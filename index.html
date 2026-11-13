@@ -948,6 +948,14 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 @keyframes aiDot{50%{opacity:1}}
 @media (prefers-reduced-motion: reduce){.ai-wait i{animation:none;opacity:.6}}
 
+/* разрешения: статус и кнопка справа, неразрешённые подсвечены */
+.permr{grid-template-columns:24px minmax(0,1fr) auto!important;align-items:center}
+.permr .btn{grid-column:auto!important;justify-self:end!important}
+.permr.need{border-color:#F8C9A8;background:var(--prev-soft)}
+.permr.need .permi{color:var(--prev)}
+.permgo{background:var(--or-g);border-color:transparent;color:#fff;white-space:nowrap}
+.permgo:hover{filter:brightness(1.05)}
+
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 </head>
@@ -1384,7 +1392,7 @@ function askPerm(k,cb){if(PERM[k]==='yes'){cb&&cb();return}permCb=cb;
   openModal('Разрешить доступ?',`<div class="permask"><div class="permic">${svgI(PIC[k],28)}</div><p><b>Orange of Health</b> запрашивает доступ: ${PERMS[k][0]}, ${PERMS[k][1]}.</p><p class="why">В приложении это системное окно Android или iOS. Разрешение можно отозвать в настройках телефона.</p><div class="row-end"><button class="btn" data-perm="no" data-k="${k}">Не сейчас</button><button class="btn pri" data-perm="yes" data-k="${k}">Разрешить</button></div></div>`)}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-perm]');if(!b)return;const k=b.dataset.k,ok=b.dataset.perm==='yes';PERM[k]=ok?'yes':'no';store.set('oh2-perm',PERM);closeModal();renderPerms();
   if(ok&&permCb){const cb=permCb;permCb=null;setTimeout(cb,40)}else if(!ok)toast('Без этого разрешения функция недоступна. Его можно дать позже в профиле.')});
-function renderPerms(){const h=$('#perms');if(!h)return;h.innerHTML=Object.keys(PERMS).map(k=>`<div class="permr"><span class="permi">${svgI(PIC[k],18)}</span><span><b>${PERMS[k][0][0].toUpperCase()+PERMS[k][0].slice(1)}</b><small>${PERMS[k][1]}</small></span><span class="chip ${PERM[k]==='yes'?'c-ok':'c-none'}">${PERM[k]==='yes'?'разрешено':PERM[k]==='no'?'отклонено':'не запрошено'}</span>${PERM[k]==='yes'?'':`<button class="btn" type="button" data-askperm="${k}">Разрешить</button>`}</div>`).join('')}
+function renderPerms(){const h=$('#perms');if(!h)return;h.innerHTML=Object.keys(PERMS).map(k=>{const ok=PERM[k]==='yes';return `<div class="permr${ok?'':' need'}"><span class="permi">${svgI(PIC[k],18)}</span><span><b>${PERMS[k][0][0].toUpperCase()+PERMS[k][0].slice(1)}</b><small>${PERMS[k][1]}${PERM[k]==='no'?' · сейчас отклонено':''}</small></span>${ok?'<span class="chip c-ok">разрешено</span>':`<button class="btn permgo" type="button" data-askperm="${k}">Разрешить</button>`}</div>`}).join('')}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-askperm]');if(b){PERM[b.dataset.askperm]=undefined;askPerm(b.dataset.askperm,()=>toast('Разрешение получено'))}});
 let LOG=store.get('oh2-login',false);
 function updLogin(){const lb=$('#logoutBtn');if(lb){lb.textContent=LOG?'Выйти из аккаунта':'Войти или зарегистрироваться';lb.classList.toggle('danger',LOG);lb.classList.toggle('pri',!LOG)}$('#whoami').textContent=LOG?(P.name||'Вы')+' · '+(P.phone||P.email||''):'Гость · демо-данные';
