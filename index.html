@@ -456,7 +456,7 @@ body{background:radial-gradient(900px 500px at 85% -10%,#E3DAFB 0%,transparent 6
 .addb:active{transform:scale(.97)}
 .addb.on{background:#fff;color:var(--or);box-shadow:inset 0 0 0 2px var(--or)}
 .cta .link{align-self:center;font-size:12.5px}
-@media(max-width:900px){.dgrid{grid-template-columns:1fr}.cta{order:-1}.cta .addb{margin-top:4px}}
+@media(max-width:900px){.dgrid{grid-template-columns:1fr}.cta{order:2}.cta .addb{margin-top:4px}}
 @media(max-width:760px){.cta{padding:12px;gap:6px}.cta-ic{display:none}}
 
 /* v8: подсказка раскрытия, мобильные таблицы, где сдать */
@@ -804,8 +804,6 @@ tr.off td{color:var(--ink3)}
 .ctal{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
 #labsPanel[hidden]{display:none}
 .sheet{overflow-wrap:anywhere}
-.sheet table{table-layout:fixed}
-.sheet th:nth-child(1),.sheet td:nth-child(1){width:42%}
 .filebox{overflow-x:hidden}
 .hist td,.hist th{white-space:normal}
 /* строки событий: и в первых шагах, и на телефоне */
@@ -827,14 +825,13 @@ tr.off td{color:var(--ink3)}
   .psadd .evr{border-bottom:0}
   .mrow-h,.mhead{grid-template-columns:minmax(0,1fr) 112px 16px!important}
   .mrow-h .mv{text-align:right}
-  .hist thead{display:none}
-  .hist,.hist tbody{display:block}
-  .hist tr{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;padding:9px 10px;border-bottom:1px solid var(--line)}
-  .hist tr:last-child{border-bottom:0}
-  .hist td{border:0!important;padding:0!important;display:block!important}
-  .hist td:first-child{font-weight:700}
-  .hist td.ctxc{flex-basis:100%;max-width:none;min-width:0}
-  .hist td.r{text-align:left}
+  .pst thead{display:none}
+  .pst,.pst tbody{display:block}
+  .pst tr{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;padding:9px 10px;border-bottom:1px solid var(--line)}
+  .pst tr:last-child{border-bottom:0}
+  .pst td{border:0!important;padding:0!important;display:block!important}
+  .pst td:first-child{font-weight:700}
+  .pst td.r{text-align:left}
   .pst td:first-child{flex-basis:100%;min-width:0}
   .pst td:last-child{margin-left:auto}
   .psb .cwrap .chart{min-width:0!important}
@@ -878,6 +875,27 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 .setfoot{margin:22px 0 10px;display:grid;justify-items:center;gap:8px;text-align:center}
 .btn.danger{color:var(--hi);border-color:#F5C2C2;background:var(--card)}
 .btn.danger:hover{background:var(--hi-soft)}
+
+/* версия 5.1: бланк и история показателя */
+.sheet .nw{white-space:nowrap}
+.sheet th{font-size:11px}
+.dh{max-width:none}
+.dh td{vertical-align:top}
+.dh .ctxs{display:block;font-size:11px;color:var(--ink3);line-height:1.3;margin-top:2px;max-width:240px;white-space:normal}
+.dh .link{font-weight:700}
+.dhn{margin-top:6px;font-size:12px}
+@media(max-width:620px){
+  .mbox-b .filebox{padding:0;border:0;background:transparent}
+  .sheet{padding:10px 8px;box-shadow:none;border:1px solid var(--line)}
+  .sheet th,.sheet td{padding:5px 4px}
+  .dh{font-size:12px}
+  .dh th,.dh td{padding:7px 6px}
+  .dh .labtag{font-size:10px;padding:1px 5px}
+}
+.labtag{white-space:nowrap}
+@media(max-width:620px){.sheet td.nw,.sheet th.nw{font-size:10.5px}}
+.sbtn.fab span{white-space:normal!important;overflow:visible!important;text-align:center;line-height:1.1;max-width:72px}
+@media(max-width:760px){.sbtn.fab span{font-size:9.5px}}
 
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
@@ -1241,7 +1259,7 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v)
 const TABS={patient:[['summary','Сводка'],['files','Мои анализы'],['add','Добавить анализ'],['book','Где сдать'],['docs','Врачи рядом']]};
 let role='patient';
 const NAVI={"summary": "<path d=\"M4 13h6V4H4zM14 20h6v-9h-6zM14 4v4h6V4zM4 20h6v-3H4z\"/>", "files": "<path d=\"M7 3h7l5 5v13H7z\"/><path d=\"M14 3v5h5M10 13h6M10 17h6\"/>", "book": "<path d=\"M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z\"/><circle cx=\"12\" cy=\"9.5\" r=\"2.5\"/>", "profile": "<circle cx=\"12\" cy=\"8\" r=\"4\"/><path d=\"M4 21c0-4 4-6 8-6s8 2 8 6\"/>", "share": "<rect x=\"4\" y=\"4\" width=\"6\" height=\"6\" rx=\"1\"/><rect x=\"14\" y=\"4\" width=\"6\" height=\"6\" rx=\"1\"/><rect x=\"4\" y=\"14\" width=\"6\" height=\"6\" rx=\"1\"/><path d=\"M14 14h2v2h-2zM18 18h2v2h-2zM14 18h2M18 14h2\"/>", "patients": "<circle cx=\"9\" cy=\"8\" r=\"3.5\"/><path d=\"M2.5 20c0-3.5 3-5.5 6.5-5.5s6.5 2 6.5 5.5\"/><path d=\"M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.8c2 .7 3 2.4 3 5.2\"/>"};
-const SHORT={summary:'Сводка',files:'Анализы',book:'Где сдать',profile:'Профиль',share:'Доступ',docs:'Врачи',add:'Добавить'};NAVI.add=`<path d='M12 5v14M5 12h14'/>`;NAVI.docs=`<circle cx='9' cy='7' r='3.5'/><path d='M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6'/><path d='M17 10v6M14 13h6'/>`;
+const SHORT={summary:'Сводка',files:'Анализы',book:'Где сдать',profile:'Профиль',share:'Доступ',docs:'Врачи',add:'Добавить анализ'};NAVI.add=`<path d='M12 5v14M5 12h14'/>`;NAVI.docs=`<circle cx='9' cy='7' r='3.5'/><path d='M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6'/><path d='M17 10v6M14 13h6'/>`;
 let cur='summary';
 function renderTabs(active){const t=$('#tabs');const ind=$('#sideInd'),hov=$('#sideHov');t.innerHTML='';t.appendChild(hov);t.appendChild(ind);
   TABS[role].forEach(([id,l])=>{const b=document.createElement('button');b.className='sbtn';b.dataset.tab=id;b.setAttribute('aria-current',id===active?'page':'false');b.title=l;
@@ -1556,7 +1574,7 @@ function fidx(t){const n=DT.length;let r;
   return Math.max(-.3,Math.min(n-1+.3,r))}
 function chartSVG(m){
   const pts=m.pts;if(pts.length<1)return '';
-  const W=680,H0=210,pl=70,pr=20,pt=26,pb=34;
+  const W=innerWidth<620?440:680,H0=innerWidth<620?230:210,pl=innerWidth<620?58:70,pr=16,pt=26,pb=34;
   const vals=pts.map(p=>p.val);let mn=Math.min(...vals),mx=Math.max(...vals);
   if(m.lo!=null)mn=Math.min(mn,m.lo);if(m.hi!=null)mx=Math.max(mx,m.hi);
   if(mx-mn<1e-9){mx+=1;mn-=1}const pad=(mx-mn)*.18;mn-=pad;mx+=pad;if(mn<0&&vals.every(v=>v>=0))mn=Math.max(0,mn);
@@ -1601,8 +1619,11 @@ function chartBox(m){
   `<div class="legend"><span><i style="background:var(--accent)"></i>последний результат</span><span><i style="background:var(--prev)"></i>предыдущий</span><span><i style="background:var(--band);border:1px solid var(--ok)"></i>норма лаборатории</span>${OV.ill?'<span><i style="background:var(--ill)"></i>болезнь</span><span><i style="background:var(--hosp)"></i>стационар</span>':''}${OV.med?'<span><i style="background:var(--med-soft);border:1px solid var(--med)"></i>приём препарата</span>':''}</div>`}
 function detailHTML(m){
   const key=m.gi+','+m.ri;
-  const rows=m.pts.slice().reverse().map(p=>{const c=ctxFor(p.d);return `<tr><td class="num">${p.d}</td><td class="r num"><b>${esc(p.raw)}</b> ${esc(U(m.u))}</td><td><span class="chip ${SC[p.st]}">${SL[p.st]}</span></td><td><span class="labtag">${LABS[p.i]}</span></td><td class="ctxc">${c?esc(c):'<span class="why">—</span>'}</td><td><button class="link" data-blank="${p.i}">бланк</button></td></tr>`}).join('');
-  const table=`<div class="tblw"><table class="hist"><thead><tr><th>Дата</th><th class="r">Значение</th><th>Норма</th><th>Лаборатория</th><th>Рядом по датам</th><th>Файл</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  const ps=m.pts.slice().reverse();
+  const rows=ps.map((p,k)=>{const c=ctxFor(p.d),pr=ps[k+1];const col=p.st==='high'?'var(--hi)':p.st==='low'?'var(--lo)':'var(--ok)';
+    const d=pr?p.val-pr.val:null;const dl=d==null?'<span class="why">—</span>':Math.abs(d)<1e-9?'<span class="why">=</span>':`<span class="num">${d>0?'+':'−'}${fmtNum(Math.abs(d))}</span>`;
+    return `<tr><td class="num"><button class="link" data-blank="${p.i}" title="Открыть бланк">${p.d}</button>${c?`<small class="ctxs">${esc(c)}</small>`:''}</td><td class="r num"><b style="color:${col}">${esc(p.raw)}</b>${p.st==='high'?' <span style="color:var(--hi)">↑</span>':p.st==='low'?' <span style="color:var(--lo)">↓</span>':''}</td><td class="r">${dl}</td><td><span class="labtag">${LABS[p.i]}</span></td></tr>`}).join('');
+  const table=`<div class="tblw"><table class="hist dh"><thead><tr><th>Дата</th><th class="r">Значение${U(m.u)?', '+esc(U(m.u)):''}</th><th class="r">Изм.</th><th>Лаборатория</th></tr></thead><tbody>${rows}</tbody></table><p class="why dhn">Норма лаборатории: ${esc(refText(m))}. Нажмите на дату, чтобы открыть бланк.</p></div>`;
   const showC=VAR==='B';
   const tog=`<label class="chk ctog"><input type="checkbox" data-chartt ${showC?'checked':''}> Показать на графике</label>`;
   const chart=`<div class="cwrap" data-cw="${key}" ${showC?'':'hidden'}>${chartBox(m)}</div>`;
@@ -1657,7 +1678,7 @@ const SRC=['PDF из почты','Фото бланка','PDF из прилож�
 const files={};let pending=[];
 function blankHTML(i){const rows=ALL.filter(m=>m.pts.some(p=>p.i===i));
   return `<div class="sheet"><h4>${LABS[i]} · результаты исследований</h4><div class="meta">Пациент: Иванов А. · дата взятия биоматериала ${DATES[i].replace(/(\d\d)$/,'20$1')} · демо-бланк</div>
-  <table><thead><tr><th>Исследование</th><th>Результат</th><th>Ед.</th><th>Референсные значения</th></tr></thead><tbody>${rows.map(m=>{const p=m.pts.find(q=>q.i===i);return `<tr><td>${esc(m.n)}</td><td><b>${esc(p.raw)}</b></td><td>${esc(U(m.u))}</td><td>${esc(m.ref.split('·')[0])}</td></tr>`}).join('')}</tbody></table>
+  <table><thead><tr><th>Исследование</th><th class='nw'>Результат</th><th class='nw'>Ед.</th><th class='nw'>Норма</th></tr></thead><tbody>${rows.map(m=>{const p=m.pts.find(q=>q.i===i);return `<tr><td>${esc(m.n)}</td><td class='nw'><b>${esc(p.raw)}</b></td><td class='nw'>${esc(U(m.u))}</td><td class='nw'>${esc(m.ref.split('·')[0])}</td></tr>`}).join('')}</tbody></table>
   <div class="stamp">Документ сформирован автоматически. Демонстрационный пример.</div></div>`}
 function fileView(id){const f=files[id];if(!f)return '<p>Файл недоступен</p>';
   if(f.type.startsWith('image/'))return `<img src="${f.url}" alt="Загруженный бланк ${esc(f.name)}">`;
