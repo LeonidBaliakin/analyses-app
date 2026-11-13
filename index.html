@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Динамика анализов</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Стиль исходного прототипа Orange of Health: лавандовая бумага, фиолетовые шапки блоков, пастельные статусы, шкалы-«пилюли» */
+  --paper:#F4F2F9; --card:#FFFFFF; --line:#E7E3F0; --ink:#1C1930; --ink2:#4A4660; --ink3:#8A85A0;
+  --accent:#7C5CE0; --accent-soft:#F0EDFB; --head:#926DDE; --prev:#E8590C; --prev-soft:#FFF1E8;
+  --hi:#DC2626; --hi-soft:#FEE2E2; --lo:#2563EB; --lo-soft:#DBEAFE; --ok:#15803D; --okm:#20C05C; --ok-soft:#E7F8EE; --mute-soft:#F2F0F7;
+  --band:rgba(32,192,92,.10);
+  --f-display:'Manrope',system-ui,sans-serif; --f-body:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --r:12px; --sh:0 1px 3px rgba(50,40,80,.07),0 4px 14px rgba(50,40,80,.04);
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--paper)}
+body{font-family:var(--f-body);color:var(--ink);font-size:14px;line-height:1.5;min-height:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+h1,h2,h3{text-wrap:balance;line-height:1.25}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px 40px}
+
+/* шапка */
+.top{position:sticky;top:0;z-index:20;background:var(--paper);border-bottom:1px solid var(--line)}
+.top-in{max-width:1180px;margin:0 auto;padding:10px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.brand{font-family:var(--f-display);font-weight:600;font-size:15px;letter-spacing:-.2px;white-space:nowrap}
+.brand small{display:block;font-family:var(--f-body);font-weight:500;font-size:11px;color:var(--ink3);letter-spacing:0}
+.tabs{display:flex;gap:2px;background:var(--mute-soft);border-radius:10px;padding:3px;flex-wrap:wrap}
+.tab{border:0;background:transparent;padding:6px 12px;border-radius:8px;font-weight:600;font-size:13px;color:var(--ink2)}
+.tab[aria-selected="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.spacer{flex:1}
+.search{position:relative;min-width:160px;flex:1 1 200px;max-width:270px}
+.search input{width:100%;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 12px 8px 34px}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--ink3)}
+.sres{position:absolute;left:0;right:0;top:calc(100% + 4px);background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.12);overflow:hidden;display:none}
+.sres.on{display:block}
+.sres button{display:flex;width:100%;text-align:left;border:0;background:transparent;padding:8px 12px;gap:8px;align-items:baseline}
+.sres button:hover,.sres button.act{background:var(--accent-soft)}
+.sres .g{font-size:11px;color:var(--ink3);margin-left:auto;white-space:nowrap}
+.sres .empty{padding:10px 12px;color:var(--ink3)}
+.role{display:flex;gap:6px;align-items:center;font-size:12px;color:var(--ink3)}
+.role select{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:5px 8px;font-size:13px}
+
+.demo{margin:14px 0 0;font-size:12px;color:var(--ink3)}
+.view{display:none}.view.on{display:block}
+
+/* карточки сводки */
+.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
+.card-h{display:flex;align-items:center;gap:8px;padding:12px 14px 8px}
+.card-h h2{font-size:13px;font-weight:700;flex:1}
+.card-b{padding:0 14px 14px}
+.link{border:0;background:transparent;color:var(--accent);font-weight:600;font-size:12.5px;padding:0;text-decoration:underline;text-underline-offset:3px}
+.pat{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13px}
+.pat dt{color:var(--ink3)}.pat dd{font-weight:600}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:10px;text-align:left}
+.stat:hover{border-color:var(--accent)}
+.stat b{display:block;font-size:24px;line-height:1.1;font-weight:700}
+.stat span{font-size:12px;color:var(--ink2)}
+.stat.ok b{color:var(--ok)}.stat.out b{color:var(--hi)}.stat.old b{color:var(--ink2)}
+.obs{display:flex;flex-wrap:wrap;gap:8px}
+.obs button,.obs div{border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:8px 10px;text-align:left;flex:1 1 110px}
+.obs button:hover{border-color:var(--accent)}
+.obs b{display:block;font-size:18px;font-weight:700}
+.obs span{font-size:12px;color:var(--ink2)}
+.devl{display:flex;flex-direction:column}
+.devr{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:baseline;padding:6px 0;border-top:1px dashed var(--line);font-size:13px;border-left:0;border-right:0;border-bottom:0;background:transparent;text-align:left;width:100%}
+.devr:first-child{border-top:0}
+.devr:hover .devn{color:var(--accent)}
+.devn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink2)}
+.devv{font-weight:700}
+.devf{font-size:11.5px;color:var(--ink3);white-space:nowrap}
+.info{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink2);font-size:11px;font-weight:700;padding:0;vertical-align:1px}
+.info:hover{border-color:var(--accent);color:var(--accent)}
+
+/* чипы статуса */
+.chip{display:inline-block;font-size:11.5px;font-weight:600;padding:1px 8px;border-radius:20px;white-space:nowrap}
+.c-ok{background:var(--ok-soft);color:var(--ok)}.c-high{background:var(--hi-soft);color:var(--hi)}
+.c-low{background:var(--lo-soft);color:var(--lo)}.c-none{background:var(--mute-soft);color:var(--ink3)}
+.c-old{background:var(--mute-soft);color:var(--ink2)}
+
+/* блоки систем */
+.sec{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:26px 0 10px}
+.sec h2{font-size:16px;font-weight:700;margin-right:auto}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:9px;padding:6px 12px;font-weight:600;font-size:12.5px}
+.btn:hover{border-color:var(--accent)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.blocks{display:flex;flex-direction:column;gap:8px}
+.blk{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
+.blk.flash{box-shadow:0 0 0 2px var(--accent)}
+.blk-h{display:flex;align-items:center;gap:12px;padding:12px 14px}
+.blk-h .tg{flex:1;display:flex;align-items:center;gap:12px;border:0;background:transparent;text-align:left;min-width:0;padding:0}
+.blk-t{font-size:15px;font-weight:700}
+.blk-s{font-size:12.5px;color:var(--ink3)}
+.blk-c{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.chev{transition:transform .2s;color:var(--ink3);flex-shrink:0}
+.blk.open .chev{transform:rotate(90deg)}
+.blk-b{display:none;border-top:1px solid var(--line)}
+.blk.open .blk-b{display:block}
+.pchk{display:none;align-items:center;gap:6px;font-size:12px;color:var(--ink2);white-space:nowrap}
+.printmode .pchk{display:flex}
+.pchk input{width:16px;height:16px;accent-color:var(--accent)}
+
+/* строка показателя */
+.mrow{border-top:1px solid var(--line)}
+.mrow:first-child{border-top:0}
+.mrow-h{display:grid;grid-template-columns:minmax(0,2fr) minmax(90px,.9fr) minmax(180px,1.8fr) minmax(120px,1fr) 20px;gap:12px;align-items:center;width:100%;border:0;background:transparent;text-align:left;padding:10px 14px}
+.mrow-h:hover{background:var(--paper)}
+.mrow.flash .mrow-h{background:var(--accent-soft)}
+.mn{font-weight:600;font-size:13.5px}
+.mn small{font-weight:500;color:var(--ink3);margin-left:4px;font-size:12px}
+.mv{font-weight:700;font-size:15px}
+.mv small{display:block;font-weight:500;font-size:11.5px;color:var(--ink3)}
+.mref{font-size:12.5px;color:var(--ink2)}
+.mref small{display:block;font-size:11px;color:var(--ink3)}
+.mprev{font-size:12.5px;color:var(--ink2)}
+.mprev small{display:block;font-size:11px;color:var(--ink3)}
+.mrow .chev{width:16px;height:16px}
+.mrow.open .chev{transform:rotate(90deg)}
+.mrow-b{display:none;padding:4px 14px 16px;background:var(--paper)}
+.mrow.open .mrow-b{display:block}
+.mhead{display:none;grid-template-columns:minmax(0,2fr) minmax(90px,.9fr) minmax(180px,1.8fr) minmax(120px,1fr) 20px;gap:12px;padding:8px 14px;font-size:11px;font-weight:700;color:var(--ink3);text-transform:none;background:var(--paper)}
+.blk.open .mhead{display:grid}
+.chart{width:100%;max-width:760px;height:auto;display:block;background:var(--card);border:1px solid var(--line);border-radius:10px;margin-top:8px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--ink2);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.hist{width:100%;max-width:760px;border-collapse:collapse;margin-top:12px;font-size:12.5px;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.hist th{text-align:left;font-size:11px;color:var(--ink3);font-weight:700;padding:7px 10px;border-bottom:1px solid var(--line)}
+.hist td{padding:6px 10px;border-bottom:1px solid var(--line)}
+.hist tr:last-child td{border-bottom:0}
+.hist .r{text-align:right}
+.tblw{overflow-x:auto}
+.docnote{margin:0 14px 14px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px;font-size:12.5px;color:var(--ink3);display:none}
+.doctor .docnote{display:block}
+.nodata{padding:16px 14px;color:var(--ink2);font-size:13px}
+
+/* модалка */
+.modal{position:fixed;inset:0;background:rgba(10,20,26,.45);display:none;align-items:flex-start;justify-content:center;z-index:50;padding:40px 16px;overflow:auto}
+.modal.on{display:flex}
+.mbox{background:var(--card);border-radius:14px;max-width:640px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.mbox-h{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.mbox-h h3{flex:1;font-size:16px}
+.x{border:0;background:var(--mute-soft);width:30px;height:30px;border-radius:50%;font-size:16px;line-height:1}
+.mbox-b{padding:16px 18px 20px;max-height:70vh;overflow:auto}
+.mbox-b p{margin-bottom:10px;color:var(--ink2)}
+.mbox-b p b{color:var(--ink)}
+.mlist{display:flex;flex-direction:column;margin-top:6px}
+.mlist button{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:baseline;border:0;border-top:1px solid var(--line);background:transparent;padding:7px 0;text-align:left;font-size:13px}
+.mlist button:hover{color:var(--accent)}
+.mlist .g{font-size:11.5px;color:var(--ink3)}
+.mfilter{width:100%;border:1px solid var(--line);border-radius:9px;padding:7px 10px;margin:4px 0 6px;background:var(--paper)}
+.gh{font-size:11.5px;font-weight:700;color:var(--ink3);margin-top:12px}
+
+/* формы и прочие вкладки */
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-top:14px;box-shadow:var(--sh)}
+.panel h2{font-size:16px;margin-bottom:4px}
+.lead{color:var(--ink2);max-width:70ch;margin-bottom:14px}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px 16px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:12.5px;font-weight:600;color:var(--ink2)}
+.field small{font-size:11.5px;color:var(--ink3)}
+.field input,.field select,.field textarea{border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--paper)}
+.field textarea{min-height:64px;resize:vertical}
+.fs{border:0;margin-top:18px}
+.fs legend{font-weight:700;font-size:14px;margin-bottom:10px}
+.why{font-size:12px;color:var(--ink3);margin-top:4px}
+.bmi{font-weight:700}
+.row-end{display:flex;gap:10px;align-items:center;margin-top:18px;flex-wrap:wrap}
+.saved{font-size:12.5px;color:var(--ok)}
+.drop{border:2px dashed var(--line);border-radius:12px;padding:18px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;background:var(--paper)}
+.drop p{flex:1;min-width:220px;color:var(--ink2)}
+.ways{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:12px}
+.way{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--ink2)}
+.way b{display:block;color:var(--ink);font-size:13px}
+.code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--mute-soft);padding:2px 6px;border-radius:6px}
+table.up{width:100%;border-collapse:collapse;margin-top:16px;font-size:13px}
+table.up th{text-align:left;font-size:11.5px;color:var(--ink3);padding:6px 8px;border-bottom:1px solid var(--line)}
+table.up td{padding:8px;border-bottom:1px solid var(--line)}
+.share{display:grid;grid-template-columns:200px 1fr;gap:20px;align-items:start}
+@media(max-width:620px){.share{grid-template-columns:1fr}}
+.qr{width:200px;height:200px;border:1px solid var(--line);border-radius:12px;background:#fff;padding:10px}
+.opts{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}
+.opt{border:1px solid var(--line);background:var(--card);border-radius:20px;padding:5px 12px;font-size:12.5px;font-weight:600}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.linkbox{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,0);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:10px;font-size:13px;display:none;z-index:60;max-width:90vw}
+.toast.on{display:block}
+.foot{margin-top:28px;font-size:12px;color:var(--ink3);max-width:80ch}
+
+
+/* фиолетовые шапки как в исходнике */
+.card-h,.blk-h{background-color:var(--head);background-image:linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.13));border-bottom:1px solid rgba(58,30,120,.2);color:#fff}
+.card-h{padding:11px 14px;margin-bottom:12px}
+.card-h h2,.blk-t{color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.22)}
+.blk-s{color:rgba(255,255,255,.88)}
+.blk-h .chev{color:#fff}
+.card-h .link{color:#fff}
+.card-h .info,.blk-h .info{background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.35);color:#fff}
+.card-h .chip,.blk-h .chip{background:rgba(255,255,255,.26);color:#fff;border:1px solid rgba(255,255,255,.3)}
+.pchk{color:#fff}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-ic{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#F97316,#FB923C);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-n{font-weight:800;font-size:16px;letter-spacing:-.2px}
+.stat{background:#FBFAFE}.obs button,.obs div{background:#FBFAFE}
+.c-ok{background:var(--ok-soft);color:var(--ok)}
+.tab[aria-selected="true"]{color:var(--accent)}
+.btn.pri{background:var(--accent);border-color:var(--accent)}
+.mhead{background:#F3F0FB;color:#6B63A8;text-transform:uppercase;letter-spacing:.4px;font-size:10px}
+.mrow:nth-child(odd) .mrow-h{background:#FCFBFE}
+/* шкала-пилюля из исходника */
+.sc3{position:relative;display:block;height:46px;width:100%}
+.mref{display:block;padding:0 8px}
+.sc3-pill,.sc3-zn,.sc3-kn,.sc3-val,.sc3-bl{display:block}
+.sc3-pill{position:absolute;left:0;right:0;top:18px;height:10px;border-radius:999px;background:linear-gradient(90deg,#B4BBE9,#BFC6EF);box-shadow:inset 0 1px 2px rgba(60,50,110,.16)}
+.sc3-zn{position:absolute;top:0;bottom:0;border-radius:999px;background:linear-gradient(90deg,#9FE6B8,#59CB84)}
+.sc3-kn{position:absolute;top:50%;width:15px;height:15px;margin:-7.5px 0 0 -7.5px;border-radius:50%;background:#fff;border:3px solid var(--okm);box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.sc3-val{position:absolute;top:0;transform:translateX(-50%);font-size:12px;font-weight:700;white-space:nowrap;line-height:1.05}
+.sc3-bl{position:absolute;top:33px;transform:translateX(-50%);font-size:10px;font-weight:600;color:#8B93A8;white-space:nowrap}
+
+.mbox.wide{max-width:1040px}
+.split{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px;align-items:start}
+@media(max-width:820px){.split{grid-template-columns:1fr}}
+.filebox{border:1px solid var(--line);border-radius:10px;background:#EDEAF5;max-height:60vh;overflow:auto;padding:10px}
+.filebox img{max-width:100%;display:block;margin:0 auto;border-radius:6px}
+.filebox iframe{width:100%;height:56vh;border:0;background:#fff}
+.sheet{background:#fff;color:#222;border-radius:4px;padding:18px 20px;font-size:12px;box-shadow:0 2px 8px rgba(0,0,0,.12);font-family:Arial,sans-serif}
+.sheet h4{font-size:14px;margin-bottom:2px}
+.sheet .meta{color:#666;margin-bottom:10px;font-size:11px}
+.sheet table{width:100%;border-collapse:collapse}
+.sheet th,.sheet td{border-bottom:1px solid #ddd;padding:4px 6px;text-align:left}
+.sheet .stamp{margin-top:10px;font-size:10px;color:#888}
+.labtag{display:inline-block;font-size:11px;font-weight:700;color:#6B63A8;background:#F0EDFB;border-radius:6px;padding:1px 6px}
+.medrow{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1.3fr) minmax(0,1fr) 34px;gap:8px;margin-bottom:8px}
+.medrow input,.medrow select{border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--paper);min-width:0}
+.medrow button{border:1px solid var(--line);background:var(--card);border-radius:9px}
+@media(max-width:620px){.medrow{grid-template-columns:1fr 1fr}}
+/* туториал */
+.tut{position:fixed;inset:0;background:rgba(28,25,48,.55);z-index:70;display:none;align-items:center;justify-content:center;padding:16px;overflow:auto}
+.tut.on{display:flex}
+.tbox{background:var(--card);border-radius:16px;max-width:620px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden}
+.tbox-h{background-color:var(--head);background-image:linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.13));color:#fff;padding:18px 22px}
+.tbox-h small{opacity:.85;font-size:12px;font-weight:600}
+.tbox-h h3{font-size:20px;font-weight:800;margin-top:2px}
+.tbox-b{padding:18px 22px;max-height:60vh;overflow:auto}
+.tbox-b p{color:var(--ink2);margin-bottom:10px;max-width:60ch}
+.tbox-f{display:flex;align-items:center;gap:10px;padding:14px 22px;border-top:1px solid var(--line)}
+.dots{display:flex;gap:5px;margin-right:auto}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--accent)}
+.pain{display:grid;gap:8px;margin-top:4px}
+.pain div{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#FBFAFE}
+.pain b{display:block}
+.steps{counter-reset:s;display:grid;gap:8px}
+.steps div{counter-increment:s;display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}
+.steps div::before{content:counter(s);width:26px;height:26px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-weight:800;display:flex;align-items:center;justify-content:center}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg label{border:1px solid var(--line);border-radius:20px;padding:5px 12px;font-size:12.5px;font-weight:600;cursor:pointer}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg input:checked+span{color:var(--accent)}
+.seg label:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.tutbtn{border:0;background:transparent;color:var(--accent);font-weight:700;font-size:12.5px}
+
+.bic{width:34px;height:34px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.bic svg{width:31px;height:31px;filter:drop-shadow(0 1px 1.5px rgba(40,20,90,.3))}
+.bask{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.bchip{display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--accent);border-radius:20px;padding:4px 6px 4px 12px;font-size:12.5px;font-weight:600}
+.bchip button{border:0;background:rgba(124,92,224,.15);color:var(--accent);width:20px;height:20px;border-radius:50%;line-height:1}
+.labs{display:grid;gap:10px;margin-top:12px}
+.lab{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr) minmax(0,1fr) auto;gap:14px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--card)}
+.lab.best{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.lab h3{font-size:14.5px}
+.lab .addr{font-size:12.5px;color:var(--ink3)}
+.lab .pr{font-size:18px;font-weight:800}
+.lab .pr small,.lab .km small{display:block;font-size:11.5px;font-weight:500;color:var(--ink3)}
+.lab .km{font-size:15px;font-weight:700}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.bdg{font-size:11px;font-weight:700;border-radius:6px;padding:2px 7px}
+.b-opt{background:var(--accent);color:#fff}.b-cheap{background:var(--ok-soft);color:var(--ok)}.b-near{background:#E4EDFA;color:var(--lo)}
+@media(max-width:760px){.lab{grid-template-columns:1fr 1fr}}
+.addsearch{position:relative;max-width:420px}
+.addsearch input{width:100%;border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--paper)}
+.addres{position:absolute;left:0;right:0;top:calc(100% + 4px);background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:5;display:none}
+.addres.on{display:block}
+.addres button{display:block;width:100%;text-align:left;border:0;background:transparent;padding:7px 12px}
+.addres button:hover{background:var(--accent-soft)}
+
+.mini{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.mc{border:1px solid var(--line);background:#FBFAFE;border-radius:20px;padding:4px 12px;font-size:12.5px;color:var(--ink2)}
+.mc:hover{border-color:var(--accent)}
+.chg{margin-bottom:8px}
+.chg-t{font-size:12.5px;font-weight:700;display:flex;align-items:center;gap:6px;margin-bottom:2px}
+.chg-t i{width:8px;height:8px;border-radius:50%}
+.chg-r{display:flex;justify-content:space-between;gap:10px;width:100%;border:0;background:transparent;padding:3px 0 3px 14px;font-size:12.5px;text-align:left;color:var(--ink2)}
+.chg-r:hover{color:var(--accent)}
+.tl{display:flex;flex-direction:column;max-height:230px;overflow:auto}
+.tl-r{display:grid;grid-template-columns:72px auto 1fr;gap:8px;align-items:center;border:0;border-left:2px solid var(--line);background:transparent;padding:6px 0 6px 12px;text-align:left;position:relative}
+.tl-r::before{content:"";position:absolute;left:-5px;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:var(--accent)}
+.tl-r:hover .tl-d{color:var(--accent)}
+.tl-d{font-weight:700;font-size:13px}
+.tl-r .why{text-align:right}
+/* анкета блоками */
+#pform{display:block}
+.fs.card{padding:0;margin-top:12px}
+.fs.card legend{display:block;float:left;width:100%;padding:11px 16px;margin:0 0 14px;color:#fff;font-weight:700;font-size:13.5px;background-color:var(--head);background-image:linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.13));text-shadow:0 1px 1px rgba(0,0,0,.22)}
+.fs.card>*:not(legend){clear:both;margin-left:16px;margin-right:16px}
+.fs.card>*:last-child{margin-bottom:16px}
+.fsnav{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.fsnav a{border:1px solid var(--line);background:var(--card);border-radius:20px;padding:5px 12px;font-size:12.5px;font-weight:600;color:var(--ink2);text-decoration:none}
+.fsnav a:hover{border-color:var(--accent);color:var(--accent)}
+.savebar{position:sticky;bottom:0;background:var(--paper);padding:12px 0;border-top:1px solid var(--line);margin-top:14px}
+
+
+/* ===== v4: стеклянная навигация справа, анимация разделов, плитки систем, мобильная версия ===== */
+body{background:radial-gradient(900px 500px at 85% -10%,#E3DAFB 0%,transparent 60%),radial-gradient(700px 500px at -10% 30%,#FDE9DC 0%,transparent 55%),var(--paper);background-attachment:fixed}
+.top{background:rgba(244,242,249,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.wrap{padding-right:116px}
+.side{position:fixed;right:16px;top:50%;transform:translateY(-50%);z-index:30;display:flex;flex-direction:column;gap:4px;padding:8px;border-radius:22px;
+  background:rgba(255,255,255,.55);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border:1px solid rgba(255,255,255,.7);box-shadow:0 10px 30px rgba(60,40,120,.14)}
+.side-ind{position:absolute;left:0;top:0;border-radius:16px;background:linear-gradient(160deg,#9B7BEA,#7C5CE0);box-shadow:0 6px 16px rgba(124,92,224,.35);transition:transform .38s var(--ease-out),width .38s,height .38s,opacity .2s;z-index:0}
+.sbtn{position:relative;z-index:1;width:76px;min-height:58px;border:0;background:transparent;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink2);font-size:10.5px;font-weight:700;transition:color .25s}
+.sbtn:hover{color:var(--accent)}
+.sbtn[aria-current="page"]{color:#fff}
+.view{display:none}
+.view.on{display:block}
+.view.leave{display:block;animation:vOut .17s ease forwards}
+.view.enter{animation:vIn .3s var(--ease-out)}
+.view.enter>*{animation:vItem .3s var(--ease-out) both}
+.view.enter>*:nth-child(2){animation-delay:.05s}.view.enter>*:nth-child(3){animation-delay:.1s}.view.enter>*:nth-child(4){animation-delay:.15s}.view.enter>*:nth-child(5){animation-delay:.2s}
+@keyframes vOut{to{opacity:0;filter:blur(8px);transform:translateY(6px) scale(.99)}}
+@keyframes vIn{from{opacity:0;filter:blur(10px)}to{opacity:1;filter:none}}
+@keyframes vItem{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.card,.panel,.tile{background:rgba(255,255,255,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.sum{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.fh{width:100%;border:0;text-align:left;cursor:pointer;margin-bottom:0}
+.fold .fb{padding-top:12px}
+.fsum{font-size:12px;color:rgba(255,255,255,.85);font-weight:600;display:none}
+.fold.closed .fb{display:none}
+.fold.closed .fsum{display:inline}
+.fold.closed .chev{transform:rotate(-90deg)}
+.fh .chev{color:#fff;transition:transform .2s}
+.syssearch{position:relative;margin:0 0 12px}
+.syssearch svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--ink3)}
+.syssearch input{width:100%;border:1px solid var(--line);background:rgba(255,255,255,.85);border-radius:14px;padding:12px 14px 12px 40px;font-size:14px;box-shadow:var(--sh)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.tile{position:relative;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--sh);transition:transform .2s,box-shadow .2s}
+.tile:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(60,40,120,.14)}
+.tile-b{display:flex;flex-direction:column;gap:8px;width:100%;height:100%;border:0;background:transparent;text-align:left;padding:0 0 14px}
+.tile-h{display:flex;align-items:center;gap:10px;padding:12px 14px;background-color:var(--head);background-image:linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.13));color:#fff}
+.tile-t{font-weight:800;font-size:15px;line-height:1.25;text-shadow:0 1px 1px rgba(0,0,0,.22)}
+.tile-s,.tile-f,.tile-m{padding:0 14px}
+.tile-s{font-size:12.5px;color:var(--ink2)}
+.tile-f{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:auto}
+.tile-m{font-size:12px;color:var(--accent);font-weight:600}
+.tile-m:empty{display:none}
+.tile .pchk{position:absolute;right:10px;top:12px;z-index:2;display:none;background:rgba(0,0,0,.18);border-radius:8px;padding:2px 6px}
+.printmode .tile .pchk{display:flex}
+.mbox.sysbox .mbox-b{padding:0}
+.mbox.sysbox .mbox-h{background-color:var(--head);background-image:linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.13));color:#fff;border-radius:14px 14px 0 0}
+.mbox.sysbox .mbox-h h3{display:flex;align-items:center;gap:10px;color:#fff}
+.mbox.sysbox .x{background:rgba(255,255,255,.25);color:#fff}
+.mic{width:30px;height:30px}
+.sysm .mhead{display:grid;position:sticky;top:0;z-index:2}
+.modal.on .mbox{animation:mIn .28s var(--ease-out)}
+@keyframes mIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
+@media(max-width:760px){
+  .wrap{padding:0 12px 104px}
+  .top-in{padding:8px 12px}
+  .brand small{display:none}
+  .tutbtn{font-size:12px}
+  .side{top:auto;bottom:10px;left:10px;right:10px;transform:none;flex-direction:row;justify-content:space-around;padding:6px;border-radius:20px}
+  .sbtn{flex:1;width:auto;min-height:54px;font-size:10px}
+  .sum{grid-template-columns:1fr}
+  .tiles{grid-template-columns:1fr 1fr;gap:8px}
+  .tile-t{font-size:13.5px}.tile-s{display:none}.tile-h{padding:10px}.tile-f{flex-direction:column;align-items:flex-start;padding:0 10px}
+  .bic{width:28px;height:28px}.bic svg{width:26px;height:26px}
+  .modal{padding:0;align-items:flex-end}
+  .mbox,.mbox.wide{border-radius:18px 18px 0 0;max-width:none;max-height:92vh;display:flex;flex-direction:column}
+  .mbox-b{max-height:none;flex:1;overflow:auto}
+  .modal.on .mbox{animation:sheetIn .3s var(--ease-out)}
+  @keyframes sheetIn{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+  .mrow-h{grid-template-columns:minmax(0,1fr) auto 16px;padding:10px 12px}
+  .mrow-b{padding:4px 12px 14px}
+  .lab{grid-template-columns:1fr 1fr}.lab>.btn{grid-column:1/-1}
+  .sec{gap:8px}.sec h2{width:100%}
+  .devr{grid-template-columns:minmax(0,1fr) auto}.devf{grid-column:1/-1;text-align:left}
+  .devhd{display:none}.devr{padding:10px 0}#stats{gap:6px}#stats .info{align-self:center}
+  .hist{font-size:11.5px}.hist th:nth-child(5),.hist td:nth-child(5){display:none}
+  .role{font-size:0}.role select{font-size:12px}
+  .top-in{flex-wrap:nowrap;gap:8px}.brand b{font-size:15px}.brand .logo{width:34px;height:34px}
+}
+@media(prefers-reduced-motion:reduce){.view.enter,.view.enter>*,.view.leave,.modal.on .mbox,.side-ind{animation:none!important;transition:none!important}}
+
+/* модалки v5 */
+.mbox{overflow:hidden}
+.mbox-h{background-color:var(--head);background-image:linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.13));color:#fff;border-bottom:0;padding:16px 20px}
+.mbox-h h3{color:#fff;display:flex;align-items:center;gap:10px}
+.mbox .x{background:rgba(255,255,255,.25);color:#fff}
+.mbox-b{padding:18px 20px 22px}
+.mbox-b>p{font-size:14px;line-height:1.55;background:var(--accent-soft);border-radius:12px;padding:12px 14px;color:var(--ink2)}
+.mlist{margin:4px -20px 0}
+.mlist button{grid-template-columns:minmax(0,1fr) auto 16px;align-items:center;gap:12px;padding:12px 20px;font-size:14px}
+.mlist button:hover{background:#FBFAFE;color:inherit}
+.ml-n{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ml-n b{font-weight:700;color:var(--ink)}
+.ml-v{display:flex;flex-direction:column;align-items:flex-end;gap:3px;text-align:right}
+.ml-v .num{font-size:14px;white-space:nowrap}
+.ml-c{color:var(--ink3)}
+.mlist .g{font-size:12px}
+.gh{margin:16px 0 0;font-weight:800;font-size:13px;color:var(--accent)}
+@media(max-width:760px){.mbox-b{padding:14px 16px 20px}.mlist{margin:4px -16px 0}.mlist button{padding:12px 16px}.mbox-h{padding:14px 16px}}
+
+.mob{display:none}@media(max-width:760px){.mob{display:inline}}
+/* v6 */
+.sum{align-items:start}
+.fold .fb{padding-top:0}
+.fold #changes{padding-top:12px}
+#cDev .fb>.card-b:first-child{padding-top:14px}
+.devt{margin-top:4px;font-size:12.5px;font-weight:800;color:var(--ink);margin-bottom:4px}
+.chg-r{padding:8px 0 8px 14px;border-bottom:1px dashed var(--line)}
+.chg-r:last-child{border-bottom:0}
+.devr{border-top:1px dashed var(--line)}
+.fh .chip{margin-left:auto}
+.fh h2{flex:1}
+/* оранжевый — выбранный раздел и блок */
+:root{--ease-out:cubic-bezier(0.23,1,0.32,1);--ease-in-out:cubic-bezier(0.77,0,0.175,1);--ease-drawer:cubic-bezier(0.32,0.72,0,1);--or:#EE6A1F;--or-g:linear-gradient(160deg,#FB923C,#E8590C)}
+.side-ind{background:var(--or-g);box-shadow:0 6px 16px rgba(232,89,12,.35)}
+.side-hov{position:absolute;left:0;top:0;border-radius:16px;border:1.5px solid rgba(124,92,224,.45);background:rgba(255,255,255,.35);box-shadow:inset 0 0 0 1px rgba(255,255,255,.6),0 4px 14px rgba(60,40,120,.10);opacity:0;pointer-events:none;z-index:0;transition:transform .32s var(--ease-out),width .32s,height .32s,opacity .2s}
+.side:hover .side-hov.on{opacity:1}
+.sbtn:hover{color:var(--ink)}
+.sbtn[aria-current="page"]:hover{color:#fff}
+.tile-h,.fh,.mbox-h{transition:background-color .25s,background-image .25s}
+.tile:hover .tile-h,.tile:focus-within .tile-h,.tile.sel .tile-h{background-color:var(--or);background-image:var(--or-g)}
+.fold:not(.closed) .fh:hover{background-color:var(--or);background-image:var(--or-g)}
+.mbox.sysbox .mbox-h{background-color:var(--or);background-image:var(--or-g)}
+
+/* v7: график + призыв сдать */
+.dgrid{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:14px;align-items:stretch;margin-top:8px}
+.dchart .chart{max-width:none;margin-top:0}
+.hist{max-width:none}
+.cta{display:flex;flex-direction:column;gap:8px;padding:16px;border-radius:14px;background:linear-gradient(160deg,#FFF4EC,#FFE6D5);border:1px solid #FBD3B8}
+.cta-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--or-g);color:#fff;box-shadow:0 6px 14px rgba(232,89,12,.3)}
+.cta b{font-size:15px;color:var(--ink)}
+.cta span{font-size:12.5px;color:var(--ink2);line-height:1.45}
+.addb{margin-top:auto;border:0;border-radius:12px;padding:12px 14px;font-weight:800;font-size:14px;color:#fff;background:var(--or-g);box-shadow:0 8px 18px rgba(232,89,12,.32);transition:transform .15s,box-shadow .2s}
+.addb:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(232,89,12,.4)}
+.addb:active{transform:scale(.97)}
+.addb.on{background:#fff;color:var(--or);box-shadow:inset 0 0 0 2px var(--or)}
+.cta .link{align-self:center;font-size:12.5px}
+@media(max-width:900px){.dgrid{grid-template-columns:1fr}.cta{order:-1}.cta .addb{margin-top:4px}}
+@media(max-width:760px){.cta{padding:12px;gap:6px}.cta-ic{display:none}}
+
+/* v8: подсказка раскрытия, мобильные таблицы, где сдать */
+@keyframes hint{0%,70%,100%{transform:rotate(-90deg)}78%{transform:rotate(0) translateY(2px)}86%{transform:rotate(-90deg)}92%{transform:rotate(0) translateY(2px)}}
+.fold.closed .fh .chev{animation:hint 3.2s ease-in-out infinite;background:rgba(255,255,255,.22);border-radius:50%;padding:2px;width:24px;height:24px}
+.fold.closed .fh{box-shadow:0 0 0 0 rgba(238,106,31,0)}
+.fold.closed .fh:hover .chev{animation:none;transform:rotate(0)}
+html,body{overflow-x:clip}
+.tblw{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+table.up td,table.up th,.hist td,.hist th{white-space:nowrap}
+table.up .r,.hist .r{text-align:right}
+.fname{display:inline-block;max-width:220px;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}
+.bdg{font-size:12px;font-weight:800;border-radius:8px;padding:4px 9px;color:#fff;box-shadow:0 3px 8px rgba(0,0,0,.12)}
+.b-opt{background:var(--or-g)}.b-cheap{background:linear-gradient(160deg,#22C55E,#15803D);color:#fff}.b-near{background:linear-gradient(160deg,#3B82F6,#1D4ED8);color:#fff}
+.lab.best{border:2px solid var(--or);box-shadow:0 8px 22px rgba(232,89,12,.18)}
+.lab.cheap{border:2px solid #22C55E}
+.lab.near{border:2px solid #3B82F6}
+.lab-div{margin:18px 0 6px;font-size:12.5px;font-weight:800;color:var(--ink3);text-transform:uppercase;letter-spacing:.04em}
+@media(max-width:760px){
+  .sbtn{font-size:9.5px;letter-spacing:-.1px;min-width:0;padding:0 2px}
+  .sbtn span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tbox-f{flex-wrap:wrap;padding:12px 14px;gap:8px}
+  .tbox-f .dots{width:100%;justify-content:center;margin:0 0 4px}
+  .tbox-f .btn{flex:1;padding:10px 6px;font-size:13px;white-space:nowrap}
+  table.up{font-size:12px}table.up th{font-size:10.5px;padding:6px 5px}table.up td{padding:8px 5px}
+  table.up .c-src{display:none}
+  table.up .chip{font-size:10.5px;padding:2px 6px}
+  table.up .btn{padding:6px 10px;font-size:12px}
+  .labtag{font-size:10.5px;padding:2px 6px}
+  .hist{font-size:11.5px}.hist th{font-size:10.5px}.hist td,.hist th{padding:7px 5px}.hist .chip{font-size:10.5px;padding:2px 6px}
+  table.docs thead{display:none}
+  table.docs tr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:10px 0;border-bottom:1px solid var(--line)}
+  table.docs td{border:0;padding:0;white-space:normal}
+  table.docs td:nth-child(1){font-weight:700;grid-column:1}
+  table.docs td:nth-child(2){grid-column:1;font-size:11.5px;color:var(--ink3)}
+  table.docs td:nth-child(3){grid-column:1;font-size:11.5px;color:var(--ink3)}
+  table.docs td:nth-child(3)::before{content:'Просмотр: '}
+  table.docs td:nth-child(4){grid-column:2;grid-row:1/4;align-self:center}
+}
+@media(prefers-reduced-motion:reduce){.fold.closed .fh .chev{animation:none}}
+
+.desk{display:inline}
+@media(max-width:760px){
+  .desk{display:none}
+  .fh{flex-wrap:wrap;row-gap:2px}
+  .fh h2{flex:1 1 0;min-width:0}
+  .fold.closed .fsum{order:3;width:100%;font-size:11.5px}
+  .lab{grid-template-columns:1fr 1fr;gap:10px 12px}
+  .lab>div:first-child{grid-column:1/-1}
+  .lab .pr{font-size:17px}
+}
+@media(max-width:760px){table.up td,table.up th{padding-left:4px;padding-right:4px}.flink{color:var(--accent);display:inline-grid;place-items:center}.flink .mob{display:inline-grid}table.up .btn.pri{padding:5px 8px;font-size:11px}table.up{font-size:11.5px}#upTable th:nth-child(2){font-size:0}#upTable th:nth-child(2)::after{content:"Лаб.";font-size:10.5px}}
+@media(max-width:380px){.sbtn{font-size:8.8px}.side{padding:5px;left:6px;right:6px}}
+
+/* полная история — окно */
+.htease{display:flex;align-items:center;gap:14px;width:100%;margin-top:18px;padding:16px 18px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.85);box-shadow:var(--sh);text-align:left;transition:transform 160ms var(--ease-out),box-shadow .2s ease}
+.htease:active{transform:scale(.985)}
+@media(hover:hover) and (pointer:fine){.htease:hover{box-shadow:0 10px 24px rgba(60,40,120,.14)}.htease:hover .ht-ic{background:var(--or-g)}}
+.ht-ic{flex:none;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;color:#fff;background-color:var(--head);background-image:linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.13));transition:background .25s}
+.ht-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.ht-t b{font-size:15px;color:var(--ink)}
+.ht-t span{font-size:12.5px;color:var(--ink3)}
+.ht-go{flex:none;display:flex;align-items:center;gap:4px;font-weight:800;font-size:13px;color:var(--accent)}
+.hm{position:fixed;inset:0;z-index:70;background:rgba(10,20,26,0);display:flex;align-items:center;justify-content:center;padding:24px;transition:background 300ms ease}
+.hm[hidden]{display:none}
+.hm.on{background:rgba(10,20,26,.5)}
+.hm-box{width:100%;max-width:1280px;height:100%;max-height:900px;background:var(--card);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.3);opacity:0;transform:scale(.985);transition:opacity 300ms ease,transform 300ms ease}
+.hm.on .hm-box{opacity:1;transform:none}
+.hm-h{display:flex;align-items:center;gap:12px;padding:12px 16px;color:#fff;background-color:var(--head);background-image:linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.13))}
+.hm-h h3{font-size:16px;color:#fff}
+.hm-n{font-size:12.5px;opacity:.85;margin-right:auto}
+.hm-h .x{background:rgba(255,255,255,.25);color:#fff}
+.hm-f{display:flex;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);overflow-x:auto;flex:none;scrollbar-width:none}
+.hm-f::-webkit-scrollbar{display:none}
+.hm-f>*{flex:none}
+.hm-s{position:relative}
+.hm-s svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink3)}
+.hm-s input{width:170px;border:1px solid var(--line);border-radius:10px;padding:7px 10px 7px 30px;font:inherit;font-size:13px;background:#fff}
+.hm-f select{border:1px solid var(--line);border-radius:10px;padding:7px 8px;background:#fff;font:inherit;font-size:13px;max-width:190px}
+.hm-d{display:flex;align-items:center;gap:5px;font-size:12.5px;color:var(--ink3)}
+.hchk{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2);white-space:nowrap}
+#hreset[disabled]{opacity:.45}
+.hwrap{flex:1;overflow:auto;min-height:0}
+.htab{border-collapse:separate;border-spacing:0;font-size:12.5px;min-width:100%}
+.htab th{position:sticky;top:0;z-index:2;background:#F7F5FC;font-size:11.5px;font-weight:800;color:var(--ink2);padding:8px 10px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+.htab th small{display:block;font-size:9.5px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.02em}
+.htab td{padding:6px 10px;text-align:right;white-space:nowrap;border-bottom:1px dashed var(--line);font-variant-numeric:tabular-nums;min-width:64px}
+.htab td i{font-style:normal;font-size:10px;margin-left:2px}
+.htab .hn{position:sticky;left:0;z-index:1;background:#fff;text-align:left;width:230px;min-width:230px;max-width:230px;box-shadow:1px 0 0 var(--line)}
+.htab th.hn{z-index:3;background:#F7F5FC;vertical-align:bottom}
+.hl{display:flex;align-items:baseline;gap:6px;width:100%;border:0;background:transparent;padding:0;text-align:left;cursor:pointer;color:var(--ink);font:inherit}
+.hl-n{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.hl-u{flex:none;font-size:10.5px;color:var(--ink3)}
+.hl:hover .hl-n{color:var(--accent);text-decoration:underline}
+.htab tr.hg td{background:var(--accent-soft);border-bottom:1px solid var(--line);padding-top:7px;padding-bottom:7px}
+.htab tr.hg td.hn{font-size:11px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.04em;overflow:visible}
+.htab tr:not(.hg):hover td{background:#FBFAFE}
+.htab td.c-h{background:#FDECEC;color:var(--hi);font-weight:700}
+.htab td.c-l{background:#E8F0FE;color:var(--lo);font-weight:700}
+.htab td.e{color:#C9C4D6}
+.hleg{display:flex;gap:14px;flex-wrap:wrap;align-items:center;padding:8px 14px;font-size:11.5px;color:var(--ink3);border-top:1px solid var(--line);flex:none}
+.hleg i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.hleg i.c-h{background:#FDECEC;box-shadow:inset 0 0 0 1px #F5B5B5}.hleg i.c-l{background:#E8F0FE;box-shadow:inset 0 0 0 1px #A9C3F5}
+.hleg-r{margin-left:auto}
+.rot{position:absolute;inset:0;z-index:5;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:24px;color:#fff;background:rgba(28,25,48,.88);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.rot.on{display:flex;animation:fadeOnly2 300ms ease}
+@keyframes fadeOnly2{from{opacity:0}}
+.rot b{font-size:18px}.rot span{font-size:13.5px;opacity:.8;max-width:260px}
+.rot-ph{animation:turn 2.4s var(--ease-in-out) infinite}
+@keyframes turn{0%,20%{transform:rotate(0)}50%,70%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
+.rot-ar{opacity:.8;margin-top:-6px}
+.rot .btn{margin-top:14px;background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.3)}
+@media(max-width:760px){
+  .htease{padding:14px;gap:12px}.ht-go{font-size:0;gap:0}.ht-go svg{width:20px;height:20px}
+  .ht-t b{font-size:14px}.ht-t span{font-size:11.5px}
+  .hm{padding:0}
+  .hm-box{max-height:none;border-radius:0}
+  .hm-h{padding:8px 12px}.hm-h h3{font-size:14px}
+  .hm-f{padding:7px 10px;gap:6px}
+  .hm-s input{width:130px;padding:6px 8px 6px 28px;font-size:12px}
+  .hm-f select{font-size:12px;padding:6px;max-width:150px}
+  .hm-f .btn{padding:6px 10px;font-size:12px}
+  .htab{font-size:11.5px}.htab th{font-size:10.5px;padding:6px 8px}.htab td{padding:5px 8px;min-width:54px}
+  .htab .hn{width:150px;min-width:150px;max-width:150px}
+  .hl{flex-direction:column;gap:0}.hl-n{width:100%}.hl-u{font-size:9.5px}
+  .hleg{padding:6px 10px;font-size:10.5px;gap:10px}.hleg-r{display:none}
+}
+@media(prefers-reduced-motion:reduce){.rot-ph{animation:none;transform:rotate(-90deg)}.hm-box{transition:opacity 200ms ease;transform:none}}
+
+@media(max-height:500px){
+  .hm{padding:0}.hm-box{max-height:none;border-radius:0}
+  .hm-h{padding:6px 12px}.hm-h h3{font-size:14px}
+  .hm-f{padding:6px 10px;gap:6px}
+  .hm-s input{width:140px;padding:5px 8px 5px 28px;font-size:12px}
+  .hm-f select{font-size:12px;padding:5px 6px;max-width:160px}
+  .hm-f .btn{padding:5px 10px;font-size:12px}
+  .htab{font-size:11.5px}.htab th{font-size:10.5px;padding:5px 8px}.htab td{padding:4px 8px;min-width:56px}
+  .htab .hn{width:180px;min-width:180px;max-width:180px}
+  .hleg{padding:5px 10px;font-size:10.5px}
+}
+.tile-t{hyphens:auto;-webkit-hyphens:auto;overflow-wrap:anywhere}
+
+.hm-r{border:0;border-radius:10px;padding:6px 12px;font-weight:800;font-size:12.5px;color:var(--or);background:#fff;box-shadow:0 3px 10px rgba(0,0,0,.15);white-space:nowrap}
+.hm-r[hidden]{display:none}
+@media(max-width:760px),(max-height:500px){.hm-r{padding:5px 10px;font-size:11.5px}.hm-n{font-size:11px}}
+@media(max-width:420px){.hm-h h3{font-size:0}.hm-h h3::after{content:'История';font-size:14px}}
+/* печать */
+.pv{display:none}
+body.preview .app{display:none}
+body.preview .pv{display:block}
+.pv-bar{position:sticky;top:0;background:var(--paper);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pv-in{max-width:1120px;margin:0 auto;padding:16px}
+.pv h1{font-size:18px;margin-bottom:4px}
+.pv h2{font-size:15px;margin:18px 0 6px}
+.pv table{width:100%;border-collapse:collapse;font-size:12px}
+.pv th,.pv td{border-bottom:1px solid var(--line);padding:4px 6px;text-align:left}
+@media print{
+  @page{size:A4 landscape;margin:8mm}
+  .pv-bar{display:none}
+  body,html{background:#fff}
+}
+@media(max-width:760px){
+  .mrow-h,.mhead{grid-template-columns:minmax(0,1fr) auto 16px}
+  .mrow-h .mref,.mrow-h .mprev,.mhead .hide-s{display:none}
+  .stat b{font-size:20px}
+}
+/* версия 2: события, профиль, специалисты, доступ */
+:root{--med:#7A4FD0;--med-soft:#EFE8FC;--ill:#E8590C;--ill-soft:rgba(232,89,12,.10);--hosp:#B42318;--hosp-soft:rgba(180,35,24,.10);--wt:#0E7C86}
+.modal{z-index:90}
+.toast{z-index:95}
+.top-in .btn{white-space:nowrap}
+.viewing{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px;padding:10px 14px;border-radius:12px;background:var(--lo-soft);color:var(--ink);border:1px solid #BFD3F6}
+.viewing[hidden]{display:none}
+.viewing span{flex:1;min-width:200px}
+body.viewmode .sbtn[data-tab="files"],body.viewmode .sbtn[data-tab="profile"]{opacity:.45}
+.varsw{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-left:auto}
+.ctxcard .card-h{background:var(--card);color:var(--ink);border-bottom:1px solid var(--line)}
+.ctxcard .card-h h2{color:var(--ink)}
+.ctxr{display:grid;grid-template-columns:20px minmax(0,1fr);gap:8px;align-items:start;padding:7px 0;border-top:1px solid var(--line);font-size:13px;color:var(--ink2)}
+.ctxr:first-of-type{border-top:0}
+.ctxr svg{color:var(--med);margin-top:1px}
+.ctxr b{color:var(--ink)}
+.ctxr.warn svg{color:var(--prev)}
+.ctxr.warn{background:var(--prev-soft);border-radius:10px;padding:8px 10px;border-top:0;margin-bottom:4px}
+.upbtns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.upbtns.big{justify-content:flex-start}
+.upbtns.big .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;font-size:13.5px}
+/* профиль */
+.pfill{margin:4px 0 12px}
+.pfill-t{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
+.pbar{height:8px;border-radius:8px;background:var(--mute-soft);overflow:hidden}
+.pbar i{display:block;height:100%;width:0;border-radius:8px;background:var(--accent);transition:width .4s ease}
+.evblk{padding:12px 0;border-top:1px solid var(--line)}
+.evblk:first-of-type{border-top:0;padding-top:0}
+.evblk h3{font-size:14px;margin-bottom:2px}
+.evblk>.why{margin-bottom:8px}
+.evl{display:grid;gap:8px;margin-bottom:8px}
+.evr{display:grid;gap:8px;align-items:center}
+.evr-med{grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1.1fr) minmax(0,1.1fr) 34px}
+.evr-weight{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) 34px;max-width:440px}
+.evr-ill{grid-template-columns:minmax(0,2fr) minmax(0,1.1fr) minmax(0,1.1fr) 34px}
+.evr-hosp{grid-template-columns:minmax(0,1.4fr) minmax(0,1.4fr) minmax(0,1.1fr) minmax(0,1.1fr) 34px}
+.evr-all{grid-template-columns:minmax(0,1.6fr) minmax(0,1.4fr) 34px}
+.evr input,.evr select{border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--paper);min-width:0;width:100%}
+.evr input:disabled{opacity:.45}
+.dl{display:flex;align-items:center;gap:6px;min-width:0}
+.dl span{font-size:12px;color:var(--ink3);white-space:nowrap}
+.evx{border:1px solid var(--line);background:var(--card);border-radius:9px;height:36px}
+@media(max-width:620px){.evr-med,.evr-ill,.evr-hosp,.evr-all{grid-template-columns:1fr 1fr}.evr .evx{grid-column:2;justify-self:end;width:40px}.evr>input:first-child{grid-column:1/-1}}
+.perms{display:grid;gap:6px}
+.permr{display:grid;grid-template-columns:24px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:10px}
+.permr small{display:block;color:var(--ink3);font-size:12px}
+.permi{color:var(--accent);display:flex}
+.permask{text-align:center}
+.permask p{margin:6px auto;max-width:42ch}
+.permic{width:56px;height:56px;border-radius:16px;margin:4px auto 8px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+.permask .row-end{justify-content:center}
+/* графики */
+.dmain{min-width:0}
+.chk{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--ink2);cursor:pointer}
+.chk input{accent-color:var(--accent);width:16px;height:16px}
+.ctog{margin:10px 0 2px;padding:6px 12px;border:1px solid var(--line);border-radius:20px;background:var(--card)}
+.ovsw{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:8px 0 2px}
+.cwrap[hidden]{display:none}
+.ctxc{font-size:12px;color:var(--ink2);max-width:260px}
+.cta .addb.alt{background:var(--card);color:var(--med);border:1px solid var(--med)}
+.cta .addb.alt.on{background:var(--med-soft)}
+.spline{margin:12px 14px 14px;padding:10px 12px;border-radius:10px;background:var(--med-soft);font-size:13px;color:var(--ink2)}
+.spline b{color:var(--ink)}
+/* где сдать */
+.loc{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.loc label{font-size:12.5px;font-weight:600;color:var(--ink2)}
+.loc input{flex:1 1 220px;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--paper)}
+.bmode .opt{padding:8px 16px;font-size:13.5px}
+.cat{display:grid;gap:14px;margin-top:12px}
+.catgh{font-size:12.5px;font-weight:700;color:var(--ink3);margin-bottom:4px}
+.catr{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.catn small{display:block;font-size:11.5px;color:var(--ink3)}
+.catp{font-weight:700;white-space:nowrap}
+.addb.sm{padding:5px 10px;font-size:12px;width:auto}
+@media(max-width:620px){.catr{grid-template-columns:minmax(0,1fr) auto}.catr .addb{grid-column:1/-1;justify-self:start}}
+.openq{margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px;font-size:12.5px;color:var(--ink2)}
+/* доступ */
+tr.off td{color:var(--ink3)}
+.empty{padding:18px;border:1px dashed var(--line);border-radius:12px;text-align:center}
+.empty p{max-width:56ch;margin:0 auto 12px;color:var(--ink2)}
+/* предпросмотр для специалиста */
+.svbar{margin:0 0 12px;padding:8px 12px;border-radius:10px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:12.5px}
+.svg2{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:12px;margin:12px 0}
+@media(max-width:760px){.svg2{grid-template-columns:1fr}}
+.svc{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--card)}
+.svc h3{font-size:14px;margin-bottom:6px}
+.svdl{display:grid;grid-template-columns:120px minmax(0,1fr);gap:4px 10px;font-size:12.5px}
+.svdl dt{color:var(--ink3)}
+.pv tr.grp td{background:var(--mute-soft);font-weight:700}
+.pv tr.evrow td{font-size:10.5px;color:var(--med);background:var(--med-soft);vertical-align:top}
+/* первые шаги */
+.tprog{display:flex;gap:6px;margin-top:12px}
+.tp{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0}
+.tp i{display:block;height:5px;border-radius:5px;background:rgba(255,255,255,.3)}
+.tp.done i,.tp.on i{background:#fff}
+.tp em{font-style:normal;font-size:11px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tp.on em{opacity:1;font-weight:700}
+.tbox-f .tsp{flex:1}
+.ocards{display:grid;gap:8px;margin-top:6px}
+.ocard{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.ocard.done{border-color:#BFE6CC}
+.oc-h{width:100%;display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border:0;background:var(--card);text-align:left}
+.oc-h small{display:block;font-size:12px;color:var(--ink3)}
+.oc-ck{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:12px;color:#fff}
+.ocard.done .oc-ck{background:var(--okm);border-color:var(--okm)}
+.oc-go{font-size:12.5px;font-weight:700;color:var(--accent)}
+.oc-b{padding:0 12px 12px}
+.oc-b[hidden]{display:none}
+.hist td.ctxc{white-space:normal;min-width:170px;max-width:260px;line-height:1.35}
+.dgrid .cta{align-self:start}
+.tp.tpopt i{background:transparent;border:1px dashed rgba(255,255,255,.6)}
+.tp.tpopt.on i{background:#fff;border-color:#fff}
+.tbox .evr-med,.tbox .evr-ill,.tbox .evr-hosp{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) 34px}
+.tbox .evr-med>input:first-child,.tbox .evr-ill>input:first-child{grid-column:1/-1}
+.tbox .evr-hosp>input:nth-child(1){grid-column:1/3}.tbox .evr-hosp>input:nth-child(2){grid-column:3/5}
+.tbox .evr-ill{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 34px}
+@media(max-width:620px){
+  .permr{grid-template-columns:24px minmax(0,1fr) auto}
+  .permr .btn{grid-column:2/-1;justify-self:start}
+  .evr-weight{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 40px}
+  .dl{flex-direction:column;align-items:stretch;gap:2px}
+  .varsw{margin-left:0;width:100%}
+}
+/* версия 3 */
+.ctxcard .card-h{background-color:var(--or);background-image:var(--or-g);border-bottom:0;color:#fff}
+.ctxcard .card-h h2{color:#fff}
+.ctxcard.fold:not(.closed) .fh:hover{background-image:var(--or-g)}
+.ctxcard .fb{padding-top:12px}
+.c-warn{background:var(--prev-soft);color:var(--prev)}
+.gear{width:38px;height:38px;border-radius:11px;border:1px solid var(--line);background:var(--card);color:var(--ink2);display:grid;place-items:center;flex-shrink:0}
+.gear:hover{color:var(--accent);border-color:var(--accent)}
+.gear.on{background:var(--or-g);border-color:transparent;color:#fff}
+.demo.guest{display:flex;gap:10px 14px;align-items:center;flex-wrap:wrap;padding:10px 14px;border-radius:12px;background:var(--accent-soft);color:var(--ink);font-size:13px}
+.demo.guest span{flex:1;min-width:200px}
+.lnote{padding:10px 12px;border-radius:10px;background:var(--accent-soft);color:var(--ink);margin-bottom:12px}
+.seth{font-size:14px;margin:0 0 10px}
+.acl{display:grid}
+.acr{display:flex;gap:10px 16px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:12px 0;border-top:1px solid var(--line)}
+.acr:first-child{border-top:0;padding-top:2px}
+.acr-m{display:flex;flex-direction:column;gap:1px;min-width:0;flex:1 1 240px}
+.acr-m span{font-size:12.5px;color:var(--ink3)}
+.acr-m b .rel{font-weight:500;color:var(--ink3);font-size:12.5px}
+.acr-a{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.acr.off .acr-m b{color:var(--ink2)}
+@media(max-width:620px){.acr{flex-direction:column;align-items:flex-start}.acr-a{justify-content:flex-start}}
+.psb .why{max-width:70ch}
+.pst td,.pst th{white-space:nowrap}
+.pst td:first-child{white-space:normal;min-width:150px}
+.evx.sm{width:30px;height:28px}
+.psadd{margin-top:16px;padding:12px;border:1px dashed var(--line);border-radius:12px;display:grid;gap:10px;justify-items:start}
+.psadd h4{font-size:13px}
+.psadd .evr{width:100%}
+.psadd .evx{visibility:hidden}
+.psb .cwrap .chart{max-width:none}
+.psb .row-end{margin-top:14px}
+#ptiles .tile-s{display:block}
+.psb .cwrap{overflow-x:auto}
+@media(max-width:760px){.psb .cwrap .chart{min-width:640px}.pst td:first-child{min-width:120px}}
+@media(max-width:620px){.acr-m{flex:none;width:100%}}
+
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+<header class="top">
+  <div class="top-in">
+    <div class="brand"><div class="brand-ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.2"/><path d="M12 3.8v16.4M3.8 12h16.4M6.2 6.2l11.6 11.6M17.8 6.2L6.2 17.8"/></svg></div><div><div class="brand-n">Orange of Health</div><small id="whoami">Кабинет пациента</small></div></div>
+    <div class="spacer"></div>
+    <button class="btn" id="loginBtn">Войти</button>
+    <button class="gear" id="setBtn" data-go="settings" aria-label="Настройки" title="Настройки"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+  </div>
+</header>
+<nav class="side" id="tabs" aria-label="Разделы"><span class="side-hov" id="sideHov" aria-hidden="true"></span><span class="side-ind" id="sideInd" aria-hidden="true"></span></nav>
+
+<main class="wrap">
+  <div class="viewing" id="viewing" hidden><span>Вы смотрите анализы: <b id="viewName"></b> · только просмотр</span><button class="btn" id="viewBack">Вернуться к своим</button></div>
+  <div class="demo" id="demoBar"></div>
+
+  <!-- СВОДКА -->
+  <section class="view on" id="v-summary" aria-label="Сводка">
+    <div class="sum">
+      <div class="card fold closed" id="cChg">
+        <button class="card-h fh" aria-expanded="false"><h2>Что изменилось с прошлой сдачи</h2><span class="fsum" id="chgSum"></span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="card-b fb" id="changes"></div>
+      </div>
+      <div class="card fold closed" id="cDev">
+        <button class="card-h fh" aria-expanded="false"><h2>В норме и не в норме</h2><span class="chip c-high" id="devN"></span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="fb"><div class="card-b" style="padding-bottom:0"><div class="mini" id="stats"></div></div>
+        <div class="card-b"><div class="devt">Сейчас не в норме</div><div class="devl" id="devList"></div></div></div>
+      </div>
+<div class="card fold ctxcard" id="cCtx">
+        <button class="card-h fh" aria-expanded="true"><h2>Контекст к последней сдаче</h2><span class="fsum" id="ctxSum"></span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="card-b fb" id="ctx"></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2>Показатели по системам</h2>
+      <button class="btn" id="pmode" aria-pressed="false">Выбрать для печати</button>
+      <button class="btn pri" id="pgo" disabled>Печать выбранных</button>
+    </div>
+    <div class="syssearch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" type="search" placeholder="Поиск по системам и показателям: ферритин, ЛПНП, витамин D…" autocomplete="off" aria-label="Поиск по системам и показателям"></div>
+    <div class="tiles" id="blocks"></div>
+    <p class="why" id="noHit" hidden>Ничего не найдено. Проверьте написание или поищите по системе, например «печень».</p>
+
+    <button class="htease" id="hOpen" aria-haspopup="dialog">
+      <span class="ht-ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11M15 9v11"/></svg></span>
+      <span class="ht-t"><b>Полная история всех показателей</b><span id="hTeaseSub"></span></span>
+      <span class="ht-go">Открыть таблицу <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span>
+    </button>
+
+    <p class="foot">Сервис показывает только то, что написано в загруженных бланках: значения, единицы и референсные интервалы лабораторий. Он не ставит диагнозов и не даёт рекомендаций. Выводы делает врач.</p>
+  </section>
+
+  <!-- МОИ АНАЛИЗЫ -->
+  <section class="view" id="v-files" aria-label="Мои анализы">
+    <div class="panel">
+      <h2>Загрузка анализов</h2>
+      <p class="lead">Добавьте бланк из любой лаборатории. Сервис распознает показатели, а вы проверите их перед сохранением. Оригинал файла хранится вместе с результатами.</p>
+      <div class="drop">
+        <p>Фото бланка, скриншот из приложения лаборатории или PDF из почты.</p>
+        <div class="upbtns"><button class="btn pri" type="button" data-up="camera">Сфотографировать</button><button class="btn" type="button" data-up="gallery">Из галереи</button><button class="btn" type="button" data-up="files">Файл или PDF</button></div>
+        <input id="file" type="file" accept="image/*,application/pdf" style="display:none" multiple>
+        <p class="why" style="margin-top:8px">При первой загрузке приложение попросит доступ к камере, галерее или файлам.</p>
+      </div>
+      <div class="ways">
+        <div class="way"><b>Фото или скриншот</b>Сфотографируйте бланк целиком, чтобы были видны дата и нормы.</div>
+        <div class="way"><b>PDF</b>Файл из приложения или личного кабинета лаборатории.</div>
+        <div class="way"><b>Переслать письмо</b>Перешлите письмо лаборатории на адрес <span class="code">a.ivanov@in.orange-health.ru</span>.</div>
+      </div>
+      <div class="tblw"><table class="up" id="upTable">
+        <thead><tr><th>Дата</th><th>Лаборатория</th><th class="c-src">Как загружен</th><th class="r">Показ.</th><th>Статус</th><th><span class="desk">Файл</span></th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ПРОФИЛЬ -->
+  <section class="view" id="v-profile" aria-label="Профиль">
+    <div class="panel"><h2>Профиль</h2>
+      <p class="lead">Данные о вас, которые помогают врачу читать анализы. Препараты, вес и болезни показываются на графиках анализов по тем же датам. Сервис сам ничего по профилю не оценивает.</p>
+      <div class="pfill"><div class="pfill-t"><b>Профиль заполнен на <span id="pfPct" class="num">0</span>%</b><span class="why" id="pfHint"></span></div><div class="pbar"><i id="pfBar"></i></div></div>
+    </div>
+    <div class="tiles" id="ptiles" style="margin-top:14px"></div>
+  </section>
+
+  <!-- ГДЕ СДАТЬ -->
+  <section class="view" id="v-book" aria-label="Где сдать и к кому обратиться">
+    <div class="panel">
+      <h2>Где сдать и к кому обратиться</h2>
+      <p class="lead">Найдите, где рядом сдать анализы и сколько это стоит, или специалиста по вашим вопросам.</p>
+      <div class="loc"><label for="locIn">Где вы</label><input id="locIn" type="text" value="Санкт-Петербург, ул. Марата"><button class="btn" type="button" id="geo">Определить по геолокации</button></div>
+      <div class="opts bmode" id="bmode" role="tablist"><button class="opt" data-bm="labs" aria-pressed="true">Сдать анализы</button><button class="opt" data-bm="spec" aria-pressed="false">Найти специалиста</button></div>
+    </div>
+
+    <div id="bm-labs">
+      <div class="panel">
+        <h2>Каталог анализов</h2>
+        <p class="lead">Что можно сдать и примерная цена по лабораториям рядом. Добавьте нужное в список: ниже покажем, где выгоднее и ближе.</p>
+        <div class="addsearch"><input id="bq" type="search" placeholder="Например: ферритин, общий анализ крови" autocomplete="off" aria-label="Найти анализ в каталоге"></div>
+        <div class="cat" id="cat"></div>
+      </div>
+      <div class="panel">
+        <h2>Мой список на сдачу</h2>
+        <div class="bask" id="bask"></div>
+        <span class="why" id="bwhere"></span>
+        <div class="labs" id="labs"></div>
+        <p class="why" style="margin-top:10px">Демо: лаборатории и цены условные. В рабочей версии цены берутся с сайтов лабораторий и у партнёров, расстояние считается от адреса или геолокации.</p>
+      </div>
+    </div>
+
+    <div id="bm-spec" hidden>
+      <div class="panel">
+        <h2>Специалисты рядом</h2>
+        <p class="lead">Справочно: к каким специалистам обычно обращаются с такими анализами. Если не знаете, с чего начать, начните с терапевта. Выбор врача остаётся за вами.</p>
+        <div class="bask" id="sq"></div>
+        <div class="field" style="margin-top:6px"><label>Специальность</label></div>
+        <div class="opts" id="spf"></div>
+        <div class="labs" id="specs"></div>
+        <p class="openq">Открытый вопрос: формат подсказок «к какому специалисту обратиться» согласовать с юристом и Машей. Демо: специалисты и цены условные.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ДОСТУП ВРАЧУ -->
+  <section class="view" id="v-share" aria-label="Доступ специалисту">
+    <div class="panel">
+      <h2>Показать анализы специалисту</h2>
+      <p class="lead">Разовый доступ: специалист сканирует QR-код или открывает ссылку. Регистрация ему не нужна. Если специалисту нужен постоянный доступ, он регистрируется, и вы открываете доступ его аккаунту. Закрыть доступ можно в любой момент.</p>
+      <div class="share">
+        <canvas class="qr" id="qr" width="180" height="180" aria-label="QR-код со ссылкой на анализы (демо)"></canvas>
+        <div>
+          <div class="field"><label>Срок доступа</label></div>
+          <div class="opts" id="dur"></div>
+          <div class="field"><label>Что показать</label></div>
+          <div class="opts" id="scope"></div>
+          <div class="linkbox"><span class="code" id="slink">orange-health.ru/s/7K2-QX9</span><button class="btn" id="copy">Скопировать ссылку</button><button class="btn" id="spdf">PDF для печати</button><button class="btn pri" id="specPrev">Как это увидит специалист</button></div>
+        </div>
+      </div>
+      <p class="why" style="margin-top:14px">Кому уже открыт доступ и чьи анализы доступны вам, смотрите в настройках. <button class="link" data-go="settings">Открыть настройки →</button></p>
+    </div>
+  </section>
+
+  <section class="view" id="v-settings" aria-label="Настройки">
+    <div class="panel">
+      <h2>Настройки</h2>
+      <h3 class="seth">Аккаунт</h3>
+      <div class="fgrid">
+        <div class="field"><label for="sName">Имя</label><input id="sName" data-acc="name" type="text"></div>
+        <div class="field"><label for="sPhone">Телефон</label><input id="sPhone" data-acc="phone" type="tel" placeholder="+7"></div>
+        <div class="field"><label for="sEmail">Почта</label><input id="sEmail" data-acc="email" type="email"></div>
+      </div>
+      <p class="why" id="accNote" style="margin-top:8px"></p>
+    </div>
+    <div class="panel">
+      <h3 class="seth">У кого есть доступ к моим анализам</h3>
+      <div class="acl" id="docs"></div>
+      <button class="link" data-go="share" style="margin-top:10px">Открыть доступ ещё кому-то →</button>
+    </div>
+    <div class="panel">
+      <h3 class="seth">Мне открыли доступ</h3>
+      <p class="why" style="margin-bottom:8px">Анализы людей, которые открыли вам постоянный доступ: пациентов, родственников. Если доступ закрыли, человек остаётся в списке, но данные скрыты.</p>
+      <div id="sharedBody"></div>
+    </div>
+    <div class="panel">
+      <h3 class="seth">Уведомления</h3>
+      <div class="opts" id="notif"></div>
+      <p class="why" style="margin-top:6px">Заглушка: подключение каналов появится в рабочей версии.</p>
+      <h3 class="seth" style="margin-top:18px">Разрешения приложения</h3>
+      <div class="perms" id="perms"></div>
+    </div>
+    <div class="panel">
+      <h3 class="seth">Знакомство с приложением</h3>
+      <button class="btn" id="tutOpen" type="button">Пройти первые шаги заново</button>
+    </div>
+  </section>
+</main>
+</div>
+
+<!-- предпросмотр печати -->
+<div class="pv" id="pv">
+  <div class="pv-bar"><button class="btn" id="pvBack">← Назад</button><button class="btn pri" id="pvPrint">Печать</button><span class="why" id="pvNote"></span></div>
+  <div class="pv-in" id="pvBody"></div>
+</div>
+
+<div class="tut" id="tut" role="dialog" aria-modal="true" aria-labelledby="tT">
+  <div class="tbox"><div class="tbox-h"><small id="tS"></small><h3 id="tT"></h3><div class="tprog" id="tP"></div></div><div class="tbox-b" id="tB"></div>
+  <div class="tbox-f"><button class="btn" id="tSkip">Пропустить</button><span class="tsp"></span><button class="btn" id="tPrev">Назад</button><button class="btn pri" id="tNext">Дальше</button></div></div>
+</div>
+<div class="hm" id="hm" role="dialog" aria-modal="true" aria-labelledby="hmT" hidden>
+  <div class="hm-box">
+    <div class="hm-h"><h3 id="hmT">Полная история показателей</h3><span class="hm-n" id="hSum"></span><button class="hm-r" id="hreset" type="button">Сбросить всё</button><button class="x" id="hmX" aria-label="Закрыть">×</button></div>
+    <div class="hm-f">
+      <div class="hm-s"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="hq" type="search" placeholder="Показатель" aria-label="Найти показатель"></div>
+      <select id="hsys" aria-label="Система"><option value="">Все системы</option></select>
+      <select id="hst" aria-label="Статус"><option value="all">Любой статус</option><option value="now">Сейчас не в норме</option><option value="ever">Были не в норме</option><option value="norm">Всегда в норме</option></select>
+      <label class="hm-d">с <select id="hfrom" aria-label="Дата с"></select></label>
+      <label class="hm-d">по <select id="hto" aria-label="Дата по"></select></label>
+      <label class="hchk"><input type="checkbox" id="hfilled"> без пустых дат</label>
+    </div>
+    <div class="hwrap"><table class="htab" id="htab"></table><p class="why" id="hNone" hidden style="padding:16px">По фильтру ничего не найдено. <button class="link" id="hreset2" type="button">Сбросить фильтры</button></p></div>
+    <div class="hleg"><span><i class="c-h"></i>выше нормы</span><span><i class="c-l"></i>ниже нормы</span><span>— не сдавали</span><span class="hleg-r">Нажмите на показатель — откроется график</span></div>
+  </div>
+  <div class="rot" id="rot">
+    <div class="rot-ph" aria-hidden="true"><svg width="74" height="74" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></svg></div>
+    <svg class="rot-ar" width="60" height="30" viewBox="0 0 60 30" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 24C14 9 38 4 52 14"/><path d="M45 8l7 6-8 4"/></svg>
+    <b>Поверните телефон</b><span>Таблица удобнее в горизонтальном виде</span>
+    <button class="btn" id="rotSkip" type="button">Смотреть вертикально</button>
+  </div>
+</div>
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mT">
+  <div class="mbox"><div class="mbox-h"><h3 id="mT"></h3><button class="x" id="mX" aria-label="Закрыть">×</button></div><div class="mbox-b" id="mB"></div></div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const DATA={"dates": ["30.07.23", "02.09.24", "01.12.24", "23.03.25", "04.09.25", "31.05.26", "02.08.26", "06.09.26", "06.10.26"], "groups": [{"t": "Углеводный обмен / диабет", "rows": [{"n": "HbA1c (гликированный гемоглобин)", "u": "%", "ref": "< 6.0 · цель при СД < 7.0", "lo": null, "hi": 6.0, "v": ["7.1", "7.8", "8.0", "7.6", "5.3", "8.7", "7.4", "6.7", "5.8"]}, {"n": "Глюкоза", "u": "ммоль/л", "ref": "4.1 – 6.0", "lo": 4.1, "hi": 6.0, "v": ["10", "10.8", "12.4", "6.77", "5.94", "13", "7.1", "7.2", "5.9"]}, {"n": "Инсулин", "u": "мкЕд/мл", "ref": "2.7 – 10.4", "lo": 2.7, "hi": 10.4, "v": ["—", "15.4", "—", "20.39", "—", "—", "—", "—", "12.5"]}, {"n": "HOMA-IR (инсулинорезистентность)", "u": "—", "ref": "< 2.7", "lo": null, "hi": 2.7, "v": ["—", "7.4", "—", "6.13", "—", "—", "—", "—", "3.3"]}]}, {"t": "Клинический анализ крови", "rows": [{"n": "Лейкоциты", "u": "тыс/мкл", "ref": "4.5 – 11", "lo": 4.5, "hi": 11, "v": ["14.64", "—", "10.21", "—", "10.53", "11.53", "11.28", "12.24", "13.73"]}, {"n": "Нейтрофилы, абс.", "u": "тыс/мкл", "ref": "1.78 – 5.38", "lo": 1.78, "hi": 5.38, "v": ["9.81", "—", "5.72", "—", "6.94", "7.36", "5.64", "6.86", "9.03"]}, {"n": "Эозинофилы, абс.", "u": "тыс/мкл", "ref": "< 0.7", "lo": null, "hi": 0.7, "v": ["0.37", "—", "0.31", "—", "0.19", "0.24", "0.7", "0.79", "0.6"]}, {"n": "Эозинофилы, %", "u": "%", "ref": "1 – 5", "lo": 1, "hi": 5, "v": ["2.5", "—", "3", "—", "1.8", "2.1", "6.2", "6.5", "4.4"]}, {"n": "Лимфоциты, абс.", "u": "тыс/мкл", "ref": "1.32 – 3.57", "lo": 1.32, "hi": 3.57, "v": ["3.63", "—", "3.47", "—", "2.76", "3.39", "4.06", "3.69", "3"]}, {"n": "Нейтрофилы, %", "u": "%", "ref": "48 – 78", "lo": 48.0, "hi": 78.0, "v": ["67", "—", "56", "—", "65.9", "63.8", "50", "56", "65.8"]}, {"n": "Лимфоциты, %", "u": "%", "ref": "19 – 37", "lo": 19.0, "hi": 37.0, "v": ["24.8", "—", "34", "—", "26.2", "29.4", "36", "30.1", "21.8"]}, {"n": "Моноциты, %", "u": "%", "ref": "3 – 11", "lo": 3.0, "hi": 11.0, "v": ["5.5", "—", "7", "—", "5.7", "4.5", "7.3", "6.8", "7.5"]}, {"n": "Моноциты, абс.", "u": "тыс/мкл", "ref": "0.2 – 0.95", "lo": 0.2, "hi": 0.95, "v": ["0.81", "—", "0.71", "—", "0.6", "0.52", "0.82", "0.83", "1.03"]}, {"n": "Базофилы, %", "u": "%", "ref": "< 1.0", "lo": null, "hi": 1.0, "v": ["0.2", "—", "0", "—", "0.4", "0.2", "0.5", "0.6", "0.5"]}, {"n": "Базофилы, абс.", "u": "тыс/мкл", "ref": "< 0.2", "lo": null, "hi": 0.2, "v": ["0.03", "—", "0", "—", "0.04", "0.02", "0.06", "0.07", "0.07"]}, {"n": "Палочкоядерные нейтрофилы", "u": "%", "ref": "1 – 6", "lo": 1.0, "hi": 6.0, "v": ["—", "—", "2", "—", "—", "—", "—", "—", "—"]}, {"n": "Сегментоядерные нейтрофилы", "u": "%", "ref": "47 – 72", "lo": 47.0, "hi": 72.0, "v": ["—", "—", "54", "—", "—", "—", "—", "—", "—"]}, {"n": "СОЭ", "u": "мм/ч", "ref": "< 15", "lo": null, "hi": 15, "v": ["5", "—", "2", "—", "2", "2", "2", "2", "2"]}, {"n": "Гемоглобин", "u": "г/дл", "ref": "13.2 – 17.3", "lo": 13.2, "hi": 17.3, "v": ["16.7", "—", "16.2", "—", "16.5", "16.8", "16.6", "16.3", "16.9"]}, {"n": "Эритроциты", "u": "млн/мкл", "ref": "4.3 – 5.7", "lo": 4.3, "hi": 5.7, "v": ["5.69", "—", "5.59", "—", "5.8", "5.82", "5.67", "5.59", "5.62"]}, {"n": "Гематокрит", "u": "%", "ref": "39 – 49", "lo": 39.0, "hi": 49.0, "v": ["47.7", "—", "46.7", "—", "51.4", "50.1", "47.1", "44.9", "48.1"]}, {"n": "MCV (средний объём эритроцита)", "u": "фл", "ref": "80 – 99", "lo": 80.0, "hi": 99.0, "v": ["83.8", "—", "83.5", "—", "88.6", "86", "83.1", "80.3", "85.6"]}, {"n": "MCH (среднее содержание Hb)", "u": "пг", "ref": "27 – 34", "lo": 27.0, "hi": 34.0, "v": ["29.3", "—", "29", "—", "28.4", "28.8", "29.3", "29.2", "30.1"]}, {"n": "MCHC (средняя концентрация Hb)", "u": "г/дл", "ref": "32 – 37", "lo": 32.0, "hi": 37.0, "v": ["35", "—", "34.7", "—", "32.1", "33.5", "35.2", "36.3", "35.1"]}, {"n": "RDW (ширина распределения эритроцитов)", "u": "%", "ref": "11.6 – 14.8", "lo": 11.6, "hi": 14.8, "v": ["13.6", "—", "13.3", "—", "13.5", "13.4", "13", "13.2", "13"]}, {"n": "Тромбоциты", "u": "тыс/мкл", "ref": "150 – 400", "lo": 150.0, "hi": 400.0, "v": ["266", "—", "197", "—", "187", "204", "197", "212", "202"]}, {"n": "MPV (средний объём тромбоцита)", "u": "фл", "ref": "7 – 12", "lo": 7.0, "hi": 12.0, "v": ["—", "—", "—", "—", "11.6", "—", "—", "—", "—"]}, {"n": "Тромбокрит (PCT)", "u": "%", "ref": "0.15 – 0.4", "lo": 0.15, "hi": 0.4, "v": ["—", "—", "—", "—", "0.217", "—", "—", "—", "—"]}]}, {"t": "Липидный профиль / сердце", "rows": [{"n": "Холестерин-ЛПНП", "u": "ммоль/л", "ref": "< 3.0 · цель при СД < 1.8", "lo": null, "hi": 3.0, "v": ["—", "3.3", "3.77", "—", "—", "3.93", "3.4", "3.24", "3.44"]}, {"n": "Холестерин не-ЛПВП", "u": "ммоль/л", "ref": "< 3.8", "lo": null, "hi": 3.8, "v": ["—", "4.44", "4.92", "—", "—", "4.79", "4.29", "4.39", "4.24"]}, {"n": "Холестерин-ЛПВП", "u": "ммоль/л", "ref": "> 1.0", "lo": 1.0, "hi": null, "v": ["—", "0.88", "0.92", "—", "—", "0.96", "0.93", "0.84", "0.89"]}, {"n": "Триглицериды", "u": "ммоль/л", "ref": "< 1.7", "lo": null, "hi": 1.7, "v": ["—", "2.5", "2.54", "1.93", "—", "1.9", "1.95", "2.53", "1.75"]}, {"n": "Холестерин общий", "u": "ммоль/л", "ref": "< 5.0", "lo": null, "hi": 5.0, "v": ["—", "5.32", "5.84", "5.55", "—", "5.75", "5.22", "5.23", "5.13"]}]}, {"t": "Витамины", "rows": [{"n": "Витамин 25(OH) D", "u": "нг/мл", "ref": "30 – 100 · цель 30–60", "lo": 30, "hi": 100, "v": ["—", "—", "—", "19.1", "—", "18", "—", "—", "38.8"]}, {"n": "Витамин B12", "u": "пг/мл", "ref": "189 – 833 · оптимум > 400", "lo": 189, "hi": 833, "v": ["—", "—", "—", "294.5", "—", "—", "—", "—", "370"]}, {"n": "Фолиевая кислота", "u": "нг/мл", "ref": "3.1 – 20", "lo": 3.1, "hi": 20, "v": ["—", "—", "—", "8.18", "—", "—", "—", "—", "6.8"]}]}, {"t": "Обмен железа", "rows": [{"n": "Железо (сыворотка)", "u": "мкмоль/л", "ref": "11.6 – 31.3", "lo": 11.6, "hi": 31.3, "v": ["—", "—", "—", "—", "—", "—", "—", "10.05", "7.16"]}, {"n": "Ферритин", "u": "мкг/л", "ref": "22 – 275", "lo": 22, "hi": 275, "v": ["—", "—", "—", "—", "—", "—", "—", "283", "—"]}]}, {"t": "Электролиты и минералы", "rows": [{"n": "Магний", "u": "ммоль/л", "ref": "0.66 – 1.07", "lo": 0.66, "hi": 1.07, "v": ["—", "—", "—", "—", "—", "—", "—", "0.82", "—"]}, {"n": "Калий", "u": "ммоль/л", "ref": "3.5 – 5.1", "lo": 3.5, "hi": 5.1, "v": ["—", "—", "—", "—", "—", "—", "4.1", "—", "—"]}, {"n": "Натрий", "u": "ммоль/л", "ref": "136 – 145", "lo": 136, "hi": 145, "v": ["—", "—", "—", "—", "—", "—", "137", "—", "—"]}, {"n": "Хлор", "u": "ммоль/л", "ref": "101 – 110", "lo": 101, "hi": 110, "v": ["—", "—", "—", "—", "—", "—", "101", "—", "—"]}]}, {"t": "Аллергологический профиль", "rows": [{"n": "Клещ дом. пыли D. pteronyssinus (d1), IgE", "u": "кЕд/л", "ref": "< 0.1", "lo": null, "hi": 0.1, "v": ["—", "—", "—", "—", "—", "—", "0.21", "—", "—"]}, {"n": "IgG (кошка, эпителий)", "u": "мг/л", "ref": "< 50", "lo": null, "hi": 50, "v": ["—", "—", "—", "—", "—", "—", "65.7", "—", "—"]}, {"n": "IgE общий", "u": "МЕ/мл", "ref": "< 100", "lo": null, "hi": 100, "v": ["—", "—", "—", "—", "—", "—", "84", "—", "—"]}, {"n": "Домашняя пыль (h2), IgE", "u": "МЕ/мл", "ref": "≤ 0.35", "lo": null, "hi": 0.35, "v": ["—", "—", "—", "—", "—", "—", "< 0.35", "—", "—"]}]}, {"t": "Гормоны", "rows": [{"n": "Тестостерон общий", "u": "нмоль/л", "ref": "8.9 – 42 · порог ISSAM 12", "lo": 8.9, "hi": 42, "v": ["—", "—", "—", "—", "—", "—", "—", "15.32", "—"]}, {"n": "ТТГ", "u": "мМЕ/л", "ref": "0.4 – 4", "lo": 0.4, "hi": 4, "v": ["—", "—", "—", "1.5", "—", "1.48", "—", "—", "—"]}, {"n": "Т4 свободный", "u": "пмоль/л", "ref": "9 – 19.05", "lo": 9, "hi": 19.05, "v": ["—", "—", "—", "—", "—", "12.27", "—", "—", "—"]}]}, {"t": "Печень и белковый обмен", "rows": [{"n": "АлАТ", "u": "Ед/л", "ref": "< 41", "lo": null, "hi": 41, "v": ["—", "38", "38", "—", "—", "39", "29", "33", "—"]}, {"n": "АсАТ", "u": "Ед/л", "ref": "< 37", "lo": null, "hi": 37, "v": ["—", "23", "19", "—", "—", "21", "20", "21", "—"]}, {"n": "ГГТ (гамма-глутамилтрансфераза)", "u": "Ед/л", "ref": "< 49", "lo": null, "hi": 49.0, "v": ["—", "—", "—", "30.2", "—", "—", "—", "—", "—"]}, {"n": "Билирубин общий", "u": "мкмоль/л", "ref": "3.4 – 20.5", "lo": 3.4, "hi": 20.5, "v": ["—", "6.7", "9.3", "—", "—", "8.1", "9.8", "6.1", "—"]}, {"n": "Общий белок", "u": "г/л", "ref": "64 – 83", "lo": 64, "hi": 83, "v": ["—", "—", "73", "—", "—", "72", "74", "69", "—"]}, {"n": "Альбумин", "u": "г/л", "ref": "35 – 52", "lo": 35, "hi": 52, "v": ["—", "—", "—", "—", "—", "—", "49", "—", "—"]}]}, {"t": "Почки и пуриновый обмен", "rows": [{"n": "Мочевая кислота", "u": "мкмоль/л", "ref": "210 – 420 · цель при подагре < 360", "lo": 210, "hi": 420, "v": ["—", "—", "361", "—", "—", "333", "404", "384", "—"]}, {"n": "Креатинин", "u": "мкмоль/л", "ref": "64 – 104", "lo": 64, "hi": 104, "v": ["—", "—", "78", "—", "91.2", "77", "87", "81", "—"]}, {"n": "Мочевина", "u": "ммоль/л", "ref": "2.1 – 7.1", "lo": 2.1, "hi": 7.1, "v": ["—", "—", "—", "—", "—", "—", "4.2", "5.5", "—"]}]}, {"t": "Жкт / инфекции", "rows": [{"n": "Helicobacter pylori, 13С-уреазный тест", "u": "DOB ‰", "ref": "< 3.0 · отрицательно", "lo": null, "hi": 3.0, "v": ["—", "—", "—", "—", "—", "—", "0", "—", "—"]}]}, {"t": "Онкомаркеры", "rows": []}]};
+const DATES=DATA.dates;
+const LABS=['ИНВИТРО','ИНВИТРО','МЕДИ ЛАБ','ИНВИТРО','СМ-Клиника','МЕДИ ЛАБ','ИНВИТРО','МЕДИ ЛАБ','ИНВИТРО'];
+const IKEYS=['carb','blood','lipids','vitamins','iron','electro','allergy','hormones','liver','kidney','gut','onco'];
+const ICONS=(function(){
+  function ic(bg,fg,body){
+    /* без фонового круга: только белые линии, цвет фона не используется */
+    return '<svg viewBox="0 0 48 48" fill="none">'
+      +'<g stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">'
+      +body+'</g></svg>';
+  }
+  var PINK='#FBE0E6', CRIM='#D6335A', BLUE='#DCE7F8', BLU2='#2B6FD4',
+      YEL='#FDF0CC', AMB='#DDA51C', MINT='#D9EFD9', GRN='#2E8B57',
+      LAV='#EADCF8', PUR='#9B59D0', PEACH='#FBE0D4', ORG='#E8552B',
+      TEAL='#D6F0EF', TEA2='#149C9C', LILA='#EDE2FA', PUR2='#7B4FD0';
+  return {
+    /* 1. Клинический анализ крови — капля + пробирка */
+    blood: ic(PINK,CRIM,
+      '<path d="M15 12.5c4.3 5.4 6.4 8.6 6.4 11.6a6.4 6.4 0 1 1-12.8 0c0-3 2.1-6.2 6.4-11.6z"/>'
+      +'<rect x="28" y="12" width="9.5" height="19" rx="2.4"/><path d="M28 17.5h9.5"/>'
+      +'<path d="M30.6 21.5h4.2M30.6 24.6h4.2M30.6 27.7h4.2"/>'),
+    /* 2. Углеводный обмен / Диабет — глюкометр с каплей */
+    carb: ic(BLUE,BLU2,
+      '<rect x="14.5" y="9.5" width="19" height="27" rx="3.4"/>'
+      +'<rect x="18.4" y="13.6" width="11.2" height="8.2" rx="1.3"/>'
+      +'<path d="M24 16.6c1.5 1.9 2.2 3 2.2 4a2.2 2.2 0 1 1-4.4 0c0-1 .7-2.1 2.2-4z"/>'
+      +'<path d="M21.2 26.4h5.6"/><path d="M24 31.6v4"/>'),
+    /* 3. Липидный профиль / Сердце — сердце с кардиограммой */
+    lipids: ic(PINK,CRIM,
+      '<path d="M24 40.4c-2.8-1.9-12.6-8.1-12.6-16.1a7.2 7.2 0 0 1 12.6-4.7 7.2 7.2 0 0 1 12.6 4.7c0 2.6-1.1 5.3-3.2 7.8"/>'
+      +'<path d="M6.6 27.1h5.2l2.6-4.5 3.2 7.4 2.6-5.2h13.6"/>'),
+    /* 4. Витамины — солнце + капсула */
+    vitamins: ic(YEL,AMB,
+      '<circle cx="18.6" cy="18.4" r="6.2"/>'
+      +'<path d="M18.6 6.6v3.2M18.6 27v3.2M6.8 18.4h3.2M27.2 18.4h3.2M10.2 10l2.3 2.3M24.7 24.5l2.3 2.3M27 10l-2.3 2.3M12.5 24.5 10.2 26.8"/>'
+      +'<rect x="24.4" y="26.2" width="16.4" height="8.4" rx="4.2" transform="rotate(-27 24.4 26.2)"/>'
+      +'<path d="M30.6 24.3l5.4 8.5"/>'),
+    /* 5. Электролиты — гексагоны Na / K / Mg */
+    electro: ic(MINT,GRN,
+      '<path d="M14.6 8.8 21 12.5v7.4l-6.4 3.7-6.4-3.7v-7.4z"/>'
+      +'<path d="M11.4 14.2h6.4M11.4 18.4h6.4"/>'
+      +'<path d="M25.4 17.6l6.4 3.7v7.4l-6.4 3.7-6.4-3.7v-7.4z" transform="translate(0 -1)"/>'
+      +'<path d="M22.4 21.8h6M22.4 25.6h6" transform="translate(0 -1)"/>'
+      +'<circle cx="35" cy="24" r="6"/><path d="M35 20.6v6.8M31.6 24h6.8"/>'),
+    /* 6. Аллергологический профиль — цветок + антитело */
+    allergy: ic(LAV,PUR,
+      '<circle cx="18" cy="18.6" r="3.1"/>'
+      +'<path d="M18 8.4a3.4 3.4 0 0 1 0 6.8 3.4 3.4 0 0 1 0-6.8z" transform="rotate(0 18 18.6)"/>'
+      +'<path d="M18 22a3.4 3.4 0 0 1 0 6.8 3.4 3.4 0 0 1 0-6.8z"/>'
+      +'<path d="M7.8 18.6a3.4 3.4 0 0 1 6.8 0 3.4 3.4 0 0 1-6.8 0z"/>'
+      +'<path d="M21.4 18.6a3.4 3.4 0 0 1 6.8 0 3.4 3.4 0 0 1-6.8 0z"/>'
+      +'<path d="M31.6 27.6v5.2M31.6 27.6l-3.4-3.1M31.6 27.6l3.4-3.1"/>'
+      +'<circle cx="37.4" cy="20.6" r="1.5"/><circle cx="26.4" cy="20.6" r="1.5"/>'),
+    /* 7. Обмен железа — капля с Fe */
+    iron: ic(PEACH,ORG,
+      '<path d="M24 8.6c6.6 8.3 10 13.2 10 17.6a10 10 0 1 1-20 0c0-4.4 3.4-9.3 10-17.6z"/>'
+      +'<text x="24" y="31.4" text-anchor="middle" font-size="12.6" font-weight="700" fill="#FFFFFF" stroke="none" font-family="Manrope,Arial,sans-serif">Fe</text>'),
+    /* 8. Гормоны — молекулярная цепь + женский знак */
+    hormones: ic(TEAL,TEA2,
+      '<path d="M9.6 19.4l4.6-2.7 4.6 2.7v5.4l-4.6 2.7-4.6-2.7z"/>'
+      +'<circle cx="19.4" cy="16.4" r="1.7"/><circle cx="19.4" cy="27.6" r="1.7"/>'
+      +'<path d="M19.4 16.4l5.2-3v7.6l5.2 3"/>'
+      +'<circle cx="35.2" cy="28.2" r="4.2"/><path d="M35.2 32.4v5.6M32.6 35.4h5.2"/>'),
+    /* 9. Печень — контур органа */
+    liver: ic(LILA,PUR2,
+      '<path d="M9.4 18.6c6.8-4.8 15.8-5.4 23.4-2.6 2.9 1.1 4.8 3.3 4.8 6 0 8.6-6.8 14.2-15.2 14.2-8 0-13.6-4.8-13.6-11.6 0-2.3.2-4.4.6-6z"/>'
+      +'<path d="M22.6 20.6c1.7 2.8 2 5.4 1.5 8.2"/>'),
+    /* 10. Почки — две почки */
+    kidney: ic(BLUE,BLU2,
+      '<path d="M22.4 11.4c3.4 0 5.8 2.9 5.8 7.6s-2.4 7.6-5.8 7.6c-2.3 0-4.2-2-4.2-4.6 0-1.5.7-2.4.7-3.5s-.7-2-.7-3.4c0-2.2 1.6-3.7 4.2-3.7z"/>'
+      +'<path d="M28.2 26.6v10M22.4 26.6v10" transform="translate(-2 0)"/>'
+      +'<path d="M25.6 11.4c-3.4 0-5.8 2.9-5.8 7.6s2.4 7.6 5.8 7.6c2.3 0 4.2-2 4.2-4.6 0-1.5-.7-2.4-.7-3.5s.7-2 .7-3.4c0-2.2-1.6-3.7-4.2-3.7z" transform="translate(9 0)"/>'),
+    /* 11. ЖКТ — кишечник */
+    gut: ic(MINT,GRN,
+      '<path d="M11.4 13.6h25.2v7.4H11.4z" rx="0"/>'
+      +'<path d="M11.4 21h25.2v7.4H11.4z"/>'
+      +'<path d="M11.4 13.6a3.7 3.7 0 1 1 0 7.4M36.6 21a3.7 3.7 0 1 0 0 7.4"/>'
+      +'<path d="M15.4 17.3h17M15.4 24.7h17"/>'
+      +'<path d="M28.4 28.4v5.2a3.6 3.6 0 0 1-7.2 0"/>'),
+    /* 12. Онкомаркеры — клетка с ядром */
+    onco: ic(PINK,CRIM,
+      '<path d="M24 9.6c2.4 0 3.4 2 5.4 2.8a6.6 6.6 0 0 1 3.4 3.2c.9 2 .2 3.6.9 5.6s1.6 3 .9 4.8a6.4 6.4 0 0 1-3.6 3.4c-1.9.8-2.8 2.6-5.2 3a7 7 0 0 1-5.6-1.5c-1.5-1.4-3.5-1.3-4.8-2.9a6.8 6.8 0 0 1-1.3-5.1c.3-2.1-.9-3.4-.4-5.2a6.6 6.6 0 0 1 3.3-4c1.9-1 2.8-3.1 5-3.5 1-.2 1.4-.6 2-.6z"/>'
+      +'<circle cx="24" cy="23.8" r="3.6"/><circle cx="24" cy="23.8" r="1.4" fill="none"/>')
+  };
+})();
+
+const META=[
+ ['Углеводный обмен','Глюкоза, гликированный гемоглобин, инсулин'],
+ ['Клинический анализ крови','Эритроциты, лейкоциты, тромбоциты'],
+ ['Липидный профиль','Холестерин и его фракции, триглицериды'],
+ ['Витамины','D, B12, фолиевая кислота'],
+ ['Обмен железа','Сывороточное железо, ферритин'],
+ ['Электролиты и минералы','Калий, натрий, хлор, магний'],
+ ['Аллергологический профиль','Общий и специфические IgE, IgG'],
+ ['Гормоны','Щитовидная железа, тестостерон'],
+ ['Печень и белковый обмен','Ферменты печени, билирубин, белок'],
+ ['Почки и пуриновый обмен','Креатинин, мочевина, мочевая кислота'],
+ ['ЖКТ и инфекции','Helicobacter pylori'],
+ ['Онкомаркеры','ПСА, РЭА, CA 19-9 и другие']
+];
+const SYN={'лпнп':'ldl','ldl':'лпнп','лпвп':'hdl','hdl':'лпвп','сахар':'глюкоза','hba1c':'гликированный','гликир':'hba1c','tsh':'ттг','ттг':'tsh','alt':'алат','ast':'асат','crp':'срб','железо':'ферритин','витамин д':'25(oh)','vitamin d':'25(oh)','гемоглобин':'гемоглобин','b12':'b12'};
+const fmtNum=x=>Math.abs(x)>=100?String(Math.round(x)):String(Math.round(x*100)/100);
+const pd=s=>{const[d,m,y]=s.split('.');return new Date(2000+ +y,m-1,+d)};
+const LAST=pd(DATES[DATES.length-1]);
+function num(raw){if(raw==null||raw==='—'||raw==='')return null;const v=parseFloat(String(raw).replace(',','.').replace(/[<>≤≥\s]/g,''));return isNaN(v)?null:v}
+function stOf(m,val,raw){if(val==null)return 'none';const q=/^[<≤]/.test(String(raw).trim());
+  if(m.hi!=null&&val>m.hi&&!q)return 'high';if(m.lo!=null&&val<m.lo)return 'low';return 'ok'}
+const SL={ok:'в норме',high:'выше нормы',low:'ниже нормы',none:'нет данных'};
+const SC={ok:'c-ok',high:'c-high',low:'c-low',none:'c-none'};
+function refText(m){if(m.lo!=null&&m.hi!=null)return fmtNum(m.lo)+' – '+fmtNum(m.hi);if(m.hi!=null)return '≤ '+fmtNum(m.hi);if(m.lo!=null)return '≥ '+fmtNum(m.lo);return m.ref}
+const U=u=>u&&u!=='—'?u:'';
+
+/* модель */
+const G=DATA.groups.map((g,gi)=>({gi,title:META[gi][0],sub:META[gi][1],rows:g.rows.map((r,ri)=>{
+  const pts=r.v.map((x,i)=>({i,d:DATES[i],raw:x,val:num(x)})).filter(p=>p.val!=null);
+  pts.forEach(p=>p.st=stOf(r,p.val,p.raw));
+  const cur=pts[pts.length-1]||null,prev=pts.length>1?pts[pts.length-2]:null;
+  const old=cur?((LAST-pd(cur.d))/864e5>365):false;
+  return Object.assign({},r,{gi,ri,pts,cur,prev,old,st:cur?cur.st:'none'});
+})}));
+const ALL=G.flatMap(g=>g.rows);
+
+/* служебное */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),3200)}
+let lastFocus=null;
+function openModal(title,html){clearTimeout(mT);$('#modal').classList.remove('closing');lastFocus=document.activeElement;$('#modal .mbox').classList.remove('wide','sysbox');$('#mT').textContent=title;$('#mB').innerHTML=html;$('#modal').classList.add('on');$('#mX').focus()}
+let mT=0;
+function closeModal(){const m=$('#modal');if(!m.classList.contains('on')||m.classList.contains('closing'))return;m.classList.add('closing');
+  mT=setTimeout(()=>{m.classList.remove('on','closing');$('#modal .mbox').classList.remove('wide','sysbox');document.querySelectorAll('.tile.sel').forEach(x=>x.classList.remove('sel'));if(lastFocus)lastFocus.focus()},(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)?0:280)}
+$('#mX').onclick=closeModal;$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#modal').classList.contains('on'))closeModal()});
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+/* роли и вкладки */
+const TABS={patient:[['summary','Сводка'],['files','Мои анализы'],['book','Где сдать'],['profile','Профиль'],['share','Доступ специалисту']]};
+let role='patient';
+const NAVI={"summary": "<path d=\"M4 13h6V4H4zM14 20h6v-9h-6zM14 4v4h6V4zM4 20h6v-3H4z\"/>", "files": "<path d=\"M7 3h7l5 5v13H7z\"/><path d=\"M14 3v5h5M10 13h6M10 17h6\"/>", "book": "<path d=\"M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z\"/><circle cx=\"12\" cy=\"9.5\" r=\"2.5\"/>", "profile": "<circle cx=\"12\" cy=\"8\" r=\"4\"/><path d=\"M4 21c0-4 4-6 8-6s8 2 8 6\"/>", "share": "<rect x=\"4\" y=\"4\" width=\"6\" height=\"6\" rx=\"1\"/><rect x=\"14\" y=\"4\" width=\"6\" height=\"6\" rx=\"1\"/><rect x=\"4\" y=\"14\" width=\"6\" height=\"6\" rx=\"1\"/><path d=\"M14 14h2v2h-2zM18 18h2v2h-2zM14 18h2M18 14h2\"/>", "patients": "<circle cx=\"9\" cy=\"8\" r=\"3.5\"/><path d=\"M2.5 20c0-3.5 3-5.5 6.5-5.5s6.5 2 6.5 5.5\"/><path d=\"M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.8c2 .7 3 2.4 3 5.2\"/>"};
+const SHORT={summary:'Сводка',files:'Анализы',book:'Где сдать',profile:'Профиль',share:'Доступ'};
+let cur='summary';
+function renderTabs(active){const t=$('#tabs');const ind=$('#sideInd'),hov=$('#sideHov');t.innerHTML='';t.appendChild(hov);t.appendChild(ind);
+  TABS[role].forEach(([id,l])=>{const b=document.createElement('button');b.className='sbtn';b.dataset.tab=id;b.setAttribute('aria-current',id===active?'page':'false');b.title=l;
+    b.innerHTML=`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${NAVI[id]}</svg><span>${SHORT[id]}</span>`;b.onclick=()=>show(id);b.onmouseenter=()=>{const r=b.getBoundingClientRect(),p=t.getBoundingClientRect();hov.style.transform=`translate(${r.left-p.left}px,${r.top-p.top}px)`;hov.style.width=r.width+'px';hov.style.height=r.height+'px';hov.classList.add('on')};t.appendChild(b)});
+  t.onmouseleave=()=>hov.classList.remove('on');
+  requestAnimationFrame(moveInd)}
+function moveInd(){const a=document.querySelector('.sbtn[aria-current="page"]'),ind=$('#sideInd');if(!a){ind.style.opacity=0;return}
+  const r=a.getBoundingClientRect(),p=$('#tabs').getBoundingClientRect();ind.style.opacity=1;
+  ind.style.transform=`translate(${r.left-p.left}px,${r.top-p.top}px)`;ind.style.width=r.width+'px';ind.style.height=r.height+'px'}
+window.addEventListener('resize',moveInd);try{document.fonts.ready.then(moveInd)}catch(e){}window.addEventListener('load',moveInd);
+const RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+function show(id){const sb=document.getElementById('setBtn');if(sb)sb.classList.toggle('on',id==='settings');const next=$('#v-'+id),prev=document.querySelector('.view.on');cur=id;
+  document.querySelectorAll('.sbtn').forEach(b=>b.setAttribute('aria-current',b.dataset.tab===id?'page':'false'));moveInd();
+  if(!document.querySelector('.sbtn[data-tab="'+id+'"]'))renderTabs(id);
+  if(prev===next){return}
+  const swap=()=>{if(prev){prev.classList.remove('on','leave')}next.classList.add('on','enter');window.scrollTo(0,0);setTimeout(()=>next.classList.remove('enter'),520)};
+  if(prev&&!RM){prev.classList.add('leave');setTimeout(swap,170)}else swap()}
+
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)show(g.dataset.go);
+  const m=e.target.closest('[data-modal]');if(m)MODALS[m.dataset.modal]()});
+
+/* профиль и события */
+const DEF={name:'Алексей',phone:'+7 921 000-00-00',email:'',sex:'m',dob:'1981-04-12',h:'178',waist:'',preg:'no',cycle:'',city:'Санкт-Петербург',travel:'Турция, июль 2026',act:'2',stress:'Да, эпизодически',sleep:'6.5',food:'Обычное',smoke:'Не курю',alc:'Реже раза в неделю',alcv:'1–2 бокала вина или пива',
+ dx:'Сахарный диабет 2 типа (с 2023 г.), дислипидемия',surg:'',fam:'Отец: диабет 2 типа',vac:'',other:'',
+ alls:[{n:'Клещ домашней пыли',r:'Насморк, чихание'},{n:'Шерсть кошки',r:'Сыпь, крапивница'}],notif:['tg']};
+let P=Object.assign({},DEF,store.get('oh2-profile',{}));
+const EVDEF={
+ med:[{n:'Метформин 1000 мг, 2 раза в день',m:'Постоянно',f:'2023-03-01',t:''},{n:'Аторвастатин 10 мг',m:'Курс',f:'2024-10-01',t:'2025-02-28'},{n:'Витамин D 4000 МЕ',m:'Курс',f:'2026-06-01',t:'2026-09-30'}],
+ weight:[{d:'2023-07-25',kg:'96'},{d:'2024-09-01',kg:'95'},{d:'2024-12-01',kg:'94'},{d:'2025-03-20',kg:'92'},{d:'2025-09-04',kg:'90'},{d:'2026-05-31',kg:'89'},{d:'2026-08-02',kg:'87'},{d:'2026-09-06',kg:'85'},{d:'2026-10-06',kg:'82'}],
+ ill:[{n:'Бронхит',f:'2023-07-10',t:'2023-07-24'},{n:'ОРВИ',f:'2026-09-25',t:'2026-10-01'}],
+ hosp:[{n:'Пневмония',w:'Городская больница № 26',f:'2024-11-05',t:'2024-11-15'}]};
+let EV=store.get('oh2-ev',null)||JSON.parse(JSON.stringify(EVDEF));
+['med','weight','ill','hosp'].forEach(k=>{if(!Array.isArray(EV[k]))EV[k]=[]});
+const ALLR=['Сыпь, крапивница','Отёк (в том числе отёк Квинке)','Насморк, чихание','Затруднённое дыхание','Анафилаксия','Другое'];
+const ACT={1:'почти нет',2:'1–2 раза в неделю',3:'3–4 раза в неделю',4:'5+ раз в неделю'};
+function age(d){if(!d)return null;const b=new Date(d);let a=LAST.getFullYear()-b.getFullYear();const md=new Date(LAST.getFullYear(),b.getMonth(),b.getDate());if(LAST<md)a--;return a}
+const evDate=s=>s?new Date(s+'T00:00:00'):null;
+const dfmt=s=>{if(!s)return '…';const p=s.split('-');return p[2]+'.'+p[1]+'.'+p[0].slice(2)};
+function lastWeight(){const w=EV.weight.filter(e=>e.d&&e.kg).sort((a,b)=>a.d<b.d?-1:1);return w.length?w[w.length-1]:null}
+function bmi(){const h=+P.h/100,w=lastWeight();return h>0&&w?Math.round(+w.kg/(h*h)*10)/10:null}
+/* отметка о снижении веса: ≥5% за последние 6 месяцев (порог согласовать с врачом) */
+function weightAlert(){const w=EV.weight.filter(e=>e.d&&e.kg).sort((a,b)=>a.d<b.d?-1:1);if(w.length<2)return null;
+  const last=w[w.length-1],lt=evDate(last.d);const win=w.filter(e=>(lt-evDate(e.d))/864e5<=183);
+  const mx=win.reduce((a,b)=>+b.kg>+a.kg?b:a,win[0]);const drop=+mx.kg-+last.kg;const pct=drop/+mx.kg*100;
+  if(pct<5)return null;const mo=Math.max(1,Math.round((lt-evDate(mx.d))/864e5/30.4));
+  return {kg:fmtNum(drop),pct:Math.round(pct),mo,from:mx.kg,to:last.kg,fd:mx.d,td:last.d}}
+const EVF={
+ med:e=>`<input data-k="n" placeholder="Препарат и дозировка" value="${esc(e.n||'')}" aria-label="Препарат и дозировка"><select data-k="m" aria-label="Как принимаете">${['Курс','Постоянно'].map(o=>`<option ${o===(e.m||'Курс')?'selected':''}>${o}</option>`).join('')}</select><label class="dl"><span>с</span><input type="date" data-k="f" value="${e.f||''}"></label><label class="dl"><span>по</span><input type="date" data-k="t" value="${e.t||''}" ${e.m==='Постоянно'?'disabled':''}></label>`,
+ weight:e=>`<label class="dl"><span>дата</span><input type="date" data-k="d" value="${e.d||''}"></label><label class="dl"><span>кг</span><input type="number" step="0.1" min="20" max="300" data-k="kg" value="${esc(e.kg||'')}"></label>`,
+ ill:e=>`<input data-k="n" placeholder="Чем болели" value="${esc(e.n||'')}" aria-label="Чем болели"><label class="dl"><span>с</span><input type="date" data-k="f" value="${e.f||''}"></label><label class="dl"><span>по</span><input type="date" data-k="t" value="${e.t||''}"></label>`,
+ hosp:e=>`<input data-k="n" placeholder="Причина" value="${esc(e.n||'')}" aria-label="Причина госпитализации"><input data-k="w" placeholder="Где: больница" value="${esc(e.w||'')}" aria-label="Где лежали"><label class="dl"><span>с</span><input type="date" data-k="f" value="${e.f||''}"></label><label class="dl"><span>по</span><input type="date" data-k="t" value="${e.t||''}"></label>`,
+ all:e=>`<input data-k="n" placeholder="На что аллергия" value="${esc(e.n||'')}" aria-label="На что аллергия"><select data-k="r" aria-label="Как проявляется">${ALLR.map(o=>`<option ${o===e.r?'selected':''}>${o}</option>`).join('')}</select>`};
+function evRow(t,e){return `<div class="evr evr-${t}" data-t="${t}">${EVF[t](e||{})}<button type="button" class="evx" aria-label="Удалить" data-evdel>×</button></div>`}
+function readEv(host){return host?[...host.querySelectorAll('.evr')].map(r=>{const o={};r.querySelectorAll('[data-k]').forEach(i=>o[i.dataset.k]=i.value);return o}).filter(o=>(o.n&&o.n.trim())||o.kg):[]}
+function evList(host,t,list){host.innerHTML=(list&&list.length?list:[{}]).map(e=>evRow(t,e)).join('')}
+document.addEventListener('click',e=>{
+  const d=e.target.closest('[data-evdel]');if(d){d.closest('.evr').remove();return}
+  const a=e.target.closest('[data-evadd]');if(a){const host=a.parentElement.querySelector('[data-evl="'+a.dataset.evadd+'"]');host.insertAdjacentHTML('beforeend',evRow(a.dataset.evadd,{}));return}
+  if(e.target.id==='addAll'){$('#alls').insertAdjacentHTML('beforeend',evRow('all',{}))}});
+document.addEventListener('change',e=>{if(e.target.matches('.evr [data-k="m"]')){const t=e.target.closest('.evr').querySelector('[data-k="t"]');t.disabled=e.target.value==='Постоянно';if(t.disabled)t.value=''}});
+
+/* уведомления, разрешения, вход */
+const CH=[['tg','Telegram'],['wa','WhatsApp'],['max','MAX'],['email','Почта'],['push','Push']];
+function notifOpts(host){host.innerHTML=CH.map(([v,l])=>`<button class="opt" type="button" data-ch="${v}" aria-pressed="${(P.notif||[]).includes(v)}">${l}</button>`).join('')}
+document.addEventListener('click',e=>{const c=e.target.closest('[data-ch]');if(!c)return;const v=c.dataset.ch;P.notif=P.notif||[];
+  P.notif=P.notif.includes(v)?P.notif.filter(x=>x!==v):P.notif.concat(v);store.set('oh2-profile',P);document.querySelectorAll('[data-ch="'+v+'"]').forEach(b=>b.setAttribute('aria-pressed',P.notif.includes(v)));
+  if(P.notif.includes(v))toast('Демо: в рабочей версии здесь будет подключение канала')});
+const PERMS={camera:['камера','чтобы сфотографировать бланк анализа'],gallery:['галерея','чтобы выбрать фото или скриншот бланка'],files:['файлы','чтобы загрузить PDF из почты или приложения лаборатории'],geo:['геолокация','чтобы показать ближайшие лаборатории и специалистов'],notif:['уведомления','чтобы напомнить о пересдаче и сообщить о новом доступе']};
+const PIC={camera:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',gallery:'<rect x="4" y="4" width="16" height="16" rx="2"/><circle cx="9" cy="9" r="1.8"/><path d="M20 16l-5-5-9 9"/>',files:'<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/>',geo:'<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',notif:'<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/>'};
+const svgI=(p,s)=>`<svg width="${s||22}" height="${s||22}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+let PERM=store.get('oh2-perm',{});let permCb=null;
+function askPerm(k,cb){if(PERM[k]==='yes'){cb&&cb();return}permCb=cb;
+  openModal('Разрешить доступ?',`<div class="permask"><div class="permic">${svgI(PIC[k],28)}</div><p><b>Orange of Health</b> запрашивает доступ: ${PERMS[k][0]}, ${PERMS[k][1]}.</p><p class="why">В приложении это системное окно Android или iOS. Разрешение можно отозвать в настройках телефона.</p><div class="row-end"><button class="btn" data-perm="no" data-k="${k}">Не сейчас</button><button class="btn pri" data-perm="yes" data-k="${k}">Разрешить</button></div></div>`)}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-perm]');if(!b)return;const k=b.dataset.k,ok=b.dataset.perm==='yes';PERM[k]=ok?'yes':'no';store.set('oh2-perm',PERM);closeModal();renderPerms();
+  if(ok&&permCb){const cb=permCb;permCb=null;setTimeout(cb,40)}else if(!ok)toast('Без этого разрешения функция недоступна. Его можно дать позже в профиле.')});
+function renderPerms(){const h=$('#perms');if(!h)return;h.innerHTML=Object.keys(PERMS).map(k=>`<div class="permr"><span class="permi">${svgI(PIC[k],18)}</span><span><b>${PERMS[k][0][0].toUpperCase()+PERMS[k][0].slice(1)}</b><small>${PERMS[k][1]}</small></span><span class="chip ${PERM[k]==='yes'?'c-ok':'c-none'}">${PERM[k]==='yes'?'разрешено':PERM[k]==='no'?'отклонено':'не запрошено'}</span>${PERM[k]==='yes'?'':`<button class="btn" type="button" data-askperm="${k}">Разрешить</button>`}</div>`).join('')}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-askperm]');if(b){PERM[b.dataset.askperm]=undefined;askPerm(b.dataset.askperm,()=>toast('Разрешение получено'))}});
+let LOG=store.get('oh2-login',false);
+function updLogin(){$('#loginBtn').textContent=LOG?'Выйти':'Войти';$('#whoami').textContent=LOG?(P.name||'Вы')+' · '+(P.phone||P.email||''):'Гость · демо-данные';
+  $('#demoBar').className=LOG?'demo':'demo guest';$('#demoBar').innerHTML=LOG?'Демо: значения условные, в рабочей версии здесь будут ваши анализы.':'<span><b>Вы смотрите демо-данные.</b> Войдите, чтобы загрузить свои анализы и сохранять изменения.</span><button class="btn pri" type="button" id="demoLogin">Войти</button>';
+  const d=$('#demoLogin');if(d)d.onclick=()=>openLogin();renderShared();renderSettings()}
+function openLogin(note){loginCb=null;openModal('Вход и регистрация',`${note?`<p class="lnote">${note}</p>`:''}<div class="opts"><button class="opt" type="button" aria-pressed="true" data-lg="phone">По телефону</button><button class="opt" type="button" aria-pressed="false" data-lg="email">По почте</button></div>
+  <div class="field" style="margin-top:12px"><label for="lgIn" id="lgL">Номер телефона</label><input id="lgIn" type="tel" placeholder="+7 900 000-00-00"></div>
+  <div class="field" id="lgCodeF" hidden style="margin-top:10px"><label for="lgCode">Код из SMS</label><input id="lgCode" inputmode="numeric" placeholder="0000"></div>
+  <div class="field" style="margin-top:12px"><label>Уведомления, можно настроить позже</label><div class="opts" id="lgN"></div></div>
+  <p class="why" style="margin-top:8px">Демо: подойдёт любой код. В рабочей версии придёт SMS или письмо с кодом. Регистрация нужна, чтобы хранить анализы на всех устройствах и получать постоянный доступ к чужим анализам.</p>
+  <div class="row-end"><button class="btn pri" type="button" id="lgGo">Получить код</button></div>`);notifOpts($('#lgN'))}
+document.addEventListener('click',e=>{const m=e.target.closest('[data-lg]');if(m){document.querySelectorAll('[data-lg]').forEach(x=>x.setAttribute('aria-pressed',x===m));const em=m.dataset.lg==='email';$('#lgL').textContent=em?'Почта':'Номер телефона';$('#lgIn').type=em?'email':'tel';$('#lgIn').placeholder=em?'name@mail.ru':'+7 900 000-00-00';$('#lgCode').previousElementSibling.textContent=em?'Код из письма':'Код из SMS'}
+  if(e.target.id==='lgGo'){if($('#lgCodeF').hidden){$('#lgCodeF').hidden=false;e.target.textContent='Войти';$('#lgCode').focus()}else{LOG=true;store.set('oh2-login',true);const v=$('#lgIn').value.trim();if(v){if(v.includes('@'))P.email=v;else P.phone=v;store.set('oh2-profile',P);fillForm()}const cb=loginCb;loginCb=null;closeModal();updLogin();toast('Вы вошли. Данные сохранятся на всех устройствах.');if(cb)setTimeout(cb,60)}}
+  if(e.target.id==='loginBtn'){if(LOG){LOG=false;store.set('oh2-login',false);updLogin();toast('Вы вышли из аккаунта')}else openLogin()}});
+
+/* вход нужен, чтобы сохранять */
+let loginCb=null;
+function requireLogin(cb){if(LOG){cb();return}openLogin('Чтобы сохранять свои данные, войдите или зарегистрируйтесь. Без входа приложение можно посмотреть на демо-данных.');loginCb=cb}
+
+/* профиль: блоки */
+const PIC2={
+ base:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
+ med:'<rect x="3.5" y="9" width="17" height="6" rx="3" transform="rotate(-35 12 12)"/><path d="M10 8.5l4 6"/>',
+ weight:'<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 9a5 5 0 0 1 7 0M12 9.5l1.5-2"/>',
+ ill:'<path d="M12 3v11"/><circle cx="12" cy="17.5" r="3.5"/><path d="M9 6h3M9 9h3"/>',
+ hosp:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M12 9v7M8.5 12.5h7"/>',
+ all:'<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>',
+ health:'<path d="M12 20s-7-4.6-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.4-7 10-7 10z"/>',
+ life:'<circle cx="12" cy="12" r="8"/><path d="M12 7.500V12l3 2"/>'};
+const PSEC=[
+ {k:'base',t:'Основное',s:'Пол, возраст, рост'},
+ {k:'med',t:'Препараты и БАДы',s:'Курсы и постоянный приём'},
+ {k:'weight',t:'Вес',s:'Динамика веса'},
+ {k:'ill',t:'Болезни',s:'ОРВИ, грипп и другие'},
+ {k:'hosp',t:'Госпитализации',s:'Когда и где лежали в больнице'},
+ {k:'all',t:'Аллергии',s:'На что и как проявляется'},
+ {k:'health',t:'Здоровье',s:'Диагнозы, операции, наследственность'},
+ {k:'life',t:'Образ жизни',s:'Сон, питание, спорт, алкоголь'}];
+const PWHY={
+ med:'Курсом: с какой по какую дату. Постоянно: с какого времени. Биотин и некоторые другие добавки искажают анализы.',
+ weight:'Записывайте вес время от времени. При заметном снижении в сводке появится отметка.',
+ ill:'Когда болели. После болезни анализы, например лейкоциты, ещё какое-то время могут быть изменены.',
+ hosp:'Когда, где и по какой причине лежали в больнице. Помогает врачу понять, откуда могла появиться инфекция.',
+ all:'На что аллергия и как она проявляется: сыпь, отёк или другое.'};
+const evArr=k=>k==='all'?(P.alls=P.alls||[]):EV[k];
+const medActive=e=>e.m==='Постоянно'||!e.t||evDate(e.t)>=LAST;
+const days=(f,t)=>f&&t?Math.round((evDate(t)-evDate(f))/864e5)+1:null;
+const HF_KEYS=['dx','surg','fam','vac','other'],LF_KEYS=['city','act','sleep','food','smoke','alc'];
+function psInfo(k){const n=(k in EV||k==='all')?evArr(k).length:0;const chip=(ok,t)=>`<span class="chip ${ok?'c-ok':'c-none'}">${t||(ok?'заполнено':'не заполнено')}</span>`;
+  if(k==='base'){const a=age(P.dob);return [(P.sex==='f'?'жен.':'муж.')+(a!=null?', '+a+' лет':'')+(P.h?' · '+P.h+' см':''),chip(P.dob&&P.h)]}
+  if(k==='med'){const a=EV.med.filter(medActive).length;return [n+' запис.',n?chip(true,a+' сейчас'):chip(false)]}
+  if(k==='weight'){const w=lastWeight(),al=weightAlert();return [w?w.kg+' кг · '+dfmt(w.d):'нет записей',al?`<span class="chip c-warn">−${al.kg} кг за ${al.mo} мес.</span>`:chip(!!w)]}
+  if(k==='ill'){const l=EV.ill.slice().sort((a,b)=>a.f<b.f?1:-1)[0];return [l?short(l.n)+' · '+dfmt(l.f):'нет записей',chip(!!l,l?n+' запис.':'')]}
+  if(k==='hosp')return [n?n+' запис.':'нет записей',chip(n>0,n?'':'нет')];
+  if(k==='all')return [n?n+' запис.':'нет записей',chip(n>0,n?'':'нет')];
+  const keys=k==='health'?HF_KEYS:LF_KEYS,f=keys.filter(x=>P[x]).length;return [f+' из '+keys.length+' полей',chip(f>=Math.ceil(keys.length/2))]}
+function renderProfile(){const h=$('#ptiles');if(!h)return;
+  h.innerHTML=PSEC.map(s=>{const[i,c]=psInfo(s.k);return `<article class="tile" id="pt-${s.k}"><button class="tile-b" data-psec="${s.k}" aria-haspopup="dialog"><span class="tile-h"><span class="bic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${PIC2[s.k]}</svg></span><span class="tile-t">${s.t}</span></span><span class="tile-s">${s.s}</span><span class="tile-f"><span class="why">${esc(i)}</span>${c}</span></button></article>`}).join('');
+  renderFill()}
+const PF=[['дата рождения',()=>P.dob],['рост',()=>P.h],['препараты',()=>EV.med.length],['вес',()=>EV.weight.length],['болезни',()=>EV.ill.length],['аллергии',()=>(P.alls||[]).length],['диагнозы',()=>P.dx],['болезни родственников',()=>P.fam],['сон',()=>P.sleep],['алкоголь',()=>P.alc==='Не пью'||P.alcv]];
+function renderFill(){const miss=PF.filter(([,f])=>!f()).map(([l])=>l);const pct=Math.round((PF.length-miss.length)/PF.length*100);
+  $('#pfPct').textContent=pct;$('#pfBar').style.width=pct+'%';$('#pfHint').textContent=miss.length?'Врачу пригодится: '+miss.slice(0,3).join(', '):'Всё заполнено. Обновляйте вес и препараты, когда что-то меняется.'}
+
+/* графики профиля: шкала времени */
+function tAxis(starts,ends){const t0=Math.min(DT[0],...starts),t1=Math.max(LAST.getTime(),...ends);const pad=(t1-t0)*.04;return [t0-pad,t1+pad]}
+function axisSVG(W,H,pl,pr,pt,pb,t0,t1){const x=t=>pl+(W-pl-pr)*(t-t0)/(t1-t0);let s='';
+  for(let y=new Date(t0).getFullYear();y<=new Date(t1).getFullYear()+1;y++){const t=new Date(y,0,1).getTime();if(t<t0||t>t1)continue;s+=`<line x1="${x(t)}" x2="${x(t)}" y1="${pt}" y2="${H-pb}" stroke="var(--line)"/><text x="${x(t)+4}" y="${H-8}" font-size="11" fill="var(--ink3)">${y}</text>`}
+  DT.forEach((t,i)=>{s+=`<path d="M${x(t)-4} ${pt-9}h8l-4 6z" fill="var(--accent)"><title>Сдача анализов ${DATES[i]}</title></path><line x1="${x(t)}" x2="${x(t)}" y1="${pt-3}" y2="${H-pb}" stroke="var(--accent)" stroke-opacity=".25" stroke-dasharray="2 3"/>`});
+  return {x,s}}
+function tlSVG(items,col,soft){if(!items.length)return '';const W=680,pl=14,pr=14,pt=22,pb=26,RH=34,H=pt+items.length*RH+pb;
+  const now=LAST.getTime();const[t0,t1]=tAxis(items.map(e=>evDate(e.f).getTime()),items.map(e=>e.open?now:evDate(e.t||e.f).getTime()));
+  const{x,s:ax}=axisSVG(W,H,pl,pr,pt,pb,t0,t1);let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Шкала времени">`+ax;
+  items.forEach((e,i)=>{const a=x(evDate(e.f).getTime()),b=x(e.open?t1:evDate(e.t||e.f).getTime()+864e5),y=pt+i*RH;
+    s+=`<text x="${Math.min(a,W-230)}" y="${y+13}" font-size="11.5" font-weight="700" fill="${col}" paint-order="stroke" stroke="var(--card)" stroke-width="3">${esc(short(e.n))} <tspan font-weight="500" fill="var(--ink3)">${dfmt(e.f)}–${e.open?'сейчас':dfmt(e.t)}</tspan></text><rect x="${a}" y="${y+18}" width="${Math.max(8,b-a)}" height="9" rx="4.5" fill="${soft}" stroke="${col}"/>`});
+  return s+'</svg>'}
+function weightSVG(){const ws=EV.weight.filter(e=>e.d&&e.kg).map(e=>({t:evDate(e.d).getTime(),kg:+e.kg,d:e.d})).sort((a,b)=>a.t-b.t);if(!ws.length)return '';
+  const W=680,H=220,pl=14,pr=14,pt=30,pb=26;const[t0,t1]=tAxis(ws.map(w=>w.t),ws.map(w=>w.t));const{x,s:ax}=axisSVG(W,H,pl,pr,pt,pb,t0,t1);
+  let a=Math.min(...ws.map(w=>w.kg)),b=Math.max(...ws.map(w=>w.kg));if(b-a<2){a-=1;b+=1}const y=v=>H-pb-14-(v-a)/(b-a)*(H-pt-pb-34);
+  let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Динамика веса">`+ax;
+  if(ws.length>1)s+=`<polyline fill="none" stroke="var(--wt)" stroke-width="2" points="${ws.map(w=>x(w.t)+','+y(w.kg)).join(' ')}"/>`;
+  ws.forEach(w=>{s+=`<circle cx="${x(w.t)}" cy="${y(w.kg)}" r="4" fill="var(--wt)" stroke="var(--card)" stroke-width="2"><title>${dfmt(w.d)}: ${w.kg} кг</title></circle><text x="${x(w.t)}" y="${y(w.kg)-9}" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--wt)" paint-order="stroke" stroke="var(--card)" stroke-width="3">${fmtNum(w.kg)}</text>`});
+  return s+'</svg>'}
+function psChart(k){if(k==='weight')return weightSVG();
+  if(k==='med')return tlSVG(EV.med.filter(e=>e.f).map(e=>({n:e.n,f:e.f,t:e.t,open:e.m==='Постоянно'||!e.t})),'var(--med)','var(--med-soft)');
+  if(k==='ill')return tlSVG(EV.ill.filter(e=>e.f),'var(--ill)','var(--ill)');
+  if(k==='hosp')return tlSVG(EV.hosp.filter(e=>e.f),'var(--hosp)','var(--hosp)');return ''}
+
+/* профиль: окно блока */
+let PSG=store.get('oh3-psg',{});let psCur=null;
+const delB=(k,i)=>`<td class="r"><button class="evx sm" type="button" aria-label="Удалить" data-psdel="${k},${i}">×</button></td>`;
+function psTable(k){const arr=evArr(k).map((e,i)=>({e,i}));if(!arr.length)return '<p class="why" style="margin:8px 0">Пока нет записей.</p>';
+  const by=f=>arr.slice().sort((a,b)=>(a.e[f]||'')<(b.e[f]||'')?1:-1);let h,r;
+  if(k==='med'){h=['Препарат и дозировка','Приём','С','По','Статус',''];r=by('f').map(({e,i})=>`<tr><td><b>${esc(e.n)}</b></td><td>${e.m==='Постоянно'?'постоянно':'курс'}</td><td class="num">${dfmt(e.f)}</td><td class="num">${e.m==='Постоянно'||!e.t?'—':dfmt(e.t)}</td><td><span class="chip ${medActive(e)?'c-ok':'c-none'}">${medActive(e)?'принимает':'закончен'}</span></td>${delB(k,i)}</tr>`)}
+  if(k==='weight'){const s=by('d');const hm=+P.h/100;h=['Дата','Вес, кг','Изменение','ИМТ',''];r=s.map(({e,i},j)=>{const p=s[j+1];const d=p?+e.kg-+p.e.kg:null;return `<tr><td class="num">${dfmt(e.d)}</td><td class="num"><b>${esc(e.kg)}</b></td><td class="num">${d==null?'—':d===0?'=':(d>0?'▲ +':'▼ ')+fmtNum(d)}</td><td class="num">${hm>0?Math.round(+e.kg/(hm*hm)*10)/10:'—'}</td>${delB(k,i)}</tr>`})}
+  if(k==='ill'){h=['Чем болели','С','По','Дней',''];r=by('f').map(({e,i})=>`<tr><td><b>${esc(e.n)}</b></td><td class="num">${dfmt(e.f)}</td><td class="num">${dfmt(e.t)}</td><td class="num">${days(e.f,e.t)??'—'}</td>${delB(k,i)}</tr>`)}
+  if(k==='hosp'){h=['Причина','Где','С','По','Дней',''];r=by('f').map(({e,i})=>`<tr><td><b>${esc(e.n)}</b></td><td>${esc(e.w||'—')}</td><td class="num">${dfmt(e.f)}</td><td class="num">${dfmt(e.t)}</td><td class="num">${days(e.f,e.t)??'—'}</td>${delB(k,i)}</tr>`)}
+  if(k==='all'){h=['На что','Как проявляется',''];r=arr.map(({e,i})=>`<tr><td><b>${esc(e.n)}</b></td><td>${esc(e.r||'—')}</td>${delB(k,i)}</tr>`)}
+  return `<div class="tblw"><table class="hist pst"><thead><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${r.join('')}</tbody></table></div>`}
+const fl=(k,l,inner,sm)=>`<div class="field"><label for="p-${k}">${l}</label>${inner}${sm?`<small>${sm}</small>`:''}</div>`;
+const fin=(k,type,ph,ex)=>`<input id="p-${k}" data-p="${k}" type="${type||'text'}" placeholder="${ph||''}" ${ex||''}>`;
+const fta=(k,ph)=>`<textarea id="p-${k}" data-p="${k}" placeholder="${ph||''}"></textarea>`;
+const fse=(k,o)=>`<select id="p-${k}" data-p="${k}">${o.map(x=>Array.isArray(x)?`<option value="${x[0]}">${x[1]}</option>`:`<option>${x}</option>`).join('')}</select>`;
+function psForm(k){
+  if(k==='base')return `<p class="why" style="margin-bottom:10px">Пол, возраст и беременность определяют, какую норму лаборатории показывать.</p><div class="fgrid">${fl('sex','Пол',fse('sex',[['m','Мужской'],['f','Женский']]))}${fl('dob','Дата рождения',fin('dob','date'))}${fl('h','Рост, см',fin('h','number','','min="100" max="230"'),'ИМТ считается по последнему весу из блока «Вес»')}${fl('waist','Обхват талии, см',fin('waist','number','','min="40" max="200"'),'Необязательно')}</div>
+   <div class="fgrid" id="p-fem" style="margin-top:12px">${fl('preg','Беременность или кормление грудью',fse('preg',[['no','Нет'],['preg','Беременность'],['bf','Кормление грудью']]),'Для части показателей лаборатории дают отдельные нормы')}${fl('cycle','День цикла в дату сдачи',fin('cycle','text','например, 5-й'),'Важно для половых гормонов')}</div>`;
+  if(k==='health')return `<p class="why" style="margin-bottom:10px">Со слов пациента. Врач видит это как контекст к анализам.</p><div class="fgrid">${fl('dx','Диагнозы, которые поставил врач',fta('dx'))}${fl('surg','Операции и серьёзные травмы',fta('surg'))}${fl('fam','Болезни у близких родственников',fta('fam','диабет, болезни сердца, онкология…'))}${fl('vac','Прививки',fta('vac','Например: гепатит B, 2019; грипп, 2025'))}</div><div style="margin-top:12px">${fl('other','Другое, что важно знать врачу',fta('other'))}</div>`;
+  return `<div class="fgrid">${fl('city','Город',fin('city'))}${fl('travel','Поездки за последний год: куда и когда',fin('travel','text','Например: Таиланд, февраль 2026'),'Часть инфекций и показателей зависит от региона')}${fl('act','Спорт и физическая активность',fse('act',[['1','Почти нет: сидячая работа, без спорта'],['2','1–2 тренировки или прогулки в неделю'],['3','3–4 тренировки в неделю'],['4','5 и больше тренировок или физический труд']]))}${fl('stress','Был ли сильный стресс за последний месяц',fse('stress',['Нет','Да, эпизодически','Да, почти постоянно']))}${fl('sleep','Сон, в среднем часов в сутки',fin('sleep','number','','min="3" max="14" step="0.5"'),'Обычная ночь за последний месяц')}${fl('food','Тип питания',fse('food',['Обычное','Вегетарианское','Веганское','Низкоуглеводное / кето','Интервальное голодание']))}${fl('smoke','Курение',fse('smoke',['Не курю','Курю','Бросил(а)']))}${fl('alc','Алкоголь, как часто',fse('alc',['Не пью','Реже раза в неделю','1–3 раза в неделю','Чаще']))}${fl('alcv','Алкоголь, сколько за раз',fse('alcv',[['','—'],'1–2 бокала вина или пива','3–4 бокала','5 и больше бокалов','Крепкий: до 100 мл','Крепкий: 100–250 мл','Крепкий: больше 250 мл']))}</div>`}
+function drawPsec(k){const b=$('#psb');if(!b)return;
+  if(k in PWHY){const g=k!=='all';
+    b.innerHTML=`<p class="why">${PWHY[k]}</p>${psTable(k)}${g&&evArr(k).length?`<label class="chk ctog"><input type="checkbox" data-psg="${k}" ${PSG[k]?'checked':''}> Показать на графике</label><div class="cwrap" ${PSG[k]?'':'hidden'}>${psChart(k)}<div class="legend"><span><i style="background:var(--accent);border-radius:2px"></i>даты сдачи анализов</span></div></div>`:''}
+     <div class="psadd"><h4>Добавить запись</h4>${evRow(k,{})}<button class="btn pri" type="button" data-psadd="${k}">Добавить</button></div>`}
+  else{b.innerHTML=psForm(k)+`<div class="row-end"><button class="btn pri" type="button" data-pssave="${k}">Сохранить</button></div>`;
+    b.querySelectorAll('[data-p]').forEach(i=>i.value=P[i.dataset.p]??'');
+    if(k==='base'){const f=()=>{$('#p-fem').style.display=$('#p-sex').value==='f'?'':'none'};$('#p-sex').onchange=f;f()}}}
+function openPsec(k){psCur=k;const s=PSEC.find(x=>x.k===k);openModal(s.t,'<div id="psb" class="psb"></div>');$('#modal .mbox').classList.add('wide');drawPsec(k)}
+function saveAll(){store.set('oh2-profile',P);store.set('oh2-ev',EV);afterEvChange()}
+document.addEventListener('click',e=>{
+  const o=e.target.closest('[data-psec]');if(o){openPsec(o.dataset.psec);return}
+  const a=e.target.closest('[data-psadd]');if(a){const k=a.dataset.psadd;const v=readEv(a.closest('.psadd'))[0];
+    const ok=v&&(k==='weight'?v.d&&v.kg:k==='all'?v.n:v.n&&v.f);if(!ok){toast(k==='weight'?'Укажите дату и вес':k==='all'?'Укажите, на что аллергия':'Укажите название и дату начала');return}
+    requireLogin(()=>{evArr(k).push(v);saveAll();openPsec(k);toast('Запись добавлена')});return}
+  const d=e.target.closest('[data-psdel]');if(d){const[k,i]=d.dataset.psdel.split(',');requireLogin(()=>{evArr(k).splice(+i,1);saveAll();openPsec(k)});return}
+  const sv=e.target.closest('[data-pssave]');if(sv){const vals={};$('#psb').querySelectorAll('[data-p]').forEach(i=>vals[i.dataset.p]=i.value);const k=sv.dataset.pssave;
+    requireLogin(()=>{Object.assign(P,vals);if(P.sex!=='f'){P.preg='no'}saveAll();closeModal();toast('Сохранено')})}});
+document.addEventListener('change',e=>{if(e.target.matches('[data-psg]')){const k=e.target.dataset.psg;PSG[k]=e.target.checked;store.set('oh3-psg',PSG);e.target.closest('.psb').querySelector('.cwrap').hidden=!e.target.checked}
+  if(e.target.matches('[data-acc]')){P[e.target.dataset.acc]=e.target.value;store.set('oh2-profile',P);updLogin()}});
+function renderSettings(){document.querySelectorAll('[data-acc]').forEach(i=>i.value=P[i.dataset.acc]||'');notifOpts($('#notif'));renderPerms();
+  $('#accNote').innerHTML=LOG?'Вы вошли. Данные сохраняются в аккаунте и доступны на всех устройствах.':'Вы не вошли: приложение работает на демо-данных. <button class="link" type="button" id="accLogin">Войти или зарегистрироваться</button>';const b=$('#accLogin');if(b)b.onclick=()=>openLogin()}
+function fillForm(){renderProfile();renderSettings()}
+function afterEvChange(){renderCtx();renderProfile();document.querySelectorAll('[data-cw]').forEach(w=>{const[g,r]=w.dataset.cw.split(',').map(Number);w.innerHTML=chartBox(G[g].rows[r])})}
+
+/* контекст к последней сдаче */
+const ICW=svgI('<path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17v.5"/>',18),ICI=svgI('<path d="M12 3v12"/><circle cx="12" cy="18" r="3"/><path d="M9 6h3M9 9h3"/>',18),ICM=svgI('<rect x="3.5" y="9" width="17" height="6" rx="3" transform="rotate(-35 12 12)"/><path d="M10 8.5l4 6"/>',18),ICH=svgI('<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M12 9v7M8.5 12.5h7"/>',18);
+function nearEvents(dstr,days){const d=pd(dstr);const out=[];
+  EV.ill.forEach(e=>{const f=evDate(e.f),t=evDate(e.t||e.f);if(!f)return;const ago=Math.round((d-t)/864e5);if(f<=d&&ago<=days)out.push({k:'ill',e,ago})});
+  EV.hosp.forEach(e=>{const f=evDate(e.f),t=evDate(e.t||e.f);if(!f)return;const ago=Math.round((d-t)/864e5);if(f<=d&&ago<=days*3)out.push({k:'hosp',e,ago})});
+  EV.med.forEach(e=>{const f=evDate(e.f);if(!f||f>d)return;const t=e.m==='Постоянно'||!e.t?null:evDate(e.t);if(!t||t>=d||(d-t)/864e5<=30)out.push({k:'med',e,ago:t&&t<d?Math.round((d-t)/864e5):null})});
+  return out}
+function ctxFor(dstr){return nearEvents(dstr,21).map(x=>x.k==='med'?(x.e.m==='Постоянно'?'':(x.ago!=null?'курс '+short(x.e.n)+' закончен '+x.ago+' дн. назад':'курс '+short(x.e.n))):(x.k==='ill'?'болел: '+x.e.n+(x.ago>0?', '+x.ago+' дн. назад':', во время болезни'):'госпитализация: '+x.e.n)).filter(Boolean).join('; ')}
+function short(n){const s=String(n).split(',')[0];return s.length>24?s.slice(0,23)+'…':s}
+function ctxHTML(){const dl=DATES[DATES.length-1];const items=[];const w=weightAlert();
+  if(w)items.push(`<div class="ctxr warn">${ICW}<span><b>Вес снизился на ${w.kg} кг (−${w.pct}%) за ${w.mo} мес.</b> ${esc(w.from)} → ${esc(w.to)} кг, ${dfmt(w.fd)}–${dfmt(w.td)}</span></div>`);
+  nearEvents(dl,45).forEach(x=>{const e=x.e;
+    if(x.k==='ill')items.push(`<div class="ctxr">${ICI}<span><b>Болел: ${esc(e.n)}</b>, ${dfmt(e.f)}–${dfmt(e.t)}${x.ago>0?' · за '+x.ago+' дн. до сдачи':' · во время сдачи'}</span></div>`);
+    if(x.k==='hosp')items.push(`<div class="ctxr">${ICH}<span><b>Госпитализация: ${esc(e.n)}</b>, ${esc(e.w||'')} ${dfmt(e.f)}–${dfmt(e.t)}</span></div>`);
+    if(x.k==='med')items.push(`<div class="ctxr">${ICM}<span><b>${esc(e.n)}</b> · ${e.m==='Постоянно'?'постоянно с '+dfmt(e.f):'курс '+dfmt(e.f)+'–'+dfmt(e.t)+(x.ago?' · закончен за '+x.ago+' дн. до сдачи':'')}</span></div>`)});
+  return items.join('')||'<p class="why">Рядом с последней сдачей событий нет.</p>'}
+function renderCtx(){const n=(weightAlert()?1:0)+nearEvents(DATES[DATES.length-1],45).length;$('#ctxSum').textContent=n?n+' событ.':'нет событий';$('#ctx').innerHTML=`<p class="why" style="margin-bottom:8px">Сдача ${DATES[DATES.length-1]}: что происходило рядом. Данные из профиля.</p>`+ctxHTML()+`<button class="link" data-tab-go="profile" style="margin-top:8px">Добавить событие →</button>`}
+
+/* сводка */
+function renderSummary(){
+  const ok=ALL.filter(m=>m.st==='ok'),out=ALL.filter(m=>m.st==='high'||m.st==='low'),old=ALL.filter(m=>m.cur&&m.old);
+  $('#stats').innerHTML=`<button class="mc" data-modal="ok"><b class="num" style="color:var(--ok)">${ok.length}</b> в норме</button><button class="mc" data-modal="out"><b class="num" style="color:var(--hi)">${out.length}</b> не в норме</button><button class="mc" data-modal="old"><b class="num">${old.length}</b> давно не сдавали</button><button class="mc" data-modal="all"><b class="num">${ALL.length}</b> показателей всего</button><button class="info" data-modal="ref" aria-label="Что значит норма">?</button>`;
+  const li=DATES.length-1;const withPrev=ALL.filter(m=>m.cur&&m.cur.i===li);
+  const newOut=withPrev.filter(m=>m.prev&&m.prev.st==='ok'&&m.st!=='ok'),back=withPrev.filter(m=>m.prev&&m.prev.st!=='ok'&&m.st==='ok'),
+        still=withPrev.filter(m=>m.prev&&m.prev.st!=='ok'&&m.st!=='ok'),first=withPrev.filter(m=>!m.prev);
+  const grp=(title,arr,col)=>arr.length?`<div class="chg"><div class="chg-t"><i style="background:${col}"></i>${title} <span class="why">${arr.length}</span></div>${arr.map(m=>`<button class="chg-r" data-goto="${m.gi},${m.ri}"><span>${esc(m.n)}</span><span class="num">${m.prev?esc(m.prev.raw)+' → ':''}<b>${esc(m.cur.raw)}</b></span></button>`).join('')}</div>`:'';
+  $('#changes').innerHTML=`<p class="why" style="margin-bottom:8px">Сдача ${DATES[li]} (${LABS[li]}) в сравнении с предыдущим результатом каждого показателя.</p>`+
+   (grp('Вышли за норму',newOut,'var(--hi)')+grp('Вернулись в норму',back,'var(--okm)')+grp('По-прежнему не в норме',still,'#F59E0B')+grp('Сданы впервые',first,'var(--accent)')||'<p class="why">Изменений нет.</p>');
+  $('#chgSum').textContent=`${newOut.length} вышли за норму · ${back.length} вернулись`;
+  $('#devN').textContent=out.length;
+  $('#devList').innerHTML=`<div class="devr devhd" style="font-size:11.5px;color:var(--ink3);font-weight:700"><span>Показатель</span><span>Значение</span><span>Норма <button class="info" data-modal="ref" aria-label="Что значит норма">?</button></span></div>`+
+   out.map(m=>`<button class="devr" data-goto="${m.gi},${m.ri}"><span class="devn">${esc(m.n)}</span><span class="devv num" style="color:var(--${m.st==='high'?'hi':'lo'})">${esc(m.cur.raw)} <small style="font-weight:500;color:var(--ink3)">${esc(U(m.u))}</small> ${m.st==='high'?'↑':'↓'}</span><span class="devf num"><span class="mob">норма </span>${esc(refText(m))} · ${m.cur.d}</span></button>`).join('');
+}
+document.addEventListener('click',e=>{const d=e.target.closest('[data-day]');if(d){const i=+d.dataset.day;const rows=ALL.filter(m=>m.pts.some(p=>p.i===i));
+  openModal(`Сдача ${DATES[i]} · ${LABS[i]}`,`<div class="row-end" style="margin:0 0 8px"><button class="btn" data-blank="${i}">Открыть бланк</button></div><div class="mlist">`+rows.map(m=>{const p=m.pts.find(q=>q.i===i);return `<button data-goto="${m.gi},${m.ri}"><span>${esc(m.n)} <span class="g">${esc(G[m.gi].title)}</span></span><span class="num" style="font-weight:700;color:${p.st==='ok'?'var(--ok)':p.st==='high'?'var(--hi)':'var(--lo)'}">${esc(p.raw)} ${esc(U(m.u))}</span><span class="chip ${SC[p.st]}">${SL[p.st]}</span></button>`}).join('')+'</div>')}});
+document.addEventListener('click',e=>{const t=e.target.closest('[data-goto]');if(t){const[g,r]=t.dataset.goto.split(',').map(Number);closeModal();goTo(g,r)}});
+
+function listHTML(arr,showSt){return '<div class="mlist">'+arr.map(m=>{const col=m.st==='high'?'var(--hi)':m.st==='low'?'var(--lo)':'var(--ink)';return `<button data-goto="${m.gi},${m.ri}"><span class="ml-n"><b>${esc(m.n)}</b><span class="g">${esc(G[m.gi].title)}</span></span><span class="ml-v"><b class="num" style="color:${col}">${m.cur?esc(m.cur.raw)+' '+esc(U(m.u)):'—'}</b>${showSt&&m.st!=='none'?`<span class="chip ${SC[m.st]}">${SL[m.st]}</span>`:''}<span class="g">сдано ${m.cur?m.cur.d:'—'}</span></span><svg class="ml-c" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`}).join('')+'</div>'}
+const REFTEXT=`<p><b>Норма</b> — это диапазон, который лаборатория печатает в бланке рядом с результатом (врачи называют его «референсный интервал»). Мы сравниваем ваш результат только с этим диапазоном.</p>
+<p><b>В норме</b> — результат внутри диапазона. <b>Выше нормы</b> или <b>ниже нормы</b> — за его границей.</p>
+<p>В такой диапазон попадают примерно 95% здоровых людей, поэтому примерно у 1 из 20 здоровых результат чуть выше или ниже — это нормально.</p>
+<p>У разных лабораторий нормы разные: они зависят от метода, а также от пола и возраста. Поэтому мы всегда берём норму той лаборатории, где сдан анализ.</p>
+<p>Результат не в норме — это факт о цифре, а не диагноз. Что он значит, объясняет врач.</p>`;
+const MODALS={
+  ref(){openModal('Что значит «норма»',REFTEXT)},
+  ok(){const a=ALL.filter(m=>m.st==='ok');openModal(`В норме: ${a.length}`,`<p>Последний результат внутри нормы, которую лаборатория указала в бланке.</p>${listHTML(a,true)}`)},
+  out(){const a=ALL.filter(m=>m.st==='high'||m.st==='low');openModal(`Не в норме: ${a.length}`,`<p>Последний результат выше или ниже нормы, которую лаборатория указала в бланке. Это не диагноз — что он значит, объясняет врач.</p>${listHTML(a,true)}`)},
+  old(){const a=ALL.filter(m=>m.cur&&m.old);openModal(`Давно не сдавали: ${a.length}`,`<p>Эти анализы последний раз сдавали больше года назад (считаем от последней сдачи ${DATES[DATES.length-1]}). Нужно ли пересдать, решает врач.</p>${listHTML(a,false)}`)},
+  all(){openModal(`Все показатели: ${ALL.length}`,`<input class="mfilter" id="mf" type="search" placeholder="Фильтр по названию" aria-label="Фильтр по названию"><div id="mfl"></div>`);
+    const draw=q=>{q=(q||'').toLowerCase();$('#mfl').innerHTML=G.filter(g=>g.rows.length).map(g=>{const r=g.rows.filter(m=>m.n.toLowerCase().includes(q));return r.length?`<div class="gh">${esc(g.title)}</div>`+listHTML(r,false):''}).join('')||'<p>Ничего не найдено</p>'};
+    draw('');$('#mf').oninput=e=>draw(e.target.value);$('#mf').focus()},
+  dates(){openModal('Даты сдачи анализов',`<p>По каждой дате указано, сколько показателей сдано.</p><div class="mlist">`+DATES.map((d,i)=>{const n=ALL.filter(m=>m.pts.some(p=>p.i===i)).length;return `<button data-tab-to="files"><span>${d}</span><span class="num">${n} показ.</span><span class="g">файл</span></button>`}).slice().reverse().join('')+'</div>')}
+};
+
+/* блоки */
+let printMode=false;const sel=new Set();
+function blockHTML(g){
+  const n=g.rows.length,out=g.rows.filter(m=>m.st==='high'||m.st==='low').length;
+  const lastD=g.rows.map(m=>m.cur?pd(m.cur.d):0).reduce((a,b)=>a>b?a:b,0);
+  const chips=n?(out?`<span class="chip c-high">${out} не в норме</span>`:`<span class="chip c-ok">всё в норме</span>`):`<span class="chip c-none">нет данных</span>`;
+  return `<article class="tile" id="b${g.gi}" data-gi="${g.gi}">
+    <label class="pchk"><input type="checkbox" data-sel="${g.gi}" ${sel.has(g.gi)?'checked':''} ${n?'':'disabled'}> в печать</label>
+    <button class="tile-b" data-sys="${g.gi}" aria-haspopup="dialog">
+      <span class="tile-h"><span class="bic" aria-hidden="true">${ICONS[IKEYS[g.gi]]||''}</span><span class="tile-t">${esc(g.title)}</span></span>
+      <span class="tile-s">${esc(g.sub)}</span>
+      <span class="tile-f"><span class="why">${n} показ.${lastD?' · '+fmtD(lastD):''}</span>${chips}</span>
+      <span class="tile-m" data-match></span>
+    </button></article>`}
+function sysBody(g){const n=g.rows.length;
+  return (n?`<div class="mhead"><span>Показатель</span><span>Последнее</span><span class="hide-s">Норма лаборатории <button class="info" data-modal="ref" aria-label="Что значит норма">?</button></span><span class="hide-s">Предыдущее</span><span></span></div>`+g.rows.map(rowHTML).join('')
+   :`<div class="nodata">В загруженных файлах таких анализов нет.</div>`)+`<div class="spline">Справочно: с этими анализами обычно обращаются к специалистам: <b>${specOf(g.gi,null).join(', ')}</b>. <button class="link" data-findspec="${g.gi}">Найти рядом →</button></div>`}
+function openSystem(gi,ri){const g=G[gi];document.querySelectorAll('.tile.sel').forEach(x=>x.classList.remove('sel'));$('#b'+gi).classList.add('sel');openModal(g.title,`<div class="sysm">${sysBody(g)}</div>`);const mb=$('#modal .mbox');mb.classList.add('wide','sysbox');
+  $('#mT').insertAdjacentHTML('afterbegin',`<span class="bic mic" aria-hidden="true">${ICONS[IKEYS[gi]]||''}</span>`);
+  const r=ri!=null?document.getElementById('r'+gi+'_'+ri):g.rows.length?document.getElementById('r'+gi+'_0'):null;
+  if(r){toggleRow(r,true);if(ri!=null){setTimeout(()=>{r.scrollIntoView({block:'start'});r.classList.add('flash');setTimeout(()=>r.classList.remove('flash'),1600)},60)}}}
+const fmtD=d=>String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getFullYear()).slice(2);
+function rowHTML(m){
+  const c=m.cur,p=m.prev;
+  const prev=p?`<span class="num" style="font-weight:700;color:${p.st==='ok'?'var(--ok)':p.st==='high'?'var(--hi)':'var(--lo)'}">${esc(p.raw)}</span> ${delta(m)}<small>${p.d} · ${LABS[p.i]}</small>`:'<small>нет</small>';
+  return `<div class="mrow" id="r${m.gi}_${m.ri}">
+   <button class="mrow-h" aria-expanded="false">
+     <span class="mn">${esc(m.n)}<small>${esc(U(m.u))}</small></span>
+     <span class="mv num" style="color:${m.st==='ok'?'var(--ok)':m.st==='high'?'var(--hi)':m.st==='low'?'var(--lo)':'inherit'}">${c?esc(c.raw):'—'} <span class="chip ${SC[m.st]}" style="vertical-align:2px">${m.st==='ok'?'в норме':m.st==='high'?'выше':m.st==='low'?'ниже':'—'}</span><small>${c?c.d:''}${m.old?' · больше года назад':''}</small></span>
+     <span class="mref">${scale(m)}</span>
+     <span class="mprev">${prev}</span>
+     <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+   </button>
+   <div class="mrow-b" data-lazy="1"></div></div>`}
+function dist(m,v){if(m.hi!=null&&v>m.hi)return v-m.hi;if(m.lo!=null&&v<m.lo)return m.lo-v;return 0}
+function trendCol(m){const a=dist(m,m.prev.val),b=dist(m,m.cur.val);if(b<a)return 'var(--okm)';if(b>a)return 'var(--hi)';return 'var(--ink3)'}
+function delta(m){const d=m.cur.val-m.prev.val;if(Math.abs(d)<1e-9)return '<span style="color:var(--ink3)">=</span>';return `<span style="color:${trendCol(m)};font-weight:700" class="num">${d>0?'▲ +':'▼ '}${fmtNum(d)}</span>`}
+
+function scale(m){const c=m.cur;if(!c)return '';const lo=m.lo,hi=m.hi,v=c.val;let a,b;
+  if(lo!=null&&hi!=null){const p=(hi-lo)*.25;a=lo-p;b=hi+p}else if(lo!=null){const s=Math.max(Math.abs(lo),Math.abs(v-lo),1);a=lo-s*.3;b=Math.max(v,lo)+s*.3}else if(hi!=null){const s=Math.max(Math.abs(hi),Math.abs(v-hi),1);a=Math.min(v,hi)-s*.3;b=hi+s*.3}else return '';
+  const e=(lo!=null&&hi!=null)?(hi-lo)*.1:Math.max(Math.abs(v)*.1,.1);if(v<a)a=v-e;if(v>b)b=v+e;if(a<0&&(lo==null||lo>=0))a=0;
+  const pc=x=>Math.max(0,Math.min(100,(x-a)/(b-a)*100));const zl=lo!=null?pc(lo):0,zh=hi!=null?pc(hi):100,vp=pc(v);
+  const col=m.st==='ok'?'var(--okm)':m.st==='high'?'var(--hi)':'var(--lo)';const k=`clamp(8px,${vp.toFixed(1)}%,calc(100% - 8px))`;
+  return `<span class="sc3" aria-label="Значение ${esc(c.raw)}, референс ${esc(refText(m))}"><span class="sc3-pill"><span class="sc3-zn" style="left:${zl}%;width:${Math.max(0,zh-zl)}%"></span><span class="sc3-kn" style="left:${k};border-color:${col}"></span></span><span class="sc3-val num" style="left:${k};color:${col}">${esc(c.raw)}</span>${lo!=null?`<span class="sc3-bl num" style="left:${zl}%">${fmtNum(lo)}</span>`:''}${hi!=null?`<span class="sc3-bl num" style="left:${zh}%">${fmtNum(hi)}</span>`:''}</span>`}
+let OV=Object.assign({med:true,ill:true,w:true},store.get('oh2-ov',{}));
+let VAR='A';
+const DT=DATES.map(d=>pd(d).getTime());
+function fidx(t){const n=DT.length;let r;
+  if(t<=DT[0])r=(t-DT[0])/((DT[1]-DT[0])||1);else if(t>=DT[n-1])r=n-1+(t-DT[n-1])/((DT[n-1]-DT[n-2])||1);
+  else{for(let i=0;i<n-1;i++)if(t<=DT[i+1]){r=i+(t-DT[i])/(DT[i+1]-DT[i]);break}}
+  return Math.max(-.3,Math.min(n-1+.3,r))}
+function chartSVG(m){
+  const pts=m.pts;if(pts.length<1)return '';
+  const W=680,H0=210,pl=70,pr=20,pt=26,pb=34;
+  const vals=pts.map(p=>p.val);let mn=Math.min(...vals),mx=Math.max(...vals);
+  if(m.lo!=null)mn=Math.min(mn,m.lo);if(m.hi!=null)mx=Math.max(mx,m.hi);
+  if(mx-mn<1e-9){mx+=1;mn-=1}const pad=(mx-mn)*.18;mn-=pad;mx+=pad;if(mn<0&&vals.every(v=>v>=0))mn=Math.max(0,mn);
+  const n=DATES.length,x=i=>pl+(W-pl-pr)*(n>1?i/(n-1):.5),y=v=>H0-pb-(v-mn)/(mx-mn)*(H0-pt-pb);
+  const t0=DT[0]-(DT[1]-DT[0])*.3,t1=DT[n-1]+(DT[n-1]-DT[n-2])*.3,xt=t=>Math.max(pl,Math.min(W-pr,x(fidx(t)))),DAY=864e5;
+  const meds=OV.med?EV.med.filter(e=>e.f&&evDate(e.f).getTime()<t1&&(e.m==='Постоянно'||!e.t||evDate(e.t).getTime()>t0)):[];
+  const ills=OV.ill?EV.ill.map(e=>({...e,k:'ill'})).concat(EV.hosp.map(e=>({...e,k:'hosp'}))).filter(e=>e.f&&evDate(e.t||e.f).getTime()>t0&&evDate(e.f).getTime()<t1):[];
+  const ws=OV.w?EV.weight.filter(e=>e.d&&e.kg).map(e=>({t:evDate(e.d).getTime(),kg:+e.kg,d:e.d})).filter(e=>e.t>=t0&&e.t<=t1).sort((a,b)=>a.t-b.t):[];
+  const LH=20;let yy=H0+6;const lanes=[];
+  meds.forEach((e,k)=>{lanes.push({type:'med',e,y:yy,first:k===0});yy+=LH});
+  if(ills.length){lanes.push({type:'ill',y:yy});yy+=LH}
+  if(ws.length){lanes.push({type:'w',y:yy});yy+=54}
+  const H=lanes.length?yy+4:H0;
+  let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Динамика: ${esc(m.n)}${lanes.length?', с событиями':''}">`;
+  const top=m.hi!=null?y(m.hi):pt,bot=m.lo!=null?y(m.lo):H0-pb;
+  s+=`<rect x="${pl}" y="${Math.min(top,bot)}" width="${W-pl-pr}" height="${Math.abs(bot-top)}" fill="var(--band)"/>`;
+  ills.forEach(e=>{const a=xt(evDate(e.f).getTime()),b=xt(evDate(e.t||e.f).getTime()+DAY);s+=`<rect x="${a}" y="${pt}" width="${Math.max(4,b-a)}" height="${H0-pb-pt}" fill="var(--${e.k}-soft)"><title>${e.k==='hosp'?'Госпитализация':'Болезнь'}: ${esc(e.n)}, ${dfmt(e.f)}–${dfmt(e.t)}</title></rect>`});
+  [m.lo,m.hi].forEach(v=>{if(v!=null)s+=`<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--ok)" stroke-dasharray="4 4" stroke-width="1"/><text x="${pl-6}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="var(--ok)">${fmtNum(v)}</text>`});
+  DATES.forEach((d,i)=>{s+=`<line x1="${x(i)}" x2="${x(i)}" y1="${pt}" y2="${H-4}" stroke="var(--line)" stroke-width="1"/><text x="${x(i)}" y="${H0-12}" text-anchor="middle" font-size="10.5" fill="var(--ink3)">${d.slice(3)}</text>`});
+  if(pts.length>1)s+=`<polyline class="cl" pathLength="1" fill="none" stroke="#B7B2C8" stroke-width="2" points="${pts.map(p=>x(p.i)+','+y(p.val)).join(' ')}"/>`;
+  pts.forEach((p,k)=>{const last=k===pts.length-1,pre=k===pts.length-2;const col=last?'var(--accent)':pre?'var(--prev)':'var(--ink3)';
+    s+=`<circle cx="${x(p.i)}" cy="${y(p.val)}" r="${last?6:pre?5:4}" fill="${last||pre?col:'var(--card)'}" stroke="${last||pre?'var(--card)':col}" stroke-width="2"><title>${p.d}: ${esc(p.raw)} ${esc(U(m.u))} · ${SL[p.st]}</title></circle>`;
+    if(last||pre){const lab=(last?'сейчас ':'пред. ')+p.raw;const ty=y(p.val)-11;let tx=x(p.i);const anc=tx>W-90?'end':tx<pl+50?'start':'middle';
+      s+=`<text x="${tx}" y="${Math.max(12,ty)}" text-anchor="${anc}" font-size="12" font-weight="700" fill="${col}" paint-order="stroke" stroke="var(--card)" stroke-width="4">${esc(lab)}</text>`}
+    else s+=`<text x="${x(p.i)}" y="${y(p.val)-8}" text-anchor="middle" font-size="10.5" fill="var(--ink3)" paint-order="stroke" stroke="var(--card)" stroke-width="3">${esc(p.raw)}</text>`});
+  if(lanes.length)s+=`<line x1="0" x2="${W}" y1="${H0+1}" y2="${H0+1}" stroke="var(--line)"/>`;
+  lanes.forEach(L=>{
+    if(L.type==='med'){const e=L.e,a=xt(Math.max(t0,evDate(e.f).getTime())),b=xt(e.m==='Постоянно'||!e.t?t1:Math.min(t1,evDate(e.t).getTime()));
+      if(L.first)s+=`<text x="6" y="${L.y+13}" font-size="10.5" fill="var(--ink3)">препараты</text>`;
+      s+=`<rect x="${a}" y="${L.y+3}" width="${Math.max(6,b-a)}" height="14" rx="7" fill="var(--med-soft)" stroke="var(--med)" stroke-width="1"><title>${esc(e.n)}: ${e.m==='Постоянно'?'постоянно с '+dfmt(e.f):dfmt(e.f)+'–'+dfmt(e.t)}</title></rect><text x="${Math.min(a+8,W-150)}" y="${L.y+13.5}" font-size="10.5" font-weight="700" fill="var(--med)" paint-order="stroke" stroke="var(--med-soft)" stroke-width="3">${esc(short(e.n))}${e.m==='Постоянно'?' · постоянно':''}</text>`}
+    if(L.type==='ill'){s+=`<text x="6" y="${L.y+13}" font-size="10.5" fill="var(--ink3)">болезни</text>`;
+      ills.forEach(e=>{const a=xt(evDate(e.f).getTime()),b=xt(evDate(e.t||e.f).getTime()+DAY);s+=`<rect x="${a}" y="${L.y+3}" width="${Math.max(6,b-a)}" height="14" rx="4" fill="var(--${e.k})"><title>${e.k==='hosp'?'Госпитализация':'Болезнь'}: ${esc(e.n)}, ${dfmt(e.f)}–${dfmt(e.t)}</title></rect><text x="${Math.min(b+4,W-80)}" y="${L.y+13.5}" font-size="10.5" font-weight="700" fill="var(--${e.k})">${e.k==='hosp'?'стационар: ':''}${esc(short(e.n))}</text>`})}
+    if(L.type==='w'){const kg=ws.map(w=>w.kg);let a=Math.min(...kg),b=Math.max(...kg);if(b-a<1){a-=1;b+=1}const yw=v=>L.y+44-(v-a)/(b-a)*30;
+      s+=`<text x="6" y="${L.y+28}" font-size="10.5" fill="var(--ink3)">вес, кг</text>`;
+      if(ws.length>1)s+=`<polyline fill="none" stroke="var(--wt)" stroke-width="1.6" points="${ws.map(w=>xt(w.t)+','+yw(w.kg)).join(' ')}"/>`;
+      ws.forEach(w=>{s+=`<circle cx="${xt(w.t)}" cy="${yw(w.kg)}" r="3" fill="var(--wt)"><title>${dfmt(w.d)}: ${w.kg} кг</title></circle><text x="${xt(w.t)}" y="${yw(w.kg)-6}" text-anchor="middle" font-size="10" fill="var(--wt)" paint-order="stroke" stroke="var(--card)" stroke-width="3">${fmtNum(w.kg)}</text>`});
+      const al=weightAlert();if(al){const ax=xt(evDate(al.td).getTime());s+=`<g transform="translate(${ax-26},${yw(+al.to)-9})"><path d="M7 0l7 12H0z" fill="var(--prev)"/><path d="M7 4v4M7 9.6v.4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><title>Вес снизился на ${al.kg} кг (−${al.pct}%) за ${al.mo} мес.</title></g>`}}
+  });
+  return s+'</svg>'}
+function chartBox(m){
+  return `<div class="ovsw"><span class="why">На графике:</span>${[['med','препараты'],['ill','болезни и стационар'],['w','вес']].map(([k,l])=>`<label class="chk"><input type="checkbox" data-ov="${k}" ${OV[k]?'checked':''}> ${l}</label>`).join('')}</div>`+chartSVG(m)+
+  `<div class="legend"><span><i style="background:var(--accent)"></i>последний результат</span><span><i style="background:var(--prev)"></i>предыдущий</span><span><i style="background:var(--band);border:1px solid var(--ok)"></i>норма лаборатории</span>${OV.ill?'<span><i style="background:var(--ill)"></i>болезнь</span><span><i style="background:var(--hosp)"></i>стационар</span>':''}${OV.med?'<span><i style="background:var(--med-soft);border:1px solid var(--med)"></i>приём препарата</span>':''}</div>`}
+function detailHTML(m){
+  const key=m.gi+','+m.ri;
+  const rows=m.pts.slice().reverse().map(p=>{const c=ctxFor(p.d);return `<tr><td class="num">${p.d}</td><td class="r num"><b>${esc(p.raw)}</b> ${esc(U(m.u))}</td><td><span class="chip ${SC[p.st]}">${SL[p.st]}</span></td><td><span class="labtag">${LABS[p.i]}</span></td><td class="ctxc">${c?esc(c):'<span class="why">—</span>'}</td><td><button class="link" data-blank="${p.i}">бланк</button></td></tr>`}).join('');
+  const table=`<div class="tblw"><table class="hist"><thead><tr><th>Дата</th><th class="r">Значение</th><th>Норма</th><th>Лаборатория</th><th>Рядом по датам</th><th>Файл</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  const showC=VAR==='B';
+  const tog=`<label class="chk ctog"><input type="checkbox" data-chartt ${showC?'checked':''}> Показать на графике</label>`;
+  const chart=`<div class="cwrap" data-cw="${key}" ${showC?'':'hidden'}>${chartBox(m)}</div>`;
+  const inB=BASK.has(key),inS=SQ.has(key),sp=specOf(m.gi,m.ri);
+  return `<div class="dgrid"><div class="dmain">${showC?tog+chart+table:table+tog+chart}</div>
+   <aside class="cta"><b>Что дальше</b>
+     <span>Пересдать: покажем лаборатории рядом, где ближе и дешевле.</span>
+     <button class="addb${inB?' on':''}" data-addb="${key}">${inB?'✓ В списке на сдачу':'+ Добавить к сдаче'}</button>
+     <span>Справочно, с этим анализом обычно обращаются: <b>${sp.join(', ')}</b>.</span>
+     <button class="addb alt${inS?' on':''}" data-adds="${key}">${inS?'✓ В поиске специалиста':'+ К поиску специалиста'}</button>
+     <button class="link" data-tab-go="book">Открыть «Где сдать» →</button></aside></div>`}
+document.addEventListener('change',e=>{
+  if(e.target.matches('[data-chartt]')){const w=e.target.closest('.dmain').querySelector('.cwrap');w.hidden=!e.target.checked}
+  if(e.target.matches('[data-ov]')){OV[e.target.dataset.ov]=e.target.checked;store.set('oh2-ov',OV);document.querySelectorAll('[data-cw]').forEach(w=>{const[g,r]=w.dataset.cw.split(',').map(Number);w.innerHTML=chartBox(G[g].rows[r])})}});
+
+function renderBlocks(){const host=$('#blocks');host.innerHTML=G.map(blockHTML).join('');host.classList.toggle('printmode',printMode);
+  host.querySelectorAll('[data-sel]').forEach(c=>c.onchange=()=>{const i=+c.dataset.sel;c.checked?sel.add(i):sel.delete(i);updP()})}
+document.addEventListener('click',e=>{const tg=e.target.closest('[data-tab-go]');if(tg){closeModal();show(tg.dataset.tabGo);return}const s=e.target.closest('[data-sys]');if(s){const gi=+s.dataset.sys;const hit=s.querySelector('[data-match]').dataset.ri;openSystem(gi,hit!=null&&hit!==''?+hit:null)}
+  const h=e.target.closest('.mrow-h');if(h)toggleRow(h.closest('.mrow'));
+  const f=e.target.closest('.fh');if(f){const c=f.closest('.fold');const on=!c.classList.contains('closed');c.classList.toggle('closed',on);f.setAttribute('aria-expanded',!on)}});
+function toggleRow(el,force){const on=force??!el.classList.contains('open');const b=el.querySelector('.mrow-b');
+  if(on&&b.dataset.lazy){const[g,r]=el.id.slice(1).split('_').map(Number);b.innerHTML=detailHTML(G[g].rows[r]);delete b.dataset.lazy}
+  el.classList.toggle('open',on);el.querySelector('.mrow-h').setAttribute('aria-expanded',on)}
+$('#pmode').onclick=e=>{printMode=!printMode;e.target.setAttribute('aria-pressed',printMode);e.target.textContent=printMode?'Готово':'Выбрать для печати';$('#blocks').classList.toggle('printmode',printMode);updP()};
+function updP(){const b=$('#pgo');b.disabled=!sel.size;b.textContent=sel.size?`Печать выбранных (${sel.size})`:'Печать выбранных'}
+function goTo(gi,ri){show('summary');setTimeout(()=>openSystem(gi,ri),RM?0:260)}
+
+/* печать */
+function openPreview(groups,title){
+  $('#pvBody').innerHTML=`<h1>${esc(title)}</h1><p class="why">А. Иванов · ${P.sex==='f'?'жен.':'муж.'}, ${age(P.dob)} лет · сформировано по загруженным бланкам. Референсы указаны лабораторией.</p>`+
+   groups.map(g=>`<h2>${esc(g.title)}</h2><table><thead><tr><th>Показатель</th><th>Ед.</th><th>Норма</th>${DATES.map((d,i)=>`<th class="num">${d}<br><span style="font-weight:500;color:var(--ink3);font-size:10px">${LABS[i]}</span></th>`).join('')}</tr></thead><tbody>`+
+   g.rows.map(m=>`<tr><td>${esc(m.n)}</td><td>${esc(U(m.u))}</td><td class="num">${esc(refText(m))}</td>${DATES.map((d,i)=>{const p=m.pts.find(q=>q.i===i);return `<td class="num" style="${p&&p.st!=='ok'?'font-weight:700;color:var(--'+(p.st==='high'?'hi':'lo')+')':''}">${p?esc(p.raw):'—'}</td>`}).join('')}</tr>`).join('')+'</tbody></table>').join('');
+  $('#pvNote').textContent='';
+  document.body.classList.add('preview');window.scrollTo(0,0)}
+$('#pgo').onclick=()=>openPreview(G.filter(g=>sel.has(g.gi)),'Анализы: выбранные блоки');
+$('#pvBack').onclick=()=>document.body.classList.remove('preview');
+$('#pvPrint').onclick=()=>{try{window.print()}catch(e){toast('Печать недоступна в этом окне')}};
+
+/* поиск по системам */
+const q=$('#q');
+q.oninput=()=>{const s=q.value.trim().toLowerCase();const alt=Object.keys(SYN).filter(k=>s&&s.includes(k)).map(k=>SYN[k]);
+  let shown=0;G.forEach(g=>{const tile=$('#b'+g.gi),mEl=tile.querySelector('[data-match]');
+    if(!s){tile.hidden=false;mEl.textContent='';mEl.dataset.ri='';shown++;return}
+    const hit=g.rows.filter(m=>{const n=m.n.toLowerCase();return n.includes(s)||alt.some(a=>n.includes(a))});
+    const tm=g.title.toLowerCase().includes(s)||g.sub.toLowerCase().includes(s);
+    tile.hidden=!(hit.length||tm);if(!tile.hidden)shown++;
+    mEl.textContent=hit.length?'Найдено: '+hit.slice(0,3).map(m=>m.n).join(', ')+(hit.length>3?' и ещё '+(hit.length-3):''):'';mEl.dataset.ri=hit.length?hit[0].ri:''});
+  $('#noHit').hidden=shown>0};
+
+/* мои анализы */
+const SRC=['PDF из почты','Фото бланка','PDF из приложения','Скриншот','PDF из почты','Фото бланка','Письмо лаборатории','PDF из приложения','Фото бланка'];
+const files={};let pending=[];
+function blankHTML(i){const rows=ALL.filter(m=>m.pts.some(p=>p.i===i));
+  return `<div class="sheet"><h4>${LABS[i]} · результаты исследований</h4><div class="meta">Пациент: Иванов А. · дата взятия биоматериала ${DATES[i].replace(/(\d\d)$/,'20$1')} · демо-бланк</div>
+  <table><thead><tr><th>Исследование</th><th>Результат</th><th>Ед.</th><th>Референсные значения</th></tr></thead><tbody>${rows.map(m=>{const p=m.pts.find(q=>q.i===i);return `<tr><td>${esc(m.n)}</td><td><b>${esc(p.raw)}</b></td><td>${esc(U(m.u))}</td><td>${esc(m.ref.split('·')[0])}</td></tr>`}).join('')}</tbody></table>
+  <div class="stamp">Документ сформирован автоматически. Демонстрационный пример.</div></div>`}
+function fileView(id){const f=files[id];if(!f)return '<p>Файл недоступен</p>';
+  if(f.type.startsWith('image/'))return `<img src="${f.url}" alt="Загруженный бланк ${esc(f.name)}">`;
+  if(f.type==='application/pdf')return `<iframe src="${f.url}" title="${esc(f.name)}"></iframe><p class="why">Если PDF не отображается, откройте его на устройстве: ${esc(f.name)}</p>`;
+  return `<p>${esc(f.name)}</p>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-blank]');if(b){const i=+b.dataset.blank;openModal(`Бланк от ${DATES[i]} · ${LABS[i]}`,`<div class="filebox">${blankHTML(i)}</div>`);$('#modal .mbox').classList.add('wide')}
+  const fv=e.target.closest('[data-file]');if(fv){openModal(files[fv.dataset.file].name,`<div class="filebox">${fileView(fv.dataset.file)}</div>`);$('#modal .mbox').classList.add('wide')}});
+
+function renderUploads(){const tb=$('#upTable tbody');
+  const base=DATES.map((d,i)=>({d,lab:LABS[i],src:SRC[i],n:ALL.filter(m=>m.pts.some(p=>p.i===i)).length,st:'Проверено',bi:i})).reverse();
+  tb.innerHTML=pending.concat(base).map(u=>`<tr><td class="num">${u.d}</td><td>${u.lab?`<span class="labtag">${esc(u.lab)}</span>`:'<span class="why">определится при распознавании</span>'}</td><td class="c-src"><span class="fname" title="${esc(u.src)}">${esc(u.src)}</span></td><td class="num r">${u.n??'…'}</td><td>${u.btn?`<button class="btn pri" data-check="${u.id}">Проверить</button>`:`<span class="chip ${u.st==='Проверено'?'c-ok':'c-none'}">${u.st==='Проверено'?'<span class="mob">✓</span><span class="desk">Проверено</span>':u.st}</span>`}</td><td>${u.id?`<button class="link flink" data-file="${u.id}" aria-label="Открыть файл"><span class="desk">открыть</span><span class="mob"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg></span></button>`:`<button class="link flink" data-blank="${u.bi}" aria-label="Открыть бланк"><span class="desk">открыть</span><span class="mob"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg></span></button>`}</td></tr>`).join('')}
+$('#file').onchange=e=>{[...e.target.files].forEach(f=>{const id='f'+Date.now()+Math.random().toString(36).slice(2,6);files[id]={name:f.name,type:f.type,url:URL.createObjectURL(f)};pending.unshift({id,d:'—',src:f.name,n:null,st:'Распознаётся…'})});renderUploads();
+  setTimeout(()=>{pending.forEach(p=>{if(p.st==='Распознаётся…'){p.st='Нужна проверка';p.n=3;p.d='10.11.26';p.lab='ИНВИТРО';p.btn=true}});renderUploads()},1400);e.target.value=''};
+document.addEventListener('click',e=>{const c=e.target.closest('[data-check]');if(c){const id=c.dataset.check;
+  openModal('Проверьте распознанное',`<p>Сверьте значения с бланком слева и исправьте, если нужно. Демо: значения справа условные.</p><div class="split"><div class="filebox">${fileView(id)}</div><div><table class="hist" style="margin-top:0"><thead><tr><th>Показатель</th><th>Значение</th><th>Ед.</th><th>Норма</th></tr></thead><tbody>${[['Гемоглобин','15.9','г/дл','13.2 – 17.3'],['Лейкоциты','9.8','тыс/мкл','4.5 – 11'],['Глюкоза','6.1','ммоль/л','4.1 – 6.0']].map(r=>`<tr><td>${r[0]}</td><td><input value="${r[1]}" style="width:70px;border:1px solid var(--line);border-radius:6px;padding:3px 6px;background:var(--paper)" aria-label="${r[0]}"></td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('')}</tbody></table><div class="field" style="margin-top:12px"><label for="labsel">Клиника / лаборатория</label><input id="labsel" value="ИНВИТРО"></div><div class="row-end"><button class="btn pri" id="conf" data-id="${id}">Подтвердить</button></div></div></div>`);$('#modal .mbox').classList.add('wide')}
+  if(e.target.id==='conf'){const p=pending.find(x=>x.id===e.target.dataset.id);if(p){p.st='Проверено';p.btn=false;p.lab=$('#labsel').value}renderUploads();closeModal();toast('Сохранено. В рабочей версии значения сразу появятся в сводке.')}
+  const tt=e.target.closest('[data-tab-to]');if(tt){closeModal();show(tt.dataset.tabTo)}});
+
+/* загрузка: камера, галерея, файлы */
+document.addEventListener('click',e=>{const u=e.target.closest('[data-up]');if(!u)return;const k=u.dataset.up;
+  requireLogin(()=>askPerm(k,()=>{const f=$('#file');f.accept=k==='files'?'application/pdf,image/*':'image/*';if(k==='camera')f.setAttribute('capture','environment');else f.removeAttribute('capture');f.click()}))});
+
+/* доступ специалисту */
+function opts(host,list,cur,cb){host.innerHTML=list.map(([v,l])=>`<button class="opt" type="button" aria-pressed="${v===cur}" data-v="${v}">${l}</button>`).join('');
+  host.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{host.querySelectorAll('.opt').forEach(x=>x.setAttribute('aria-pressed',x===b));cb&&cb(b.dataset.v)})}
+opts($('#dur'),[['24h','24 часа'],['7d','7 дней'],['30d','30 дней']],'24h',()=>{drawQR();toast('Новая ссылка создана, старая перестала работать')});
+opts($('#scope'),[['all','Все анализы'],['out','Только не в норме'],['sel','Выбранные блоки']],'all');
+function drawQR(){const c=$('#qr'),x=c.getContext('2d'),n=25,s=c.width/n;x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.fillStyle='#14202A';
+  let seed=(Date.now()%9973)+7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+  for(let i=0;i<n;i++)for(let j=0;j<n;j++){const f=(a,b)=>a<7&&b<7;if(f(i,j)||f(n-1-i,j)||f(i,n-1-j))continue;if(rnd()<.45)x.fillRect(i*s,j*s,s,s)}
+  [[0,0],[n-7,0],[0,n-7]].forEach(([a,b])=>{x.fillRect(a*s,b*s,7*s,7*s);x.fillStyle='#fff';x.fillRect((a+1)*s,(b+1)*s,5*s,5*s);x.fillStyle='#14202A';x.fillRect((a+2)*s,(b+2)*s,3*s,3*s)});
+  $('#slink').textContent='orange-health.ru/s/'+Math.random().toString(36).slice(2,5).toUpperCase()+'-'+Math.random().toString(36).slice(2,5).toUpperCase()}
+$('#copy').onclick=()=>requireLogin(async()=>{try{await navigator.clipboard.writeText('https://'+$('#slink').textContent);toast('Ссылка скопирована')}catch(e){toast('Не удалось скопировать: выделите ссылку вручную')}});
+$('#spdf').onclick=()=>openSpecView(true);
+$('#specPrev').onclick=()=>openSpecView(false);
+let DOCS=[{n:'Петрова Е. В., эндокринолог',ty:'Постоянный',o:'14.03.26',st:'Открыт',v:'06.10.26, 18:42'},{n:'Ссылка для приёма',ty:'Разовая ссылка, 24 ч',o:'02.08.26',st:'Истекла',v:'02.08.26, 10:15'},{n:'Мама',ty:'Постоянный',o:'01.06.26',st:'Закрыт',v:'20.06.26, 21:03'}];
+const STC={'Открыт':'c-ok','Истекла':'c-warn','Закрыт':'c-high','Запрошен':'c-low'};
+const acRow=(off,name,meta,st,btn)=>`<div class="acr${off?' off':''}"><div class="acr-m"><b>${name}</b>${meta.filter(Boolean).map(x=>`<span>${x}</span>`).join('')}</div><div class="acr-a"><span class="chip ${STC[st]}">${st.toLowerCase()}</span>${btn||''}</div></div>`;
+function renderDocs(){$('#docs').innerHTML=DOCS.map((d,i)=>acRow(d.st!=='Открыт',esc(d.n),[esc(d.ty),'Доступ открыт: '+esc(d.o),'Последний просмотр: '+esc(d.v)],d.st,d.st==='Открыт'?`<button class="btn" data-rev="${i}">Закрыть доступ</button>`:d.ty==='Постоянный'?`<button class="btn" data-reopen="${i}">Открыть снова</button>`:'')).join('')}
+document.addEventListener('click',e=>{const r=e.target.closest('[data-rev]');if(r){DOCS[+r.dataset.rev].st='Закрыт';renderDocs();toast('Доступ закрыт. Специалист больше не видит ваши анализы.')}
+  const o=e.target.closest('[data-reopen]');if(o){DOCS[+o.dataset.reopen].st='Открыт';renderDocs();toast('Доступ открыт снова')}});
+
+/* доступно мне */
+let SH=[{n:'Иванов А.',rel:'пациент',o:'06.10.26',st:'Открыт',c:'',last:DATES[DATES.length-1],out:null},{n:'Белова К.',rel:'мама',o:'01.06.26',st:'Открыт',c:'',last:'21.10.26',out:2},{n:'Сергеева М.',rel:'пациент',o:'14.09.26',st:'Закрыт',c:'21.09.26',last:'',out:null},{n:'Орлов Д.',rel:'пациент',o:'02.07.26',st:'Закрыт',c:'02.08.26',last:'',out:null}];
+function renderShared(){const h=$('#sharedBody');if(!h)return;
+  if(!LOG){h.innerHTML=`<div class="empty"><p>Чтобы видеть анализы, к которым вам открыли постоянный доступ, войдите или зарегистрируйтесь. Подтверждать, что вы врач, не нужно: доступ дают сами люди.</p><button class="btn pri" type="button" id="shLogin">Войти по телефону или почте</button></div>`;$('#shLogin').onclick=openLogin;return}
+  const outN=ALL.filter(m=>m.st==='high'||m.st==='low').length;
+  h.innerHTML=`<div class="acl">${SH.map((r,i)=>acRow(r.st!=='Открыт',esc(r.n)+' <span class="rel">'+esc(r.rel)+'</span>',['Доступ открыт: '+esc(r.o),r.c?'Доступ закрыт: '+esc(r.c):'',r.st==='Открыт'?'Последний анализ: '+esc(r.last)+(i===0?' · '+outN+' не в норме':r.out?' · '+r.out+' не в норме':''):'Данные скрыты'],r.st,r.st==='Открыт'?`<button class="btn pri" data-viewp="${i}">Открыть анализы</button>`:r.st==='Запрошен'?'<button class="btn" disabled>Ждём ответа</button>':`<button class="btn" data-reqp="${i}">Запросить доступ снова</button>`)).join('')}</div>
+  <p class="why" style="margin-top:10px">Демо: у всех открытых людей показываются одни и те же демо-анализы.</p>`}
+document.addEventListener('click',e=>{const v=e.target.closest('[data-viewp]');if(v){const r=SH[+v.dataset.viewp];$('#viewName').textContent=r.n+(r.rel==='пациент'?'':' ('+r.rel+')');$('#viewing').hidden=false;document.body.classList.add('viewmode');show('summary');toast('Режим просмотра: менять данные нельзя')}
+  const q=e.target.closest('[data-reqp]');if(q){SH[+q.dataset.reqp].st='Запрошен';renderShared();toast('Запрос отправлен. Человек получит уведомление и решит, открыть ли доступ.')}});
+$('#viewBack').onclick=()=>{$('#viewing').hidden=true;document.body.classList.remove('viewmode');show('settings')};
+
+/* как увидит специалист */
+function openSpecView(print){const a=age(P.dob),w=lastWeight(),b=bmi(),out=ALL.filter(m=>m.st==='high'||m.st==='low');
+  const meds=EV.med.filter(e=>e.f&&(e.m==='Постоянно'||!e.t||(LAST-evDate(e.t))/864e5<=60));
+  const card=`<div class="svg2"><div class="svc"><h3>Пациент</h3><dl class="svdl"><dt>Имя</dt><dd>${esc(P.name||'А. Иванов')}</dd><dt>Пол, возраст</dt><dd>${P.sex==='f'?'жен.':'муж.'}, ${a??'—'} лет${P.sex==='f'&&P.preg!=='no'?' · '+(P.preg==='preg'?'беременность':'кормление грудью'):''}</dd>
+    <dt>Рост, вес</dt><dd>${esc(P.h||'—')} см, ${w?esc(w.kg)+' кг ('+dfmt(w.d)+')':'—'} · ИМТ ${b??'—'}</dd>
+    <dt>Диагнозы</dt><dd>${esc(P.dx||'—')}</dd><dt>Аллергии</dt><dd>${(P.alls||[]).length?(P.alls||[]).map(x=>esc(x.n)+' <span class="why">· '+esc(x.r.toLowerCase())+'</span>').join('<br>'):'—'}</dd>
+    <dt>Препараты</dt><dd>${meds.length?meds.map(e=>esc(e.n)+' <span class="why">· '+(e.m==='Постоянно'?'постоянно с '+dfmt(e.f):'курс '+dfmt(e.f)+'–'+dfmt(e.t))+'</span>').join('<br>'):'—'}</dd>
+    <dt>Госпитализации</dt><dd>${EV.hosp.length?EV.hosp.map(e=>esc(e.n)+', '+esc(e.w||'')+' <span class="why">· '+dfmt(e.f)+'–'+dfmt(e.t)+'</span>').join('<br>'):'—'}</dd>
+    <dt>Образ жизни</dt><dd>активность: ${ACT[P.act]||'—'}; сон в среднем ${esc(P.sleep||'—')} ч; курение: ${esc(P.smoke.toLowerCase())}; алкоголь: ${esc(P.alc.toLowerCase())}${P.alcv?', '+esc(P.alcv.toLowerCase()):''}</dd></dl></div>
+    <div class="svc"><h3>Контекст к последней сдаче</h3>${ctxHTML()}</div></div>`;
+  const outT=`<h2>Сейчас не в норме: ${out.length}</h2><table><thead><tr><th>Показатель</th><th>Значение</th><th>Норма лаборатории</th><th>Дата</th><th>Предыдущее</th></tr></thead><tbody>${out.map(m=>`<tr><td>${esc(m.n)}</td><td class="num" style="font-weight:700;color:var(--${m.st==='high'?'hi':'lo'})">${esc(m.cur.raw)} ${esc(U(m.u))} ${m.st==='high'?'↑':'↓'}</td><td class="num">${esc(refText(m))}</td><td class="num">${m.cur.d}</td><td class="num">${m.prev?esc(m.prev.raw)+' · '+m.prev.d:'—'}</td></tr>`).join('')}</tbody></table>`;
+  const evRowT=`<tr class="evrow"><td colspan="3"><b>События рядом с датой</b></td>${DATES.map(d=>`<td>${esc(ctxFor(d))}</td>`).join('')}</tr>`;
+  const all=`<h2>Все показатели по датам</h2><table><thead><tr><th>Показатель</th><th>Ед.</th><th>Норма</th>${DATES.map((d,i)=>`<th class="num">${d}<br><span style="font-weight:500;color:var(--ink3);font-size:10px">${LABS[i]}</span></th>`).join('')}</tr></thead><tbody>${evRowT}`+
+   G.filter(g=>g.rows.length).map(g=>`<tr class="grp"><td colspan="${3+DATES.length}">${esc(g.title)}</td></tr>`+g.rows.map(m=>`<tr><td>${esc(m.n)}</td><td>${esc(U(m.u))}</td><td class="num">${esc(refText(m))}</td>${DATES.map((d,i)=>{const p=m.pts.find(q=>q.i===i);return `<td class="num" style="${p&&p.st!=='ok'?'font-weight:700;color:var(--'+(p.st==='high'?'hi':'lo')+')':''}">${p?esc(p.raw)+(p.st==='high'?' ↑':p.st==='low'?' ↓':''):'—'}</td>`}).join('')}</tr>`).join('')).join('')+'</tbody></table>';
+  $('#pvBody').innerHTML=`<div class="svbar">${print?'Так выглядит PDF для печати':'Так специалист видит анализы по ссылке или QR-коду: без регистрации, только просмотр'}</div><h1>Анализы: ${esc(P.name||'А. Иванов')}</h1><p class="why">Сформировано по загруженным бланкам и данным со слов пациента. Нормы указаны лабораториями. Отклонения отмечены ↑ ↓, чтобы их было видно и на чёрно-белой печати. Сервис не ставит диагнозов.</p>`+card+outT+all+`<p class="why" style="margin-top:14px">Оригиналы бланков доступны по ссылке. Распознанные значения подтверждены пациентом.</p>`;
+  $('#pvNote').textContent='';document.body.classList.add('preview');window.scrollTo(0,0)}
+
+/* где сдать: каталог и специалисты */
+const CAT=[
+ {n:'Общий анализ крови с лейкоцитарной формулой',s:'Кровь',p:[190,650],k:'1,0',sp:['терапевт']},
+ {n:'СОЭ',s:'Кровь',p:[120,300],k:'1,13',sp:['терапевт']},
+ {n:'Глюкоза',s:'Углеводный обмен',p:[150,350],k:'0,1',sp:['терапевт','эндокринолог']},
+ {n:'Гликированный гемоглобин (HbA1c)',s:'Углеводный обмен',p:[450,900],k:'0,0',sp:['эндокринолог']},
+ {n:'Инсулин',s:'Углеводный обмен',p:[450,850],k:'0,2',sp:['эндокринолог']},
+ {n:'Липидный профиль',s:'Сердце и сосуды',p:[700,1500],k:'2,4',sp:['терапевт','кардиолог']},
+ {n:'Ферритин',s:'Обмен железа',p:[400,800],k:'4,1',sp:['терапевт','гематолог']},
+ {n:'Железо сыворотки',s:'Обмен железа',p:[180,400],k:'4,0',sp:['терапевт','гематолог']},
+ {n:'Витамин D (25-OH)',s:'Витамины',p:[1200,2500],k:'3,0',sp:['терапевт','эндокринолог']},
+ {n:'Витамин B12',s:'Витамины',p:[500,1000],k:'3,1',sp:['терапевт','гастроэнтеролог']},
+ {n:'ТТГ',s:'Гормоны',p:[350,700],k:'7,1',sp:['эндокринолог']},
+ {n:'Т4 свободный',s:'Гормоны',p:[350,700],k:'7,2',sp:['эндокринолог']},
+ {n:'Тестостерон общий',s:'Гормоны',p:[450,900],k:'7,0',sp:['эндокринолог','уролог']},
+ {n:'АЛТ, АСТ',s:'Печень',p:[250,600],k:'8,0',sp:['терапевт','гастроэнтеролог']},
+ {n:'Билирубин общий',s:'Печень',p:[150,350],k:'8,3',sp:['терапевт','гастроэнтеролог']},
+ {n:'Креатинин',s:'Почки',p:[150,350],k:'9,1',sp:['терапевт','нефролог']},
+ {n:'Мочевая кислота',s:'Почки',p:[150,350],k:'9,0',sp:['терапевт','ревматолог']},
+ {n:'Общий анализ мочи',s:'Почки',p:[200,450],sp:['терапевт','нефролог','уролог']},
+ {n:'С-реактивный белок',s:'Воспаление',p:[300,650],sp:['терапевт']},
+ {n:'IgE общий',s:'Аллергия',p:[400,800],k:'6,2',sp:['аллерголог-иммунолог']},
+ {n:'ПСА общий',s:'Онкомаркеры',p:[500,900],sp:['уролог','онколог']},
+ {n:'Helicobacter pylori, дыхательный тест',s:'ЖКТ',p:[1500,3000],k:'10,0',sp:['гастроэнтеролог']}];
+CAT.forEach((c,i)=>c.key=c.k||'c'+i);
+const catBy=k=>CAT.find(c=>c.key===k);
+const SPEC_G=[['терапевт','эндокринолог'],['терапевт','гематолог'],['терапевт','кардиолог','эндокринолог'],['терапевт','эндокринолог','гастроэнтеролог'],['терапевт','гематолог','гинеколог'],['терапевт','нефролог','кардиолог'],['аллерголог-иммунолог'],['эндокринолог','уролог','гинеколог'],['терапевт','гастроэнтеролог','инфекционист'],['терапевт','нефролог','ревматолог','уролог'],['гастроэнтеролог','инфекционист'],['онколог','терапевт']];
+const SPEC_I={'7,0':['эндокринолог','уролог'],'7,1':['эндокринолог'],'7,2':['эндокринолог'],'9,0':['терапевт','ревматолог','нефролог']};
+function specOf(gi,ri){if(ri!=null&&SPEC_I[gi+','+ri])return SPEC_I[gi+','+ri];return SPEC_G[gi]||['терапевт']}
+function specOfKey(k){const c=catBy(k);if(c&&!/^\d/.test(k))return c.sp;const[g,r]=k.split(',').map(Number);return specOf(g,r)}
+const BASK=new Set(store.get('oh2-bask',['1,0','4,1']));
+const SQ=new Set(store.get('oh2-sq',['0,1','1,0']));
+const keyName=k=>{const c=catBy(k);if(c)return c.n;const[g,r]=k.split(',').map(Number);return G[g]&&G[g].rows[r]?G[g].rows[r].n:k};
+const LABLIST=[
+ {n:'Лаборатория «Невская»',a:'ул. Марата, 12',km:0.8,k:1.12,draw:250,h:'7:30–20:00',ready:'1 день'},
+ {n:'МедЛаб Центр',a:'Лиговский пр., 45',km:1.6,k:0.92,draw:200,h:'7:00–19:00',ready:'1–2 дня'},
+ {n:'Анализ-Экспресс',a:'Невский пр., 88',km:1.1,k:1.0,draw:150,h:'круглосуточно',ready:'в день сдачи'},
+ {n:'БиоТест',a:'ул. Типанова, 21',km:9.4,k:0.78,draw:190,h:'8:00–18:00',ready:'2 дня'},
+ {n:'ДиаЛаб на Петроградской',a:'Большой пр. П.С., 30',km:4.2,k:0.88,draw:220,h:'7:30–19:30',ready:'1 день'},
+ {n:'Клиника на Литейном',a:'Литейный пр., 51',km:1.9,k:1.3,draw:0,h:'8:00–21:00',ready:'1 день'}];
+function keyPrice(k){const c=catBy(k);if(c)return Math.round((c.p[0]+c.p[1])/2);const[g]=k.split(',').map(Number);if(g===1)return 420;return 400}
+function saveB(){store.set('oh2-bask',[...BASK]);store.set('oh2-sq',[...SQ])}
+let BM='labs';
+document.addEventListener('click',e=>{const b=e.target.closest('[data-bm]');if(b)setBM(b.dataset.bm)});
+function setBM(m){BM=m;document.querySelectorAll('[data-bm]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.bm===m));$('#bm-labs').hidden=m!=='labs';$('#bm-spec').hidden=m!=='spec';renderBook()}
+function renderCat(){const q=($('#bq').value||'').trim().toLowerCase();const list=CAT.filter(c=>!q||c.n.toLowerCase().includes(q)||c.s.toLowerCase().includes(q));
+  const groups=[...new Set(list.map(c=>c.s))];
+  $('#cat').innerHTML=list.length?groups.map(s=>`<div class="catg"><div class="catgh">${esc(s)}</div>`+list.filter(c=>c.s===s).map(c=>{const on=BASK.has(c.key);return `<div class="catr"><span class="catn">${esc(c.n)}<small>обычно: ${c.sp.join(', ')}</small></span><span class="catp num">${c.p[0]}–${c.p[1]} ₽</span><button class="addb sm${on?' on':''}" data-catadd="${c.key}">${on?'✓ в списке':'+ к сдаче'}</button></div>`}).join('')+'</div>').join(''):'<p class="why">Такого анализа нет в каталоге. В рабочей версии каталог берётся у лабораторий.</p>'}
+function renderBook(){renderCat();
+  const items=[...BASK];
+  $('#bask').innerHTML=items.length?items.map(k=>`<span class="bchip">${esc(keyName(k))}<button aria-label="Убрать" data-rmb="${k}">×</button></span>`).join(''):'<span class="why">Список пуст. Добавьте анализы из каталога выше или кнопкой «Добавить к сдаче» в карточке показателя.</span>';
+  $('#bwhere').textContent=`Рядом с: ${$('#locIn').value||'ваш адрес'} · ${items.length} в списке`;
+  if(!items.length){$('#labs').innerHTML=''}else{
+  const blood=true;const uniq=[...new Set(items.map(k=>/^1,/.test(k)?'1,0':k))];
+  const base=uniq.reduce((s,k)=>s+keyPrice(k),0);
+  let L=LABLIST.map(l=>({...l,an:Math.round(base*l.k/10)*10,dr:blood?l.draw:0})).map(l=>({...l,tot:l.an+l.dr}));
+  const pmin=Math.min(...L.map(l=>l.tot)),pmax=Math.max(...L.map(l=>l.tot)),dmin=Math.min(...L.map(l=>l.km)),dmax=Math.max(...L.map(l=>l.km));
+  L.forEach(l=>l.sc=.6*((l.tot-pmin)/((pmax-pmin)||1))+.4*((l.km-dmin)/((dmax-dmin)||1)));
+  const cheap=L.reduce((a,b)=>b.tot<a.tot?b:a),near=L.reduce((a,b)=>b.km<a.km?b:a),opt=L.reduce((a,b)=>b.sc<a.sc?b:a);
+  const top=[opt,cheap,near].filter((x,i,a)=>a.indexOf(x)===i);const rest=L.filter(l=>!top.includes(l)).sort((a,b)=>a.sc-b.sc);
+  const card=l=>`<div class="lab ${l===opt?'best':l===cheap?'cheap':l===near?'near':''}"><div><h3>${esc(l.n)}</h3><div class="addr">${esc(l.a)} · ${esc(l.h)} · результат ${esc(l.ready)}</div><div class="badges">${l===opt?'<span class="bdg b-opt">Оптимально</span>':''}${l===cheap?'<span class="bdg b-cheap">Дешевле всего</span>':''}${l===near?'<span class="bdg b-near">Ближе всего</span>':''}</div></div>
+   <div class="pr num">${l.tot.toLocaleString('ru-RU')} ₽<small>анализы ${l.an.toLocaleString('ru-RU')} ₽${blood?' + взятие крови '+l.dr+' ₽':''}</small></div>
+   <div class="km num">${String(l.km).replace('.',',')} км<small>~${l.km<1.5?Math.max(3,Math.round(l.km*12)):Math.round(10+l.km*4)} мин в пути</small></div>
+   <button class="btn pri" data-booklab="${esc(l.n)}">Записаться</button></div>`;
+  $('#labs').innerHTML=top.map(card).join('')+(rest.length?`<div class="lab-div">Другие лаборатории рядом</div>`+rest.map(card).join(''):'')}
+  renderSpec()}
+const SPECS=[
+ {n:'Смирнова О. А.',sp:'терапевт',cl:'Клиника «Невская»',a:'ул. Марата, 12',km:0.8,pr:2200,slot:'завтра, 9:30',x:'стаж 14 лет'},
+ {n:'Кузнецов И. В.',sp:'терапевт',cl:'МедЛаб Центр',a:'Лиговский пр., 45',km:1.6,pr:1800,slot:'сегодня, 18:00',x:'стаж 9 лет'},
+ {n:'Петрова Е. В.',sp:'эндокринолог',cl:'Клиника на Литейном',a:'Литейный пр., 51',km:1.9,pr:3200,slot:'пт, 11:00',x:'стаж 18 лет'},
+ {n:'Орлова Н. С.',sp:'эндокринолог',cl:'ДиаЛаб на Петроградской',a:'Большой пр. П.С., 30',km:4.2,pr:2600,slot:'завтра, 15:20',x:'стаж 11 лет'},
+ {n:'Волков А. П.',sp:'кардиолог',cl:'Клиника «Невская»',a:'ул. Марата, 12',km:0.8,pr:3000,slot:'пн, 10:00',x:'стаж 20 лет'},
+ {n:'Соколова М. Д.',sp:'гематолог',cl:'Клиника на Литейном',a:'Литейный пр., 51',km:1.9,pr:3500,slot:'ср, 13:40',x:'стаж 12 лет'},
+ {n:'Лебедев Р. К.',sp:'гастроэнтеролог',cl:'МедЛаб Центр',a:'Лиговский пр., 45',km:1.6,pr:2800,slot:'чт, 16:00',x:'стаж 15 лет'},
+ {n:'Морозова Т. И.',sp:'нефролог',cl:'ДиаЛаб на Петроградской',a:'Большой пр. П.С., 30',km:4.2,pr:3100,slot:'вт, 12:00',x:'стаж 10 лет'},
+ {n:'Новикова А. Г.',sp:'аллерголог-иммунолог',cl:'Анализ-Экспресс',a:'Невский пр., 88',km:1.1,pr:2700,slot:'завтра, 17:30',x:'стаж 8 лет'},
+ {n:'Фёдоров С. Л.',sp:'уролог',cl:'Клиника на Литейном',a:'Литейный пр., 51',km:1.9,pr:2900,slot:'пт, 9:00',x:'стаж 16 лет'},
+ {n:'Михайлова Е. Р.',sp:'гинеколог',cl:'Клиника «Невская»',a:'ул. Марата, 12',km:0.8,pr:3000,slot:'сб, 10:30',x:'стаж 13 лет'},
+ {n:'Алексеев В. Н.',sp:'ревматолог',cl:'БиоТест',a:'ул. Типанова, 21',km:9.4,pr:2500,slot:'ср, 14:00',x:'стаж 22 года'},
+ {n:'Григорьева Л. А.',sp:'онколог',cl:'Клиника на Литейном',a:'Литейный пр., 51',km:1.9,pr:3800,slot:'пн, 15:00',x:'стаж 19 лет'},
+ {n:'Зайцев К. О.',sp:'инфекционист',cl:'МедЛаб Центр',a:'Лиговский пр., 45',km:1.6,pr:2600,slot:'чт, 11:30',x:'стаж 7 лет'}];
+const ALLSP=[...new Set(SPECS.map(s=>s.sp))];
+let SPF=null;
+function sqSpecs(){const c={};[...SQ].forEach(k=>specOfKey(k).forEach(s=>c[s]=(c[s]||0)+1));return Object.keys(c).sort((a,b)=>c[b]-c[a])}
+function renderSpec(){const mine=sqSpecs();if(SPF===null)SPF=mine.slice();
+  $('#sq').innerHTML=(SQ.size?'<span class="why" style="width:100%">Мои вопросы к специалисту:</span>'+[...SQ].map(k=>`<span class="bchip">${esc(keyName(k))}<button aria-label="Убрать" data-rms="${k}">×</button></span>`).join('')+(mine.length?`<span class="why" style="width:100%;margin-top:4px">Справочно, с такими анализами обычно обращаются: <b>${mine.join(', ')}</b></span>`:''):'<span class="why">Добавьте анализы кнопкой «К поиску специалиста» в карточке показателя, и мы подберём, к кому обычно обращаются.</span>');
+  $('#spf').innerHTML=`<button class="opt" type="button" data-spf="__all" aria-pressed="${!SPF.length}">Все</button>${mine.length?`<button class="opt" type="button" data-spf="__mine" aria-pressed="${SPF.length&&SPF.join()===mine.join()}">По моим вопросам</button>`:''}`+ALLSP.map(s=>`<button class="opt" type="button" data-spf="${s}" aria-pressed="${SPF.includes(s)}">${s}</button>`).join('');
+  const list=SPECS.filter(s=>!SPF.length||SPF.includes(s.sp)).sort((a,b)=>(SPF.indexOf(a.sp)-SPF.indexOf(b.sp))||a.km-b.km);
+  $('#specs').innerHTML=list.map(s=>`<div class="lab spec"><div><h3>${esc(s.n)}</h3><div class="addr"><b>${esc(s.sp)}</b> · ${esc(s.x)}</div><div class="addr">${esc(s.cl)}, ${esc(s.a)}</div></div><div class="pr num">${s.pr.toLocaleString('ru-RU')} ₽<small>первичный приём</small></div><div class="km num">${String(s.km).replace('.',',')} км<small>ближайшая запись: ${esc(s.slot)}</small></div><button class="btn pri" data-bookspec="${esc(s.n)}|${esc(s.sp)}">Записаться</button></div>`).join('')||'<p class="why">Нет специалистов по фильтру.</p>'}
+document.addEventListener('click',e=>{
+  const c=e.target.closest('[data-catadd]');if(c){const k=c.dataset.catadd;BASK.has(k)?BASK.delete(k):BASK.add(k);saveB();renderBook();return}
+  const a=e.target.closest('[data-addb]');if(a){const k=a.dataset.addb;BASK.has(k)?BASK.delete(k):BASK.add(k);saveB();a.textContent=BASK.has(k)?'✓ В списке на сдачу':'+ Добавить к сдаче';a.classList.toggle('on',BASK.has(k));renderBook();toast(BASK.has(k)?'Добавлено в список на сдачу: раздел «Где сдать»':'Убрано из списка')}
+  const s=e.target.closest('[data-adds]');if(s){const k=s.dataset.adds;SQ.has(k)?SQ.delete(k):SQ.add(k);saveB();SPF=null;s.textContent=SQ.has(k)?'✓ В поиске специалиста':'+ К поиску специалиста';s.classList.toggle('on',SQ.has(k));renderSpec();toast(SQ.has(k)?'Добавлено: «Где сдать → Найти специалиста»':'Убрано из поиска специалиста')}
+  const r=e.target.closest('[data-rmb]');if(r){BASK.delete(r.dataset.rmb);saveB();renderBook()}
+  const rs=e.target.closest('[data-rms]');if(rs){SQ.delete(rs.dataset.rms);saveB();SPF=null;renderSpec()}
+  const f=e.target.closest('[data-spf]');if(f){const v=f.dataset.spf;if(v==='__all')SPF=[];else if(v==='__mine')SPF=sqSpecs();else SPF=SPF.includes(v)?SPF.filter(x=>x!==v):SPF.concat(v);renderSpec()}
+  const fs=e.target.closest('[data-findspec]');if(fs){SPF=specOf(+fs.dataset.findspec,null).slice();closeModal();show('book');setBM('spec')}
+  const bl=e.target.closest('[data-booklab]');if(bl){openModal('Запись на сдачу анализов',`<p><b>${esc(bl.dataset.booklab)}</b></p><div class="fgrid"><div class="field"><label for="bkd">Дата</label><input id="bkd" type="date" value="2026-11-16"></div><div class="field"><label for="bkt">Время</label><select id="bkt"><option>08:00</option><option>08:30</option><option>09:00</option><option>10:00</option></select></div></div><p class="why" style="margin-top:10px">Большинство анализов крови сдают утром натощак. Правила подготовки придут вместе с подтверждением.</p><div class="row-end"><button class="btn pri" id="bkok">Записаться</button></div>`)}
+  const bs=e.target.closest('[data-bookspec]');if(bs){const[n,sp]=bs.dataset.bookspec.split('|');openModal('Запись к специалисту',`<p><b>${esc(n)}</b>, ${esc(sp)}</p><div class="fgrid"><div class="field"><label for="bkd">Дата</label><input id="bkd" type="date" value="2026-11-16"></div><div class="field"><label for="bkt">Время</label><select id="bkt"><option>09:30</option><option>11:00</option><option>15:20</option><option>18:00</option></select></div></div><label class="chk" style="margin-top:10px"><input type="checkbox" checked> Открыть врачу доступ к моим анализам на 7 дней</label><div class="row-end"><button class="btn pri" id="bkok">Записаться</button></div>`)}
+  if(e.target.id==='bkok'){closeModal();toast('Демо: заявка отправлена')}});
+$('#bq').oninput=renderCat;
+$('#locIn').onchange=renderBook;
+$('#geo').onclick=()=>askPerm('geo',()=>{$('#locIn').value='Санкт-Петербург, по геолокации';renderBook();toast('Демо: расстояния считаются от вашего местоположения')});
+
+
+/* полная история — отдельное окно */
+const HDEF={q:'',sys:'',st:'all',from:0,to:DATES.length-1,filled:false};
+let HF=Object.assign({},HDEF,store.get('oh-hist',{}));
+const hEl={q:$('#hq'),sys:$('#hsys'),st:$('#hst'),from:$('#hfrom'),to:$('#hto'),filled:$('#hfilled')};
+$('#hsys').insertAdjacentHTML('beforeend',G.filter(g=>g.rows.length).map(g=>`<option value="${g.gi}">${esc(g.title)}</option>`).join(''));
+[$('#hfrom'),$('#hto')].forEach(s=>s.innerHTML=DATES.map((d,i)=>`<option value="${i}">${d}</option>`).join(''));
+$('#hTeaseSub').textContent=`${ALL.length} показателей · ${DATES.length} сдач · 20${DATES[0].slice(-2)}–20${DATES[DATES.length-1].slice(-2)} · фильтры по датам и системам`;
+function hSync(){hEl.q.value=HF.q;hEl.sys.value=HF.sys;hEl.st.value=HF.st;hEl.from.value=HF.from;hEl.to.value=HF.to;hEl.filled.checked=HF.filled;
+  const dirty=JSON.stringify(HF)!==JSON.stringify(HDEF);$('#hreset').hidden=!dirty}
+function hRead(){HF={q:hEl.q.value,sys:hEl.sys.value,st:hEl.st.value,from:+hEl.from.value,to:+hEl.to.value,filled:hEl.filled.checked};
+  if(HF.from>HF.to){const x=HF.from;HF.from=HF.to;HF.to=x}store.set('oh-hist',HF);hSync();renderHist()}
+function renderHist(){
+  const q=HF.q.trim().toLowerCase();const alt=Object.keys(SYN).filter(k=>q&&q.includes(k)).map(k=>SYN[k]);
+  let di=DATES.map((d,i)=>i).filter(i=>i>=HF.from&&i<=HF.to);
+  const inR=p=>p.i>=HF.from&&p.i<=HF.to;
+  const ok=m=>{const n=m.n.toLowerCase();if(q&&!(n.includes(q)||alt.some(a=>n.includes(a))))return false;
+    const ps=m.pts.filter(inR);if(!ps.length)return false;
+    if(HF.st==='now')return m.st==='high'||m.st==='low';if(HF.st==='ever')return ps.some(p=>p.st==='high'||p.st==='low');if(HF.st==='norm')return ps.every(p=>p.st==='ok'||p.st==='none');return true};
+  const gs=G.filter(g=>g.rows.length&&(!HF.sys||String(g.gi)===HF.sys)).map(g=>({g,rows:g.rows.filter(ok)})).filter(x=>x.rows.length);
+  if(HF.filled){const used=new Set();gs.forEach(x=>x.rows.forEach(m=>m.pts.forEach(p=>used.add(p.i))));di=di.filter(i=>used.has(i))}
+  const n=gs.reduce((s,x)=>s+x.rows.length,0);$('#hSum').textContent=`${n} из ${ALL.length} · ${di.length} дат`;$('#hNone').hidden=n>0;
+  $('#htab').innerHTML=n?`<thead><tr><th class="hn">Показатель</th>${di.map(i=>`<th>${DATES[i]}<small>${esc(LABS[i]||'')}</small></th>`).join('')}</tr></thead><tbody>`+
+    gs.map(x=>`<tr class="hg"><td class="hn">${esc(x.g.title)}</td>${di.map(()=>'<td></td>').join('')}</tr>`+x.rows.map(m=>`<tr><td class="hn"><button class="hl" data-hgo="${m.gi},${m.ri}" title="${esc(m.n)}${U(m.u)?', '+esc(U(m.u)):''}"><span class="hl-n">${esc(m.n)}</span>${U(m.u)?`<span class="hl-u">${esc(U(m.u))}</span>`:''}</button></td>${di.map(i=>{const p=m.pts.find(p=>p.i===i);return p?`<td class="${p.st==='high'?'c-h':p.st==='low'?'c-l':''}" title="${esc(m.n)} · ${DATES[i]} · ${esc(p.raw)} ${esc(U(m.u))}${p.st==='high'?' · выше нормы':p.st==='low'?' · ниже нормы':''}">${esc(p.raw)}${p.st==='high'?'<i>↑</i>':p.st==='low'?'<i>↓</i>':''}</td>`:'<td class="e">—</td>'}).join('')}</tr>`).join('')).join('')+'</tbody>':'';
+  const hw=$('#hm .hwrap');requestAnimationFrame(()=>{hw.scrollLeft=hw.scrollWidth})}
+Object.values(hEl).forEach(e=>{e.addEventListener(e.type==='search'?'input':'change',hRead)});
+const hReset=()=>{HF=Object.assign({},HDEF);store.set('oh-hist',HF);hSync();renderHist()};
+$('#hreset').onclick=hReset;$('#hreset2').onclick=hReset;
+const portrait=()=>window.matchMedia('(orientation: portrait) and (max-width: 760px)').matches;
+let rotSkipped=false;
+function rotUI(){$('#rot').classList.toggle('on',portrait()&&!rotSkipped)}
+window.addEventListener('resize',()=>{if(!$('#hm').hidden)rotUI()});
+function openHist(){lastFocus=document.activeElement;hSync();renderHist();const h=$('#hm');h.hidden=false;requestAnimationFrame(()=>h.classList.add('on'));rotUI();document.body.style.overflow='hidden';
+  try{if(portrait()&&screen.orientation&&screen.orientation.lock&&document.documentElement.requestFullscreen){document.documentElement.requestFullscreen().then(()=>screen.orientation.lock('landscape')).catch(()=>{})}}catch(e){}
+  $('#hmX').focus()}
+function closeHist(){const h=$('#hm');h.classList.remove('on');document.body.style.overflow='';setTimeout(()=>{h.hidden=true},250);
+  try{if(document.fullscreenElement){screen.orientation&&screen.orientation.unlock&&screen.orientation.unlock();document.exitFullscreen().catch(()=>{})}}catch(e){}
+  if(lastFocus)lastFocus.focus()}
+$('#hOpen').onclick=openHist;$('#hmX').onclick=closeHist;$('#rotSkip').onclick=()=>{rotSkipped=true;rotUI()};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#hm').hidden)closeHist()});
+document.addEventListener('click',e=>{const g=e.target.closest('[data-hgo]');if(g){const [gi,ri]=g.dataset.hgo.split(',').map(Number);closeHist();setTimeout(()=>openSystem(gi,ri),260)}});
+/* первые шаги */
+let ts=0;
+const PSTEPS=['Знакомство','О вас','Первый анализ','По желанию'];
+const OPTC=[
+ {k:'med',t:'Препараты и курсы',w:'Покажем на графиках, как препарат влияет на анализы'},
+ {k:'weight',t:'Вес',w:'Динамика веса рядом с анализами; резкое снижение будет отмечено'},
+ {k:'ill',t:'Последняя болезнь',w:'Объясняет, например, повышенные лейкоциты после ОРВИ'},
+ {k:'hosp',t:'Госпитализации',w:'Помогает понять, откуда могла появиться инфекция'},
+ {k:'all',t:'Аллергии',w:'С типом реакции: сыпь, отёк или другое'}];
+const segT=(k,o,cur)=>`<div class="seg" role="radiogroup">${o.map(([v,l])=>`<label><input type="radio" name="t-${k}" value="${v}" ${v===cur?'checked':''}><span>${l}</span></label>`).join('')}</div>`;
+const STEPS=[
+ {h:()=>`<p>Загружайте анализы из любых лабораторий, а мы сведём их в динамику по каждому показателю и поможем показать врачу. Дальше два коротких шага.</p><p class="why" style="margin-top:10px">Сервис показывает только факты с ваших бланков и ваши данные. Диагнозы ставит врач.</p>`},
+ {h:()=>`<p>От этого зависит, какую норму лаборатории показывать.</p><div class="fgrid"><div class="field"><label>Пол</label>${segT('sex',[['m','Мужской'],['f','Женский']],P.sex)}</div><div class="field"><label for="t-dob">Дата рождения</label><input id="t-dob" type="date" value="${esc(P.dob||'')}"></div></div><div class="field" id="t-pregf" style="margin-top:12px;${P.sex==='f'?'':'display:none'}"><label>Беременность или кормление грудью</label>${segT('preg',[['no','Нет'],['preg','Беременность'],['bf','Кормление']],P.preg)}</div>`,
+  after:()=>document.querySelectorAll('#tB input[name="t-sex"]').forEach(r=>r.onchange=()=>{$('#t-pregf').style.display=r.value==='f'&&r.checked?'':'none'})},
+ {h:()=>`<p>Добавьте бланк из любой лаборатории. Мы распознаем показатели, а вы проверите их перед сохранением.</p><div class="upbtns big"><button class="btn pri" type="button" data-up="camera">${svgI(PIC.camera,20)} Сфотографировать</button><button class="btn" type="button" data-up="gallery">${svgI(PIC.gallery,20)} Из галереи</button><button class="btn" type="button" data-up="files">${svgI(PIC.files,20)} Файл или PDF</button></div><p class="why" style="margin-top:10px">Приложение попросит доступ к камере, галерее или файлам. Можно загрузить позже в разделе «Мои анализы».</p>`},
+ {h:()=>`<p>Это не обязательно, но поможет врачу понять ваши анализы. Заполните, что знаете, остальное можно добавить позже в профиле.</p><div class="ocards">${OPTC.map(c=>{const list=c.k==='all'?P.alls:EV[c.k];const done=list&&list.length;return `<div class="ocard${done?' done':''}"><button type="button" class="oc-h" data-oc="${c.k}" aria-expanded="false"><span class="oc-ck" aria-hidden="true">${done?'✓':''}</span><span><b>${c.t}</b><small>${c.w}</small></span><span class="oc-go">${done?'Изменить':'Заполнить'}</span></button><div class="oc-b" hidden><div class="evl" data-tevl="${c.k}">${(list&&list.length?list:[{}]).map(e=>evRow(c.k,e)).join('')}</div><button class="btn" type="button" data-tadd="${c.k}">+ Ещё</button></div></div>`}).join('')}</div>`}];
+function drawTut(){const s=STEPS[ts];const opt=ts===3;
+  $('#tS').textContent=opt?'По желанию · поможет врачу':'Шаг '+(ts+1)+' из 3';$('#tT').textContent=['Все анализы в одном месте','Немного о вас','Первый анализ','Что ещё поможет врачу'][ts];
+  $('#tP').innerHTML=PSTEPS.map((l,i)=>`<span class="tp${i<ts?' done':''}${i===ts?' on':''}${i===3?' tpopt':''}"><i></i><em>${l}</em></span>`).join('');
+  $('#tB').innerHTML=s.h();s.after&&s.after();
+  $('#tPrev').style.visibility=ts?'visible':'hidden';$('#tNext').textContent=opt?'Готово':ts===2?'Дальше':'Дальше';
+  $('#tSkip').style.visibility=ts>=2?'visible':'hidden';$('#tSkip').textContent=ts===2?'Загружу позже':'Пропустить'}
+function readTut(){const r=n=>{const c=document.querySelector(`#tB input[name="t-${n}"]:checked`);return c?c.value:null};
+  if(r('sex'))P.sex=r('sex');if($('#t-dob'))P.dob=$('#t-dob').value;if(r('preg'))P.preg=P.sex==='f'?r('preg'):'no';
+  document.querySelectorAll('#tB [data-tevl]').forEach(h=>{const v=readEv(h);if(h.dataset.tevl==='all')P.alls=v;else EV[h.dataset.tevl]=v})}
+document.addEventListener('click',e=>{const h=e.target.closest('[data-oc]');if(h){const b=h.nextElementSibling;b.hidden=!b.hidden;h.setAttribute('aria-expanded',!b.hidden)}
+  const a=e.target.closest('[data-tadd]');if(a){a.previousElementSibling.insertAdjacentHTML('beforeend',evRow(a.dataset.tadd,{}))}});
+function openTut(){ts=0;drawTut();$('#tut').classList.add('on')}
+function closeTut(){store.set('oh2-profile',P);store.set('oh2-ev',EV);store.set('oh2-tut',1);fillForm();afterEvChange();$('#tut').classList.remove('on')}
+$('#tNext').onclick=()=>{readTut();if(ts<STEPS.length-1){ts++;drawTut()}else{closeTut();toast('Готово. Дополнить данные можно в разделе «Профиль».')}};
+$('#tPrev').onclick=()=>{readTut();ts=Math.max(0,ts-1);drawTut()};
+$('#tSkip').onclick=()=>{readTut();if(ts===2){ts=3;drawTut()}else{closeTut();toast('Профиль можно дополнить позже, он заполнен частично')}};
+$('#tutOpen').onclick=openTut;
+
+/* старт */
+renderTabs('summary');updLogin();fillForm();renderSummary();renderCtx();renderBlocks();renderUploads();drawQR();renderDocs();renderShared();renderBook();{const co=store.get('oh3-ctx',true);$('#cCtx').classList.toggle('closed',!co);$('#cCtx .fh').setAttribute('aria-expanded',co)}
+document.addEventListener('click',e=>{const f=e.target.closest('#cCtx .fh');if(f)store.set('oh3-ctx',!$('#cCtx').classList.contains('closed'))});
+if(!store.get('oh2-tut',0))openTut();
+
+</script>
+</body>
+</html>
