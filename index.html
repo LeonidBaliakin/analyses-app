@@ -858,6 +858,26 @@ tr.off td{color:var(--ink3)}
 }
 .psadd .evx{display:none!important}
 @media(max-width:620px){.psadd .evr>[data-k="n"]{grid-column:1/-1!important}}
+/* версия 5 */
+.top-in .gear{margin-left:2px}
+.sbtn.fab{color:var(--or)}
+.sbtn.fab svg{width:30px;height:30px;padding:5px;border-radius:50%;background:var(--or-g);color:#fff;stroke-width:2.4;box-shadow:0 6px 14px rgba(232,89,12,.35)}
+.sbtn.fab:hover svg{transform:scale(1.06)}
+@media(max-width:760px){
+  .sbtn.fab{transform:translateY(-14px)}
+  .sbtn.fab svg{width:50px;height:50px;padding:11px;border:4px solid var(--card)}
+  .sbtn.fab span{margin-top:-4px}
+}
+.addopts{display:grid;gap:8px}
+.ao{display:flex;gap:12px;align-items:center;text-align:left;width:100%;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
+.ao b{display:block;font-size:14px}
+.ao small{display:block;font-size:12.5px;color:var(--ink3);margin-top:1px}
+.ao-i{width:44px;height:44px;border-radius:12px;flex-shrink:0;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+.ao-mail{background:var(--paper)}
+.setfoot{margin:22px 0 10px;display:grid;justify-items:center;gap:8px;text-align:center}
+.btn.danger{color:var(--hi);border-color:#F5C2C2;background:var(--card)}
+.btn.danger:hover{background:var(--hi-soft)}
 
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
@@ -868,8 +888,9 @@ tr.off td{color:var(--ink3)}
   <div class="top-in">
     <div class="brand"><div class="brand-ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.2"/><path d="M12 3.8v16.4M3.8 12h16.4M6.2 6.2l11.6 11.6M17.8 6.2L6.2 17.8"/></svg></div><div><div class="brand-n">Orange of Health</div><small id="whoami">Кабинет пациента</small></div></div>
     <div class="spacer"></div>
-    <button class="btn" id="loginBtn">Войти</button>
-    <button class="gear" id="setBtn" data-go="settings" aria-label="Настройки" title="Настройки"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+    <button class="gear" data-go="share" aria-label="Показать врачу" title="Показать врачу"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><path d="M14 14h2v2h-2zM18 18h2v2h-2zM14 18h2M18 14h2"/></svg></button>
+    <button class="gear" data-go="profile" aria-label="Профиль" title="Профиль"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></button>
+    <button class="gear" data-go="settings" aria-label="Настройки" title="Настройки"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
   </div>
 </header>
 <nav class="side" id="tabs" aria-label="Разделы"><span class="side-hov" id="sideHov" aria-hidden="true"></span><span class="side-ind" id="sideInd" aria-hidden="true"></span></nav>
@@ -1029,9 +1050,17 @@ tr.off td{color:var(--ink3)}
       <div class="perms" id="perms"></div>
     </div>
     <div class="panel">
+      <h3 class="seth">Поддержка</h3>
+      <p class="why" style="margin-bottom:10px">Что-то не работает или есть идея? Напишите нам, ответим на почту.</p>
+      <div class="field"><label for="supT">Тема</label><select id="supT"><option>Не распознался анализ</option><option>Ошибка в приложении</option><option>Вопрос по доступу врачу</option><option>Идея или пожелание</option><option>Другое</option></select></div>
+      <div class="field" style="margin-top:10px"><label for="supM">Сообщение</label><textarea id="supM" placeholder="Опишите, что произошло"></textarea></div>
+      <div class="row-end"><button class="btn pri" type="button" id="supSend">Отправить</button></div>
+    </div>
+    <div class="panel">
       <h3 class="seth">Знакомство с приложением</h3>
       <button class="btn" id="tutOpen" type="button">Пройти первые шаги заново</button>
     </div>
+    <div class="setfoot"><button class="btn danger" type="button" id="logoutBtn">Выйти из аккаунта</button><p class="why">Orange of Health · прототип, версия 5</p></div>
   </section>
 </main>
 </div>
@@ -1209,14 +1238,14 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#modal').classLi
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 
 /* роли и вкладки */
-const TABS={patient:[['summary','Сводка'],['files','Мои анализы'],['book','Где сдать'],['docs','Врачи рядом'],['profile','Профиль'],['share','Доступ специалисту']]};
+const TABS={patient:[['summary','Сводка'],['files','Мои анализы'],['add','Добавить анализ'],['book','Где сдать'],['docs','Врачи рядом']]};
 let role='patient';
 const NAVI={"summary": "<path d=\"M4 13h6V4H4zM14 20h6v-9h-6zM14 4v4h6V4zM4 20h6v-3H4z\"/>", "files": "<path d=\"M7 3h7l5 5v13H7z\"/><path d=\"M14 3v5h5M10 13h6M10 17h6\"/>", "book": "<path d=\"M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z\"/><circle cx=\"12\" cy=\"9.5\" r=\"2.5\"/>", "profile": "<circle cx=\"12\" cy=\"8\" r=\"4\"/><path d=\"M4 21c0-4 4-6 8-6s8 2 8 6\"/>", "share": "<rect x=\"4\" y=\"4\" width=\"6\" height=\"6\" rx=\"1\"/><rect x=\"14\" y=\"4\" width=\"6\" height=\"6\" rx=\"1\"/><rect x=\"4\" y=\"14\" width=\"6\" height=\"6\" rx=\"1\"/><path d=\"M14 14h2v2h-2zM18 18h2v2h-2zM14 18h2M18 14h2\"/>", "patients": "<circle cx=\"9\" cy=\"8\" r=\"3.5\"/><path d=\"M2.5 20c0-3.5 3-5.5 6.5-5.5s6.5 2 6.5 5.5\"/><path d=\"M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.8c2 .7 3 2.4 3 5.2\"/>"};
-const SHORT={summary:'Сводка',files:'Анализы',book:'Где сдать',profile:'Профиль',share:'Доступ',docs:'Врачи'};NAVI.docs=`<circle cx='9' cy='7' r='3.5'/><path d='M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6'/><path d='M17 10v6M14 13h6'/>`;
+const SHORT={summary:'Сводка',files:'Анализы',book:'Где сдать',profile:'Профиль',share:'Доступ',docs:'Врачи',add:'Добавить'};NAVI.add=`<path d='M12 5v14M5 12h14'/>`;NAVI.docs=`<circle cx='9' cy='7' r='3.5'/><path d='M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6'/><path d='M17 10v6M14 13h6'/>`;
 let cur='summary';
 function renderTabs(active){const t=$('#tabs');const ind=$('#sideInd'),hov=$('#sideHov');t.innerHTML='';t.appendChild(hov);t.appendChild(ind);
   TABS[role].forEach(([id,l])=>{const b=document.createElement('button');b.className='sbtn';b.dataset.tab=id;b.setAttribute('aria-current',id===active?'page':'false');b.title=l;
-    b.innerHTML=`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${NAVI[id]}</svg><span>${SHORT[id]}</span>`;b.onclick=()=>show(id);b.onmouseenter=()=>{const r=b.getBoundingClientRect(),p=t.getBoundingClientRect();hov.style.transform=`translate(${r.left-p.left}px,${r.top-p.top}px)`;hov.style.width=r.width+'px';hov.style.height=r.height+'px';hov.classList.add('on')};t.appendChild(b)});
+    b.innerHTML=`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${NAVI[id]}</svg><span>${SHORT[id]}</span>`;b.onclick=()=>id==='add'?openAdd():show(id);if(id==='add'){b.classList.add('fab');b.removeAttribute('aria-current')}b.onmouseenter=()=>{const r=b.getBoundingClientRect(),p=t.getBoundingClientRect();hov.style.transform=`translate(${r.left-p.left}px,${r.top-p.top}px)`;hov.style.width=r.width+'px';hov.style.height=r.height+'px';hov.classList.add('on')};t.appendChild(b)});
   t.onmouseleave=()=>hov.classList.remove('on');
   requestAnimationFrame(moveInd)}
 function moveInd(){const a=document.querySelector('.sbtn[aria-current="page"]'),ind=$('#sideInd');if(!a){ind.style.opacity=0;return}
@@ -1224,7 +1253,7 @@ function moveInd(){const a=document.querySelector('.sbtn[aria-current="page"]'),
   ind.style.transform=`translate(${r.left-p.left}px,${r.top-p.top}px)`;ind.style.width=r.width+'px';ind.style.height=r.height+'px'}
 window.addEventListener('resize',moveInd);try{document.fonts.ready.then(moveInd)}catch(e){}window.addEventListener('load',moveInd);
 const RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-function show(id){const sb=document.getElementById('setBtn');if(sb)sb.classList.toggle('on',id==='settings');const next=$('#v-'+id),prev=document.querySelector('.view.on');cur=id;
+function show(id){document.querySelectorAll('.gear').forEach(g=>g.classList.toggle('on',g.dataset.go===id));const next=$('#v-'+id),prev=document.querySelector('.view.on');cur=id;
   document.querySelectorAll('.sbtn').forEach(b=>b.setAttribute('aria-current',b.dataset.tab===id?'page':'false'));moveInd();
   if(!document.querySelector('.sbtn[data-tab="'+id+'"]'))renderTabs(id);
   if(prev===next){return}
@@ -1291,7 +1320,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-perm]');if
 function renderPerms(){const h=$('#perms');if(!h)return;h.innerHTML=Object.keys(PERMS).map(k=>`<div class="permr"><span class="permi">${svgI(PIC[k],18)}</span><span><b>${PERMS[k][0][0].toUpperCase()+PERMS[k][0].slice(1)}</b><small>${PERMS[k][1]}</small></span><span class="chip ${PERM[k]==='yes'?'c-ok':'c-none'}">${PERM[k]==='yes'?'разрешено':PERM[k]==='no'?'отклонено':'не запрошено'}</span>${PERM[k]==='yes'?'':`<button class="btn" type="button" data-askperm="${k}">Разрешить</button>`}</div>`).join('')}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-askperm]');if(b){PERM[b.dataset.askperm]=undefined;askPerm(b.dataset.askperm,()=>toast('Разрешение получено'))}});
 let LOG=store.get('oh2-login',false);
-function updLogin(){$('#loginBtn').textContent=LOG?'Выйти':'Войти';$('#whoami').textContent=LOG?(P.name||'Вы')+' · '+(P.phone||P.email||''):'Гость · демо-данные';
+function updLogin(){const lb=$('#logoutBtn');if(lb){lb.textContent=LOG?'Выйти из аккаунта':'Войти или зарегистрироваться';lb.classList.toggle('danger',LOG);lb.classList.toggle('pri',!LOG)}$('#whoami').textContent=LOG?(P.name||'Вы')+' · '+(P.phone||P.email||''):'Гость · демо-данные';
   $('#demoBar').className=LOG?'demo':'demo guest';$('#demoBar').innerHTML=LOG?'Демо: значения условные, в рабочей версии здесь будут ваши анализы.':'<span><b>Вы смотрите демо-данные.</b> Войдите, чтобы загрузить свои анализы и сохранять изменения.</span><button class="btn pri" type="button" id="demoLogin">Войти</button>';
   const d=$('#demoLogin');if(d)d.onclick=()=>openLogin();renderShared();renderSettings()}
 function openLogin(note){loginCb=null;openModal('Вход и регистрация',`${note?`<p class="lnote">${note}</p>`:''}<div class="opts"><button class="opt" type="button" aria-pressed="true" data-lg="phone">По телефону</button><button class="opt" type="button" aria-pressed="false" data-lg="email">По почте</button></div>
@@ -1302,7 +1331,7 @@ function openLogin(note){loginCb=null;openModal('Вход и регистрац�
   <div class="row-end"><button class="btn pri" type="button" id="lgGo">Получить код</button></div>`);notifOpts($('#lgN'))}
 document.addEventListener('click',e=>{const m=e.target.closest('[data-lg]');if(m){document.querySelectorAll('[data-lg]').forEach(x=>x.setAttribute('aria-pressed',x===m));const em=m.dataset.lg==='email';$('#lgL').textContent=em?'Почта':'Номер телефона';$('#lgIn').type=em?'email':'tel';$('#lgIn').placeholder=em?'name@mail.ru':'+7 900 000-00-00';$('#lgCode').previousElementSibling.textContent=em?'Код из письма':'Код из SMS'}
   if(e.target.id==='lgGo'){if($('#lgCodeF').hidden){$('#lgCodeF').hidden=false;e.target.textContent='Войти';$('#lgCode').focus()}else{LOG=true;store.set('oh2-login',true);const v=$('#lgIn').value.trim();if(v){if(v.includes('@'))P.email=v;else P.phone=v;store.set('oh2-profile',P);fillForm()}const cb=loginCb;loginCb=null;closeModal();updLogin();toast('Вы вошли. Данные сохранятся на всех устройствах.');if(cb)setTimeout(cb,60)}}
-  if(e.target.id==='loginBtn'){if(LOG){LOG=false;store.set('oh2-login',false);updLogin();toast('Вы вышли из аккаунта')}else openLogin()}});
+  if(e.target.id==='logoutBtn'){if(LOG){LOG=false;store.set('oh2-login',false);updLogin();toast('Вы вышли из аккаунта')}else openLogin()}});
 
 /* вход нужен, чтобы сохранять */
 let loginCb=null;
@@ -1640,7 +1669,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-blank]');i
 function renderUploads(){const tb=$('#upTable tbody');
   const base=DATES.map((d,i)=>({d,lab:LABS[i],src:SRC[i],n:ALL.filter(m=>m.pts.some(p=>p.i===i)).length,st:'Проверено',bi:i})).reverse();
   tb.innerHTML=pending.concat(base).map(u=>`<tr><td class="num">${u.d}</td><td>${u.lab?`<span class="labtag">${esc(u.lab)}</span>`:'<span class="why">определится при распознавании</span>'}</td><td class="c-src"><span class="fname" title="${esc(u.src)}">${esc(u.src)}</span></td><td class="num r">${u.n??'…'}</td><td>${u.btn?`<button class="btn pri" data-check="${u.id}">Проверить</button>`:`<span class="chip ${u.st==='Проверено'?'c-ok':'c-none'}">${u.st==='Проверено'?'<span class="mob">✓</span><span class="desk">Проверено</span>':u.st}</span>`}</td><td>${u.id?`<button class="link flink" data-file="${u.id}" aria-label="Открыть файл"><span class="desk">открыть</span><span class="mob"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg></span></button>`:`<button class="link flink" data-blank="${u.bi}" aria-label="Открыть бланк"><span class="desk">открыть</span><span class="mob"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg></span></button>`}</td></tr>`).join('')}
-$('#file').onchange=e=>{[...e.target.files].forEach(f=>{const id='f'+Date.now()+Math.random().toString(36).slice(2,6);files[id]={name:f.name,type:f.type,url:URL.createObjectURL(f)};pending.unshift({id,d:'—',src:f.name,n:null,st:'Распознаётся…'})});renderUploads();
+$('#file').onchange=e=>{closeModal();show('files');[...e.target.files].forEach(f=>{const id='f'+Date.now()+Math.random().toString(36).slice(2,6);files[id]={name:f.name,type:f.type,url:URL.createObjectURL(f)};pending.unshift({id,d:'—',src:f.name,n:null,st:'Распознаётся…'})});renderUploads();
   setTimeout(()=>{pending.forEach(p=>{if(p.st==='Распознаётся…'){p.st='Нужна проверка';p.n=3;p.d='10.11.26';p.lab='ИНВИТРО';p.btn=true}});renderUploads()},1400);e.target.value=''};
 document.addEventListener('click',e=>{const c=e.target.closest('[data-check]');if(c){const id=c.dataset.check;
   openModal('Проверьте распознанное',`<p>Сверьте значения с бланком слева и исправьте, если нужно. Демо: значения справа условные.</p><div class="split"><div class="filebox">${fileView(id)}</div><div><table class="hist" style="margin-top:0"><thead><tr><th>Показатель</th><th>Значение</th><th>Ед.</th><th>Норма</th></tr></thead><tbody>${[['Гемоглобин','15.9','г/дл','13.2 – 17.3'],['Лейкоциты','9.8','тыс/мкл','4.5 – 11'],['Глюкоза','6.1','ммоль/л','4.1 – 6.0']].map(r=>`<tr><td>${r[0]}</td><td><input value="${r[1]}" style="width:70px;border:1px solid var(--line);border-radius:6px;padding:3px 6px;background:var(--paper)" aria-label="${r[0]}"></td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('')}</tbody></table><div class="field" style="margin-top:12px"><label for="labsel">Клиника / лаборатория</label><input id="labsel" value="ИНВИТРО"></div><div class="row-end"><button class="btn pri" id="conf" data-id="${id}">Подтвердить</button></div></div></div>`);$('#modal .mbox').classList.add('wide')}
@@ -1896,6 +1925,15 @@ $('#tNext').onclick=()=>{readTut();if(ts<STEPS.length-1){ts++;drawTut()}else{clo
 $('#tPrev').onclick=()=>{readTut();ts=Math.max(0,ts-1);drawTut()};
 $('#tSkip').onclick=()=>{readTut();if(ts===2){ts=3;drawTut()}else{closeTut();toast('Профиль можно дополнить позже, он заполнен частично')}};
 $('#tutOpen').onclick=openTut;
+
+/* кнопка «Добавить анализ» */
+function openAdd(){openModal('Добавить анализ',`<div class="addopts">
+  <button type="button" class="ao" data-up="camera"><span class="ao-i">${svgI(PIC.camera,24)}</span><span><b>Сфотографировать бланк</b><small>Снимите бланк целиком, чтобы были видны дата и нормы</small></span></button>
+  <button type="button" class="ao" data-up="gallery"><span class="ao-i">${svgI(PIC.gallery,24)}</span><span><b>Фото или скриншот из галереи</b><small>Например, скриншот из приложения лаборатории</small></span></button>
+  <button type="button" class="ao" data-up="files"><span class="ao-i">${svgI(PIC.files,24)}</span><span><b>Файл или PDF</b><small>Из почты или личного кабинета лаборатории</small></span></button>
+  <div class="ao ao-mail"><span class="ao-i">${svgI('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',24)}</span><span><b>Переслать письмо лаборатории</b><small>На адрес <span class="code">a.ivanov@in.orange-health.ru</span>, результаты появятся сами</small></span></div>
+ </div><p class="why" style="margin-top:12px">Мы распознаем показатели, а вы проверите их перед сохранением. Оригинал файла хранится вместе с результатами.</p>`)}
+$('#supSend').onclick=()=>{const m=$('#supM').value.trim();if(!m){toast('Опишите, что произошло');return}$('#supM').value='';toast('Демо: в рабочей версии сообщение уйдёт в поддержку на почту')};
 
 /* старт */
 renderTabs('summary');updLogin();fillForm();renderSummary();renderCtx();renderBlocks();renderUploads();drawQR();renderDocs();renderShared();renderBook();{const co=store.get('oh3-ctx',true);$('#cCtx').classList.toggle('closed',!co);$('#cCtx .fh').setAttribute('aria-expanded',co)}
