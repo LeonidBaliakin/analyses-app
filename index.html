@@ -913,6 +913,12 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 #cqNewMed[hidden],.cq [hidden]{display:none!important}
 .sbtn.fab{gap:6px}
 @media(min-width:761px){.sbtn.fab span{margin-top:3px}}
+@media(max-width:760px){
+  .sbtn.fab{transform:none!important;justify-content:flex-end;padding-bottom:6px;gap:0}
+  .sbtn.fab svg{position:absolute;top:-22px;left:50%;transform:translateX(-50%);width:50px;height:50px}
+  .sbtn.fab:hover svg{transform:translateX(-50%) scale(1.04)}
+  .sbtn.fab span{margin-top:0!important;font-size:9.5px;line-height:1.1}
+}
 
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
