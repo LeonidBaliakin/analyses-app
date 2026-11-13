@@ -920,6 +920,15 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
   .sbtn.fab span{margin-top:0!important;font-size:9.5px;line-height:1.1}
 }
 
+.locline{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:2px 0 12px;font-size:13px;color:var(--ink2)}
+.locic{color:var(--accent);display:flex}
+.locline .link{font-size:13px}
+[data-geo] svg{vertical-align:-3px;margin-right:4px}
+@media(max-width:760px){
+  .sbtn.fab svg{top:-28px;width:46px;height:46px;padding:10px}
+  .sbtn.fab{padding-bottom:5px}
+}
+
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 </head>
@@ -1012,8 +1021,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
   <section class="view" id="v-book" aria-label="Где сдать">
     <div class="panel">
       <h2>Где сдать анализы</h2>
-      <p class="lead">Найдите нужные анализы и добавьте их в список. Ниже покажем лаборатории рядом: где дешевле, где ближе и где лучший баланс.</p>
-      <div class="loc"><label for="locIn">Где вы</label><input id="locIn" data-loc type="text" value="Санкт-Петербург, ул. Марата"><button class="btn" type="button" data-geo>Определить по геолокации</button></div>
+      <div class="locline"><span class="locic" aria-hidden="true"></span><span data-locshow></span><button class="link" type="button" data-locedit>Изменить</button></div>
       <div class="addsearch wide"><input id="bq" type="search" placeholder="Найти анализ: ферритин, общий анализ крови…" autocomplete="off" aria-label="Найти анализ"><div class="addres" id="bres"></div></div>
       <h3 class="seth" style="margin-top:16px">Мой список на сдачу</h3>
       <div class="picked" id="bask"></div>
@@ -1029,8 +1037,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
   <section class="view" id="v-docs" aria-label="Врачи рядом">
     <div class="panel">
       <h2>Врачи рядом</h2>
-      <p class="lead">Найдите специалиста по названию. Справочно подскажем, к кому обычно обращаются с вашими анализами; если не знаете, с чего начать, начните с терапевта.</p>
-      <div class="loc"><label for="locIn2">Где вы</label><input id="locIn2" data-loc type="text" value="Санкт-Петербург, ул. Марата"><button class="btn" type="button" data-geo>Определить по геолокации</button></div>
+      <div class="locline"><span class="locic" aria-hidden="true"></span><span data-locshow></span><button class="link" type="button" data-locedit>Изменить</button></div>
       <div class="addsearch wide"><input id="sqs" type="search" placeholder="Найти специалиста: терапевт, эндокринолог…" autocomplete="off" aria-label="Найти специалиста"><div class="addres" id="sres"></div></div>
       <h3 class="seth" style="margin-top:16px">Выбранные специалисты</h3>
       <div class="picked" id="spSel"></div>
@@ -1850,7 +1857,7 @@ function bSearch(){const q=($('#bq').value||'').trim().toLowerCase(),r=$('#bres'
 function renderBook(){
   const items=[...BASK];
   $('#bask').innerHTML=items.length?items.map(k=>{const c=catBy(k);return `<div class="pk"><span class="pk-n">${esc(keyName(k))}${c?`<small>${c.p[0]}–${c.p[1]} ₽ · обычно: ${c.sp.join(', ')}</small>`:''}</span><button class="pk-x" type="button" aria-label="Убрать" data-rmb="${k}">×</button></div>`}).join(''):'<p class="why">Список пуст. Найдите анализ поиском выше или нажмите «Добавить к сдаче» в карточке показателя.</p>';
-  $('#bwhere').textContent=items.length?`Рядом с: ${LOC} · ${items.length} в списке`:'';
+  $('#bwhere').textContent='';
   $('#labsPanel').hidden=!items.length;
   if(items.length){
   const uniq=[...new Set(items.map(k=>/^1,/.test(k)?'1,0':k))];const base=uniq.reduce((s,k)=>s+keyPrice(k),0);
@@ -1877,8 +1884,16 @@ function renderSpec(){if(!$('#specs'))return;const mine=sqSpecs();if(SPF===null)
   $('#specsH').textContent=SPF.length?'Специалисты рядом: '+list.length:'Все специалисты рядом';
   $('#specs').innerHTML=list.map(s=>`<div class="lab spec"><div class="spc">${spIc(s.sp)}<div><h3>${esc(s.n)}</h3><div class="addr"><b>${esc(s.sp)}</b> · ${esc(s.x)}</div><div class="addr">${esc(s.cl)}, ${esc(s.a)}</div></div></div><div class="pr num">${s.pr.toLocaleString('ru-RU')} ₽<small>первичный приём</small></div><div class="km num">${String(s.km).replace('.',',')} км<small>ближайшая запись: ${esc(s.slot)}</small></div><button class="btn pri" data-site="${esc(s.cl)}">Записаться на сайте</button></div>`).join('')}
 let LOC=store.get('oh3-loc','Санкт-Петербург, ул. Марата');
-function setLoc(v){LOC=v;store.set('oh3-loc',v);document.querySelectorAll('[data-loc]').forEach(i=>i.value=v);renderBook()}
-document.querySelectorAll('[data-loc]').forEach(i=>{i.value=LOC;i.onchange=()=>setLoc(i.value)});
+const PINSVG='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>';
+function setLoc(v){LOC=v;store.set('oh3-loc',v);store.set('oh3-locset',1);document.querySelectorAll('[data-locshow]').forEach(x=>x.textContent=v);renderBook()}
+document.querySelectorAll('[data-locshow]').forEach(x=>x.textContent=LOC);document.querySelectorAll('.locic').forEach(x=>x.innerHTML=PINSVG);
+function openLoc(){openModal('Где вы находитесь?',`<p class="why" style="margin-bottom:12px">По этому адресу покажем ближайшие лаборатории и врачей и посчитаем расстояние. Поменять можно в любой момент.</p>
+  <div class="field"><label for="locM">Город, улица</label><input id="locM" type="text" value="${esc(LOC)}"></div>
+  <button class="btn" type="button" data-geo style="margin-top:10px">${PINSVG} Определить по геолокации</button>
+  <div class="row-end"><button class="btn pri" type="button" id="locOk">Готово</button></div>`);
+  $('#locOk').onclick=()=>{const v=$('#locM').value.trim();if(v)setLoc(v);else store.set('oh3-locset',1);closeModal()}}
+document.addEventListener('click',e=>{if(e.target.closest('[data-locedit]'))openLoc()});
+const _show=show;show=function(id){_show(id);if((id==='book'||id==='docs')&&!store.get('oh3-locset',0))setTimeout(openLoc,300)};
 $('#bq').oninput=bSearch;$('#bq').onfocus=bSearch;$('#sqs').oninput=sSearch;$('#sqs').onfocus=sSearch;
 document.addEventListener('click',e=>{
   if(!e.target.closest('.addsearch'))document.querySelectorAll('.addres').forEach(r=>r.classList.remove('on'));
@@ -1893,7 +1908,7 @@ document.addEventListener('click',e=>{
   const st=e.target.closest('[data-site]');if(st){openModal('Переход на сайт клиники',`<div class="permask"><div class="permic">${svgI('<path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',26)}</div><p>Запись проходит на сайте <b>${esc(st.dataset.site)}</b>. Сейчас откроем его в новой вкладке.</p><p class="why">Мы показываем цены и расписание справочно; итоговую стоимость и время уточняйте на сайте клиники.</p><div class="row-end"><button class="btn" type="button" data-mclose>Отмена</button><button class="btn pri" type="button" id="goSite">Перейти на сайт</button></div></div>`)}
   if(e.target.closest('[data-mclose]'))closeModal();
   if(e.target.id==='goSite'){closeModal();toast('Демо: в рабочей версии откроется сайт клиники')}
-  if(e.target.closest('[data-geo]'))askPerm('geo',()=>{setLoc('Санкт-Петербург, по геолокации');toast('Демо: расстояния считаются от вашего местоположения')})});
+  if(e.target.closest('[data-geo]'))askPerm('geo',()=>{setLoc('Санкт-Петербург, по геолокации');if($('#locM'))$('#locM').value=LOC;toast('Демо: расстояния считаются от вашего местоположения')})});
 
 
 /* полная история — отдельное окно */
