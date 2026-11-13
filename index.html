@@ -782,6 +782,82 @@ tr.off td{color:var(--ink3)}
 .psb .cwrap{overflow-x:auto}
 @media(max-width:760px){.psb .cwrap .chart{min-width:640px}.pst td:first-child{min-width:120px}}
 @media(max-width:620px){.acr-m{flex:none;width:100%}}
+/* версия 4 */
+.stale{color:var(--hi);font-weight:600}
+.addsearch.wide{max-width:none}
+.addres button{display:flex;align-items:center;gap:10px}
+.rn{flex:1;min-width:0}
+.rn small{display:block;font-size:11.5px;color:var(--ink3)}
+.ra{font-size:12px;font-weight:700;color:var(--accent);white-space:nowrap}
+.picked{display:grid;gap:6px}
+.pk{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.pk-n{flex:1;min-width:0;font-weight:600}
+.pk-n small{display:block;font-weight:500;font-size:12px;color:var(--ink3)}
+.pk-x{border:1px solid var(--line);background:var(--card);border-radius:9px;width:32px;height:32px;flex-shrink:0}
+.spic{width:38px;height:38px;border-radius:11px;flex-shrink:0;display:grid;place-items:center;background-color:var(--head);background-image:linear-gradient(160deg,#9B7BEA,#7C5CE0)}
+.spic svg{width:28px;height:28px}
+.addres .spic{width:30px;height:30px;border-radius:9px}.addres .spic svg{width:22px;height:22px}
+.spc{display:flex;gap:12px;align-items:flex-start;min-width:0}
+.sqbox{margin-top:14px;padding:10px 12px;border-radius:12px;background:var(--med-soft)}
+.sqbox .bchip{margin:2px 0}
+.sugg{border:1px solid var(--med);background:var(--card);color:var(--med);border-radius:20px;padding:3px 10px;font-size:12.5px;font-weight:600;margin:2px 0}
+.ctal{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+#labsPanel[hidden]{display:none}
+.sheet{overflow-wrap:anywhere}
+.sheet table{table-layout:fixed}
+.sheet th:nth-child(1),.sheet td:nth-child(1){width:42%}
+.filebox{overflow-x:hidden}
+.hist td,.hist th{white-space:normal}
+/* строки событий: и в первых шагах, и на телефоне */
+.tbox .evr{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 36px;padding-bottom:10px;border-bottom:1px dashed var(--line)}
+.tbox .evr>[data-k="n"]{grid-column:1/3}
+.tbox .evr>.evx{grid-column:3;grid-row:1}
+.tbox .evr-med>[data-k="m"],.tbox .evr-hosp>[data-k="w"],.tbox .evr-all>[data-k="r"]{grid-column:1/-1}
+.tbox .evr .dl{flex-direction:column;align-items:stretch;gap:2px}
+.tbox .evr-weight>.dl:first-child{grid-column:1}
+.tbox .evr-weight>.evx{grid-row:1}
+.tbox .evr-hosp>[data-k="w"]{grid-row:2}
+@media(max-width:620px){
+  .evr{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 36px!important;padding-bottom:10px;border-bottom:1px dashed var(--line)}
+  .evr>[data-k="n"]{grid-column:1/3!important}
+  .evr>.evx{grid-column:3!important;grid-row:1!important;width:36px!important;justify-self:end}
+  .evr-med>[data-k="m"],.evr-hosp>[data-k="w"],.evr-all>[data-k="r"]{grid-column:1/-1!important}
+  .evr .dl{flex-direction:column;align-items:stretch;gap:2px}
+  .evr-weight>.dl:first-child{grid-column:1}
+  .psadd .evr{border-bottom:0}
+  .mrow-h,.mhead{grid-template-columns:minmax(0,1fr) 112px 16px!important}
+  .mrow-h .mv{text-align:right}
+  .hist thead{display:none}
+  .hist,.hist tbody{display:block}
+  .hist tr{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;padding:9px 10px;border-bottom:1px solid var(--line)}
+  .hist tr:last-child{border-bottom:0}
+  .hist td{border:0!important;padding:0!important;display:block!important}
+  .hist td:first-child{font-weight:700}
+  .hist td.ctxc{flex-basis:100%;max-width:none;min-width:0}
+  .hist td.r{text-align:left}
+  .pst td:first-child{flex-basis:100%;min-width:0}
+  .pst td:last-child{margin-left:auto}
+  .psb .cwrap .chart{min-width:0!important}
+  .sheet{padding:12px;font-size:11px}
+  .pv-in{padding:10px}
+  .pv table{font-size:10px}
+  .pv td,.pv th{padding:3px 4px}
+  .pv table.alld th:nth-child(n+4):nth-last-child(n+4),.pv table.alld td:nth-child(n+4):nth-last-child(n+4){display:none}
+  .pv .mobnote{display:block}
+  .svdl{grid-template-columns:1fr}
+  .svdl dt{margin-top:6px}
+  .spc .spic{width:34px;height:34px}
+  table.up{font-size:11.5px}
+}
+.pv .mobnote{display:none;font-size:11px;color:var(--ink3);margin:-2px 0 6px}
+@media(max-width:620px){
+  .pv-in{overflow-x:hidden}
+  .pv table{table-layout:fixed;width:100%}
+  .pv td,.pv th{overflow-wrap:anywhere}
+  .pv table.alld td:first-child,.pv table.alld th:first-child{width:34%}
+}
+.psadd .evx{display:none!important}
+@media(max-width:620px){.psadd .evr>[data-k="n"]{grid-column:1/-1!important}}
 
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
@@ -871,40 +947,37 @@ tr.off td{color:var(--ink3)}
   </section>
 
   <!-- ГДЕ СДАТЬ -->
-  <section class="view" id="v-book" aria-label="Где сдать и к кому обратиться">
+  <section class="view" id="v-book" aria-label="Где сдать">
     <div class="panel">
-      <h2>Где сдать и к кому обратиться</h2>
-      <p class="lead">Найдите, где рядом сдать анализы и сколько это стоит, или специалиста по вашим вопросам.</p>
-      <div class="loc"><label for="locIn">Где вы</label><input id="locIn" type="text" value="Санкт-Петербург, ул. Марата"><button class="btn" type="button" id="geo">Определить по геолокации</button></div>
-      <div class="opts bmode" id="bmode" role="tablist"><button class="opt" data-bm="labs" aria-pressed="true">Сдать анализы</button><button class="opt" data-bm="spec" aria-pressed="false">Найти специалиста</button></div>
+      <h2>Где сдать анализы</h2>
+      <p class="lead">Найдите нужные анализы и добавьте их в список. Ниже покажем лаборатории рядом: где дешевле, где ближе и где лучший баланс.</p>
+      <div class="loc"><label for="locIn">Где вы</label><input id="locIn" data-loc type="text" value="Санкт-Петербург, ул. Марата"><button class="btn" type="button" data-geo>Определить по геолокации</button></div>
+      <div class="addsearch wide"><input id="bq" type="search" placeholder="Найти анализ: ферритин, общий анализ крови…" autocomplete="off" aria-label="Найти анализ"><div class="addres" id="bres"></div></div>
+      <h3 class="seth" style="margin-top:16px">Мой список на сдачу</h3>
+      <div class="picked" id="bask"></div>
+      <span class="why" id="bwhere"></span>
     </div>
-
-    <div id="bm-labs">
-      <div class="panel">
-        <h2>Каталог анализов</h2>
-        <p class="lead">Что можно сдать и примерная цена по лабораториям рядом. Добавьте нужное в список: ниже покажем, где выгоднее и ближе.</p>
-        <div class="addsearch"><input id="bq" type="search" placeholder="Например: ферритин, общий анализ крови" autocomplete="off" aria-label="Найти анализ в каталоге"></div>
-        <div class="cat" id="cat"></div>
-      </div>
-      <div class="panel">
-        <h2>Мой список на сдачу</h2>
-        <div class="bask" id="bask"></div>
-        <span class="why" id="bwhere"></span>
-        <div class="labs" id="labs"></div>
-        <p class="why" style="margin-top:10px">Демо: лаборатории и цены условные. В рабочей версии цены берутся с сайтов лабораторий и у партнёров, расстояние считается от адреса или геолокации.</p>
-      </div>
+    <div class="panel" id="labsPanel">
+      <h2>Лаборатории рядом</h2>
+      <div class="labs" id="labs"></div>
+      <p class="why" style="margin-top:10px">Демо: лаборатории и цены условные. В рабочей версии цены берутся с сайтов лабораторий и у партнёров, расстояние считается от адреса или геолокации. Запись проходит на сайте лаборатории.</p>
     </div>
+  </section>
 
-    <div id="bm-spec" hidden>
-      <div class="panel">
-        <h2>Специалисты рядом</h2>
-        <p class="lead">Справочно: к каким специалистам обычно обращаются с такими анализами. Если не знаете, с чего начать, начните с терапевта. Выбор врача остаётся за вами.</p>
-        <div class="bask" id="sq"></div>
-        <div class="field" style="margin-top:6px"><label>Специальность</label></div>
-        <div class="opts" id="spf"></div>
-        <div class="labs" id="specs"></div>
-        <p class="openq">Открытый вопрос: формат подсказок «к какому специалисту обратиться» согласовать с юристом и Машей. Демо: специалисты и цены условные.</p>
-      </div>
+  <section class="view" id="v-docs" aria-label="Врачи рядом">
+    <div class="panel">
+      <h2>Врачи рядом</h2>
+      <p class="lead">Найдите специалиста по названию. Справочно подскажем, к кому обычно обращаются с вашими анализами; если не знаете, с чего начать, начните с терапевта.</p>
+      <div class="loc"><label for="locIn2">Где вы</label><input id="locIn2" data-loc type="text" value="Санкт-Петербург, ул. Марата"><button class="btn" type="button" data-geo>Определить по геолокации</button></div>
+      <div class="addsearch wide"><input id="sqs" type="search" placeholder="Найти специалиста: терапевт, эндокринолог…" autocomplete="off" aria-label="Найти специалиста"><div class="addres" id="sres"></div></div>
+      <h3 class="seth" style="margin-top:16px">Выбранные специалисты</h3>
+      <div class="picked" id="spSel"></div>
+      <div id="sq"></div>
+    </div>
+    <div class="panel">
+      <h2 id="specsH">Специалисты рядом</h2>
+      <div class="labs" id="specs"></div>
+      <p class="openq">Открытый вопрос: формат подсказок «к кому обычно обращаются» согласовать с юристом и Машей. Демо: специалисты и цены условные. Запись проходит на сайте клиники.</p>
     </div>
   </section>
 
@@ -1117,7 +1190,7 @@ const G=DATA.groups.map((g,gi)=>({gi,title:META[gi][0],sub:META[gi][1],rows:g.ro
   const pts=r.v.map((x,i)=>({i,d:DATES[i],raw:x,val:num(x)})).filter(p=>p.val!=null);
   pts.forEach(p=>p.st=stOf(r,p.val,p.raw));
   const cur=pts[pts.length-1]||null,prev=pts.length>1?pts[pts.length-2]:null;
-  const old=cur?((LAST-pd(cur.d))/864e5>365):false;
+  const old=cur?((LAST-pd(cur.d))/864e5>183):false;
   return Object.assign({},r,{gi,ri,pts,cur,prev,old,st:cur?cur.st:'none'});
 })}));
 const ALL=G.flatMap(g=>g.rows);
@@ -1136,10 +1209,10 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#modal').classLi
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 
 /* роли и вкладки */
-const TABS={patient:[['summary','Сводка'],['files','Мои анализы'],['book','Где сдать'],['profile','Профиль'],['share','Доступ специалисту']]};
+const TABS={patient:[['summary','Сводка'],['files','Мои анализы'],['book','Где сдать'],['docs','Врачи рядом'],['profile','Профиль'],['share','Доступ специалисту']]};
 let role='patient';
 const NAVI={"summary": "<path d=\"M4 13h6V4H4zM14 20h6v-9h-6zM14 4v4h6V4zM4 20h6v-3H4z\"/>", "files": "<path d=\"M7 3h7l5 5v13H7z\"/><path d=\"M14 3v5h5M10 13h6M10 17h6\"/>", "book": "<path d=\"M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z\"/><circle cx=\"12\" cy=\"9.5\" r=\"2.5\"/>", "profile": "<circle cx=\"12\" cy=\"8\" r=\"4\"/><path d=\"M4 21c0-4 4-6 8-6s8 2 8 6\"/>", "share": "<rect x=\"4\" y=\"4\" width=\"6\" height=\"6\" rx=\"1\"/><rect x=\"14\" y=\"4\" width=\"6\" height=\"6\" rx=\"1\"/><rect x=\"4\" y=\"14\" width=\"6\" height=\"6\" rx=\"1\"/><path d=\"M14 14h2v2h-2zM18 18h2v2h-2zM14 18h2M18 14h2\"/>", "patients": "<circle cx=\"9\" cy=\"8\" r=\"3.5\"/><path d=\"M2.5 20c0-3.5 3-5.5 6.5-5.5s6.5 2 6.5 5.5\"/><path d=\"M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.8c2 .7 3 2.4 3 5.2\"/>"};
-const SHORT={summary:'Сводка',files:'Анализы',book:'Где сдать',profile:'Профиль',share:'Доступ'};
+const SHORT={summary:'Сводка',files:'Анализы',book:'Где сдать',profile:'Профиль',share:'Доступ',docs:'Врачи'};NAVI.docs=`<circle cx='9' cy='7' r='3.5'/><path d='M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6'/><path d='M17 10v6M14 13h6'/>`;
 let cur='summary';
 function renderTabs(active){const t=$('#tabs');const ind=$('#sideInd'),hov=$('#sideHov');t.innerHTML='';t.appendChild(hov);t.appendChild(ind);
   TABS[role].forEach(([id,l])=>{const b=document.createElement('button');b.className='sbtn';b.dataset.tab=id;b.setAttribute('aria-current',id===active?'page':'false');b.title=l;
@@ -1285,14 +1358,14 @@ function axisSVG(W,H,pl,pr,pt,pb,t0,t1){const x=t=>pl+(W-pl-pr)*(t-t0)/(t1-t0);l
   for(let y=new Date(t0).getFullYear();y<=new Date(t1).getFullYear()+1;y++){const t=new Date(y,0,1).getTime();if(t<t0||t>t1)continue;s+=`<line x1="${x(t)}" x2="${x(t)}" y1="${pt}" y2="${H-pb}" stroke="var(--line)"/><text x="${x(t)+4}" y="${H-8}" font-size="11" fill="var(--ink3)">${y}</text>`}
   DT.forEach((t,i)=>{s+=`<path d="M${x(t)-4} ${pt-9}h8l-4 6z" fill="var(--accent)"><title>Сдача анализов ${DATES[i]}</title></path><line x1="${x(t)}" x2="${x(t)}" y1="${pt-3}" y2="${H-pb}" stroke="var(--accent)" stroke-opacity=".25" stroke-dasharray="2 3"/>`});
   return {x,s}}
-function tlSVG(items,col,soft){if(!items.length)return '';const W=680,pl=14,pr=14,pt=22,pb=26,RH=34,H=pt+items.length*RH+pb;
+function tlSVG(items,col,soft){if(!items.length)return '';const W=innerWidth<620?380:680,pl=14,pr=14,pt=22,pb=26,RH=34,H=pt+items.length*RH+pb;
   const now=LAST.getTime();const[t0,t1]=tAxis(items.map(e=>evDate(e.f).getTime()),items.map(e=>e.open?now:evDate(e.t||e.f).getTime()));
   const{x,s:ax}=axisSVG(W,H,pl,pr,pt,pb,t0,t1);let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Шкала времени">`+ax;
   items.forEach((e,i)=>{const a=x(evDate(e.f).getTime()),b=x(e.open?t1:evDate(e.t||e.f).getTime()+864e5),y=pt+i*RH;
     s+=`<text x="${Math.min(a,W-230)}" y="${y+13}" font-size="11.5" font-weight="700" fill="${col}" paint-order="stroke" stroke="var(--card)" stroke-width="3">${esc(short(e.n))} <tspan font-weight="500" fill="var(--ink3)">${dfmt(e.f)}–${e.open?'сейчас':dfmt(e.t)}</tspan></text><rect x="${a}" y="${y+18}" width="${Math.max(8,b-a)}" height="9" rx="4.5" fill="${soft}" stroke="${col}"/>`});
   return s+'</svg>'}
 function weightSVG(){const ws=EV.weight.filter(e=>e.d&&e.kg).map(e=>({t:evDate(e.d).getTime(),kg:+e.kg,d:e.d})).sort((a,b)=>a.t-b.t);if(!ws.length)return '';
-  const W=680,H=220,pl=14,pr=14,pt=30,pb=26;const[t0,t1]=tAxis(ws.map(w=>w.t),ws.map(w=>w.t));const{x,s:ax}=axisSVG(W,H,pl,pr,pt,pb,t0,t1);
+  const W=innerWidth<620?380:680,H=220,pl=14,pr=14,pt=30,pb=26;const[t0,t1]=tAxis(ws.map(w=>w.t),ws.map(w=>w.t));const{x,s:ax}=axisSVG(W,H,pl,pr,pt,pb,t0,t1);
   let a=Math.min(...ws.map(w=>w.kg)),b=Math.max(...ws.map(w=>w.kg));if(b-a<2){a-=1;b+=1}const y=v=>H-pb-14-(v-a)/(b-a)*(H-pt-pb-34);
   let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Динамика веса">`+ax;
   if(ws.length>1)s+=`<polyline fill="none" stroke="var(--wt)" stroke-width="2" points="${ws.map(w=>x(w.t)+','+y(w.kg)).join(' ')}"/>`;
@@ -1394,7 +1467,7 @@ const MODALS={
   ref(){openModal('Что значит «норма»',REFTEXT)},
   ok(){const a=ALL.filter(m=>m.st==='ok');openModal(`В норме: ${a.length}`,`<p>Последний результат внутри нормы, которую лаборатория указала в бланке.</p>${listHTML(a,true)}`)},
   out(){const a=ALL.filter(m=>m.st==='high'||m.st==='low');openModal(`Не в норме: ${a.length}`,`<p>Последний результат выше или ниже нормы, которую лаборатория указала в бланке. Это не диагноз — что он значит, объясняет врач.</p>${listHTML(a,true)}`)},
-  old(){const a=ALL.filter(m=>m.cur&&m.old);openModal(`Давно не сдавали: ${a.length}`,`<p>Эти анализы последний раз сдавали больше года назад (считаем от последней сдачи ${DATES[DATES.length-1]}). Нужно ли пересдать, решает врач.</p>${listHTML(a,false)}`)},
+  old(){const a=ALL.filter(m=>m.cur&&m.old);openModal(`Давно не сдавали: ${a.length}`,`<p>Эти анализы последний раз сдавали больше полугода назад (считаем от последней сдачи ${DATES[DATES.length-1]}). Нужно ли пересдать, решает врач.</p>${listHTML(a,false)}`)},
   all(){openModal(`Все показатели: ${ALL.length}`,`<input class="mfilter" id="mf" type="search" placeholder="Фильтр по названию" aria-label="Фильтр по названию"><div id="mfl"></div>`);
     const draw=q=>{q=(q||'').toLowerCase();$('#mfl').innerHTML=G.filter(g=>g.rows.length).map(g=>{const r=g.rows.filter(m=>m.n.toLowerCase().includes(q));return r.length?`<div class="gh">${esc(g.title)}</div>`+listHTML(r,false):''}).join('')||'<p>Ничего не найдено</p>'};
     draw('');$('#mf').oninput=e=>draw(e.target.value);$('#mf').focus()},
@@ -1429,7 +1502,7 @@ function rowHTML(m){
   return `<div class="mrow" id="r${m.gi}_${m.ri}">
    <button class="mrow-h" aria-expanded="false">
      <span class="mn">${esc(m.n)}<small>${esc(U(m.u))}</small></span>
-     <span class="mv num" style="color:${m.st==='ok'?'var(--ok)':m.st==='high'?'var(--hi)':m.st==='low'?'var(--lo)':'inherit'}">${c?esc(c.raw):'—'} <span class="chip ${SC[m.st]}" style="vertical-align:2px">${m.st==='ok'?'в норме':m.st==='high'?'выше':m.st==='low'?'ниже':'—'}</span><small>${c?c.d:''}${m.old?' · больше года назад':''}</small></span>
+     <span class="mv num" style="color:${m.st==='ok'?'var(--ok)':m.st==='high'?'var(--hi)':m.st==='low'?'var(--lo)':'inherit'}">${c?esc(c.raw):'—'} <span class="chip ${SC[m.st]}" style="vertical-align:2px">${m.st==='ok'?'в норме':m.st==='high'?'выше':m.st==='low'?'ниже':'—'}</span><small>${c?`<span class="${m.old?'stale':''}" title="${m.old?'Сдано больше полугода назад':''}">${c.d}</span>`:''}</small></span>
      <span class="mref">${scale(m)}</span>
      <span class="mprev">${prev}</span>
      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
@@ -1511,7 +1584,7 @@ function detailHTML(m){
      <button class="addb${inB?' on':''}" data-addb="${key}">${inB?'✓ В списке на сдачу':'+ Добавить к сдаче'}</button>
      <span>Справочно, с этим анализом обычно обращаются: <b>${sp.join(', ')}</b>.</span>
      <button class="addb alt${inS?' on':''}" data-adds="${key}">${inS?'✓ В поиске специалиста':'+ К поиску специалиста'}</button>
-     <button class="link" data-tab-go="book">Открыть «Где сдать» →</button></aside></div>`}
+     <span class="ctal"><button class="link" data-tab-go="book">Где сдать →</button><button class="link" data-tab-go="docs">Врачи рядом →</button></span></aside></div>`}
 document.addEventListener('change',e=>{
   if(e.target.matches('[data-chartt]')){const w=e.target.closest('.dmain').querySelector('.cwrap');w.hidden=!e.target.checked}
   if(e.target.matches('[data-ov]')){OV[e.target.dataset.ov]=e.target.checked;store.set('oh2-ov',OV);document.querySelectorAll('[data-cw]').forEach(w=>{const[g,r]=w.dataset.cw.split(',').map(Number);w.innerHTML=chartBox(G[g].rows[r])})}});
@@ -1620,9 +1693,9 @@ function openSpecView(print){const a=age(P.dob),w=lastWeight(),b=bmi(),out=ALL.f
     <dt>Образ жизни</dt><dd>активность: ${ACT[P.act]||'—'}; сон в среднем ${esc(P.sleep||'—')} ч; курение: ${esc(P.smoke.toLowerCase())}; алкоголь: ${esc(P.alc.toLowerCase())}${P.alcv?', '+esc(P.alcv.toLowerCase()):''}</dd></dl></div>
     <div class="svc"><h3>Контекст к последней сдаче</h3>${ctxHTML()}</div></div>`;
   const outT=`<h2>Сейчас не в норме: ${out.length}</h2><table><thead><tr><th>Показатель</th><th>Значение</th><th>Норма лаборатории</th><th>Дата</th><th>Предыдущее</th></tr></thead><tbody>${out.map(m=>`<tr><td>${esc(m.n)}</td><td class="num" style="font-weight:700;color:var(--${m.st==='high'?'hi':'lo'})">${esc(m.cur.raw)} ${esc(U(m.u))} ${m.st==='high'?'↑':'↓'}</td><td class="num">${esc(refText(m))}</td><td class="num">${m.cur.d}</td><td class="num">${m.prev?esc(m.prev.raw)+' · '+m.prev.d:'—'}</td></tr>`).join('')}</tbody></table>`;
-  const evRowT=`<tr class="evrow"><td colspan="3"><b>События рядом с датой</b></td>${DATES.map(d=>`<td>${esc(ctxFor(d))}</td>`).join('')}</tr>`;
-  const all=`<h2>Все показатели по датам</h2><table><thead><tr><th>Показатель</th><th>Ед.</th><th>Норма</th>${DATES.map((d,i)=>`<th class="num">${d}<br><span style="font-weight:500;color:var(--ink3);font-size:10px">${LABS[i]}</span></th>`).join('')}</tr></thead><tbody>${evRowT}`+
-   G.filter(g=>g.rows.length).map(g=>`<tr class="grp"><td colspan="${3+DATES.length}">${esc(g.title)}</td></tr>`+g.rows.map(m=>`<tr><td>${esc(m.n)}</td><td>${esc(U(m.u))}</td><td class="num">${esc(refText(m))}</td>${DATES.map((d,i)=>{const p=m.pts.find(q=>q.i===i);return `<td class="num" style="${p&&p.st!=='ok'?'font-weight:700;color:var(--'+(p.st==='high'?'hi':'lo')+')':''}">${p?esc(p.raw)+(p.st==='high'?' ↑':p.st==='low'?' ↓':''):'—'}</td>`}).join('')}</tr>`).join('')).join('')+'</tbody></table>';
+  const evRowT=`<tr class="evrow"><td><b>События рядом с датой</b></td><td></td><td></td>${DATES.map(d=>`<td>${esc(ctxFor(d))}</td>`).join('')}</tr>`;
+  const all=`<h2>Все показатели по датам</h2><p class="mobnote">На телефоне показаны последние 3 сдачи; все даты — на компьютере или в PDF.</p><table class="alld"><thead><tr><th>Показатель</th><th>Ед.</th><th>Норма</th>${DATES.map((d,i)=>`<th class="num">${d}<br><span style="font-weight:500;color:var(--ink3);font-size:10px">${LABS[i]}</span></th>`).join('')}</tr></thead><tbody>${evRowT}`+
+   G.filter(g=>g.rows.length).map(g=>`<tr class="grp"><td>${esc(g.title)}</td><td></td><td></td>${DATES.map(()=>"<td></td>").join("")}</tr>`+g.rows.map(m=>`<tr><td>${esc(m.n)}</td><td>${esc(U(m.u))}</td><td class="num">${esc(refText(m))}</td>${DATES.map((d,i)=>{const p=m.pts.find(q=>q.i===i);return `<td class="num" style="${p&&p.st!=='ok'?'font-weight:700;color:var(--'+(p.st==='high'?'hi':'lo')+')':''}">${p?esc(p.raw)+(p.st==='high'?' ↑':p.st==='low'?' ↓':''):'—'}</td>`}).join('')}</tr>`).join('')).join('')+'</tbody></table>';
   $('#pvBody').innerHTML=`<div class="svbar">${print?'Так выглядит PDF для печати':'Так специалист видит анализы по ссылке или QR-коду: без регистрации, только просмотр'}</div><h1>Анализы: ${esc(P.name||'А. Иванов')}</h1><p class="why">Сформировано по загруженным бланкам и данным со слов пациента. Нормы указаны лабораториями. Отклонения отмечены ↑ ↓, чтобы их было видно и на чёрно-белой печати. Сервис не ставит диагнозов.</p>`+card+outT+all+`<p class="why" style="margin-top:14px">Оригиналы бланков доступны по ссылке. Распознанные значения подтверждены пациентом.</p>`;
   $('#pvNote').textContent='';document.body.classList.add('preview');window.scrollTo(0,0)}
 
@@ -1668,30 +1741,16 @@ const LABLIST=[
  {n:'Клиника на Литейном',a:'Литейный пр., 51',km:1.9,k:1.3,draw:0,h:'8:00–21:00',ready:'1 день'}];
 function keyPrice(k){const c=catBy(k);if(c)return Math.round((c.p[0]+c.p[1])/2);const[g]=k.split(',').map(Number);if(g===1)return 420;return 400}
 function saveB(){store.set('oh2-bask',[...BASK]);store.set('oh2-sq',[...SQ])}
-let BM='labs';
-document.addEventListener('click',e=>{const b=e.target.closest('[data-bm]');if(b)setBM(b.dataset.bm)});
-function setBM(m){BM=m;document.querySelectorAll('[data-bm]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.bm===m));$('#bm-labs').hidden=m!=='labs';$('#bm-spec').hidden=m!=='spec';renderBook()}
-function renderCat(){const q=($('#bq').value||'').trim().toLowerCase();const list=CAT.filter(c=>!q||c.n.toLowerCase().includes(q)||c.s.toLowerCase().includes(q));
-  const groups=[...new Set(list.map(c=>c.s))];
-  $('#cat').innerHTML=list.length?groups.map(s=>`<div class="catg"><div class="catgh">${esc(s)}</div>`+list.filter(c=>c.s===s).map(c=>{const on=BASK.has(c.key);return `<div class="catr"><span class="catn">${esc(c.n)}<small>обычно: ${c.sp.join(', ')}</small></span><span class="catp num">${c.p[0]}–${c.p[1]} ₽</span><button class="addb sm${on?' on':''}" data-catadd="${c.key}">${on?'✓ в списке':'+ к сдаче'}</button></div>`}).join('')+'</div>').join(''):'<p class="why">Такого анализа нет в каталоге. В рабочей версии каталог берётся у лабораторий.</p>'}
-function renderBook(){renderCat();
-  const items=[...BASK];
-  $('#bask').innerHTML=items.length?items.map(k=>`<span class="bchip">${esc(keyName(k))}<button aria-label="Убрать" data-rmb="${k}">×</button></span>`).join(''):'<span class="why">Список пуст. Добавьте анализы из каталога выше или кнопкой «Добавить к сдаче» в карточке показателя.</span>';
-  $('#bwhere').textContent=`Рядом с: ${$('#locIn').value||'ваш адрес'} · ${items.length} в списке`;
-  if(!items.length){$('#labs').innerHTML=''}else{
-  const blood=true;const uniq=[...new Set(items.map(k=>/^1,/.test(k)?'1,0':k))];
-  const base=uniq.reduce((s,k)=>s+keyPrice(k),0);
-  let L=LABLIST.map(l=>({...l,an:Math.round(base*l.k/10)*10,dr:blood?l.draw:0})).map(l=>({...l,tot:l.an+l.dr}));
-  const pmin=Math.min(...L.map(l=>l.tot)),pmax=Math.max(...L.map(l=>l.tot)),dmin=Math.min(...L.map(l=>l.km)),dmax=Math.max(...L.map(l=>l.km));
-  L.forEach(l=>l.sc=.6*((l.tot-pmin)/((pmax-pmin)||1))+.4*((l.km-dmin)/((dmax-dmin)||1)));
-  const cheap=L.reduce((a,b)=>b.tot<a.tot?b:a),near=L.reduce((a,b)=>b.km<a.km?b:a),opt=L.reduce((a,b)=>b.sc<a.sc?b:a);
-  const top=[opt,cheap,near].filter((x,i,a)=>a.indexOf(x)===i);const rest=L.filter(l=>!top.includes(l)).sort((a,b)=>a.sc-b.sc);
-  const card=l=>`<div class="lab ${l===opt?'best':l===cheap?'cheap':l===near?'near':''}"><div><h3>${esc(l.n)}</h3><div class="addr">${esc(l.a)} · ${esc(l.h)} · результат ${esc(l.ready)}</div><div class="badges">${l===opt?'<span class="bdg b-opt">Оптимально</span>':''}${l===cheap?'<span class="bdg b-cheap">Дешевле всего</span>':''}${l===near?'<span class="bdg b-near">Ближе всего</span>':''}</div></div>
-   <div class="pr num">${l.tot.toLocaleString('ru-RU')} ₽<small>анализы ${l.an.toLocaleString('ru-RU')} ₽${blood?' + взятие крови '+l.dr+' ₽':''}</small></div>
-   <div class="km num">${String(l.km).replace('.',',')} км<small>~${l.km<1.5?Math.max(3,Math.round(l.km*12)):Math.round(10+l.km*4)} мин в пути</small></div>
-   <button class="btn pri" data-booklab="${esc(l.n)}">Записаться</button></div>`;
-  $('#labs').innerHTML=top.map(card).join('')+(rest.length?`<div class="lab-div">Другие лаборатории рядом</div>`+rest.map(card).join(''):'')}
-  renderSpec()}
+const ICS=(body)=>'<svg viewBox="0 0 48 48" fill="none"><g stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">'+body+'</g></svg>';
+const SPICON={
+ 'терапевт':ICS('<path d="M14 9v10a8 8 0 0 0 16 0V9"/><path d="M11 9h6M27 9h6"/><path d="M22 27v4a8 8 0 0 0 16 0v-4"/><circle cx="38" cy="23" r="3.5"/>'),
+ 'эндокринолог':ICONS.hormones,'кардиолог':ICONS.lipids,'гематолог':ICONS.blood,'гастроэнтеролог':ICONS.gut,'нефролог':ICONS.kidney,
+ 'аллерголог-иммунолог':ICONS.allergy,'онколог':ICONS.onco,
+ 'уролог':ICS('<circle cx="20" cy="28" r="9"/><path d="M27 21l10-10M29 11h8v8"/>'),
+ 'гинеколог':ICS('<circle cx="24" cy="18" r="9"/><path d="M24 27v13M18 34h12"/>'),
+ 'ревматолог':ICS('<path d="M14 10l7 7M10 14l7 7"/><circle cx="14" cy="14" r="4"/><path d="M19 19l10 10"/><circle cx="34" cy="34" r="4"/><path d="M34 38l4 4M38 34l4 4"/>'),
+ 'инфекционист':ICS('<circle cx="24" cy="24" r="9"/><path d="M24 9v6M24 33v6M9 24h6M33 24h6M13.4 13.4l4.2 4.2M30.4 30.4l4.2 4.2M34.6 13.4l-4.2 4.2M17.6 30.4l-4.2 4.2"/><circle cx="21" cy="22" r="1.4"/><circle cx="27" cy="26" r="1.4"/>')};
+const spIc=sp=>`<span class="spic" aria-hidden="true">${SPICON[sp]||SPICON['терапевт']}</span>`;
 const SPECS=[
  {n:'Смирнова О. А.',sp:'терапевт',cl:'Клиника «Невская»',a:'ул. Марата, 12',km:0.8,pr:2200,slot:'завтра, 9:30',x:'стаж 14 лет'},
  {n:'Кузнецов И. В.',sp:'терапевт',cl:'МедЛаб Центр',a:'Лиговский пр., 45',km:1.6,pr:1800,slot:'сегодня, 18:00',x:'стаж 9 лет'},
@@ -1708,27 +1767,60 @@ const SPECS=[
  {n:'Григорьева Л. А.',sp:'онколог',cl:'Клиника на Литейном',a:'Литейный пр., 51',km:1.9,pr:3800,slot:'пн, 15:00',x:'стаж 19 лет'},
  {n:'Зайцев К. О.',sp:'инфекционист',cl:'МедЛаб Центр',a:'Лиговский пр., 45',km:1.6,pr:2600,slot:'чт, 11:30',x:'стаж 7 лет'}];
 const ALLSP=[...new Set(SPECS.map(s=>s.sp))];
-let SPF=null;
+let SPF=store.get('oh3-spf',null);
 function sqSpecs(){const c={};[...SQ].forEach(k=>specOfKey(k).forEach(s=>c[s]=(c[s]||0)+1));return Object.keys(c).sort((a,b)=>c[b]-c[a])}
-function renderSpec(){const mine=sqSpecs();if(SPF===null)SPF=mine.slice();
-  $('#sq').innerHTML=(SQ.size?'<span class="why" style="width:100%">Мои вопросы к специалисту:</span>'+[...SQ].map(k=>`<span class="bchip">${esc(keyName(k))}<button aria-label="Убрать" data-rms="${k}">×</button></span>`).join('')+(mine.length?`<span class="why" style="width:100%;margin-top:4px">Справочно, с такими анализами обычно обращаются: <b>${mine.join(', ')}</b></span>`:''):'<span class="why">Добавьте анализы кнопкой «К поиску специалиста» в карточке показателя, и мы подберём, к кому обычно обращаются.</span>');
-  $('#spf').innerHTML=`<button class="opt" type="button" data-spf="__all" aria-pressed="${!SPF.length}">Все</button>${mine.length?`<button class="opt" type="button" data-spf="__mine" aria-pressed="${SPF.length&&SPF.join()===mine.join()}">По моим вопросам</button>`:''}`+ALLSP.map(s=>`<button class="opt" type="button" data-spf="${s}" aria-pressed="${SPF.includes(s)}">${s}</button>`).join('');
+function saveSpf(){store.set('oh3-spf',SPF)}
+/* где сдать */
+function bSearch(){const q=($('#bq').value||'').trim().toLowerCase(),r=$('#bres');if(!q){r.classList.remove('on');return}
+  const hit=CAT.filter(c=>c.n.toLowerCase().includes(q)||c.s.toLowerCase().includes(q)).slice(0,8);
+  r.innerHTML=hit.length?hit.map(c=>`<button type="button" data-catadd="${c.key}"><span class="rn">${esc(c.n)}<small>${esc(c.s)} · ${c.p[0]}–${c.p[1]} ₽</small></span><span class="ra">${BASK.has(c.key)?'✓ в списке':'+ добавить'}</span></button>`).join(''):'<div class="why" style="padding:8px 12px">Не нашли такой анализ</div>';r.classList.add('on')}
+function renderBook(){
+  const items=[...BASK];
+  $('#bask').innerHTML=items.length?items.map(k=>{const c=catBy(k);return `<div class="pk"><span class="pk-n">${esc(keyName(k))}${c?`<small>${c.p[0]}–${c.p[1]} ₽ · обычно: ${c.sp.join(', ')}</small>`:''}</span><button class="pk-x" type="button" aria-label="Убрать" data-rmb="${k}">×</button></div>`}).join(''):'<p class="why">Список пуст. Найдите анализ поиском выше или нажмите «Добавить к сдаче» в карточке показателя.</p>';
+  $('#bwhere').textContent=items.length?`Рядом с: ${LOC} · ${items.length} в списке`:'';
+  $('#labsPanel').hidden=!items.length;
+  if(items.length){
+  const uniq=[...new Set(items.map(k=>/^1,/.test(k)?'1,0':k))];const base=uniq.reduce((s,k)=>s+keyPrice(k),0);
+  let L=LABLIST.map(l=>({...l,an:Math.round(base*l.k/10)*10,dr:l.draw})).map(l=>({...l,tot:l.an+l.dr}));
+  const pmin=Math.min(...L.map(l=>l.tot)),pmax=Math.max(...L.map(l=>l.tot)),dmin=Math.min(...L.map(l=>l.km)),dmax=Math.max(...L.map(l=>l.km));
+  L.forEach(l=>l.sc=.6*((l.tot-pmin)/((pmax-pmin)||1))+.4*((l.km-dmin)/((dmax-dmin)||1)));
+  const cheap=L.reduce((a,b)=>b.tot<a.tot?b:a),near=L.reduce((a,b)=>b.km<a.km?b:a),opt=L.reduce((a,b)=>b.sc<a.sc?b:a);
+  const top=[opt,cheap,near].filter((x,i,a)=>a.indexOf(x)===i);const rest=L.filter(l=>!top.includes(l)).sort((a,b)=>a.sc-b.sc);
+  const card=l=>`<div class="lab ${l===opt?'best':l===cheap?'cheap':l===near?'near':''}"><div><h3>${esc(l.n)}</h3><div class="addr">${esc(l.a)} · ${esc(l.h)} · результат ${esc(l.ready)}</div><div class="badges">${l===opt?'<span class="bdg b-opt">Оптимально</span>':''}${l===cheap?'<span class="bdg b-cheap">Дешевле всего</span>':''}${l===near?'<span class="bdg b-near">Ближе всего</span>':''}</div></div>
+   <div class="pr num">${l.tot.toLocaleString('ru-RU')} ₽<small>анализы ${l.an.toLocaleString('ru-RU')} ₽ + взятие крови ${l.dr} ₽</small></div>
+   <div class="km num">${String(l.km).replace('.',',')} км<small>~${l.km<1.5?Math.max(3,Math.round(l.km*12)):Math.round(10+l.km*4)} мин в пути</small></div>
+   <button class="btn pri" data-site="${esc(l.n)}">Записаться на сайте</button></div>`;
+  $('#labs').innerHTML=top.map(card).join('')+(rest.length?`<div class="lab-div">Другие лаборатории рядом</div>`+rest.map(card).join(''):'')}
+  renderSpec()}
+/* врачи рядом */
+function sSearch(){const q=($('#sqs').value||'').trim().toLowerCase(),r=$('#sres');if(!q){r.classList.remove('on');return}
+  const sp=ALLSP.filter(x=>x.includes(q)),dn=SPECS.filter(d=>d.n.toLowerCase().includes(q));
+  r.innerHTML=(sp.map(x=>`<button type="button" data-spadd="${x}">${spIc(x)}<span class="rn">${x}<small>${SPECS.filter(d=>d.sp===x).length} рядом</small></span><span class="ra">${(SPF||[]).includes(x)?'✓ выбран':'+ выбрать'}</span></button>`).join('')+dn.map(d=>`<button type="button" data-spadd="${d.sp}">${spIc(d.sp)}<span class="rn">${esc(d.n)}<small>${d.sp} · ${esc(d.cl)}</small></span><span class="ra">+ выбрать</span></button>`).join(''))||'<div class="why" style="padding:8px 12px">Не нашли такого специалиста</div>';r.classList.add('on')}
+function renderSpec(){if(!$('#specs'))return;const mine=sqSpecs();if(SPF===null)SPF=mine.slice(0,2);
+  $('#spSel').innerHTML=SPF.length?SPF.map(x=>`<div class="pk">${spIc(x)}<span class="pk-n">${x}<small>${SPECS.filter(d=>d.sp===x).length} рядом</small></span><button class="pk-x" type="button" aria-label="Убрать" data-rms2="${x}">×</button></div>`).join(''):'<p class="why">Никто не выбран: ниже показаны все специалисты рядом.</p>';
+  const sug=mine.filter(x=>!SPF.includes(x));
+  $('#sq').innerHTML=SQ.size?`<div class="sqbox"><div class="why">Мои вопросы к специалисту: ${[...SQ].map(k=>`<span class="bchip">${esc(keyName(k))}<button aria-label="Убрать" data-rms="${k}">×</button></span>`).join(' ')}</div>${sug.length?`<div class="why" style="margin-top:8px">Справочно, с такими анализами обычно обращаются: ${sug.map(x=>`<button class="sugg" type="button" data-spadd="${x}">+ ${x}</button>`).join(' ')}</div>`:''}</div>`:'';
   const list=SPECS.filter(s=>!SPF.length||SPF.includes(s.sp)).sort((a,b)=>(SPF.indexOf(a.sp)-SPF.indexOf(b.sp))||a.km-b.km);
-  $('#specs').innerHTML=list.map(s=>`<div class="lab spec"><div><h3>${esc(s.n)}</h3><div class="addr"><b>${esc(s.sp)}</b> · ${esc(s.x)}</div><div class="addr">${esc(s.cl)}, ${esc(s.a)}</div></div><div class="pr num">${s.pr.toLocaleString('ru-RU')} ₽<small>первичный приём</small></div><div class="km num">${String(s.km).replace('.',',')} км<small>ближайшая запись: ${esc(s.slot)}</small></div><button class="btn pri" data-bookspec="${esc(s.n)}|${esc(s.sp)}">Записаться</button></div>`).join('')||'<p class="why">Нет специалистов по фильтру.</p>'}
+  $('#specsH').textContent=SPF.length?'Специалисты рядом: '+list.length:'Все специалисты рядом';
+  $('#specs').innerHTML=list.map(s=>`<div class="lab spec"><div class="spc">${spIc(s.sp)}<div><h3>${esc(s.n)}</h3><div class="addr"><b>${esc(s.sp)}</b> · ${esc(s.x)}</div><div class="addr">${esc(s.cl)}, ${esc(s.a)}</div></div></div><div class="pr num">${s.pr.toLocaleString('ru-RU')} ₽<small>первичный приём</small></div><div class="km num">${String(s.km).replace('.',',')} км<small>ближайшая запись: ${esc(s.slot)}</small></div><button class="btn pri" data-site="${esc(s.cl)}">Записаться на сайте</button></div>`).join('')}
+let LOC=store.get('oh3-loc','Санкт-Петербург, ул. Марата');
+function setLoc(v){LOC=v;store.set('oh3-loc',v);document.querySelectorAll('[data-loc]').forEach(i=>i.value=v);renderBook()}
+document.querySelectorAll('[data-loc]').forEach(i=>{i.value=LOC;i.onchange=()=>setLoc(i.value)});
+$('#bq').oninput=bSearch;$('#bq').onfocus=bSearch;$('#sqs').oninput=sSearch;$('#sqs').onfocus=sSearch;
 document.addEventListener('click',e=>{
-  const c=e.target.closest('[data-catadd]');if(c){const k=c.dataset.catadd;BASK.has(k)?BASK.delete(k):BASK.add(k);saveB();renderBook();return}
-  const a=e.target.closest('[data-addb]');if(a){const k=a.dataset.addb;BASK.has(k)?BASK.delete(k):BASK.add(k);saveB();a.textContent=BASK.has(k)?'✓ В списке на сдачу':'+ Добавить к сдаче';a.classList.toggle('on',BASK.has(k));renderBook();toast(BASK.has(k)?'Добавлено в список на сдачу: раздел «Где сдать»':'Убрано из списка')}
-  const s=e.target.closest('[data-adds]');if(s){const k=s.dataset.adds;SQ.has(k)?SQ.delete(k):SQ.add(k);saveB();SPF=null;s.textContent=SQ.has(k)?'✓ В поиске специалиста':'+ К поиску специалиста';s.classList.toggle('on',SQ.has(k));renderSpec();toast(SQ.has(k)?'Добавлено: «Где сдать → Найти специалиста»':'Убрано из поиска специалиста')}
+  if(!e.target.closest('.addsearch'))document.querySelectorAll('.addres').forEach(r=>r.classList.remove('on'));
+  const c=e.target.closest('[data-catadd]');if(c){const k=c.dataset.catadd;BASK.has(k)?BASK.delete(k):BASK.add(k);saveB();renderBook();$('#bq').value='';$('#bres').classList.remove('on');toast(BASK.has(k)?'Добавлено в список на сдачу':'Убрано из списка');return}
+  const a=e.target.closest('[data-addb]');if(a){const k=a.dataset.addb;BASK.has(k)?BASK.delete(k):BASK.add(k);saveB();a.textContent=BASK.has(k)?'✓ В списке на сдачу':'+ Добавить к сдаче';a.classList.toggle('on',BASK.has(k));renderBook();toast(BASK.has(k)?'Добавлено в список: раздел «Где сдать»':'Убрано из списка')}
+  const s=e.target.closest('[data-adds]');if(s){const k=s.dataset.adds;SQ.has(k)?SQ.delete(k):SQ.add(k);saveB();s.textContent=SQ.has(k)?'✓ В поиске специалиста':'+ К поиску специалиста';s.classList.toggle('on',SQ.has(k));renderSpec();toast(SQ.has(k)?'Добавлено: раздел «Врачи рядом»':'Убрано из поиска специалиста')}
   const r=e.target.closest('[data-rmb]');if(r){BASK.delete(r.dataset.rmb);saveB();renderBook()}
-  const rs=e.target.closest('[data-rms]');if(rs){SQ.delete(rs.dataset.rms);saveB();SPF=null;renderSpec()}
-  const f=e.target.closest('[data-spf]');if(f){const v=f.dataset.spf;if(v==='__all')SPF=[];else if(v==='__mine')SPF=sqSpecs();else SPF=SPF.includes(v)?SPF.filter(x=>x!==v):SPF.concat(v);renderSpec()}
-  const fs=e.target.closest('[data-findspec]');if(fs){SPF=specOf(+fs.dataset.findspec,null).slice();closeModal();show('book');setBM('spec')}
-  const bl=e.target.closest('[data-booklab]');if(bl){openModal('Запись на сдачу анализов',`<p><b>${esc(bl.dataset.booklab)}</b></p><div class="fgrid"><div class="field"><label for="bkd">Дата</label><input id="bkd" type="date" value="2026-11-16"></div><div class="field"><label for="bkt">Время</label><select id="bkt"><option>08:00</option><option>08:30</option><option>09:00</option><option>10:00</option></select></div></div><p class="why" style="margin-top:10px">Большинство анализов крови сдают утром натощак. Правила подготовки придут вместе с подтверждением.</p><div class="row-end"><button class="btn pri" id="bkok">Записаться</button></div>`)}
-  const bs=e.target.closest('[data-bookspec]');if(bs){const[n,sp]=bs.dataset.bookspec.split('|');openModal('Запись к специалисту',`<p><b>${esc(n)}</b>, ${esc(sp)}</p><div class="fgrid"><div class="field"><label for="bkd">Дата</label><input id="bkd" type="date" value="2026-11-16"></div><div class="field"><label for="bkt">Время</label><select id="bkt"><option>09:30</option><option>11:00</option><option>15:20</option><option>18:00</option></select></div></div><label class="chk" style="margin-top:10px"><input type="checkbox" checked> Открыть врачу доступ к моим анализам на 7 дней</label><div class="row-end"><button class="btn pri" id="bkok">Записаться</button></div>`)}
-  if(e.target.id==='bkok'){closeModal();toast('Демо: заявка отправлена')}});
-$('#bq').oninput=renderCat;
-$('#locIn').onchange=renderBook;
-$('#geo').onclick=()=>askPerm('geo',()=>{$('#locIn').value='Санкт-Петербург, по геолокации';renderBook();toast('Демо: расстояния считаются от вашего местоположения')});
+  const rs=e.target.closest('[data-rms]');if(rs){SQ.delete(rs.dataset.rms);saveB();renderSpec()}
+  const sa=e.target.closest('[data-spadd]');if(sa){const v=sa.dataset.spadd;SPF=SPF||[];if(!SPF.includes(v))SPF.push(v);saveSpf();$('#sqs').value='';$('#sres').classList.remove('on');renderSpec();return}
+  const r2=e.target.closest('[data-rms2]');if(r2){SPF=SPF.filter(x=>x!==r2.dataset.rms2);saveSpf();renderSpec()}
+  const fs=e.target.closest('[data-findspec]');if(fs){SPF=specOf(+fs.dataset.findspec,null).slice();saveSpf();closeModal();show('docs');renderSpec()}
+  const st=e.target.closest('[data-site]');if(st){openModal('Переход на сайт клиники',`<div class="permask"><div class="permic">${svgI('<path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',26)}</div><p>Запись проходит на сайте <b>${esc(st.dataset.site)}</b>. Сейчас откроем его в новой вкладке.</p><p class="why">Мы показываем цены и расписание справочно; итоговую стоимость и время уточняйте на сайте клиники.</p><div class="row-end"><button class="btn" type="button" data-mclose>Отмена</button><button class="btn pri" type="button" id="goSite">Перейти на сайт</button></div></div>`)}
+  if(e.target.closest('[data-mclose]'))closeModal();
+  if(e.target.id==='goSite'){closeModal();toast('Демо: в рабочей версии откроется сайт клиники')}
+  if(e.target.closest('[data-geo]'))askPerm('geo',()=>{setLoc('Санкт-Петербург, по геолокации');toast('Демо: расстояния считаются от вашего местоположения')})});
 
 
 /* полная история — отдельное окно */
