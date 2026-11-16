@@ -984,6 +984,40 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
   .dfilt{margin-left:0;width:100%}.dfilt button{flex:1;justify-content:center;padding:7px 4px;font-size:12.5px}
   .vbadge{margin:0 10px;font-size:11px}
 }
+/* v6.1: выбор систем */
+.sysf{margin:0 0 14px;background:rgba(255,255,255,.7);border:1px solid var(--line);border-radius:16px;padding:10px 12px 12px;box-shadow:var(--sh)}
+.sysf-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.sysf-n{font-size:13px;color:var(--ink2)}.sysf-n b{color:var(--ink)}
+.sysf-go{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;border-color:transparent;padding:7px 12px;white-space:nowrap}
+.supchips{display:flex;flex-wrap:wrap;gap:6px}
+.supc{display:inline-flex;align-items:center;gap:6px;border:1.5px solid color-mix(in srgb,var(--sc) 45%,#fff);background:color-mix(in srgb,var(--sc) 10%,#fff);color:var(--ink);border-radius:20px;padding:5px 10px 5px 8px;font-size:12.5px;font-weight:700;transition:background .15s,opacity .15s}
+.supc .supdot{width:9px;height:9px;box-shadow:none}
+.supn{font-size:11px;font-weight:600;color:var(--ink3)}
+.supc.off{background:#fff;border-color:var(--line);color:var(--ink3);border-style:dashed}
+.supc.off .supdot{background:#C9CCD6}
+.spk-pre{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+.spk-pre button{border:1px solid var(--line);background:var(--card);border-radius:20px;padding:6px 12px;font-size:12.5px;font-weight:600;color:var(--ink2)}
+.spk-pre button:hover{border-color:var(--accent);color:var(--accent)}
+.spk-sec{margin:0 0 14px}
+.spk-h{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:13.5px}
+.spk-h .link{margin-left:auto;font-size:12.5px}
+.spk-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.spk{display:grid;grid-template-columns:34px minmax(0,1fr) 20px;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--card);border-radius:12px;padding:8px 10px;transition:border-color .15s,background .15s}
+.spk-ic{width:34px;height:34px;border-radius:10px;background:#C9CCD6;display:flex;align-items:center;justify-content:center}
+.spk-ic svg{width:26px;height:26px}
+.spk-t{font-size:13px;font-weight:700;line-height:1.25;color:var(--ink3);overflow-wrap:anywhere}
+.spk-t small{display:block;font-weight:500;font-size:11.5px;color:var(--ink3);margin-top:1px}
+.spk-t .o{font-style:normal;color:var(--hi)}
+.spk-ck{width:20px;height:20px;border-radius:6px;border:1.5px solid #C9CCD6;display:flex;align-items:center;justify-content:center;color:transparent}
+.spk.on{border-color:color-mix(in srgb,var(--sc) 55%,#fff);background:color-mix(in srgb,var(--sc) 7%,#fff)}
+.spk.on .spk-ic{background:var(--sc)}
+.spk.on.nod .spk-ic{background:color-mix(in srgb,var(--sc) 45%,#fff)}
+.spk.on .spk-t{color:var(--ink)}
+.spk.on .spk-ck{background:var(--sc);border-color:var(--sc);color:#fff}
+.spk-foot{position:sticky;bottom:-1px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--card);padding:10px 0 2px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink2)}
+.spk-foot .btn{padding:9px 18px}
+@media(max-width:620px){.spk-g{grid-template-columns:1fr 1fr}.spk{grid-template-columns:28px minmax(0,1fr);padding:8px;gap:8px}.spk-ic{width:28px;height:28px}.spk-ic svg{width:22px;height:22px}.spk-ck{display:none}.spk-t{font-size:12px}
+  .sysf-n{font-size:12.5px}.sysf-go{padding:7px 10px}.supc{font-size:12px;padding:5px 9px 5px 7px}}
 
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
@@ -1863,7 +1897,7 @@ function validInfo(g){const v=VALID[g.gi];if(!v)return null;
     :{cls:'vexp',txt:'устарел',full:`${base} Сдан ${fmtD(lastD)}, срок прошёл.`,act:'renew'}}
 const CLK='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
 
-let DF=store.get('oh4-df','all');
+const HID=new Set(store.get('oh4-hid',[]));const saveHid=()=>store.set('oh4-hid',[...HID]);
 blockHTML=function(g){
   const n=g.rows.length,out=g.rows.filter(m=>m.st==='high'||m.st==='low').length;
   const lastD=g.rows.map(m=>m.cur?pd(m.cur.d):0).reduce((a,b)=>a>b?a:b,0);
@@ -1881,21 +1915,37 @@ blockHTML=function(g){
 renderBlocks=function(){const host=$('#blocks');host.classList.remove('tiles');host.classList.add('supl');
   host.innerHTML=SUPER.map(s=>{const gs=s.g.map(i=>G[i]).filter(Boolean);const has=gs.filter(g=>g.rows.length).length;
     return `<section class="supg" style="--sc:${s.c}" data-sup><h3 class="suph"><span class="supdot" aria-hidden="true"></span>${esc(s.t)}<small>${has} из ${gs.length} с данными</small></h3><div class="tiles">${gs.map(blockHTML).join('')}</div></section>`}).join('')
-    +`<div class="nodata dfempty" id="dfEmpty" hidden>Под этот фильтр блоков нет.</div>`;
+    +`<div class="nodata dfempty" id="dfEmpty" hidden>Системы не выбраны. <button class="link" data-sysedit>Выбрать системы</button></div>`;
   host.classList.toggle('printmode',printMode);
   host.querySelectorAll('[data-sel]').forEach(c=>c.onchange=()=>{const i=+c.dataset.sel;c.checked?sel.add(i):sel.delete(i);updP()});
   applyDF()};
 function applyDF(){let any=0;
-  document.querySelectorAll('#blocks .tile').forEach(t=>{const g=G[+t.dataset.gi];const ok=DF==='all'||(DF==='has'?g.rows.length>0:g.rows.length===0);t.classList.toggle('dfhide',!ok)});
+  document.querySelectorAll('#blocks .tile').forEach(t=>t.classList.toggle('dfhide',HID.has(+t.dataset.gi)));
   document.querySelectorAll('#blocks .supg').forEach(s=>{const vis=[...s.querySelectorAll('.tile')].some(t=>!t.classList.contains('dfhide')&&!t.hidden);s.hidden=!vis;if(vis)any++});
-  const e=$('#dfEmpty');if(e)e.hidden=any>0;
-  document.querySelectorAll('[data-df]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.df===DF))}
-(function(){const ss=$('.syssearch');if(!ss||$('#dfBar'))return;
-  const wrap=document.createElement('div');wrap.className='sysbar';ss.parentNode.insertBefore(wrap,ss);wrap.appendChild(ss);
-  const nE=G.filter(g=>!g.rows.length).length;
-  wrap.insertAdjacentHTML('beforeend',`<div class="dfilt" id="dfBar" role="group" aria-label="Фильтр блоков"><button type="button" data-df="all">Все</button><button type="button" data-df="has">Есть данные</button><button type="button" data-df="none">Нет данных<span class="dfn">${nE}</span></button></div>`);
-  wrap.addEventListener('click',e=>{const b=e.target.closest('[data-df]');if(!b)return;DF=b.dataset.df;store.set('oh4-df',DF);applyDF()});
-  /* поиск тоже должен скрывать пустые разделы */
+  const e=$('#dfEmpty');if(e)e.hidden=any>0;renderSysf()}
+const gOut=g=>g.rows.some(m=>m.st==='high'||m.st==='low');
+function renderSysf(){const h=$('#sysf');if(!h)return;const tot=G.length,on=tot-HID.size;
+  h.innerHTML=`<div class="sysf-top"><span class="sysf-n">Показаны <b>${on} из ${tot}</b> систем</span><button type="button" class="btn sysf-go" data-sysedit><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Выбрать системы</button></div>
+  <div class="supchips">${SUPER.map((s,i)=>{const n=s.g.filter(x=>!HID.has(x)).length;return `<button type="button" class="supc${n?'':' off'}" style="--sc:${s.c}" data-supt="${i}" aria-pressed="${n>0}"><span class="supdot"></span>${esc(s.t)}<span class="supn">${n}/${s.g.length}</span></button>`}).join('')}</div>`}
+function sysPickHTML(){
+  return `<div class="spk-pre"><button type="button" data-pre="all">Все</button><button type="button" data-pre="has">С данными</button><button type="button" data-pre="out">Есть отклонения</button><button type="button" data-pre="none">Снять все</button></div>`
+  +SUPER.map((s,i)=>`<div class="spk-sec" style="--sc:${s.c}"><div class="spk-h"><span class="supdot"></span><b>${esc(s.t)}</b><button type="button" class="link" data-supall="${i}">${s.g.every(x=>!HID.has(x))?'снять':'выбрать все'}</button></div>
+    <div class="spk-g">${s.g.map(gi=>{const g=G[gi];const n=g.rows.length;const on=!HID.has(gi);
+      return `<button type="button" class="spk${on?' on':''}${n?'':' nod'}" data-spk="${gi}" aria-pressed="${on}"><span class="spk-ic">${ICONS[IKEYS[gi]]||''}</span><span class="spk-t">${esc(g.title)}<small>${n?(gOut(g)?'<i class="o">есть отклонения</i>':n+' показ.'):'нет данных'}</small></span><span class="spk-ck" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M5 12l5 5 9-10"/></svg></span></button>`}).join('')}</div></div>`).join('')
+  +`<div class="spk-foot"><span id="spkN"></span><button type="button" class="btn pri" data-spkdone>Готово</button></div>`}
+function openSysPick(){openModal('Какие системы показывать',sysPickHTML());$('#modal .mbox').classList.add('wide');updSpkN()}
+function updSpkN(){const n=$('#spkN');if(n)n.textContent=`Выбрано ${G.length-HID.size} из ${G.length}. Выбор запомним.`}
+function refreshPick(){const b=$('#mB');if(b&&b.querySelector('.spk-pre')){const mb=$('#modal .mbox');const st=b.scrollTop,st2=mb.scrollTop;b.innerHTML=sysPickHTML();b.scrollTop=st;mb.scrollTop=st2;updSpkN()}}
+function setHid(fn){HID.clear();G.forEach(g=>{if(!fn(g))HID.add(g.gi)});saveHid();applyDF();refreshPick()}
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-sysedit]')){openSysPick();return}
+  const t=e.target.closest('[data-supt]');if(t){const s=SUPER[+t.dataset.supt];const anyOn=s.g.some(x=>!HID.has(x));s.g.forEach(x=>anyOn?HID.add(x):HID.delete(x));saveHid();applyDF();return}
+  const k=e.target.closest('[data-spk]');if(k){const gi=+k.dataset.spk;HID.has(gi)?HID.delete(gi):HID.add(gi);saveHid();applyDF();refreshPick();return}
+  const sa=e.target.closest('[data-supall]');if(sa){const s=SUPER[+sa.dataset.supall];const all=s.g.every(x=>!HID.has(x));s.g.forEach(x=>all?HID.add(x):HID.delete(x));saveHid();applyDF();refreshPick();return}
+  const pr=e.target.closest('[data-pre]');if(pr){const v=pr.dataset.pre;setHid(v==='all'?()=>true:v==='has'?g=>g.rows.length>0:v==='out'?gOut:()=>false);return}
+  if(e.target.closest('[data-spkdone]'))closeModal()});
+(function(){const ss=$('.syssearch');if(!ss||$('#sysf'))return;
+  ss.insertAdjacentHTML('afterend','<div class="sysf" id="sysf"></div>');
   const q0=$('#q');const oi=q0.oninput;q0.oninput=()=>{oi&&oi();applyDF()};
 })();
 
