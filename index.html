@@ -955,6 +955,35 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 .permr.need .permi{color:var(--prev)}
 .permgo{background:var(--or-g);border-color:transparent;color:#fff;white-space:nowrap}
 .permgo:hover{filter:brightness(1.05)}
+/* v6: разделы, пустые блоки, фильтр, срок действия */
+.sysbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 12px}
+.sysbar .syssearch{flex:1 1 260px;margin:0}
+.dfilt{display:inline-flex;margin-left:auto;background:rgba(255,255,255,.85);border:1px solid var(--line);border-radius:12px;padding:3px;box-shadow:var(--sh)}
+.dfilt button{border:0;background:transparent;border-radius:9px;padding:7px 11px;font-size:13px;font-weight:600;color:var(--ink2);white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.dfilt button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.dfn{font-size:11px;background:rgba(0,0,0,.08);border-radius:8px;padding:0 6px;line-height:17px}
+.dfilt button[aria-pressed="true"] .dfn{background:rgba(255,255,255,.25)}
+.supl{display:flex;flex-direction:column;gap:18px}
+.supg[hidden],.tile.dfhide{display:none!important}
+.suph{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:14px;font-weight:800;color:var(--ink)}
+.suph small{font-weight:500;color:var(--ink3);font-size:12px;margin-left:2px}
+.supdot{width:10px;height:10px;border-radius:50%;background:var(--sc);box-shadow:0 0 0 3px color-mix(in srgb,var(--sc) 20%,transparent)}
+.supg .tile:hover .tile-h,.supg .tile:focus-within .tile-h,.supg .tile.sel .tile-h{background-color:var(--head);background-image:linear-gradient(180deg,rgba(255,255,255,.14),rgba(0,0,0,.2))}
+.tile.nod{box-shadow:none;background:rgba(255,255,255,.5);border-style:dashed}
+.tile.nod .tile-h{background-color:color-mix(in srgb,var(--head) 38%,#fff);background-image:none}
+.tile.nod .tile-t{text-shadow:none}
+.tile.nod .tile-s,.tile.nod .why{color:var(--ink3)}
+.tile.nod:hover{transform:none}
+.vbadge{align-self:flex-start;margin:0 14px;display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;border-radius:8px;padding:3px 8px}
+.vnone{background:#EEF0F4;color:var(--ink2)}
+.vok{background:#E6F5EC;color:#1E7A45}
+.vexp{background:var(--prev-soft);color:var(--prev)}
+.vline{display:flex;gap:8px;align-items:flex-start;font-size:13px;border-radius:12px;padding:10px 12px;margin:0 0 12px}
+.vline svg{flex-shrink:0;margin-top:3px}
+@media(max-width:620px){
+  .dfilt{margin-left:0;width:100%}.dfilt button{flex:1;justify-content:center;padding:7px 4px;font-size:12.5px}
+  .vbadge{margin:0 10px;font-size:11px}
+}
 
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
@@ -1798,6 +1827,86 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-ai]');if(!
   if(!box.hidden){box.hidden=true;b.setAttribute('aria-expanded','false');return}
   const[g,r]=b.dataset.ai.split(',').map(Number);box.hidden=false;b.setAttribute('aria-expanded','true');box.innerHTML='<div class="ai-wait"><i></i><i></i><i></i> Готовим справку…</div>';
   setTimeout(()=>{box.innerHTML=aiHTML(G[g].rows[r])},RM?0:700)});
+/* большие разделы, пустые блоки, сроки действия */
+(function(){
+  const ICG=b=>'<svg viewBox="0 0 48 48" fill="none"><g stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">'+b+'</g></svg>';
+  ICONS.coag=ICG('<path d="M20 8c0 0-9 11-9 18a9 9 0 0 0 18 0c0-7-9-18-9-18z"/><circle cx="33" cy="31" r="8"/><path d="M33 27v4l3 2"/>');
+  ICONS.inflam=ICG('<path d="M24 40c-7 0-12-5-12-11 0-6 5-9 6-15 3 2 5 5 5 8 2-2 3-5 3-8 5 4 10 9 10 15 0 6-5 11-12 11z"/><path d="M24 40c-3 0-5-2-5-5 0-3 3-5 5-8 2 3 5 5 5 8 0 3-2 5-5 5z"/>');
+  ICONS.infect=ICG('<circle cx="24" cy="24" r="9"/><path d="M24 9v6M24 33v6M9 24h6M33 24h6M13.4 13.4l4.2 4.2M30.4 30.4l4.2 4.2M34.6 13.4l-4.2 4.2M17.6 30.4l-4.2 4.2"/><circle cx="21" cy="22" r="1.4"/><circle cx="27" cy="26" r="1.4"/>');
+  ICONS.urine=ICG('<path d="M18 8h12M20 8v8l-7 17a5 5 0 0 0 4.6 7h12.8a5 5 0 0 0 4.6-7l-7-17V8"/><path d="M15 30h18"/>');
+  [['Коагулограмма','МНО, АЧТВ, фибриноген, D-димер','coag'],
+   ['Воспаление','С-реактивный белок, СОЭ, ревмопробы','inflam'],
+   ['Инфекции','ВИЧ, сифилис, гепатиты B и C','infect'],
+   ['Общий анализ мочи','Плотность, белок, лейкоциты','urine']].forEach(([t,s,k])=>{
+     const gi=G.length;G.push({gi,title:t,sub:s,rows:[]});META.push([t,s]);IKEYS.push(k)});
+})();
+
+/* большие разделы: цвет шапки и порядок блоков */
+const SUPER=[
+ {t:'Кровь',c:'#C8364B',g:[1,4,12]},
+ {t:'Обмен веществ',c:'#C98410',g:[0,2,3,5]},
+ {t:'Гормоны',c:'#7B4FD0',g:[7]},
+ {t:'Органы',c:'#14907F',g:[8,9,15,10]},
+ {t:'Иммунитет и инфекции',c:'#2B6FD4',g:[6,13,14]},
+ {t:'Онкомаркеры',c:'#B83A82',g:[11]}];
+const supOf=gi=>SUPER.find(s=>s.g.includes(gi))||SUPER[0];
+
+/* срок действия результата: для госпитализации и операции. Цифры уточняем у Маши */
+const VALID={1:{d:14,t:'14 дней'},12:{d:14,t:'14 дней'},14:{d:90,t:'3 месяца'},15:{d:14,t:'14 дней'}};
+function validInfo(g){const v=VALID[g.gi];if(!v)return null;
+  const lastD=g.rows.map(m=>m.cur?pd(m.cur.d):0).reduce((a,b)=>a>b?a:b,0);
+  if(!lastD)return {cls:'vnone',txt:'срок '+v.t,full:`Для госпитализации и операции результат обычно действует ${v.t}.`};
+  const left=v.d-Math.round((LAST-lastD)/864e5);
+  return left>0?{cls:'vok',txt:'ещё '+left+' дн.',full:`Для госпитализации и операции результат обычно действует ${v.t}. Последняя сдача ${fmtD(lastD)}: осталось ${left} дн.`}
+    :{cls:'vexp',txt:'срок истёк',full:`Для госпитализации и операции результат обычно действует ${v.t}. Последняя сдача ${fmtD(lastD)}: срок истёк, анализ нужно сдать заново.`}}
+const CLK='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+
+let DF=store.get('oh4-df','all');
+blockHTML=function(g){
+  const n=g.rows.length,out=g.rows.filter(m=>m.st==='high'||m.st==='low').length;
+  const lastD=g.rows.map(m=>m.cur?pd(m.cur.d):0).reduce((a,b)=>a>b?a:b,0);
+  const chips=n?(out?`<span class="chip c-high">${out} не в норме</span>`:`<span class="chip c-ok">всё в норме</span>`):`<span class="chip c-none">нет данных</span>`;
+  const v=validInfo(g);
+  return `<article class="tile${n?'':' nod'}" id="b${g.gi}" data-gi="${g.gi}" style="--head:${supOf(g.gi).c}">
+    <label class="pchk"><input type="checkbox" data-sel="${g.gi}" ${sel.has(g.gi)?'checked':''} ${n?'':'disabled'}> в печать</label>
+    <button class="tile-b" data-sys="${g.gi}" aria-haspopup="dialog">
+      <span class="tile-h"><span class="bic" aria-hidden="true">${ICONS[IKEYS[g.gi]]||''}</span><span class="tile-t">${esc(g.title)}</span></span>
+      <span class="tile-s">${esc(g.sub)}</span>
+      ${v?`<span class="vbadge ${v.cls}" title="${esc(v.full)}">${CLK}${v.txt}</span>`:''}
+      <span class="tile-f"><span class="why">${n?n+' показ.'+(lastD?' · '+fmtD(lastD):''):'ещё не загружено'}</span>${chips}</span>
+      <span class="tile-m" data-match></span>
+    </button></article>`};
+renderBlocks=function(){const host=$('#blocks');host.classList.remove('tiles');host.classList.add('supl');
+  host.innerHTML=SUPER.map(s=>{const gs=s.g.map(i=>G[i]).filter(Boolean);const has=gs.filter(g=>g.rows.length).length;
+    return `<section class="supg" style="--sc:${s.c}" data-sup><h3 class="suph"><span class="supdot" aria-hidden="true"></span>${esc(s.t)}<small>${has} из ${gs.length} с данными</small></h3><div class="tiles">${gs.map(blockHTML).join('')}</div></section>`}).join('')
+    +`<div class="nodata dfempty" id="dfEmpty" hidden>Под этот фильтр блоков нет.</div>`;
+  host.classList.toggle('printmode',printMode);
+  host.querySelectorAll('[data-sel]').forEach(c=>c.onchange=()=>{const i=+c.dataset.sel;c.checked?sel.add(i):sel.delete(i);updP()});
+  applyDF()};
+function applyDF(){let any=0;
+  document.querySelectorAll('#blocks .tile').forEach(t=>{const g=G[+t.dataset.gi];const ok=DF==='all'||(DF==='has'?g.rows.length>0:g.rows.length===0);t.classList.toggle('dfhide',!ok)});
+  document.querySelectorAll('#blocks .supg').forEach(s=>{const vis=[...s.querySelectorAll('.tile')].some(t=>!t.classList.contains('dfhide')&&!t.hidden);s.hidden=!vis;if(vis)any++});
+  const e=$('#dfEmpty');if(e)e.hidden=any>0;
+  document.querySelectorAll('[data-df]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.df===DF))}
+(function(){const ss=$('.syssearch');if(!ss||$('#dfBar'))return;
+  const wrap=document.createElement('div');wrap.className='sysbar';ss.parentNode.insertBefore(wrap,ss);wrap.appendChild(ss);
+  const nE=G.filter(g=>!g.rows.length).length;
+  wrap.insertAdjacentHTML('beforeend',`<div class="dfilt" id="dfBar" role="group" aria-label="Фильтр блоков"><button type="button" data-df="all">Все</button><button type="button" data-df="has">Есть данные</button><button type="button" data-df="none">Нет данных<span class="dfn">${nE}</span></button></div>`);
+  wrap.addEventListener('click',e=>{const b=e.target.closest('[data-df]');if(!b)return;DF=b.dataset.df;store.set('oh4-df',DF);applyDF()});
+  /* поиск тоже должен скрывать пустые разделы */
+  const q0=$('#q');const oi=q0.oninput;q0.oninput=()=>{oi&&oi();applyDF()};
+})();
+
+/* к каким специалистам: основные + «также смотрят» (по ответам Маши, 16.11) */
+const SPEC_ALSO={0:'диетолог, кардиолог, невролог, психиатр',1:'смотрят почти все специалисты',2:'диетолог, невролог, флеболог, офтальмолог',3:'диетолог, невролог, психиатр, кардиолог',
+ 5:'невролог, травматолог-ортопед',6:'терапевт, дерматолог, пульмонолог',7:'кардиолог, невролог, педиатр',8:'невролог',9:'ревматолог, невролог',10:'хирург, онколог, стоматолог',
+ 11:'смотрят почти все специалисты',12:'лечащий врач перед операцией, хирург',13:'невролог, травматолог-ортопед',14:'невролог, психиатр, хирург перед операцией',15:'хирург'};
+sysBody=function(g){const n=g.rows.length;const v=validInfo(g);const also=SPEC_ALSO[g.gi];
+  return (v?`<div class="vline ${v.cls}">${CLK}<span>${esc(v.full)}</span></div>`:'')
+   +(n?`<div class="mhead"><span>Показатель</span><span>Последнее</span><span class="hide-s">Норма лаборатории <button class="info" data-modal="ref" aria-label="Что значит норма">?</button></span><span class="hide-s">Предыдущее</span><span></span></div>`+g.rows.map(rowHTML).join('')
+   :`<div class="nodata">В загруженных файлах таких анализов нет. <button class="link" data-addfrom>Добавить анализ</button></div>`)
+   +`<div class="spline">Справочно: с этими анализами обычно обращаются к специалистам: <b>${specOf(g.gi,null).join(', ')}</b>.${also?` Также смотрят: ${esc(also)}.`:''} Если не знаете, с чего начать, начните с терапевта. <button class="link" data-findspec="${g.gi}">Найти рядом →</button></div>`};
+document.addEventListener('click',e=>{if(e.target.closest('[data-addfrom]')){closeModal();openAdd()}});
 /* загрузка: камера, галерея, файлы */
 document.addEventListener('click',e=>{const u=e.target.closest('[data-up]');if(!u)return;const k=u.dataset.up;
   requireLogin(()=>askPerm(k,()=>{const f=$('#file');f.accept=k==='files'?'application/pdf,image/*':'image/*';if(k==='camera')f.setAttribute('capture','environment');else f.removeAttribute('capture');f.click()}))});
@@ -1877,6 +1986,7 @@ const CAT=[
 CAT.forEach((c,i)=>c.key=c.k||'c'+i);
 const catBy=k=>CAT.find(c=>c.key===k);
 const SPEC_G=[['терапевт','эндокринолог'],['терапевт','гематолог'],['терапевт','кардиолог','эндокринолог'],['терапевт','эндокринолог','гастроэнтеролог'],['терапевт','гематолог','гинеколог'],['терапевт','нефролог','кардиолог'],['аллерголог-иммунолог'],['эндокринолог','уролог','гинеколог'],['терапевт','гастроэнтеролог','инфекционист'],['терапевт','нефролог','ревматолог','уролог'],['гастроэнтеролог','инфекционист'],['онколог','терапевт']];
+SPEC_G.push(['гематолог','терапевт'],['терапевт','ревматолог'],['инфекционист','терапевт'],['терапевт','нефролог','уролог']);
 const SPEC_I={'7,0':['эндокринолог','уролог'],'7,1':['эндокринолог'],'7,2':['эндокринолог'],'9,0':['терапевт','ревматолог','нефролог']};
 function specOf(gi,ri){if(ri!=null&&SPEC_I[gi+','+ri])return SPEC_I[gi+','+ri];return SPEC_G[gi]||['терапевт']}
 function specOfKey(k){const c=catBy(k);if(c&&!/^\d/.test(k))return c.sp;const[g,r]=k.split(',').map(Number);return specOf(g,r)}
