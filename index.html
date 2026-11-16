@@ -1018,6 +1018,8 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 .spk-foot .btn{padding:9px 18px}
 @media(max-width:620px){.spk-g{grid-template-columns:1fr 1fr}.spk{grid-template-columns:28px minmax(0,1fr);padding:8px;gap:8px}.spk-ic{width:28px;height:28px}.spk-ic svg{width:22px;height:22px}.spk-ck{display:none}.spk-t{font-size:12px}
   .sysf-n{font-size:12.5px}.sysf-go{padding:7px 10px}.supc{font-size:12px;padding:5px 9px 5px 7px}}
+/* одинаковая высота шапок в ряду */
+.supg .tile-h{box-sizing:border-box}
 
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
@@ -1919,10 +1921,16 @@ renderBlocks=function(){const host=$('#blocks');host.classList.remove('tiles');h
   host.classList.toggle('printmode',printMode);
   host.querySelectorAll('[data-sel]').forEach(c=>c.onchange=()=>{const i=+c.dataset.sel;c.checked?sel.add(i):sel.delete(i);updP()});
   applyDF()};
+function eqHeads(){const hs=[...document.querySelectorAll('#blocks .supg:not([hidden]) .tile:not(.dfhide):not([hidden]) .tile-h')];hs.forEach(h=>h.style.minHeight='');
+  const rows={};hs.forEach(h=>{const k=Math.round(h.getBoundingClientRect().top);(rows[k]=rows[k]||[]).push(h)});
+  Object.values(rows).forEach(r=>{if(r.length<2)return;const m=Math.max(...r.map(h=>h.offsetHeight));r.forEach(h=>h.style.minHeight=m+'px')})}
+{const _sh=show;show=function(id){const r=_sh.apply(this,arguments);if(id==='summary')setTimeout(eqHeads,60);return r}}
+try{document.fonts.ready.then(()=>eqHeads())}catch(_){}
+let eqT=0;addEventListener('resize',()=>{clearTimeout(eqT);eqT=setTimeout(eqHeads,120)});
 function applyDF(){let any=0;
   document.querySelectorAll('#blocks .tile').forEach(t=>t.classList.toggle('dfhide',HID.has(+t.dataset.gi)));
   document.querySelectorAll('#blocks .supg').forEach(s=>{const vis=[...s.querySelectorAll('.tile')].some(t=>!t.classList.contains('dfhide')&&!t.hidden);s.hidden=!vis;if(vis)any++});
-  const e=$('#dfEmpty');if(e)e.hidden=any>0;renderSysf()}
+  const e=$('#dfEmpty');if(e)e.hidden=any>0;renderSysf();requestAnimationFrame(eqHeads)}
 const gOut=g=>g.rows.some(m=>m.st==='high'||m.st==='low');
 function renderSysf(){const h=$('#sysf');if(!h)return;const tot=G.length,on=tot-HID.size;
   h.innerHTML=`<div class="sysf-top"><span class="sysf-n">Показаны <b>${on} из ${tot}</b> систем</span><button type="button" class="btn sysf-go" data-sysedit><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Выбрать системы</button></div>
