@@ -1124,6 +1124,24 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 }
 @media (prefers-reduced-motion:reduce){.swwrap .sw-rot,.swwrap .sw-num,.swwrap .sw-pet{transition:none}}
 @media(min-width:900px){.swwrap .sw-cards{grid-column:1;grid-row:1}.swwrap .sw-empty,.swwrap .sw-panel{grid-column:2;grid-row:1}}
+/* v7.3: компактные действия в карточке показателя */
+.cta.cta2{gap:8px;padding:12px}
+.act{display:grid;grid-template-columns:40px minmax(0,1fr);gap:10px;align-items:center;text-align:left;border:0;border-radius:14px;padding:10px 12px;background:var(--or-g);color:#fff;box-shadow:0 6px 14px rgba(232,89,12,.22);transition:transform 160ms cubic-bezier(0.23,1,0.32,1)}
+.act:active{transform:scale(.97)}
+.act-ic{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.22);display:grid;place-items:center}
+.act-ic .spic{background:transparent;width:30px;height:30px}.act-ic .spic svg{width:28px;height:28px}
+.act-t b{display:block;font-size:14px;font-weight:800;line-height:1.2;color:inherit}
+.act-t small{display:block;font-size:12px;opacity:.85;line-height:1.3;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.act.alt{background:var(--card);color:var(--ink);box-shadow:none;border:1px solid #E3D8FA}
+.act.alt .act-ic{background:var(--accent)}
+.act.alt .act-t small{color:var(--ink3);opacity:1}
+.act.on{background:#E6F5EC;color:#1E7A45;box-shadow:none;border:1px solid #BFE3CC}
+.act.on .act-ic{background:#2E9E5B;color:#fff}
+.act.on .act-t small{color:#3C8A5A;opacity:1}
+@media(max-width:900px){.cta.cta2{display:grid;grid-template-columns:1fr 1fr;background:none;border:0;padding:0;margin-top:4px}.cta.cta2 .ctal{grid-column:1/-1}}
+@media(max-width:420px){.act{grid-template-columns:34px minmax(0,1fr);gap:8px;padding:9px 10px}.act-ic{width:34px;height:34px;border-radius:10px}.act-t b{font-size:13px}.act-t small{font-size:11.5px}}
+.cta .act-t b{color:inherit}
+@media(max-width:900px){.act-t small{white-space:normal;overflow-wrap:anywhere}}
 
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
@@ -1856,12 +1874,12 @@ function detailHTML(m){
   const inB=BASK.has(key),inS=SQ.has(key),sp=specOf(m.gi,m.ri);
   const ai=`<button class="aibtn" type="button" data-ai="${key}" aria-expanded="false">${svgI(SPARK,16)} Объяснить показатель</button><div class="aibox" hidden></div>`;
   return `<div class="dgrid"><div class="dmain">${showC?tog+chart+table:table+'<div class="dbtns">'+ai+tog+'</div>'+chart}</div>
-   <aside class="cta"><b>Что дальше</b>
-     <span>Пересдать: покажем лаборатории рядом, где ближе и дешевле.</span>
-     <button class="addb${inB?' on':''}" data-addb="${key}">${inB?'✓ В списке на сдачу':'+ Добавить к сдаче'}</button>
-     <span>Справочно, с этим анализом обычно обращаются: <b>${sp.join(', ')}</b>.</span>
-     <button class="addb alt${inS?' on':''}" data-adds="${key}">${inS?'✓ В поиске специалиста':'+ К поиску специалиста'}</button>
-     <span class="ctal"><button class="link" data-tab-go="book">Где сдать →</button><button class="link" data-tab-go="docs">Врачи рядом →</button></span></aside></div>`}
+   <aside class="cta cta2">
+     <button class="act${inB?' on':''}" data-addb="${key}"><span class="act-ic">${inB?ACT_OK:ACT_LAB}</span><span class="act-t"><b>${inB?'В списке на сдачу':'Добавить к сдаче'}</b><small>${inB?'ещё раз — убрать':'где ближе и дешевле'}</small></span></button>
+     <button class="act alt${inS?' on':''}" data-adds="${key}"><span class="act-ic">${inS?ACT_OK:(typeof spIc==='function'?spIc(sp[0]):'')}</span><span class="act-t"><b>${inS?'В поиске врача':'К специалисту'}</b><small>${esc(sp.slice(0,2).join(', '))}</small></span></button>
+     ${inB||inS?`<span class="ctal">${inB?'<button class="link" data-tab-go="book">Где сдать →</button>':''}${inS?'<button class="link" data-tab-go="docs">Врачи рядом →</button>':''}</span>`:''}</aside></div>`}
+const ACT_LAB='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg>';
+const ACT_OK='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>';
 document.addEventListener('change',e=>{
   if(e.target.matches('[data-chartt]')){const w=e.target.closest('.dmain').querySelector('.cwrap');w.hidden=!e.target.checked}
   if(e.target.matches('[data-ov]')){OV[e.target.dataset.ov]=e.target.checked;store.set('oh2-ov',OV);document.querySelectorAll('[data-cw]').forEach(w=>{const[g,r]=w.dataset.cw.split(',').map(Number);w.innerHTML=chartBox(G[g].rows[r])})}});
@@ -2246,8 +2264,8 @@ $('#bq').oninput=bSearch;$('#bq').onfocus=bSearch;$('#sqs').oninput=sSearch;$('#
 document.addEventListener('click',e=>{
   if(!e.target.closest('.addsearch'))document.querySelectorAll('.addres').forEach(r=>r.classList.remove('on'));
   const c=e.target.closest('[data-catadd]');if(c){const k=c.dataset.catadd;BASK.has(k)?BASK.delete(k):BASK.add(k);saveB();renderBook();$('#bq').value='';$('#bres').classList.remove('on');toast(BASK.has(k)?'Добавлено в список на сдачу':'Убрано из списка');return}
-  const a=e.target.closest('[data-addb]');if(a){const k=a.dataset.addb;BASK.has(k)?BASK.delete(k):BASK.add(k);saveB();a.textContent=BASK.has(k)?'✓ В списке на сдачу':'+ Добавить к сдаче';a.classList.toggle('on',BASK.has(k));renderBook();toast(BASK.has(k)?'Добавлено в список: раздел «Где сдать»':'Убрано из списка')}
-  const s=e.target.closest('[data-adds]');if(s){const k=s.dataset.adds;SQ.has(k)?SQ.delete(k):SQ.add(k);saveB();s.textContent=SQ.has(k)?'✓ В поиске специалиста':'+ К поиску специалиста';s.classList.toggle('on',SQ.has(k));renderSpec();toast(SQ.has(k)?'Добавлено: раздел «Врачи рядом»':'Убрано из поиска специалиста')}
+  const a=e.target.closest('[data-addb]');if(a){const k=a.dataset.addb;BASK.has(k)?BASK.delete(k):BASK.add(k);saveB();a.classList.toggle('on',BASK.has(k));if(a.classList.contains('act'))actUpd(a,BASK.has(k),'b');else a.textContent=BASK.has(k)?'✓ В списке на сдачу':'+ Добавить к сдаче';renderBook();toast(BASK.has(k)?'Добавлено в список: раздел «Где сдать»':'Убрано из списка')}
+  const s=e.target.closest('[data-adds]');if(s){const k=s.dataset.adds;SQ.has(k)?SQ.delete(k):SQ.add(k);saveB();s.classList.toggle('on',SQ.has(k));if(s.classList.contains('act'))actUpd(s,SQ.has(k),'s');else s.textContent=SQ.has(k)?'✓ В поиске специалиста':'+ К поиску специалиста';renderSpec();toast(SQ.has(k)?'Добавлено: раздел «Врачи рядом»':'Убрано из поиска специалиста')}
   const r=e.target.closest('[data-rmb]');if(r){BASK.delete(r.dataset.rmb);saveB();renderBook()}
   const rs=e.target.closest('[data-rms]');if(rs){SQ.delete(rs.dataset.rms);saveB();renderSpec()}
   const sa=e.target.closest('[data-spadd]');if(sa){const v=sa.dataset.spadd;SPF=SPF||[];if(!SPF.includes(v))SPF.push(v);saveSpf();$('#sqs').value='';$('#sres').classList.remove('on');renderSpec();return}
@@ -2369,6 +2387,14 @@ function openCtxAsk(){const act=EV.med.map((e,i)=>({e,i})).filter(x=>x.e.f&&medA
 renderTabs('summary');updLogin();fillForm();renderSummary();renderCtx();renderBlocks();renderUploads();drawQR();renderDocs();renderShared();renderBook();{const co=store.get('oh3-ctx',true);$('#cCtx').classList.toggle('closed',!co);$('#cCtx .fh').setAttribute('aria-expanded',co)}
 document.addEventListener('click',e=>{const f=e.target.closest('#cCtx .fh');if(f)store.set('oh3-ctx',!$('#cCtx').classList.contains('closed'))});
 if(!store.get('oh2-tut',0))openTut();
+
+function actUpd(btn,on,t){const sp=specOfKey(btn.dataset.adds||btn.dataset.addb);
+  btn.querySelector('.act-ic').innerHTML=on?ACT_OK:(t==='b'?ACT_LAB:spIc(sp[0]));
+  btn.querySelector('.act-t b').textContent=on?(t==='b'?'В списке на сдачу':'В поиске врача'):(t==='b'?'Добавить к сдаче':'К специалисту');
+  if(t==='b')btn.querySelector('.act-t small').textContent=on?'ещё раз — убрать':'где ближе и дешевле';
+  const cta=btn.closest('.cta2');let l=cta.querySelector('.ctal');const inB=cta.querySelector('[data-addb]').classList.contains('on'),inS=cta.querySelector('[data-adds]').classList.contains('on');
+  if(!inB&&!inS){l&&l.remove();return}if(!l){cta.insertAdjacentHTML('beforeend','<span class="ctal"></span>');l=cta.querySelector('.ctal')}
+  l.innerHTML=(inB?'<button class="link" data-tab-go="book">Где сдать →</button>':'')+(inS?'<button class="link" data-tab-go="docs">Врачи рядом →</button>':'')}
 
 /* база Маши: специалист → какие анализы смотрит (16.11) */
 const SPB={
