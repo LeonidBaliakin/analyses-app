@@ -1035,6 +1035,49 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 .st-none .sptk-n{color:var(--ink2)}
 .sptk-f{gap:8px;flex-wrap:wrap}
 @media(max-width:620px){.sptk-l li{font-size:13px;padding:9px 10px}.sptk-f .btn{flex:1}}
+/* v7: сводка-апельсин */
+#sw{--eo:cubic-bezier(0.23,1,0.32,1);--eio:cubic-bezier(0.77,0,0.175,1);margin-top:14px;padding:14px 16px}
+.sw-line{display:flex;align-items:center;gap:16px}
+.sw-wheel{flex:0 0 116px;height:116px}.sw-wheel svg{width:100%;height:100%;overflow:visible}
+.sw-rot{transform-box:view-box;transform-origin:60px 60px;transition:transform 520ms var(--eio)}
+.sw-pet{cursor:pointer;transform-box:fill-box;transform-origin:center;transition:transform 240ms var(--eo),opacity 220ms ease}
+.sw-pet rect{filter:drop-shadow(0 2px 3px rgba(200,80,10,.25))}
+.sw-has .sw-pet{opacity:.85}.sw-has .sw-pet.on{opacity:1;transform:translate(2px,-3px) scale(1.06)}
+.sw-num{font-size:15px;font-weight:800;fill:#fff;pointer-events:none;transform-box:fill-box;transform-origin:center;transition:transform 520ms var(--eio)}
+.sw-cards{flex:1;min-width:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.sw-cd{display:grid;grid-template-columns:10px auto minmax(0,1fr) 16px;gap:10px;align-items:center;text-align:left;border:1px solid var(--line);background:rgba(255,255,255,.75);border-radius:14px;padding:11px 12px;transition:transform 160ms var(--eo),border-color 160ms ease,box-shadow 160ms ease}
+.sw-cd:active{transform:scale(.97)}
+.sw-cd>i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.sw-cd.on{border-color:var(--c);box-shadow:inset 0 0 0 1px var(--c)}
+.sw-n{font-size:24px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+.sw-t b{display:block;font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.25}
+.sw-t .sw-sh{display:none}
+.sw-t small{display:block;font-size:12px;color:var(--ink3);margin-top:1px}
+.sw-chev{color:var(--ink3);transition:transform 240ms var(--eo)}
+.sw-cd[aria-expanded="true"] .sw-chev{transform:rotate(180deg)}
+.sw-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows 280ms var(--eo)}
+.sw-panel.open{grid-template-rows:1fr}
+.sw-pin{min-height:0;overflow:hidden}
+.sw-pi{margin-top:12px;border-top:1px solid var(--line);padding-top:10px;opacity:0;transform:translateY(-6px);transition:opacity 220ms ease,transform 280ms var(--eo)}
+.sw-panel.open .sw-pi{opacity:1;transform:none;transition-delay:60ms}
+.sw-ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.sw-pt{font-weight:800;font-size:15px}
+.sw-x{border:0;background:transparent;font-size:22px;line-height:1;color:var(--ink3);padding:0 4px}
+.sw-body .card-b{padding-left:0;padding-right:0}
+.sw-body .sw-pane[hidden]{display:none!important}
+@media (hover:hover) and (pointer:fine){.sw-cd:hover{border-color:var(--c)}}
+@media(max-width:620px){
+  #sw{padding:12px}
+  .sw-line{flex-direction:column;gap:8px}
+  .sw-wheel{flex-basis:auto;width:132px;height:132px}
+  .sw-cards{width:100%;gap:6px}
+  .sw-cd{grid-template-columns:1fr;justify-items:center;text-align:center;gap:2px;padding:8px 4px}
+  .sw-cd>i{width:8px;height:8px}
+  .sw-n{font-size:21px;line-height:1.1}
+  .sw-t b{display:none}.sw-t .sw-sh{display:block;font-size:11.5px;color:var(--ink2)}
+  .sw-t small,.sw-chev{display:none}
+}
+@media (prefers-reduced-motion:reduce){.sw-rot,.sw-num,.sw-pet,.sw-cd,.sw-panel,.sw-pi,.sw-chev{transition:opacity 150ms ease!important}.sw-pi{transform:none}}
 
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
@@ -2344,6 +2387,55 @@ document.addEventListener('click',e=>{
   document.querySelectorAll('#specs .spec').forEach(c=>{const b=c.querySelector('.addr b');if(!b||!SPB[b.textContent]||c.querySelector('[data-sptk]'))return;
     b.parentNode.insertAdjacentHTML('afterend',`<button type="button" class="link sptk-go" data-sptk="${esc(b.textContent)}">Какие анализы взять →</button>`)})};}
 try{renderSpec()}catch(_){}
+
+/* сводка-апельсин: три дольки вместо трёх плашек */
+(function(){
+  const sum=document.querySelector('#v-summary .sum');if(!sum||$('#sw'))return;
+  const W=[{id:'cChg',t:'Что изменилось',sh:'Изменилось',a:'#FFB347',b:'#F27A1A'},
+           {id:'cDev',t:'В норме и не в норме',sh:'Не в норме',a:'#FF8A50',b:'#D9440F'},
+           {id:'cCtx',t:'Контекст к сдаче',sh:'Контекст',a:'#FFD066',b:'#F29A0C'}];
+  const OFF=Math.atan2(-13.5,24)*180/Math.PI;
+  let d='<defs>'+W.map((x,i)=>`<linearGradient id="swg${i}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${x.a}"/><stop offset="1" stop-color="${x.b}"/></linearGradient>`).join('')+'</defs><g class="sw-rot">';
+  W.forEach((x,i)=>{const ang=-90+i*120;d+=`<g transform="translate(60 60) rotate(${ang})"><g class="sw-pet" data-sw="${i}"><rect x="-4" y="-27" width="56" height="27" rx="13.5" fill="url(#swg${i})"><title>${x.t}</title></rect></g><g transform="translate(24 -13.5)"><text class="sw-num" data-swn="${i}" text-anchor="middle" y="5.5"></text></g></g>`});
+  d+='</g>';
+  const box=document.createElement('div');box.className='sw card';box.id='sw';
+  box.innerHTML=`<div class="sw-line"><div class="sw-wheel"><svg viewBox="0 0 120 120" role="img" aria-label="Сводка последней сдачи: три раздела">${d}</svg></div>
+   <div class="sw-cards">${W.map((x,i)=>`<button type="button" class="sw-cd" style="--c:${x.b}" data-sw="${i}" aria-expanded="false"><i aria-hidden="true"></i><span class="sw-n" data-swc="${i}"></span><span class="sw-t"><b>${x.t}</b><b class="sw-sh">${x.sh}</b><small data-sws="${i}"></small></span><svg class="sw-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>`).join('')}</div></div>
+   <div class="sw-panel"><div class="sw-pin"><div class="sw-pi"><div class="sw-ph"><span class="sw-pt"></span><button type="button" class="sw-x" aria-label="Свернуть">×</button></div><div class="sw-body"></div></div></div></div>`;
+  sum.parentNode.insertBefore(box,sum);
+  /* переносим тела старых карточек в панель: рендеры пишут в те же id */
+  const body=box.querySelector('.sw-body');
+  W.forEach((x,i)=>{const c=$('#'+x.id);const fb=c.querySelector('.fb');fb.classList.add('sw-pane');fb.dataset.pane=i;body.appendChild(fb)});
+  sum.hidden=true;
+
+  const rot=box.querySelector('.sw-rot'),svg=box.querySelector('svg'),panel=box.querySelector('.sw-panel');
+  const fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
+  let sel=store.get('oh4-sw',store.get('oh3-ctx',true)?2:-1),base=0,hov=-1;
+  function nums(){
+    const li=DATES.length-1,w=ALL.filter(m=>m.cur&&m.cur.i===li);
+    const nOut=w.filter(m=>m.prev&&m.prev.st==='ok'&&m.st!=='ok').length,nBack=w.filter(m=>m.prev&&m.prev.st!=='ok'&&m.st==='ok').length;
+    const out=ALL.filter(m=>m.st==='high'||m.st==='low').length;
+    const nc=(weightAlert()?1:0)+nearEvents(DATES[li],45).length;
+    const v=[[nOut+nBack,`${nOut} вышли за норму · ${nBack} вернулись`],[out,`из ${ALL.length} показателей`],[nc,nc?'события рядом со сдачей':'событий нет']];
+    v.forEach(([n,s],i)=>{box.querySelector(`[data-swn="${i}"]`).textContent=n;box.querySelector(`[data-swc="${i}"]`).textContent=n;box.querySelector(`[data-sws="${i}"]`).textContent=s})}
+  function paint(anim){const a=hov>=0?hov:sel;
+    svg.classList.toggle('sw-has',a>=0);
+    box.querySelectorAll('.sw-pet').forEach(p=>p.classList.toggle('on',+p.dataset.sw===a));
+    box.querySelectorAll('.sw-cd').forEach(c=>{const on=+c.dataset.sw===sel;c.classList.toggle('on',+c.dataset.sw===a);c.setAttribute('aria-expanded',on)});
+    if(sel>=0){const c=-90+sel*120+OFF;let t=90-c;while(t-base>180)t-=360;while(t-base<-180)t+=360;base=t}
+    rot.style.transform=`rotate(${base}deg)`;
+    box.querySelectorAll('.sw-num').forEach(t=>{const own=-90+(+t.dataset.swn)*120;t.style.transform=`rotate(${-(own+base)}deg)`});
+    if(sel<0){panel.classList.remove('open');return}
+    box.querySelector('.sw-pt').textContent=W[sel].t;box.querySelector('.sw-pt').style.color=W[sel].b;
+    box.querySelectorAll('.sw-pane').forEach(p=>p.hidden=+p.dataset.pane!==sel);
+    if(anim){panel.classList.remove('open');void panel.offsetWidth}
+    panel.classList.add('open')}
+  box.addEventListener('click',e=>{if(e.target.closest('.sw-x')){sel=-1;store.set('oh4-sw',sel);paint();return}
+    const t=e.target.closest('[data-sw]');if(!t)return;const i=+t.dataset.sw;sel=sel===i?-1:i;hov=-1;store.set('oh4-sw',sel);paint(true)});
+  if(fine)box.querySelectorAll('.sw-pet').forEach(p=>{p.addEventListener('mouseenter',()=>{hov=+p.dataset.sw;paint()});p.addEventListener('mouseleave',()=>{hov=-1;paint()})});
+  {const rs=renderSummary;renderSummary=function(){rs.apply(this,arguments);nums()};const rc=renderCtx;renderCtx=function(){rc.apply(this,arguments);nums()}}
+  nums();paint(false);
+})();
 
 </script>
 </body>
