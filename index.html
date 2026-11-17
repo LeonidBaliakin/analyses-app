@@ -1096,6 +1096,30 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 }
 .swwrap{align-items:flex-start}.swwrap .sw-wheel{margin-top:4px}
 @media(max-width:620px){.swwrap{align-items:center}}
+/* v7.2: без синей подсветки нажатия, плавнее, ПК-раскладка */
+.swwrap,.swwrap *{-webkit-tap-highlight-color:transparent}
+.swwrap svg:focus,.swwrap g:focus{outline:none}
+.swwrap .sw-rot{transition:transform 680ms cubic-bezier(0.65,0,0.35,1)}
+.swwrap .sw-num{transition:transform 680ms cubic-bezier(0.65,0,0.35,1)}
+.swwrap .sw-pet{transition:transform 320ms cubic-bezier(0.23,1,0.32,1),opacity 260ms ease}
+.sw-empty{display:none}
+@media (hover:hover) and (pointer:fine){.swwrap .sw-pet:hover{opacity:1}}
+@media(min-width:900px){
+  .swwrap{align-items:stretch;gap:22px}
+  .swwrap .sw-wheel{flex:0 0 268px;width:268px;height:268px;margin-top:0;align-self:center}
+  .swwrap #sw{display:grid;grid-template-columns:290px minmax(0,1fr);gap:16px;align-items:start;padding:14px}
+  .swwrap .sw-cards{grid-template-columns:1fr;gap:8px}
+  .swwrap .sw-cd{padding:12px 14px}
+  .swwrap .sw-chev{transform:rotate(-90deg)}
+  .swwrap .sw-cd[aria-expanded="true"] .sw-chev{transform:rotate(-90deg) translateX(0)}
+  .swwrap .sw-panel{grid-template-rows:1fr;display:block}
+  .swwrap .sw-panel:not(.open){display:none}
+  .swwrap .sw-pi{margin-top:0;border-top:0;padding-top:0;border-left:1px solid var(--line);padding-left:16px;max-height:420px;overflow:auto;transform:translateX(-8px)}
+  .swwrap .sw-panel.open .sw-pi{transform:none}
+  .swwrap:not(.sw-open) .sw-empty{display:flex;align-items:center;justify-content:center;min-height:200px;border-left:1px solid var(--line);color:var(--ink3);font-size:13.5px;text-align:center;padding:0 20px}
+}
+@media (prefers-reduced-motion:reduce){.swwrap .sw-rot,.swwrap .sw-num,.swwrap .sw-pet{transition:none}}
+@media(min-width:900px){.swwrap .sw-cards{grid-column:1;grid-row:1}.swwrap .sw-empty,.swwrap .sw-panel{grid-column:2;grid-row:1}}
 
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
@@ -2437,6 +2461,7 @@ try{renderSpec()}catch(_){}
   const body=box.querySelector('.sw-body');
   W.forEach((x,i)=>{const c=$('#'+x.id);const fb=c.querySelector('.fb');fb.classList.add('sw-pane');fb.dataset.pane=i;body.appendChild(fb)});
   sum.hidden=true;sum.classList.add('sw-gone');
+  box.querySelector('.sw-panel').insertAdjacentHTML('beforebegin','<div class="sw-empty">Нажмите на дольку или карточку, чтобы увидеть данные</div>');
 
   const rot=box.querySelector('.sw-rot'),svg=box.querySelector('.sw-wheel svg'),panel=box.querySelector('.sw-panel');
   const fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
@@ -2455,11 +2480,14 @@ try{renderSpec()}catch(_){}
     if(sel>=0){let t=180-sel*120;while(t-base>180)t-=360;while(t-base<-180)t+=360;base=t}
     rot.style.transform=`rotate(${base}deg)`;
     box.querySelectorAll('.sw-num').forEach(t=>{t.style.transform=`rotate(${-(+t.dataset.swn*120+base)}deg)`});
-    if(sel<0){panel.classList.remove('open');return}
+    box.classList.toggle('sw-open',sel>=0);if(sel<0){panel.classList.remove('open');return}
     const pt=box.querySelector('.sw-pt');pt.textContent=W[sel].t;pt.style.color=W[sel].r;
     box.querySelectorAll('.sw-pane').forEach(p=>p.hidden=+p.dataset.pane!==sel);
     if(anim){panel.classList.remove('open');void panel.offsetWidth}
-    panel.classList.add('open')}
+    panel.classList.add('open');
+    if(anim&&!RM){const pane=box.querySelector('.sw-pane:not([hidden])');const items=[...pane.querySelectorAll('.card-b > *, .chg > *, .devl > *, .mini > *')].filter(el=>el.offsetParent!==null).slice(0,14);
+      items.forEach((el,k)=>el.animate([{opacity:0,transform:'translateY(8px)'},{opacity:1,transform:'none'}],{duration:320,delay:120+k*35,easing:'cubic-bezier(0.23,1,0.32,1)',fill:'backwards'}))}
+    if(anim&&!RM){const p=box.querySelector('.sw-pet.on');if(p)p.animate([{transform:'translateY(-7px) scale(1.04)'},{transform:'translateY(-11px) scale(1.09)'},{transform:'translateY(-7px) scale(1.04)'}],{duration:420,delay:380,easing:'cubic-bezier(0.23,1,0.32,1)'})}}
   box.addEventListener('click',e=>{if(e.target.closest('.sw-x')){sel=-1;store.set('oh4-sw',sel);paint();return}
     const t=e.target.closest('[data-sw]');if(!t)return;const i=+t.dataset.sw;sel=sel===i?-1:i;hov=-1;store.set('oh4-sw',sel);paint(true);
     if(sel>=0&&innerWidth<620&&t.closest('svg'))setTimeout(()=>{const r=panel.getBoundingClientRect();if(r.top>innerHeight-160)scrollBy({top:r.top-innerHeight+260,behavior:'smooth'})},300)});
