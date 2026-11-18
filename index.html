@@ -1216,6 +1216,15 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 }
 @media(max-width:620px){.pv table.alld th.num{white-space:nowrap;font-size:10px;letter-spacing:-.2px}.pv table.alld th.num span{white-space:normal}}
 @media(max-width:620px){.pv table.alld td:first-child,.pv table.alld th:first-child{width:34%}.pv table.alld td:nth-child(3),.pv table.alld th:nth-child(3){width:15%}.pv table.alld th:nth-last-child(-n+3),.pv table.alld td:nth-last-child(-n+3){width:17%}}
+@media(max-width:620px){
+  .pv table.svt tr{display:grid;grid-template-columns:max-content max-content minmax(0,1fr) max-content;column-gap:6px;row-gap:3px;align-items:baseline}
+  .pv table.svt td.sv-n{grid-column:1/4;grid-row:1}
+  .pv table.svt td.sv-v{grid-column:4;grid-row:1;text-align:right}
+  .pv table.svt td.sv-r{grid-column:1;grid-row:2}
+  .pv table.svt td.sv-d{grid-column:2;grid-row:2}
+  .pv table.svt td.sv-p{grid-column:4;grid-row:2;text-align:right}
+  .pv table.svt td.sv-p::before{content:'было '}
+}
 
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
