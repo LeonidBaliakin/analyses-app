@@ -1163,6 +1163,59 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 .dv-t b{display:block;font-size:15px;font-weight:800;color:var(--ink)}.dv-t small{display:block;font-size:12.5px;color:var(--ink3)}
 .dv-ch{color:var(--ink3)}
 @media(min-width:900px){.docview{max-width:calc(100% - 290px);margin-left:290px}}
+/* экран врача: поиск и мобильная раскладка */
+.svsearch{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:8px;margin:8px 0 12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px 12px;box-shadow:var(--sh)}
+.svsearch svg{color:var(--ink3);flex-shrink:0}
+.svsearch input{flex:1;min-width:0;border:0;background:transparent;padding:9px 0;font-size:14px;outline:none}
+#svqn{font-size:12px;color:var(--ink3);white-space:nowrap}
+.pv tr.svhide{display:none!important}
+.svsearching .evrow,.svsearching .evlist{display:none}
+.svt th{white-space:nowrap}
+.pv th.nw,.pv td.sv-d{white-space:nowrap}
+.svl li{display:flex;flex-direction:column}
+.svsince{font-size:12px;color:var(--ink3);margin-top:1px}
+.evlist{display:none;margin:0 0 10px;padding:10px 12px;border-radius:10px;background:var(--med-soft);color:var(--med);font-size:12.5px}
+.evlist b{display:block;margin-bottom:4px}.evlist div{margin:3px 0}.evlist .num{font-weight:700;margin-right:4px}
+@media print{.svsearch{display:none}}
+@media(max-width:620px){
+  .pv table.svt thead{display:none}
+  .pv table.svt,.pv table.svt tbody{display:block;width:100%}
+  .pv table.svt tr{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;padding:9px 2px;border-bottom:1px solid var(--line)}
+  .pv table.svt td{display:block;border:0!important;padding:0!important}
+  .pv table.svt td.sv-n{flex:0 0 calc(100% - 122px);font-weight:600;font-size:13.5px;overflow-wrap:anywhere}
+  .pv table.svt td.sv-v{flex:0 0 114px;text-align:right;font-size:13.5px}
+  .pv table.svt td.sv-r,.pv table.svt td.sv-d,.pv table.svt td.sv-p{font-size:12px;color:var(--ink3);white-space:nowrap}
+  .pv table.svt td.sv-r::before{content:'норма '}
+  .pv table.svt td.sv-d::before{content:'· '}
+  .pv table.svt td.sv-p::before{content:'· было '}
+  .pv table.alld tr.evrow{display:none}
+  .evlist{display:block}
+  .pv table.alld th{white-space:nowrap;font-size:11px}
+  .pv table.alld th .lab{display:block}
+}
+.u-m{display:none;font-weight:400;color:var(--ink3);font-size:.92em}
+@media(max-width:620px){
+  .pv table.alld .u-c{display:none}.pv table.alld .u-m{display:inline}
+  .pv table.alld th{white-space:normal;font-size:10.5px;line-height:1.25}
+  .pv table.alld th span{display:block;font-size:9.5px!important;overflow-wrap:anywhere}
+  .pv table.alld td:first-child,.pv table.alld th:first-child{width:42%}
+  .pv table.svt td.sv-n{flex:1 1 0;min-width:0}
+  .pv table.svt td.sv-v{flex:0 0 auto;white-space:nowrap;max-width:150px}
+}
+@media(max-width:620px){
+  .pv table.svt td.sv-n{flex:0 0 calc(100% - 150px);min-width:0}
+  .pv table.svt td.sv-v{flex:0 0 142px;text-align:right;white-space:nowrap;max-width:none}
+  .pv table.alld td.num{white-space:nowrap;font-size:11.5px}
+  .pv table.alld td,.pv table.alld th{padding-left:4px!important;padding-right:4px!important}
+}
+@media(max-width:620px){
+  .pv table.alld{table-layout:fixed;width:100%}
+  .pv table.alld td:first-child,.pv table.alld th:first-child{width:36%}
+  .pv table.alld td:nth-child(3),.pv table.alld th:nth-child(3){white-space:normal;width:17%}
+  .pv table.alld td.num:nth-child(n+4){font-size:11px;letter-spacing:-.2px}
+}
+@media(max-width:620px){.pv table.alld th.num{white-space:nowrap;font-size:10px;letter-spacing:-.2px}.pv table.alld th.num span{white-space:normal}}
+@media(max-width:620px){.pv table.alld td:first-child,.pv table.alld th:first-child{width:34%}.pv table.alld td:nth-child(3),.pv table.alld th:nth-child(3){width:15%}.pv table.alld th:nth-last-child(-n+3),.pv table.alld td:nth-last-child(-n+3){width:17%}}
 
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
@@ -2164,13 +2217,15 @@ document.addEventListener('click',e=>{const v=e.target.closest('[data-viewp]');i
 $('#viewBack').onclick=()=>{$('#viewing').hidden=true;document.body.classList.remove('viewmode');show('settings')};
 
 /* как увидит специалист */
+const svRow=(m,cls)=>`<tr class="${cls||''}"><td class="sv-n">${esc(m.n)}</td><td class="num sv-v" style="${m.st!=='ok'?'font-weight:700;color:var(--'+(m.st==='high'?'hi':'lo')+')':''}">${esc(m.cur.raw)} ${esc(U(m.u))}${m.st==='high'?' ↑':m.st==='low'?' ↓':''}</td><td class="num sv-r">${esc(refText(m))}</td><td class="num sv-d">${m.cur.d}</td><td class="num sv-p">${m.prev?esc(m.prev.raw)+' <span class="why">· '+m.prev.d+'</span>':'—'}</td></tr>`;
+const SVH='<thead><tr><th>Показатель</th><th>Значение</th><th>Норма лаборатории</th><th class="nw">Дата</th><th>Предыдущее</th></tr></thead>';
 function openSpecView(print){const a=age(P.dob),w=lastWeight(),b=bmi(),out=ALL.filter(m=>m.st==='high'||m.st==='low');
   const meds=EV.med.filter(e=>e.f&&(e.m==='Постоянно'||!e.t||(LAST-evDate(e.t))/864e5<=60));
   const cmps=(EV.cmp||[]).slice().sort((x,y)=>x.f<y.f?-1:1);
   const yr=EV.ill.filter(e=>e.f&&(LAST-evDate(e.f))/864e5<=366).sort((x,y)=>x.f<y.f?1:-1);
   const constMeds=EV.med.filter(e=>e.m==='Постоянно'&&e.f),curMeds=meds.filter(e=>e.m!=='Постоянно');
   const L=(arr,f)=>arr.length?arr.map(f).join('<br>'):'—';
-  const card=`<div class="svc svcmp"><h3>Жалобы</h3>${cmps.length?`<ul class="svl">${cmps.map(e=>`<li><b>${esc(e.n)}</b> <span class="why">· беспокоит с ${dfmt(e.f)}</span></li>`).join('')}</ul>`:'<p class="why">Пациент жалоб не указал.</p>'}</div>
+  const card=`<div class="svc svcmp"><h3>Жалобы</h3>${cmps.length?`<ul class="svl">${cmps.map(e=>`<li><b>${esc(e.n)}</b><span class="svsince">беспокоит с ${dfmt(e.f)}</span></li>`).join('')}</ul>`:'<p class="why">Пациент жалоб не указал.</p>'}</div>
    <div class="svg2"><div class="svc"><h3>Краткий анамнез</h3><dl class="svdl">
     <dt>Пациент</dt><dd>${esc(P.name||'А. Иванов')}, ${P.sex==='f'?'жен.':'муж.'}, ${a??'—'} лет</dd>
     <dt>Хронические заболевания</dt><dd>${esc(P.dx||'—')}</dd>
@@ -2187,17 +2242,26 @@ function openSpecView(print){const a=age(P.dob),w=lastWeight(),b=bmi(),out=ALL.f
   const mon=G.filter(g=>[1,8,9,0,5].includes(g.gi)).flatMap(g=>g.rows).filter(m=>m.cur&&(LAST-pd(m.cur.d))/864e5<=31);
   const isKey=m=>KEYM.some(r=>r.test(m.n))||m.st!=='ok';
   const keyN=mon.filter(isKey).length,restN=mon.length-keyN;
-  const main=`<h2>ОАК и биохимия за последний месяц</h2>${mon.length?`<p class="why" style="margin:-4px 0 8px">Главные показатели и всё, что вне нормы${restN&&!print?`. Остальные ${restN} — по кнопке ниже`:''}.</p><table class="svmon${print?' all':''}"><thead><tr><th>Показатель</th><th>Значение</th><th>Норма лаборатории</th><th>Дата</th><th>Предыдущее</th></tr></thead><tbody>${mon.map(m=>`<tr class="${isKey(m)?'':'svx'}"><td>${esc(m.n)}</td><td class="num" style="${m.st!=='ok'?'font-weight:700;color:var(--'+(m.st==='high'?'hi':'lo')+')':''}">${esc(m.cur.raw)} ${esc(U(m.u))}${m.st==='high'?' ↑':m.st==='low'?' ↓':''}</td><td class="num">${esc(refText(m))}</td><td class="num">${m.cur.d}</td><td class="num">${m.prev?esc(m.prev.raw)+' · '+m.prev.d:'—'}</td></tr>`).join('')}</tbody></table>${restN&&!print?`<button type="button" class="btn svmore" data-svmore>Показать все ${mon.length}</button>`:''}`:'<p class="why">За последний месяц ОАК и биохимию не сдавали.</p>'}`;
-  const outT=`<h2>Сейчас не в норме: ${out.length}</h2><table><thead><tr><th>Показатель</th><th>Значение</th><th>Норма лаборатории</th><th>Дата</th><th>Предыдущее</th></tr></thead><tbody>${out.map(m=>`<tr><td>${esc(m.n)}</td><td class="num" style="font-weight:700;color:var(--${m.st==='high'?'hi':'lo'})">${esc(m.cur.raw)} ${esc(U(m.u))} ${m.st==='high'?'↑':'↓'}</td><td class="num">${esc(refText(m))}</td><td class="num">${m.cur.d}</td><td class="num">${m.prev?esc(m.prev.raw)+' · '+m.prev.d:'—'}</td></tr>`).join('')}</tbody></table>`;
+  const main=`<h2>ОАК и биохимия за последний месяц</h2>${mon.length?`<p class="why" style="margin:-4px 0 8px">Главные показатели и всё, что вне нормы${restN&&!print?`. Остальные ${restN} — по кнопке ниже`:''}.</p><table class="svt svmon${print?' all':''}">${SVH}<tbody>${mon.map(m=>svRow(m,isKey(m)?'':'svx')).join('')}</tbody></table>${restN&&!print?`<button type="button" class="btn svmore" data-svmore>Показать все ${mon.length}</button>`:''}`:'<p class="why">За последний месяц ОАК и биохимию не сдавали.</p>'}`;
+  const outT=`<h2>Сейчас не в норме: ${out.length}</h2><table class="svt">${SVH}<tbody>${out.map(m=>svRow(m)).join('')}</tbody></table>`;
+  const evList=`<div class="evlist"><b>События рядом с датами сдачи</b>${DATES.map((d,i)=>{const c=ctxFor(d);return c?`<div><span class="num">${d}</span> ${esc(c)}</div>`:''}).join('')}</div>`;
   const evRowT=`<tr class="evrow"><td><b>События рядом с датой</b></td><td></td><td></td>${DATES.map(d=>`<td>${esc(ctxFor(d))}</td>`).join('')}</tr>`;
-  const all=`<h2>Все показатели по датам</h2><p class="mobnote">На телефоне показаны последние 3 сдачи; все даты — на компьютере или в PDF.</p><table class="alld"><thead><tr><th>Показатель</th><th>Ед.</th><th>Норма</th>${DATES.map((d,i)=>`<th class="num">${d}<br><span style="font-weight:500;color:var(--ink3);font-size:10px">${LABS[i]}</span></th>`).join('')}</tr></thead><tbody>${evRowT}`+
-   G.filter(g=>g.rows.length).map(g=>`<tr class="grp"><td>${esc(g.title)}</td><td></td><td></td>${DATES.map(()=>"<td></td>").join("")}</tr>`+g.rows.map(m=>`<tr><td>${esc(m.n)}</td><td>${esc(U(m.u))}</td><td class="num">${esc(refText(m))}</td>${DATES.map((d,i)=>{const p=m.pts.find(q=>q.i===i);return `<td class="num" style="${p&&p.st!=='ok'?'font-weight:700;color:var(--'+(p.st==='high'?'hi':'lo')+')':''}">${p?esc(p.raw)+(p.st==='high'?' ↑':p.st==='low'?' ↓':''):'—'}</td>`}).join('')}</tr>`).join('')).join('')+'</tbody></table>';
-  $('#pvBody').innerHTML=`<div class="svbar">${print?'Так выглядит PDF для печати':'Так специалист видит анализы по ссылке или QR-коду: без регистрации, только просмотр'}</div><h1>Анализы: ${esc(P.name||'А. Иванов')}</h1><p class="why">Сформировано по загруженным бланкам и данным со слов пациента. Нормы указаны лабораториями. Отклонения отмечены ↑ ↓, чтобы их было видно и на чёрно-белой печати. Сервис не ставит диагнозов.</p>`+card+main+outT+all+`<p class="why" style="margin-top:14px">Оригиналы бланков доступны по ссылке. Распознанные значения подтверждены пациентом.</p>`;
+  const all=`<h2>Все показатели по датам</h2>${evList}<p class="mobnote">На телефоне показаны последние 3 сдачи; все даты — на компьютере или в PDF.</p><table class="alld"><thead><tr><th>Показатель</th><th class="u-c">Ед.</th><th>Норма</th>${DATES.map((d,i)=>`<th class="num">${d}<br><span style="font-weight:500;color:var(--ink3);font-size:10px">${LABS[i]}</span></th>`).join('')}</tr></thead><tbody>${evRowT}`+
+   G.filter(g=>g.rows.length).map(g=>`<tr class="grp"><td>${esc(g.title)}</td><td></td><td></td>${DATES.map(()=>"<td></td>").join("")}</tr>`+g.rows.map(m=>`<tr><td>${esc(m.n)}${U(m.u)?`<span class="u-m">, ${esc(U(m.u))}</span>`:''}</td><td class="u-c">${esc(U(m.u))}</td><td class="num">${esc(refText(m))}</td>${DATES.map((d,i)=>{const p=m.pts.find(q=>q.i===i);return `<td class="num" style="${p&&p.st!=='ok'?'font-weight:700;color:var(--'+(p.st==='high'?'hi':'lo')+')':''}">${p?esc(p.raw)+(p.st==='high'?' ↑':p.st==='low'?' ↓':''):'—'}</td>`}).join('')}</tr>`).join('')).join('')+'</tbody></table>';
+  $('#pvBody').innerHTML=`<div class="svbar">${print?'Так выглядит PDF для печати':'Так специалист видит анализы по ссылке или QR-коду: без регистрации, только просмотр'}</div><h1>Анализы: ${esc(P.name||'А. Иванов')}</h1><div class="svsearch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="svq" type="search" placeholder="Найти показатель: ферритин, ЛПНП, глюкоза…" aria-label="Найти показатель"><span id="svqn"></span></div><p class="why">Сформировано по загруженным бланкам и данным со слов пациента. Нормы указаны лабораториями. Отклонения отмечены ↑ ↓, чтобы их было видно и на чёрно-белой печати. Сервис не ставит диагнозов.</p>`+card+main+outT+all+`<p class="why" style="margin-top:14px">Оригиналы бланков доступны по ссылке. Распознанные значения подтверждены пациентом.</p>`;
   $('#pvNote').textContent='';document.body.classList.add('preview');window.scrollTo(0,0)}
 
 /* ключевые показатели ОАК и биохимии для экрана врача (список на проверке у Маши) */
 const KEYM=[/^гемоглобин$/i,/^эритроциты$/i,/^лейкоциты$/i,/^тромбоциты$/i,/^соэ$/i,/^глюкоза$/i,/^креатинин$/i,/^алат$/i,/^асат$/i,/^билирубин общий$/i,/^мочевина$/i];
 document.addEventListener('click',e=>{const b=e.target.closest('[data-svmore]');if(!b)return;const t=b.previousElementSibling;const on=t.classList.toggle('all');const n=t.querySelectorAll('tbody tr').length;b.textContent=on?'Свернуть':'Показать все '+n});
+/* поиск на экране врача */
+document.addEventListener('input',e=>{if(e.target.id!=='svq')return;const q=e.target.value.trim().toLowerCase();const alt=Object.keys(SYN).filter(k=>q&&q.includes(k)).map(k=>SYN[k]);
+  const body=$('#pvBody');body.classList.toggle('svsearching',!!q);let n=0;
+  body.querySelectorAll('.svmon').forEach(t=>t.classList.toggle('all',!!q||t.classList.contains('was-all')));
+  body.querySelectorAll('table tbody tr').forEach(tr=>{if(tr.classList.contains('grp')||tr.classList.contains('evrow'))return;const nm=(tr.querySelector('td')||{}).textContent||'';const l=nm.toLowerCase();
+    const hit=!q||l.includes(q)||alt.some(a=>l.includes(a));tr.classList.toggle('svhide',!hit);if(q&&hit)n++});
+  body.querySelectorAll('table.alld tbody tr.grp').forEach(g=>{let x=g.nextElementSibling,any=false;while(x&&!x.classList.contains('grp')){if(!x.classList.contains('svhide')&&!x.classList.contains('evrow'))any=true;x=x.nextElementSibling}g.classList.toggle('svhide',!!q&&!any)});
+  $('#svqn').textContent=q?(n?'найдено строк: '+n:'ничего не найдено'):''});
 /* где сдать: каталог и специалисты */
 const CAT=[
  {n:'Общий анализ крови с лейкоцитарной формулой',s:'Кровь',p:[190,650],k:'1,0',sp:['терапевт']},
