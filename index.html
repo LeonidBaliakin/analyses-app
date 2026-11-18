@@ -1154,6 +1154,9 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 .docr b{display:block;font-size:13.5px}.docr small{display:block;font-size:12px;color:var(--ink3)}
 .evr-ill{grid-template-columns:1fr 1fr!important}
 .evr-ill [data-k="n"],.evr-ill [data-k="ab"]{grid-column:1/-1}
+.svmon:not(.all) tr.svx{display:none}
+.svmore{margin:8px 0 4px}
+@media print{.svmon tr.svx{display:table-row!important}.svmore{display:none}}
 
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
@@ -2176,7 +2179,9 @@ function openSpecView(print){const a=age(P.dob),w=lastWeight(),b=bmi(),out=ALL.f
     ${weightAlert()?`<p class="why" style="margin-top:6px">Вес снизился на ${weightAlert().pct}% за ${weightAlert().mo} мес.</p>`:''}
     <h3 style="margin-top:12px">Образ жизни</h3><dl class="svdl"><dt>Спорт</dt><dd>${ACT[P.act]||'—'}</dd><dt>Сон</dt><dd>в среднем ${esc(P.sleep||'—')} ч</dd><dt>Курение</dt><dd>${esc((P.smoke||'—').toLowerCase())}</dd><dt>Алкоголь</dt><dd>${esc((P.alc||'—').toLowerCase())}${P.alcv?', '+esc(P.alcv.toLowerCase()):''}</dd></dl></div></div>`;
   const mon=G.filter(g=>[1,8,9,0,5].includes(g.gi)).flatMap(g=>g.rows).filter(m=>m.cur&&(LAST-pd(m.cur.d))/864e5<=31);
-  const main=`<h2>ОАК и биохимия за последний месяц</h2>${mon.length?`<table><thead><tr><th>Показатель</th><th>Значение</th><th>Норма лаборатории</th><th>Дата</th><th>Предыдущее</th></tr></thead><tbody>${mon.map(m=>`<tr><td>${esc(m.n)}</td><td class="num" style="${m.st!=='ok'?'font-weight:700;color:var(--'+(m.st==='high'?'hi':'lo')+')':''}">${esc(m.cur.raw)} ${esc(U(m.u))}${m.st==='high'?' ↑':m.st==='low'?' ↓':''}</td><td class="num">${esc(refText(m))}</td><td class="num">${m.cur.d}</td><td class="num">${m.prev?esc(m.prev.raw)+' · '+m.prev.d:'—'}</td></tr>`).join('')}</tbody></table>`:'<p class="why">За последний месяц ОАК и биохимию не сдавали.</p>'}`;
+  const isKey=m=>KEYM.some(r=>r.test(m.n))||m.st!=='ok';
+  const keyN=mon.filter(isKey).length,restN=mon.length-keyN;
+  const main=`<h2>ОАК и биохимия за последний месяц</h2>${mon.length?`<p class="why" style="margin:-4px 0 8px">Главные показатели и всё, что вне нормы${restN&&!print?`. Остальные ${restN} — по кнопке ниже`:''}.</p><table class="svmon${print?' all':''}"><thead><tr><th>Показатель</th><th>Значение</th><th>Норма лаборатории</th><th>Дата</th><th>Предыдущее</th></tr></thead><tbody>${mon.map(m=>`<tr class="${isKey(m)?'':'svx'}"><td>${esc(m.n)}</td><td class="num" style="${m.st!=='ok'?'font-weight:700;color:var(--'+(m.st==='high'?'hi':'lo')+')':''}">${esc(m.cur.raw)} ${esc(U(m.u))}${m.st==='high'?' ↑':m.st==='low'?' ↓':''}</td><td class="num">${esc(refText(m))}</td><td class="num">${m.cur.d}</td><td class="num">${m.prev?esc(m.prev.raw)+' · '+m.prev.d:'—'}</td></tr>`).join('')}</tbody></table>${restN&&!print?`<button type="button" class="btn svmore" data-svmore>Показать все ${mon.length}</button>`:''}`:'<p class="why">За последний месяц ОАК и биохимию не сдавали.</p>'}`;
   const outT=`<h2>Сейчас не в норме: ${out.length}</h2><table><thead><tr><th>Показатель</th><th>Значение</th><th>Норма лаборатории</th><th>Дата</th><th>Предыдущее</th></tr></thead><tbody>${out.map(m=>`<tr><td>${esc(m.n)}</td><td class="num" style="font-weight:700;color:var(--${m.st==='high'?'hi':'lo'})">${esc(m.cur.raw)} ${esc(U(m.u))} ${m.st==='high'?'↑':'↓'}</td><td class="num">${esc(refText(m))}</td><td class="num">${m.cur.d}</td><td class="num">${m.prev?esc(m.prev.raw)+' · '+m.prev.d:'—'}</td></tr>`).join('')}</tbody></table>`;
   const evRowT=`<tr class="evrow"><td><b>События рядом с датой</b></td><td></td><td></td>${DATES.map(d=>`<td>${esc(ctxFor(d))}</td>`).join('')}</tr>`;
   const all=`<h2>Все показатели по датам</h2><p class="mobnote">На телефоне показаны последние 3 сдачи; все даты — на компьютере или в PDF.</p><table class="alld"><thead><tr><th>Показатель</th><th>Ед.</th><th>Норма</th>${DATES.map((d,i)=>`<th class="num">${d}<br><span style="font-weight:500;color:var(--ink3);font-size:10px">${LABS[i]}</span></th>`).join('')}</tr></thead><tbody>${evRowT}`+
@@ -2184,6 +2189,9 @@ function openSpecView(print){const a=age(P.dob),w=lastWeight(),b=bmi(),out=ALL.f
   $('#pvBody').innerHTML=`<div class="svbar">${print?'Так выглядит PDF для печати':'Так специалист видит анализы по ссылке или QR-коду: без регистрации, только просмотр'}</div><h1>Анализы: ${esc(P.name||'А. Иванов')}</h1><p class="why">Сформировано по загруженным бланкам и данным со слов пациента. Нормы указаны лабораториями. Отклонения отмечены ↑ ↓, чтобы их было видно и на чёрно-белой печати. Сервис не ставит диагнозов.</p>`+card+main+outT+all+`<p class="why" style="margin-top:14px">Оригиналы бланков доступны по ссылке. Распознанные значения подтверждены пациентом.</p>`;
   $('#pvNote').textContent='';document.body.classList.add('preview');window.scrollTo(0,0)}
 
+/* ключевые показатели ОАК и биохимии для экрана врача (список на проверке у Маши) */
+const KEYM=[/^гемоглобин$/i,/^эритроциты$/i,/^лейкоциты$/i,/^тромбоциты$/i,/^соэ$/i,/^глюкоза$/i,/^креатинин$/i,/^алат$/i,/^асат$/i,/^билирубин общий$/i,/^мочевина$/i];
+document.addEventListener('click',e=>{const b=e.target.closest('[data-svmore]');if(!b)return;const t=b.previousElementSibling;const on=t.classList.toggle('all');const n=t.querySelectorAll('tbody tr').length;b.textContent=on?'Свернуть':'Показать все '+n});
 /* где сдать: каталог и специалисты */
 const CAT=[
  {n:'Общий анализ крови с лейкоцитарной формулой',s:'Кровь',p:[190,650],k:'1,0',sp:['терапевт']},
