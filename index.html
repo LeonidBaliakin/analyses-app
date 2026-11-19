@@ -1225,6 +1225,19 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
   .pv table.svt td.sv-p{grid-column:4;grid-row:2;text-align:right}
   .pv table.svt td.sv-p::before{content:'было '}
 }
+/* повод сдачи */
+.rsnp{display:flex;flex-wrap:wrap;gap:6px}
+.rsnc{border:1px solid var(--line);background:var(--card);border-radius:20px;padding:6px 11px;font-size:12.5px;font-weight:600;color:var(--ink2);transition:background .15s,border-color .15s}
+.rsnc.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.rsnc .rsnn{font-size:11px;opacity:.7;margin-left:2px}
+.rsnadd{display:flex;gap:6px;margin-top:8px}.rsnadd input{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px}
+.rsnt{display:block;margin-top:4px;border:0;background:#FFF1E6;color:var(--prev);border-radius:8px;padding:2px 7px;font-size:11.5px;font-weight:700;text-align:left;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rsnt.none{background:transparent;color:var(--ink3);font-weight:600;padding-left:0}
+.rsnf{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 10px}
+.rsnh{display:block;margin-top:2px;font-size:9.5px!important;font-weight:700;color:var(--prev);white-space:normal}
+.rsnl{color:var(--prev)}
+#upTable tr[hidden]{display:none}
+@media(max-width:620px){.rsnt{max-width:96px;white-space:normal;line-height:1.25;overflow-wrap:anywhere}}
 
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
@@ -2458,7 +2471,7 @@ const OPTC=[
  {k:'all',t:'Аллергии',w:'С типом реакции: сыпь, отёк или другое'}];
 const segT=(k,o,cur)=>`<div class="seg" role="radiogroup">${o.map(([v,l])=>`<label><input type="radio" name="t-${k}" value="${v}" ${v===cur?'checked':''}><span>${l}</span></label>`).join('')}</div>`;
 const STEPS=[
- {h:()=>`<p>Загружайте анализы из любых лабораторий, а мы сведём их в динамику по каждому показателю и поможем показать врачу. Дальше два коротких шага.</p><p class="why" style="margin-top:10px">Сервис показывает только факты с ваших бланков и ваши данные. Диагнозы ставит врач.</p>`},
+ {h:()=>`<p>Один вход для всех ваших анализов: из любых лабораторий, с диспансеризации, из санатория, из больницы. Загружайте всё, отмечайте повод, а мы сведём результаты в динамику и поможем показать врачу. Дальше два коротких шага.</p><p class="why" style="margin-top:10px">Сервис показывает только факты с ваших бланков и ваши данные. Диагнозы ставит врач.</p>`},
  {h:()=>`<p>От этого зависит, какую норму лаборатории показывать.</p><div class="fgrid"><div class="field"><label>Пол</label>${segT('sex',[['m','Мужской'],['f','Женский']],P.sex)}</div><div class="field"><label for="t-dob">Дата рождения</label><input id="t-dob" type="date" value="${esc(P.dob||'')}"></div></div>`,
 },
  {h:()=>`<p>Добавьте бланк из любой лаборатории. Мы распознаем показатели, а вы проверите их перед сохранением.</p><div class="upbtns big"><button class="btn pri" type="button" data-up="camera">${svgI(PIC.camera,20)} Сфотографировать</button><button class="btn" type="button" data-up="gallery">${svgI(PIC.gallery,20)} Из галереи</button><button class="btn" type="button" data-up="files">${svgI(PIC.files,20)} Файл или PDF</button></div><p class="why" style="margin-top:10px">Приложение попросит доступ к камере, галерее или файлам. Можно загрузить позже в разделе «Мои анализы».</p>`},
@@ -2656,6 +2669,48 @@ try{renderSpec()}catch(_){}
   {const rs=renderSummary;renderSummary=function(){rs.apply(this,arguments);nums()};const rc=renderCtx;renderCtx=function(){rc.apply(this,arguments);nums()}}
   nums();paint(false);
 })();
+
+/* повод сдачи: диспансеризация, санаторий и т. п.; свои варианты запоминаются */
+const RSN_DEF=['Диспансеризация','Санаторий','Чекап','По назначению врача','Перед госпитализацией или операцией','В больнице','Профосмотр','Сам решил проверить'];
+let RSN_MY=store.get('oh5-rsnmy',['Санаторий «Белые ночи»']);
+let RSN=store.get('oh5-rsn',null)||{d0:'Санаторий «Белые ночи»',d1:'В больнице',d2:'Диспансеризация',d4:'Чекап',d5:'По назначению врача',d6:'По назначению врача',d7:'По назначению врача',d8:'По назначению врача'};
+const saveRsn=()=>{store.set('oh5-rsn',RSN);store.set('oh5-rsnmy',RSN_MY)};
+const rsnAll=()=>[...RSN_MY,...RSN_DEF.filter(x=>!RSN_MY.includes(x))];
+let RSNF=null;
+function rsnPicker(cur){return `<div class="rsnp">${rsnAll().map(r=>`<button type="button" class="rsnc${r===cur?' on':''}" data-rsnpick="${esc(r)}">${esc(r)}</button>`).join('')}</div>
+  <div class="rsnadd"><input type="text" id="rsnNew" placeholder="Свой вариант, например: санаторий «Сосны», март" aria-label="Свой вариант повода"><button type="button" class="btn" data-rsnaddbtn>Добавить</button></div>
+  <p class="why" style="margin-top:6px">Свой вариант сохранится, и в следующий раз его можно выбрать одним нажатием.</p>`}
+function rsnBindPicker(root,onPick){
+  root.addEventListener('click',e=>{const c=e.target.closest('[data-rsnpick]');if(c){root.querySelectorAll('.rsnc').forEach(x=>x.classList.remove('on'));c.classList.add('on');onPick(c.dataset.rsnpick);return}
+    if(e.target.closest('[data-rsnaddbtn]')){const i=root.querySelector('#rsnNew');const v=i.value.trim();if(!v)return;if(!RSN_MY.includes(v))RSN_MY.unshift(v);saveRsn();
+      root.querySelector('.rsnp').insertAdjacentHTML('afterbegin',`<button type="button" class="rsnc" data-rsnpick="${esc(v)}">${esc(v)}</button>`);i.value='';root.querySelector('.rsnc').click()}})}
+/* вопрос о поводе в окне после загрузки */
+{const _o=openCtxAsk;openCtxAsk=function(){_o.apply(this,arguments);const b=$('#mB');const first=b.querySelector('.cq');if(!first)return;
+  first.insertAdjacentHTML('beforebegin',`<div class="cq cq-rsn"><div class="cq-t">Повод сдачи</div>${rsnPicker(null)}</div>`);
+  let pick=null;rsnBindPicker(b.querySelector('.cq-rsn'),v=>pick=v);
+  $('#cqSave').addEventListener('click',()=>{const p=pending[0];if(p&&pick){RSN[p.id]=pick;saveRsn();renderUploads()}})}}
+/* метка в списке загрузок и фильтр */
+{const _r=renderUploads;renderUploads=function(){_r.apply(this,arguments);
+  const base=DATES.map((d,i)=>({k:'d'+i})).reverse();const list=pending.map(p=>({k:p.id})).concat(base);
+  const rows=[...document.querySelectorAll('#upTable tbody tr')];
+  rows.forEach((tr,i)=>{const k=list[i]&&list[i].k;if(!k)return;const r=RSN[k];tr.dataset.rsn=r||'';
+    tr.cells[0].insertAdjacentHTML('beforeend',`<button type="button" class="rsnt${r?'':' none'}" data-rsnedit="${k}">${r?esc(r):'+ повод'}</button>`);
+    tr.hidden=!!RSNF&&r!==RSNF});
+  const host=$('#upTable').closest('.tblw');let f=$('#rsnFilter');if(!f){host.insertAdjacentHTML('beforebegin','<div class="rsnf" id="rsnFilter"></div>');f=$('#rsnFilter')}
+  const cnt={};list.forEach(x=>{const r=RSN[x.k];if(r)cnt[r]=(cnt[r]||0)+1});
+  f.innerHTML=`<span class="why">Повод:</span><button type="button" class="rsnc${RSNF?'':' on'}" data-rsnf="">Все</button>`+Object.keys(cnt).map(r=>`<button type="button" class="rsnc${RSNF===r?' on':''}" data-rsnf="${esc(r)}">${esc(r)} <span class="rsnn">${cnt[r]}</span></button>`).join('')}}
+document.addEventListener('click',e=>{
+  const f=e.target.closest('[data-rsnf]');if(f){RSNF=f.dataset.rsnf||null;renderUploads();return}
+  const ed=e.target.closest('[data-rsnedit]');if(ed){const k=ed.dataset.rsnedit;
+    openModal('Повод сдачи',`<p class="why" style="margin-bottom:10px">Отметьте, по какому поводу сдавали: так проще найти анализы из санатория, с диспансеризации или из больницы, и врач увидит это рядом с датой.</p><div id="rsnBox">${rsnPicker(RSN[k])}</div><div class="row-end"><button class="btn" type="button" data-rsnclear="${k}">Убрать повод</button><button class="btn pri" type="button" data-mclose>Готово</button></div>`);
+    rsnBindPicker($('#rsnBox'),v=>{RSN[k]=v;saveRsn();renderUploads()});return}
+  const cl=e.target.closest('[data-rsnclear]');if(cl){delete RSN[cl.dataset.rsnclear];saveRsn();renderUploads();closeModal()}
+  if(e.target.closest('[data-mclose]'))closeModal()});
+/* повод в виде для врача: под датой сдачи */
+{const _s=openSpecView;openSpecView=function(){_s.apply(this,arguments);
+  const ths=[...document.querySelectorAll('#pvBody table.alld thead th.num')];ths.forEach((th,i)=>{const r=RSN['d'+i];if(r)th.insertAdjacentHTML('beforeend',`<span class="rsnh">${esc(r)}</span>`)});
+  document.querySelectorAll('#pvBody .evlist div').forEach(dv=>{const d=(dv.querySelector('.num')||{}).textContent;const i=DATES.indexOf(d);const r=RSN['d'+i];if(r)dv.querySelector('.num').insertAdjacentHTML('afterend',` <b class="rsnl">${esc(r)}.</b>`)})}}
+try{renderUploads()}catch(_){}
 
 </script>
 </body>
