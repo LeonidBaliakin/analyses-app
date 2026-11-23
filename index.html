@@ -1241,7 +1241,24 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
-<style>#drafts10 fieldset{border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0}#drafts10 .inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:8px 0}[data-capture]{margin:8px 0 14px}</style></head>
+<style>#drafts10 fieldset{border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0}#drafts10 .inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:8px 0}[data-capture]{margin:8px 0 14px}</style><style>
+#drafts10 fieldset{display:block;min-inline-size:0;padding:16px;margin:14px 0;border-radius:14px}
+#drafts10 label{display:grid;gap:5px;min-width:0;color:var(--ink2);font-size:13px;align-content:start}
+#drafts10 .inputs{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:12px;margin:12px 0}
+#drafts10 .inputs label:has(textarea){grid-column:1/-1}
+#check10 :is(input,select,textarea){box-sizing:border-box;width:100%;min-width:0;max-width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);font:inherit;font-size:16px;min-height:44px}
+#check10 textarea{resize:vertical;line-height:1.45}
+#check10 .remove{min-height:40px}
+#check10 .add-draft{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+@media(max-width:600px){
+ .mbox:has(#check10){max-height:90dvh}
+ .mbox-b:has(#check10){min-height:0;overscroll-behavior:contain;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+ #drafts10 .inputs{grid-template-columns:minmax(0,1fr)}
+ #check10 .row-end{display:grid;grid-template-columns:1fr;gap:8px;margin-top:20px}
+ #check10 .row-end .pri{grid-row:1}
+ #check10 .btn{min-height:44px}
+}
+</style></head>
 <body>
 <div class="app" id="app">
 <header class="top">
@@ -2729,25 +2746,37 @@ function captureStart(){
  $('#parse10').onclick=()=>{const story=input.value.trim();if(!story){input.focus();return}speech?.stop();captureReview(story)};
 }
 function captureReview(story){
- const chunks=story.split(/[.!?](?=\s|$)|[;\n]|,\s*(?=(?:с \d|приним|болел|лежал|был))|\s+и\s+(?=приним|болел|лежал|был)/i).map(t=>t.trim()).filter(Boolean);
- openModal('Проверьте записи','<details><summary>Исходный рассказ</summary><p>'+esc(story)+'</p></details><form id="check10"><div id="drafts10"></div><p class="why">Можно дополнить рассказ другими записями.</p><select aria-label="Добавить раздел" id="extra10"></select> <button class="btn" type="button" id="add10">Дополнить</button><div class="row-end"><button class="btn" type="button" data-mclose>Отмена</button><button class="btn pri">Подтвердить и сохранить</button></div></form>');
+ const chunks=story.split(/[.!?](?=\s|$)|[;\n]|,\s*(?=(?:с \d|приним|болел|лежал|был[аи]?(?=\s|$)))|\s+и\s+(?=приним|болел|лежал|был[аи]?(?=\s|$))/i).map(t=>t.trim()).filter(Boolean);
+ openModal('Проверьте записи','<details><summary>Исходный рассказ</summary><p>'+esc(story)+'</p></details><form id="check10"><div id="drafts10"></div><p class="why">Можно дополнить рассказ другими записями.</p><div class="add-draft"><select aria-label="Добавить раздел" id="extra10"></select> <button class="btn" type="button" id="add10">Добавить</button></div><div class="row-end"><button class="btn" type="button" data-mclose>Отмена</button><button class="btn pri">Подтвердить и сохранить</button></div></form>');
  const choices=Object.entries(captureTypes).map(([k,t])=>'<option value="'+k+'">'+t+'</option>').join('');
  $('#extra10').innerHTML=choices;
  function add(k,n='',date=''){
   const box=document.createElement('fieldset');box.className='field';
-  box.innerHTML='<legend>Запись</legend><label>Раздел <select class="kind">'+choices+'</select></label><div class="inputs"></div><button type="button" class="link remove">Убрать запись</button>';
+  box.innerHTML='<label>Раздел <select class="kind">'+choices+'</select></label><div class="inputs"></div><button type="button" class="link remove">Удалить запись</button>';
   $('#drafts10').append(box);const kind=box.querySelector('.kind');kind.value=k;
   function fields(name,start){
    const type=kind.value, host=box.querySelector('.inputs');
    host.innerHTML=type==='travel'?'<label>Где и когда <input data-k="n"></label>':EVF[type]({});
-   const title=host.querySelector('[data-k="n"],[data-k="kg"]');title.value=type==='weight'?(name.match(/\d+(?:[.,]\d+)?/)||[''])[0].replace(',','.'):name;title.required=true;
-   const from=host.querySelector('[data-k="f"],[data-k="d"]');if(from){from.value=start;from.required=true}
-   host.querySelectorAll('input,select').forEach(i=>{if(i.placeholder&&!i.getAttribute('aria-label'))i.setAttribute('aria-label',i.placeholder)});
-   if(type==='all')host.querySelector('select').insertAdjacentHTML('afterbegin','<option selected value="">Реакция не указана</option>');
+   const controls=Object.fromEntries([...host.querySelectorAll('[data-k]')].map(el=>[el.dataset.k,el]));
+   const order=['n','kg','d','f','t','m','course','who','why','w','results','time','ab','tmax','r'];
+   const labels={n:{ill:'Чем болели',med:'Препарат и дозировка',cmp:'Что беспокоит',all:'На что аллергия',travel:'Где и когда',hosp:'Причина госпитализации'}[type],kg:'Вес, кг',d:'Дата измерения',f:'Дата начала',t:'Дата окончания',m:'Режим приёма',course:'Опыт приёма',who:'Кто назначил',why:'Причина назначения',w:'Название стационара',results:'Показатели из выписки',ab:'Антибиотики',tmax:'Максимальная температура, °C',r:'Реакция'};
+   host.replaceChildren();
+   for(const key of order){
+    if(!controls[key])continue;
+    let input=controls[key];
+    if(key==='n'){input=document.createElement('textarea');input.dataset.k=key;input.rows=2;input.value=name;input.required=true}
+    if(key==='kg'){input.value=(name.match(/\d+(?:[.,]\d+)?/)||[''])[0].replace(',','.');input.required=true}
+    if(key==='f'||key==='d'){input.value=start;input.required=true}
+    if(key==='r')input.insertAdjacentHTML('afterbegin','<option selected value="">Не указано</option>');
+    input.removeAttribute('placeholder');input.removeAttribute('aria-label');
+    const label=document.createElement('label');label.textContent=labels[key]||key;label.append(input);host.append(label);
+   }
+   const mode=host.querySelector('[data-k="m"]');if(mode)mode.onchange=()=>{const end=controls.t;end.disabled=mode.value==='Постоянно';if(end.disabled)end.value=''};
+
   }
   fields(n,date);
-  kind.onchange=()=>fields(box.querySelector('[data-k="n"],[data-k="kg"]').value,box.querySelector('[data-k="f"],[data-k="d"]')?.value||'');
-  box.querySelector('.remove').onclick=()=>box.remove();
+  kind.onchange=()=>{fields(box.querySelector('[data-k="n"],[data-k="kg"]').value,box.querySelector('[data-k="f"],[data-k="d"]')?.value||'');updateSuggestion()};
+  box.querySelector('.remove').onclick=()=>{box.remove();updateSuggestion()};
  }
  for(const chunk of chunks){
   let k=/приним|назнач|таблет|лекарств|препарат|пил[аи]? /i.test(chunk)?'med':/стационар|больниц|госпитал/i.test(chunk)?'hosp':/болел|болела|перебол|забол/i.test(chunk)?'ill':/аллерг/i.test(chunk)?'all':/санатор|поездк|был[аи]? в|ездил/i.test(chunk)?'travel':/вес|вешу/i.test(chunk)?'weight':'cmp';
@@ -2755,11 +2784,13 @@ function captureReview(story){
   const title=(d&&k!=='travel'?chunk.replace(d[0],''):chunk).replace(/^\s*(?:с\s+)?(?:я\s+)?(?:болел[аи]?|принимал[аи]?|переболел[аи]?)\s+/i,'').trim();
   add(k,title||chunk,d?d[3]+'-'+d[2].padStart(2,'0')+'-'+d[1].padStart(2,'0'):'');
  }
- const kinds=[...$('#drafts10').querySelectorAll('.kind')].map(el=>el.value);
+ function updateSuggestion(){const kinds=[...$('#drafts10').querySelectorAll('.kind')].map(el=>el.value);
  const suggested=kinds.includes('med')?'cmp':kinds.includes('ill')?'med':'hosp';
  $('#extra10').value=suggested;
- $('#extra10').previousElementSibling.textContent=kinds.includes('med')?'Хотите уточнить, что беспокоило в этот период?':kinds.includes('ill')?'Принимали что-нибудь во время болезни? Можно добавить препарат.':'Можно добавить связанное событие из профиля.';
- $('#add10').onclick=()=>add($('#extra10').value);
+ $('#extra10').parentElement.previousElementSibling.textContent=kinds.includes('med')?'Хотите уточнить, что беспокоило в этот период?':kinds.includes('ill')?'Принимали что-нибудь во время болезни? Можно добавить препарат.':'Можно добавить связанное событие из профиля.';
+ }
+ updateSuggestion();
+ $('#add10').onclick=()=>{add($('#extra10').value);updateSuggestion();$('#drafts10').lastElementChild.scrollIntoView({block:'start'})};
  $('#check10').onsubmit=e=>{e.preventDefault();const records=[...$('#drafts10').children].map(box=>[box.querySelector('.kind').value,Object.fromEntries([...box.querySelectorAll('[data-k]')].map(i=>[i.dataset.k,i.value.trim()]))]);
  if(!records.length){toast('Добавьте запись');return}
  if(records.some(([,v])=>(!v.n&&!v.kg)||(v.f&&v.t&&v.f>v.t))){toast('Проверьте название и даты записи');return}
