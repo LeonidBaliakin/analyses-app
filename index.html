@@ -1261,12 +1261,12 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 </style><style>
 .swwrap .sw-wheel svg{touch-action:pan-y pinch-zoom;user-select:none;cursor:grab}
 .swwrap .sw-wheel svg.dragging{cursor:grabbing}
-.swwrap .sw-rot,.swwrap .sw-upright{transition:transform .3s var(--ease-out,ease-out)}
-.sw-upright{transform-box:view-box;transform-origin:0 0}
+.swwrap .sw-rot,.swwrap .sw-num{transition:transform .3s var(--ease-out,ease-out)}
+.sw-num{transform-box:fill-box;transform-origin:center}
 .swwrap .sw-pet.on,.swwrap .sw-has .sw-pet.on{transform:none}
 .swwrap .sw-has .sw-pet:not(.on){opacity:.72}
-.swwrap .dragging .sw-rot,.swwrap .dragging .sw-upright{transition:none}
-@media(prefers-reduced-motion:reduce){.swwrap .sw-rot,.swwrap .sw-upright{transition:none}}
+.swwrap .dragging .sw-rot,.swwrap .dragging .sw-num{transition:none}
+@media(prefers-reduced-motion:reduce){.swwrap .sw-rot,.swwrap .sw-num{transition:none}}
 </style><style>#reportRange{max-width:1040px;margin:12px auto;padding:8px 16px}#reportRange summary{cursor:pointer;font-weight:600}#reportRange .field{max-width:420px;margin-top:10px}.date-pair:not([hidden]){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}.date-pair input{width:100%;min-width:0}@media print{#reportRange{display:none!important}}</style><style>.smoking-fields{display:grid;align-content:start;gap:10px;min-width:0}</style></head>
 <body>
 <div class="app" id="app">
@@ -2654,7 +2654,21 @@ try{renderSpec()}catch(_){}
   const colors=['#6350b9','#cb542e','#078473'];
   const symbols=['M-6 -3h12l-3 -3 M6 3H-6l3 3','M0 -7l7 13H-7Z M0 -2v3 M0 3v.3','M-6 -4h12v10H-6Z M-6 -1H6 M-3 -6v4 M3 -6v4'];
   const icon=i=>`<path d="${symbols[i]}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>`;
-  const d='<g class="sw-rot">'+W.map((x,i)=>`<g transform="translate(100 100) rotate(${i*120})"><g class="sw-pet" data-sw="${i}" style="color:${colors[i]}"><title>${x.sh}</title><path d="M-61 -48 A78 78 0 0 1 61 -48" fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="round"/><circle cy="-78" r="15" fill="currentColor"/><g transform="translate(0 -78)"><g class="sw-upright" style="color:white">${icon(i)}</g></g></g></g>`).join('')+'</g><text x="100" y="100" dy=".32em" text-anchor="middle" font-size="72" style="pointer-events:none" aria-hidden="true">🍊</text>';
+  /* долька: смотрит вверх, острый край к центру, несимметричная как у настоящей дольки */
+  const SEG='M2 -12 C-6 -13 -26 -32 -36 -52 C-44 -68 -32 -88 -8 -90 C14 -92 36 -82 40 -64 C43 -50 26 -26 10 -14 C7 -12 4 -11.5 2 -12 Z';
+  const HL='M-24 -62 C-26 -72 -18 -82 -4 -83 C-12 -78 -18 -70 -20 -60 Z';
+  const veins=[-30,-15,0,15,30].map(a=>{const r=a*Math.PI/180;return `<path d="M2 -20 L${(2+62*Math.sin(r)).toFixed(1)} ${(-20-62*Math.cos(r)).toFixed(1)}"/>`}).join('');
+  let d='<defs><filter id="swsh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#F06A10" flood-opacity=".28"/></filter>'
+   +W.map((x,i)=>`<radialGradient id="swg${i}" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="${x.a}"/><stop offset="1" stop-color="${x.b}"/></radialGradient><clipPath id="swc${i}"><path d="${SEG}"/></clipPath>`).join('')
+   +'<marker id="swar" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#F6A06A"/></marker></defs>'
+   +'<g class="sw-rot">';
+  W.forEach((x,i)=>{d+=`<g transform="translate(100 100) rotate(${i*120})"><g class="sw-pet" data-sw="${i}" filter="url(#swsh)"><title>${x.t}</title>
+    <path d="${SEG}" fill="url(#swg${i})" stroke="${x.r}" stroke-width="1.6"/>
+    <g clip-path="url(#swc${i})" stroke="#fff" stroke-opacity=".16" stroke-width="1.2" fill="none">${veins}</g>
+    <path d="${SEG}" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2.5" transform="translate(0 -51) scale(.88) translate(0 51)"/>
+    <path d="${HL}" fill="#fff" opacity=".45"/></g>
+    <g transform="translate(2 -54)"><text class="sw-num" data-swn="${i}" text-anchor="middle" y="8"></text></g></g>`});
+  d+='</g>';
   const wrap=document.createElement('div');wrap.className='swwrap';wrap.id='swwrap';
   wrap.innerHTML=`<div class="sw-wheel"><svg viewBox="0 0 200 200" role="img" aria-label="Сводка последней сдачи: три дольки">${d}</svg></div>
    <div class="sw card" id="sw"><div class="sw-cards">${W.map((x,i)=>`<button type="button" class="sw-cd" style="--c:${colors[i]}" data-sw="${i}" aria-expanded="false"><svg width="18" height="18" viewBox="-10 -10 20 20" style="color:${colors[i]}" aria-hidden="true">${icon(i)}</svg><span class="sw-n" data-swc="${i}"></span><span class="sw-t"><b>${x.t}</b><b class="sw-sh">${x.sh}</b><small data-sws="${i}"></small></span><svg class="sw-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>`).join('')}</div>
@@ -2666,7 +2680,7 @@ try{renderSpec()}catch(_){}
   const body=box.querySelector('.sw-body');
   W.forEach((x,i)=>{const c=$('#'+x.id);const fb=c.querySelector('.fb');fb.classList.add('sw-pane');fb.dataset.pane=i;body.appendChild(fb)});
   sum.hidden=true;sum.classList.add('sw-gone');
-  box.querySelector('.sw-panel').insertAdjacentHTML('beforebegin','<div class="sw-empty">Поверните кольцо или выберите раздел</div>');
+  box.querySelector('.sw-panel').insertAdjacentHTML('beforebegin','<div class="sw-empty">Поверните дольки или выберите раздел</div>');
 
   const rot=box.querySelector('.sw-rot'),svg=box.querySelector('.sw-wheel svg'),panel=box.querySelector('.sw-panel');
   const fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
@@ -2677,7 +2691,7 @@ try{renderSpec()}catch(_){}
     const out=latestTests().filter(m=>m.st==='high'||m.st==='low').length;
     const ncmp=(EV.cmp||[]).length,nc=ncmp+(weightAlert()?1:0)+nearEvents(DATES[li],45).length;
     const v=[[nOut+nBack,`${nOut} вышли за норму · ${nBack} вернулись`],[out,`из ${w.length} за ${DATES[li]}`],[nc,nc?(ncmp?'жалобы и события рядом со сдачей':'события рядом со сдачей'):'событий нет']];
-    v.forEach(([n,s],i)=>{box.querySelector(`[data-swc="${i}"]`).textContent=n;box.querySelector(`[data-sws="${i}"]`).textContent=s})}
+    v.forEach(([n,s],i)=>{box.querySelector(`[data-swn="${i}"]`).textContent=n;box.querySelector(`[data-swc="${i}"]`).textContent=n;box.querySelector(`[data-sws="${i}"]`).textContent=s})}
   function paint(anim){const a=hov>=0?hov:sel;
     svg.classList.toggle('sw-has',a>=0);
     box.querySelectorAll('.sw-pet').forEach(p=>p.classList.toggle('on',+p.dataset.sw===a));
@@ -2694,7 +2708,7 @@ try{renderSpec()}catch(_){}
   }
   function rotate(angle){
     rot.style.transform=`rotate(${angle}deg)`;
-    box.querySelectorAll('.sw-upright').forEach((el,i)=>el.style.transform=`rotate(${-angle-120*i}deg)`);
+    box.querySelectorAll('.sw-num').forEach((el,i)=>el.style.transform=`rotate(${-angle-120*i}deg)`);
   }
   let gesture=null,ignoreClick=false;
   const delta=(a,b)=>(a-b+540)%360-180;
@@ -2704,7 +2718,7 @@ try{renderSpec()}catch(_){}
     ignoreClick=false;
     const r=svg.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
     const distance=Math.hypot(e.clientX-cx,e.clientY-cy);
-    if(distance<r.width*.27||distance>r.width*.5)return;
+    if(distance<r.width*.07||distance>r.width*.5)return;
     gesture={id:e.pointerId,cx,cy,x:e.clientX,y:e.clientY,time:e.timeStamp,velocity:0,active:false};
     gesture.last=direction(e,gesture);
   });
