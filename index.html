@@ -1238,15 +1238,10 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 .rsnl{color:var(--prev)}
 #upTable tr[hidden]{display:none}
 @media(max-width:620px){.rsnt{max-width:96px;white-space:normal;line-height:1.25;overflow-wrap:anywhere}}
-.rsnf{margin-top:16px}
-@media(max-width:620px){.rsnt{max-width:118px;white-space:normal;overflow-wrap:normal;word-break:normal;hyphens:none;line-height:1.25;padding:3px 7px}}
-@media(max-width:620px){.rsnt{max-width:92px;font-size:11px;padding:2px 6px}#upTable td:first-child{padding-right:4px}}
-@media(max-width:620px){.rsnt{max-width:84px;padding:2px 5px;font-size:10.5px}}
-@media(max-width:620px){.rsnt{hyphens:auto;-webkit-hyphens:auto;overflow:visible;text-overflow:clip;overflow-wrap:break-word}}
 
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
-</head>
+<style>#drafts10 fieldset{border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0}#drafts10 .inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:8px 0}[data-capture]{margin:8px 0 14px}</style></head>
 <body>
 <div class="app" id="app">
 <header class="top">
@@ -1265,7 +1260,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
   <div class="demo" id="demoBar"></div>
 
   <!-- СВОДКА -->
-  <section class="view on" id="v-summary" aria-label="Сводка">
+  <section class="view on" id="v-summary" aria-label="Сводка"><button class="btn pri" type="button" data-capture>Записать с AI</button>
     <div class="sum">
       <div class="card fold closed" id="cChg">
         <button class="card-h fh" aria-expanded="false"><h2>Что изменилось с прошлой сдачи</h2><span class="fsum" id="chgSum"></span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
@@ -1324,7 +1319,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
   </section>
 
   <!-- ПРОФИЛЬ -->
-  <section class="view" id="v-profile" aria-label="Профиль">
+  <section class="view" id="v-profile" aria-label="Профиль"><button class="btn pri" type="button" data-capture>Записать с AI</button>
     <div class="panel"><h2>Профиль</h2>
       <p class="lead">Данные о вас, которые помогают врачу читать анализы. Препараты, вес и болезни показываются на графиках анализов по тем же датам. Сервис сам ничего по профилю не оценивает.</p>
       <div class="pfill"><div class="pfill-t"><b>Профиль заполнен на <span id="pfPct" class="num">0</span>%</b><span class="why" id="pfHint"></span></div><div class="pbar"><i id="pfBar"></i></div></div>
@@ -1375,7 +1370,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
         <canvas class="qr" id="qr" width="180" height="180" aria-label="QR-код со ссылкой на анализы (демо)"></canvas>
         <div>
           <div class="field"><label>Срок доступа</label></div>
-          <div class="opts" id="dur"></div>
+          <div class="opts" id="dur"></div><div class="field"><label for="period10">Период анализов</label><select id="period10"><option value="0">Вся история</option><option value="30">Последние 30 дней до последней сдачи</option><option value="180">Последние 180 дней до последней сдачи</option></select></div>
           <div class="field"><label>Что показать</label></div>
           <div class="opts" id="scope"></div>
           <div class="linkbox"><span class="code" id="slink">orange-health.ru/s/7K2-QX9</span><button class="btn" id="copy">Скопировать ссылку</button><button class="btn" id="spdf">PDF для печати</button><button class="btn pri" id="specPrev">Вид для врача</button></div>
@@ -1617,12 +1612,13 @@ function moveInd(){const a=document.querySelector('.sbtn[aria-current="page"]'),
   ind.style.transform=`translate(${r.left-p.left}px,${r.top-p.top}px)`;ind.style.width=r.width+'px';ind.style.height=r.height+'px'}
 window.addEventListener('resize',moveInd);try{document.fonts.ready.then(moveInd)}catch(e){}window.addEventListener('load',moveInd);
 const RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-function show(id){document.querySelectorAll('.gear').forEach(g=>g.classList.toggle('on',g.dataset.go===id));const next=$('#v-'+id),prev=document.querySelector('.view.on');cur=id;
+let pendingView;
+function show(id){clearTimeout(pendingView);document.querySelectorAll(".view.leave").forEach(el=>el.classList.remove("leave"));document.querySelectorAll('.gear').forEach(g=>g.classList.toggle('on',g.dataset.go===id));const next=$('#v-'+id),prev=document.querySelector('.view.on');cur=id;
   document.querySelectorAll('.sbtn').forEach(b=>b.setAttribute('aria-current',b.dataset.tab===id?'page':'false'));moveInd();
   if(!document.querySelector('.sbtn[data-tab="'+id+'"]'))renderTabs(id);
   if(prev===next){return}
   const swap=()=>{if(prev){prev.classList.remove('on','leave')}next.classList.add('on','enter');window.scrollTo(0,0);setTimeout(()=>next.classList.remove('enter'),520)};
-  if(prev&&!RM){prev.classList.add('leave');setTimeout(swap,170)}else swap()}
+  if(prev&&!RM){prev.classList.add('leave');pendingView=setTimeout(swap,170)}else swap()}
 
 document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)show(g.dataset.go);
   const m=e.target.closest('[data-modal]');if(m)MODALS[m.dataset.modal]()});
@@ -1637,7 +1633,7 @@ const EVDEF={
  weight:[{d:'2023-07-25',kg:'96'},{d:'2024-09-01',kg:'95'},{d:'2024-12-01',kg:'94'},{d:'2025-03-20',kg:'92'},{d:'2025-09-04',kg:'90'},{d:'2026-05-31',kg:'89'},{d:'2026-08-02',kg:'87'},{d:'2026-09-06',kg:'85'},{d:'2026-10-06',kg:'82'}],
  ill:[{n:'Бронхит',f:'2023-07-10',t:'2023-07-24',tmax:'38.6',ab:'Амоксициллин, 7 дней'},{n:'ОРВИ',f:'2026-09-25',t:'2026-10-01',tmax:'38.2',ab:''}],
  cmp:[{n:'Слабость, быстро устаю',f:'2026-08-15'},{n:'Сухость во рту, часто хочется пить',f:'2026-09-01'}],
- hosp:[{n:'Пневмония',w:'Городская больница № 26',f:'2024-11-05',t:'2024-11-15'}]};
+ hosp:[{n:'Пневмония',w:'Городская больница № 26',results:'08.11.2024 · Гемоглобин 142 г/л (демо)',f:'2024-11-05',t:'2024-11-15'}]};
 let EV=store.get('oh2-ev',null)||JSON.parse(JSON.stringify(EVDEF));
 ['med','weight','ill','hosp','cmp'].forEach(k=>{if(!Array.isArray(EV[k]))EV[k]=k==='cmp'?JSON.parse(JSON.stringify(EVDEF.cmp)):[]});
 const ALLR=['Сыпь, крапивница','Отёк (в том числе отёк Квинке)','Насморк, чихание','Затруднённое дыхание','Анафилаксия','Другое'];
@@ -1654,11 +1650,11 @@ function weightAlert(){const w=EV.weight.filter(e=>e.d&&e.kg).sort((a,b)=>a.d<b.
   if(pct<5)return null;const mo=Math.max(1,Math.round((lt-evDate(mx.d))/864e5/30.4));
   return {kg:fmtNum(drop),pct:Math.round(pct),mo,from:mx.kg,to:last.kg,fd:mx.d,td:last.d}}
 const EVF={
- med:e=>`<input data-k="n" placeholder="Препарат и дозировка" value="${esc(e.n||'')}" aria-label="Препарат и дозировка"><select data-k="m" aria-label="Как принимаете">${['Курс','Постоянно'].map(o=>`<option ${o===(e.m||'Курс')?'selected':''}>${o}</option>`).join('')}</select><label class="dl"><span>с</span><input type="date" data-k="f" value="${e.f||''}"></label><label class="dl"><span>по</span><input type="date" data-k="t" value="${e.t||''}" ${e.m==='Постоянно'?'disabled':''}></label>`,
+ med:e=>`<input data-k="who" placeholder="Какой специалист назначил" value="${esc(e.who||'')}"><input data-k="why" placeholder="Причина назначения" value="${esc(e.why||'')}"><input data-k="n" placeholder="Препарат и дозировка" value="${esc(e.n||'')}" aria-label="Препарат и дозировка"><select data-k="m" aria-label="Как принимаете">${['Курс','Постоянно'].map(o=>`<option ${o===(e.m||'Курс')?'selected':''}>${o}</option>`).join('')}</select><label class="dl"><span>с</span><input type="date" data-k="f" value="${e.f||''}"></label><label class="dl"><span>по</span><input type="date" data-k="t" value="${e.t||''}" ${e.m==='Постоянно'?'disabled':''}></label>`,
  weight:e=>`<label class="dl"><span>дата</span><input type="date" data-k="d" value="${e.d||''}"></label><label class="dl"><span>кг</span><input type="number" step="0.1" min="20" max="300" data-k="kg" value="${esc(e.kg||'')}"></label>`,
  ill:e=>`<input data-k="n" placeholder="Чем болели" value="${esc(e.n||'')}" aria-label="Чем болели"><label class="dl"><span>с</span><input type="date" data-k="f" value="${e.f||''}"></label><label class="dl"><span>по</span><input type="date" data-k="t" value="${e.t||''}"></label><label class="dl"><span>макс. t°</span><input type="number" step="0.1" min="35" max="42" data-k="tmax" value="${esc(e.tmax||'')}" aria-label="Максимальная температура"></label><input data-k="ab" placeholder="Антибиотики, если это было не ОРВИ" value="${esc(e.ab||'')}" aria-label="Антибиотики">`,
  cmp:e=>`<input data-k="n" placeholder="Что беспокоит" value="${esc(e.n||'')}" aria-label="Что беспокоит"><label class="dl"><span>с</span><input type="date" data-k="f" value="${e.f||''}"></label>`,
- hosp:e=>`<input data-k="n" placeholder="Причина" value="${esc(e.n||'')}" aria-label="Причина госпитализации"><input data-k="w" placeholder="Где: больница" value="${esc(e.w||'')}" aria-label="Где лежали"><label class="dl"><span>с</span><input type="date" data-k="f" value="${e.f||''}"></label><label class="dl"><span>по</span><input type="date" data-k="t" value="${e.t||''}"></label>`,
+ hosp:e=>`<input data-k="results" placeholder="Показатели из выписки с датами" value="${esc(e.results||'')}"><input data-k="n" placeholder="Причина" value="${esc(e.n||'')}" aria-label="Причина госпитализации"><input data-k="w" placeholder="Где: больница" value="${esc(e.w||'')}" aria-label="Где лежали"><label class="dl"><span>с</span><input type="date" data-k="f" value="${e.f||''}"></label><label class="dl"><span>по</span><input type="date" data-k="t" value="${e.t||''}"></label>`,
  all:e=>`<input data-k="n" placeholder="На что аллергия" value="${esc(e.n||'')}" aria-label="На что аллергия"><select data-k="r" aria-label="Как проявляется">${ALLR.map(o=>`<option ${o===e.r?'selected':''}>${o}</option>`).join('')}</select>`};
 function evRow(t,e){return `<div class="evr evr-${t}" data-t="${t}">${EVF[t](e||{})}<button type="button" class="evx" aria-label="Удалить" data-evdel>×</button></div>`}
 function readEv(host){return host?[...host.querySelectorAll('.evr')].map(r=>{const o={};r.querySelectorAll('[data-k]').forEach(i=>o[i.dataset.k]=i.value);return o}).filter(o=>(o.n&&o.n.trim())||o.kg):[]}
@@ -1731,7 +1727,7 @@ const PWHY={
  weight:'Записывайте вес время от времени. При заметном снижении в сводке появится отметка.',
  ill:'Болезни за последний год: когда, максимальная температура и антибиотики, если это было не ОРВИ (например, ангина или пневмония). После болезни анализы, например лейкоциты, ещё какое-то время могут быть изменены.',
  cmp:'Что беспокоит и с какого времени. Терапевту это сразу подсказывает, к какому специалисту направить дальше. Врач увидит жалобы первыми.',
- hosp:'Когда, где и по какой причине лежали в больнице. Помогает врачу понять, откуда могла появиться инфекция.',
+ hosp:'Когда, где и по какой причине лежали в больнице. Укажите даты и название стационара, чтобы врач мог сопоставить выписку с анализами.',
  all:'На что аллергия и как она проявляется: сыпь, отёк или другое.'};
 const evArr=k=>k==='all'?(P.alls=P.alls||[]):EV[k];
 const medActive=e=>e.m==='Постоянно'||!e.t||evDate(e.t)>=LAST;
@@ -1783,11 +1779,11 @@ let PSG=store.get('oh3-psg',{});let psCur=null;
 const delB=(k,i)=>`<td class="r"><button class="evx sm" type="button" aria-label="Удалить" data-psdel="${k},${i}">×</button></td>`;
 function psTable(k){const arr=evArr(k).map((e,i)=>({e,i}));if(!arr.length)return '<p class="why" style="margin:8px 0">Пока нет записей.</p>';
   const by=f=>arr.slice().sort((a,b)=>(a.e[f]||'')<(b.e[f]||'')?1:-1);let h,r;
-  if(k==='med'){h=['Препарат и дозировка','Приём','С','По','Статус',''];r=by('f').map(({e,i})=>`<tr><td><b>${esc(e.n)}</b></td><td>${e.m==='Постоянно'?'постоянно':'курс'}</td><td class="num">${dfmt(e.f)}</td><td class="num">${e.m==='Постоянно'||!e.t?'—':dfmt(e.t)}</td><td><span class="chip ${medActive(e)?'c-ok':'c-none'}">${medActive(e)?'принимает':'закончен'}</span></td>${delB(k,i)}</tr>`)}
+  if(k==='med'){h=['Препарат и дозировка','Приём','С','По','Статус',''];r=by('f').map(({e,i})=>`<tr><td><b>${esc(e.n)}</b><small>${esc([e.who,e.why].filter(Boolean).join(" · "))}</small></td><td>${e.m==='Постоянно'?'постоянно':'курс'}</td><td class="num">${dfmt(e.f)}</td><td class="num">${e.m==='Постоянно'||!e.t?'—':dfmt(e.t)}</td><td><span class="chip ${medActive(e)?'c-ok':'c-none'}">${medActive(e)?'принимает':'закончен'}</span></td>${delB(k,i)}</tr>`)}
   if(k==='weight'){const s=by('d');const hm=+P.h/100;h=['Дата','Вес, кг','Изменение','ИМТ',''];r=s.map(({e,i},j)=>{const p=s[j+1];const d=p?+e.kg-+p.e.kg:null;return `<tr><td class="num">${dfmt(e.d)}</td><td class="num"><b>${esc(e.kg)}</b></td><td class="num">${d==null?'—':d===0?'=':(d>0?'▲ +':'▼ ')+fmtNum(d)}</td><td class="num">${hm>0?Math.round(+e.kg/(hm*hm)*10)/10:'—'}</td>${delB(k,i)}</tr>`})}
   if(k==='ill'){h=['Чем болели','С','По','Макс. t°','Антибиотики',''];r=by('f').map(({e,i})=>`<tr><td><b>${esc(e.n)}</b></td><td class="num">${dfmt(e.f)}</td><td class="num">${dfmt(e.t)}</td><td class="num">${e.tmax?esc(e.tmax)+'°':'—'}</td><td>${esc(e.ab||'—')}</td>${delB(k,i)}</tr>`)}
   if(k==='cmp'){h=['Что беспокоит','С какого времени','Сколько',''];r=by('f').map(({e,i})=>{const d=e.f?Math.round((LAST-evDate(e.f))/864e5):null;return `<tr><td><b>${esc(e.n)}</b></td><td class="num">${dfmt(e.f)}</td><td class="num">${d==null?'—':d<60?d+' дн.':Math.round(d/30.4)+' мес.'}</td>${delB(k,i)}</tr>`})}
-  if(k==='hosp'){h=['Причина','Где','С','По','Дней',''];r=by('f').map(({e,i})=>`<tr><td><b>${esc(e.n)}</b></td><td>${esc(e.w||'—')}</td><td class="num">${dfmt(e.f)}</td><td class="num">${dfmt(e.t)}</td><td class="num">${days(e.f,e.t)??'—'}</td>${delB(k,i)}</tr>`)}
+  if(k==='hosp'){h=['Причина','Где','С','По','Дней',''];r=by('f').map(({e,i})=>`<tr><td><b>${esc(e.n)}</b></td><td>${esc(e.w||'—')}<br>${esc(e.results||'')}</td><td class="num">${dfmt(e.f)}</td><td class="num">${dfmt(e.t)}</td><td class="num">${days(e.f,e.t)??'—'}</td>${delB(k,i)}</tr>`)}
   if(k==='all'){h=['На что','Как проявляется',''];r=arr.map(({e,i})=>`<tr><td><b>${esc(e.n)}</b></td><td>${esc(e.r||'—')}</td>${delB(k,i)}</tr>`)}
   return `<div class="tblw"><table class="hist pst"><thead><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${r.join('')}</tbody></table></div>`}
 const fl=(k,l,inner,sm)=>`<div class="field"><label for="p-${k}">${l}</label>${inner}${sm?`<small>${sm}</small>`:''}</div>`;
@@ -1798,7 +1794,7 @@ function psForm(k){
   if(k==='base')return `<p class="why" style="margin-bottom:10px">Пол и возраст определяют, какую норму лаборатории показывать.</p><div class="fgrid">${fl('sex','Пол',fse('sex',[['m','Мужской'],['f','Женский']]))}${fl('dob','Дата рождения',fin('dob','date'))}${fl('h','Рост, см',fin('h','number','','min="100" max="230"'),'ИМТ считается по последнему весу из блока «Вес»')}${fl('waist','Обхват талии, см',fin('waist','number','','min="40" max="200"'),'Необязательно')}</div>
    <div class="fgrid" id="p-fem" style="margin-top:12px">${fl('cycle','День цикла в дату сдачи',fin('cycle','text','например, 5-й'),'Важно для половых гормонов')}</div>`;
   if(k==='health')return `<p class="why" style="margin-bottom:10px">Краткий анамнез со слов пациента: что серьёзное было за всю жизнь. Постоянные препараты укажите в разделе «Препараты».</p><div class="fgrid">${fl('dx','Хронические заболевания',fta('dx','Например: сахарный диабет 2 типа с 2023 г.'))}${fl('surg','Операции и травмы',fta('surg','Что и когда'))}${fl('fam','Наследственные и генетические заболевания, если знаете',fta('fam','У вас или у близких: диабет, болезни сердца, онкология…'))}</div><div style="margin-top:12px">${fl('other','Другое, что важно знать врачу',fta('other'))}</div>`;
-  return `<div class="fgrid">${fl('city','Город',fin('city'))}${fl('travel','Поездки за последний год: куда и когда',fin('travel','text','Например: Таиланд, февраль 2026'),'Часть инфекций и показателей зависит от региона')}${fl('act','Спорт и физическая активность',fse('act',[['1','Почти нет: сидячая работа, без спорта'],['2','1–2 тренировки или прогулки в неделю'],['3','3–4 тренировки в неделю'],['4','5 и больше тренировок или физический труд']]))}${fl('stress','Был ли сильный стресс за последний месяц',fse('stress',['Нет','Да, эпизодически','Да, почти постоянно']))}${fl('sleep','Сон, в среднем часов в сутки',fin('sleep','number','','min="3" max="14" step="0.5"'),'Обычная ночь за последний месяц')}${fl('food','Тип питания',fse('food',['Обычное','Вегетарианское','Веганское','Низкоуглеводное / кето','Интервальное голодание']))}${fl('smoke','Курение',fse('smoke',['Не курю','Курю','Бросил(а)']))}${fl('alc','Алкоголь, как часто',fse('alc',['Не пью','Реже раза в неделю','1–3 раза в неделю','Чаще']))}${fl('alcv','Алкоголь, сколько за раз',fse('alcv',[['','—'],'1–2 бокала вина или пива','3–4 бокала','5 и больше бокалов','Крепкий: до 100 мл','Крепкий: 100–250 мл','Крепкий: больше 250 мл']))}</div>`}
+  return `<div class="fgrid">${fl('city','Город',fin('city'))}${fl('travel','Поездки за последний год: куда и когда',fin('travel','text','Например: Таиланд, февраль 2026'),'Часть инфекций и показателей зависит от региона')}${fl('act','Спорт и физическая активность',fse('act',[['1','Почти нет: сидячая работа, без спорта'],['2','1–2 тренировки или прогулки в неделю'],['3','3–4 тренировки в неделю'],['4','5 и больше тренировок или физический труд']]))}${fl('sportNote','Вид спорта',fin('sportNote'))}${fl('foodNote','Особенности питания',fta('foodNote'))}${fl('cigs','Сигарет в день',fin('cigs','number','','min="0"'))}${fl('stress','Был ли сильный стресс за последний месяц',fse('stress',['Нет','Да, эпизодически','Да, почти постоянно']))}${fl('sleep','Сон, в среднем часов в сутки',fin('sleep','number','','min="3" max="14" step="0.5"'),'Обычная ночь за последний месяц')}${fl('food','Тип питания',fse('food',['Обычное','Вегетарианское','Веганское','Низкоуглеводное / кето','Интервальное голодание']))}${fl('smoke','Курение',fse('smoke',['Не курю','Курю','Бросил(а)']))}${fl('alc','Алкоголь, как часто',fse('alc',['Не пью','Реже раза в неделю','1–3 раза в неделю','Чаще']))}${fl('alcv','Алкоголь, сколько за раз',fse('alcv',[['','—'],'1–2 бокала вина или пива','3–4 бокала','5 и больше бокалов','Крепкий: до 100 мл','Крепкий: 100–250 мл','Крепкий: больше 250 мл']))}</div>`}
 function drawPsec(k){const b=$('#psb');if(!b)return;
   if(k==='docs'){b.innerHTML=`<p class="why">Скоро здесь можно будет хранить заключения инструментальных исследований рядом с анализами. Врачу их часто не хватает.</p>
     <div class="docl">${[['ЭКГ','10–14 дней перед госпитализацией'],['УЗИ',''],['Флюорография','действует год'],['Рентген','действует год, после травмы повторять'],['КТ и МРТ','действуют год']].map(([n,v])=>`<div class="docr">${svgI(PIC2.docs,18)}<span><b>${n}</b>${v?`<small>${v}</small>`:''}</span><span class="chip c-none">скоро</span></div>`).join('')}</div>
@@ -1974,8 +1970,13 @@ function chartSVG(m){
       const al=weightAlert();if(al){const ax=xt(evDate(al.td).getTime());s+=`<g transform="translate(${ax-26},${yw(+al.to)-9})"><path d="M7 0l7 12H0z" fill="var(--prev)"/><path d="M7 4v4M7 9.6v.4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><title>Вес снизился на ${al.kg} кг (−${al.pct}%) за ${al.mo} мес.</title></g>`}}
   });
   return s+'</svg>'}
+function medicationAt(date){
+  const day=pd(date);
+  const active=EV.med.filter(e=>e.f && evDate(e.f)<=day && (!e.t || evDate(e.t)>=day));
+  return active.map(e=>e.n+' · с '+dfmt(e.f)+' ('+(1+Math.round((day-evDate(e.f))/864e5))+' дн.)'+(e.who?' · '+e.who:'')+(e.why?' · '+e.why:'')).join(', ') || 'Препараты на эту дату не указаны';
+}
 function chartBox(m){
-  return `<div class="ovsw"><span class="why">На графике:</span>${[['med','препараты'],['ill','болезни и стационар'],['w','вес']].map(([k,l])=>`<label class="chk"><input type="checkbox" data-ov="${k}" ${OV[k]?'checked':''}> ${l}</label>`).join('')}</div>`+chartSVG(m)+
+  return `<div class="ovsw"><span class="why">На графике:</span>${[['med','препараты'],['ill','болезни и стационар'],['w','вес']].map(([k,l])=>`<label class="chk"><input type="checkbox" data-ov="${k}" ${OV[k]?'checked':''}> ${l}</label>`).join('')}</div>`+chartSVG(m)+`<details><summary>Препараты на даты анализов</summary>${m.pts.map(p=>'<p>'+esc(p.d)+' · '+esc(medicationAt(p.d))+'</p>').join('')}</details>`+
   `<div class="legend"><span><i style="background:var(--accent)"></i>последний результат</span><span><i style="background:var(--prev)"></i>предыдущий</span><span><i style="background:var(--band);border:1px solid var(--ok)"></i>норма лаборатории</span>${OV.ill?'<span><i style="background:var(--ill)"></i>болезнь</span><span><i style="background:var(--hosp)"></i>стационар</span>':''}${OV.med?'<span><i style="background:var(--med-soft);border:1px solid var(--med)"></i>приём препарата</span>':''}</div>`}
 function detailHTML(m){
   const key=m.gi+','+m.ri;
@@ -2262,20 +2263,22 @@ function openSpecView(print){const a=age(P.dob),w=lastWeight(),b=bmi(),out=ALL.f
     <dt>Наследственность</dt><dd>${esc(P.fam||'—')}</dd>
     <dt>Аллергии</dt><dd>${L(P.alls||[],x=>esc(x.n)+' <span class="why">· '+esc((x.r||'').toLowerCase())+'</span>')}</dd>
     <dt>Болезни за год</dt><dd>${L(yr,e=>esc(e.n)+' <span class="why">· '+dfmt(e.f)+'–'+dfmt(e.t)+(e.tmax?', до '+esc(e.tmax)+'°':'')+(e.ab?', антибиотики: '+esc(e.ab):'')+'</span>')}</dd>
-    <dt>Госпитализации</dt><dd>${L(EV.hosp,e=>esc(e.n)+', '+esc(e.w||'')+' <span class="why">· '+dfmt(e.f)+'–'+dfmt(e.t)+'</span>')}</dd></dl></div>
+    <dt>Госпитализации</dt><dd>${L(EV.hosp,e=>esc(e.n)+', '+esc([e.w,e.results].filter(Boolean).join(' · '))+' <span class="why">· '+dfmt(e.f)+'–'+dfmt(e.t)+'</span>')}</dd></dl></div>
     <div class="svc"><h3>Рост, вес, ИМТ</h3><dl class="svdl"><dt>Рост</dt><dd>${esc(P.h||'—')} см</dd><dt>Вес</dt><dd>${w?esc(w.kg)+' кг · '+dfmt(w.d):'—'}</dd><dt>ИМТ</dt><dd><b>${b??'—'}</b></dd></dl>
     ${weightAlert()?`<p class="why" style="margin-top:6px">Вес снизился на ${weightAlert().pct}% за ${weightAlert().mo} мес.</p>`:''}
-    <h3 style="margin-top:12px">Образ жизни</h3><dl class="svdl"><dt>Спорт</dt><dd>${ACT[P.act]||'—'}</dd><dt>Сон</dt><dd>в среднем ${esc(P.sleep||'—')} ч</dd><dt>Курение</dt><dd>${esc((P.smoke||'—').toLowerCase())}</dd><dt>Алкоголь</dt><dd>${esc((P.alc||'—').toLowerCase())}${P.alcv?', '+esc(P.alcv.toLowerCase()):''}</dd></dl></div></div>`;
+    <h3 style="margin-top:12px">Образ жизни</h3><dl class="svdl"><dt>Питание</dt><dd>${esc([P.food,P.foodNote].filter(Boolean).join(" · "))}</dd><dt>Спорт</dt><dd>${esc(P.sportNote||"")} ${ACT[P.act]||'—'}</dd><dt>Сон</dt><dd>в среднем ${esc(P.sleep||'—')} ч</dd><dt>Курение</dt><dd>${esc((P.smoke||'—').toLowerCase())} ${P.smoke==='Курю' && P.cigs ? esc(P.cigs)+' сиг./день':''}</dd><dt>Алкоголь</dt><dd>${esc((P.alc||'—').toLowerCase())}${P.alcv?', '+esc(P.alcv.toLowerCase()):''}</dd></dl></div></div>`;
   const mon=G.filter(g=>[1,8,9,0,5].includes(g.gi)).flatMap(g=>g.rows).filter(m=>m.cur&&(LAST-pd(m.cur.d))/864e5<=31);
   const isKey=m=>KEYM.some(r=>r.test(m.n))||m.st!=='ok';
   const keyN=mon.filter(isKey).length,restN=mon.length-keyN;
   const main=`<h2>ОАК и биохимия за последний месяц</h2>${mon.length?`<p class="why" style="margin:-4px 0 8px">Главные показатели и всё, что вне нормы${restN&&!print?`. Остальные ${restN} — по кнопке ниже`:''}.</p><table class="svt svmon${print?' all':''}">${SVH}<tbody>${mon.map(m=>svRow(m,isKey(m)?'':'svx')).join('')}</tbody></table>${restN&&!print?`<button type="button" class="btn svmore" data-svmore>Показать все ${mon.length}</button>`:''}`:'<p class="why">За последний месяц ОАК и биохимию не сдавали.</p>'}`;
   const outT=`<h2>Сейчас не в норме: ${out.length}</h2><table class="svt">${SVH}<tbody>${out.map(m=>svRow(m)).join('')}</tbody></table>`;
-  const evList=`<div class="evlist"><b>События рядом с датами сдачи</b>${DATES.map((d,i)=>{const c=ctxFor(d);return c?`<div><span class="num">${d}</span> ${esc(c)}</div>`:''}).join('')}</div>`;
-  const evRowT=`<tr class="evrow"><td><b>События рядом с датой</b></td><td></td><td></td>${DATES.map(d=>`<td>${esc(ctxFor(d))}</td>`).join('')}</tr>`;
-  const all=`<h2>Все показатели по датам</h2>${evList}<p class="mobnote">На телефоне показаны последние 3 сдачи; все даты — на компьютере или в PDF.</p><table class="alld"><thead><tr><th>Показатель</th><th class="u-c">Ед.</th><th>Норма</th>${DATES.map((d,i)=>`<th class="num">${d}<br><span style="font-weight:500;color:var(--ink3);font-size:10px">${LABS[i]}</span></th>`).join('')}</tr></thead><tbody>${evRowT}`+
-   G.filter(g=>g.rows.length).map(g=>`<tr class="grp"><td>${esc(g.title)}</td><td></td><td></td>${DATES.map(()=>"<td></td>").join("")}</tr>`+g.rows.map(m=>`<tr><td>${esc(m.n)}${U(m.u)?`<span class="u-m">, ${esc(U(m.u))}</span>`:''}</td><td class="u-c">${esc(U(m.u))}</td><td class="num">${esc(refText(m))}</td>${DATES.map((d,i)=>{const p=m.pts.find(q=>q.i===i);return `<td class="num" style="${p&&p.st!=='ok'?'font-weight:700;color:var(--'+(p.st==='high'?'hi':'lo')+')':''}">${p?esc(p.raw)+(p.st==='high'?' ↑':p.st==='low'?' ↓':''):'—'}</td>`}).join('')}</tr>`).join('')).join('')+'</tbody></table>';
-  $('#pvBody').innerHTML=`<div class="svbar">${print?'Так выглядит PDF для печати':'Так специалист видит анализы по ссылке или QR-коду: без регистрации, только просмотр'}</div><h1>Анализы: ${esc(P.name||'А. Иванов')}</h1><div class="svsearch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="svq" type="search" placeholder="Найти показатель: ферритин, ЛПНП, глюкоза…" aria-label="Найти показатель"><span id="svqn"></span></div><p class="why">Сформировано по загруженным бланкам и данным со слов пациента. Нормы указаны лабораториями. Отклонения отмечены ↑ ↓, чтобы их было видно и на чёрно-белой печати. Сервис не ставит диагнозов.</p>`+card+main+outT+all+`<p class="why" style="margin-top:14px">Оригиналы бланков доступны по ссылке. Распознанные значения подтверждены пациентом.</p>`;
+  const period=Number($('#period10').value);
+  const selectedDates=DATES.filter(d=>!period || (LAST-pd(d))/864e5<period);
+  const evList=`<div class="evlist"><b>События рядом с датами сдачи</b>${selectedDates.map((d,i)=>{const c=[ctxFor(d),medicationAt(d)].filter(Boolean).join(' · ');return c?`<div><span class="num">${d}</span> ${esc(c)}</div>`:''}).join('')}</div>`;
+  const evRowT=`<tr class="evrow"><td><b>События рядом с датой</b></td><td></td><td></td>${selectedDates.map(d=>`<td>${esc([ctxFor(d),medicationAt(d)].filter(Boolean).join(" · "))}</td>`).join('')}</tr>`;
+  const all=`<h2>Результаты за период ${selectedDates[0]} – ${selectedDates.at(-1)}</h2>${evList}<p class="mobnote">На телефоне показаны последние 3 сдачи; все даты — на компьютере или в PDF.</p><table class="alld"><thead><tr><th>Показатель</th><th class="u-c">Ед.</th><th>Норма</th>${selectedDates.map((d,i)=>`<th class="num">${d}<br><span style="font-weight:500;color:var(--ink3);font-size:10px">${LABS[DATES.indexOf(d)]}</span></th>`).join('')}</tr></thead><tbody>${evRowT}`+
+   G.filter(g=>g.rows.length).map(g=>`<tr class="grp"><td>${esc(g.title)}</td><td></td><td></td>${selectedDates.map(()=>"<td></td>").join("")}</tr>`+g.rows.map(m=>`<tr><td>${esc(m.n)}${U(m.u)?`<span class="u-m">, ${esc(U(m.u))}</span>`:''}</td><td class="u-c">${esc(U(m.u))}</td><td class="num">${esc(refText(m))}</td>${selectedDates.map((d,i)=>{const p=m.pts.find(q=>q.i===DATES.indexOf(d));return `<td class="num" style="${p&&p.st!=='ok'?'font-weight:700;color:var(--'+(p.st==='high'?'hi':'lo')+')':''}">${p?esc(p.raw)+(p.st==='high'?' ↑':p.st==='low'?' ↓':''):'—'}</td>`}).join('')}</tr>`).join('')).join('')+'</tbody></table>';
+  $('#pvBody').innerHTML=`<div class="svbar">${print?'Так выглядит PDF для печати':'Так специалист видит анализы по ссылке или QR-коду: без регистрации, только просмотр'}</div><h1>Анализы: ${esc(P.name||'А. Иванов')}</h1><div class="svsearch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="svq" type="search" placeholder="Найти показатель: ферритин, ЛПНП, глюкоза…" aria-label="Найти показатель"><span id="svqn"></span></div><p class="why">Сформировано по загруженным бланкам и данным со слов пациента. Нормы указаны лабораториями. Отклонения отмечены ↑ ↓, чтобы их было видно и на чёрно-белой печати. Сервис не ставит диагнозов.</p>`+(period ? "" : card+main+outT)+all+`<p class="why" style="margin-top:14px">Оригиналы бланков доступны по ссылке. Распознанные значения подтверждены пациентом.</p>`;
   $('#pvNote').textContent='';document.body.classList.add('preview');window.scrollTo(0,0)}
 
 /* ключевые показатели ОАК и биохимии для экрана врача (список на проверке у Маши) */
@@ -2466,39 +2469,18 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#hm').hidden)cl
 document.addEventListener('click',e=>{const g=e.target.closest('[data-hgo]');if(g){const [gi,ri]=g.dataset.hgo.split(',').map(Number);closeHist();setTimeout(()=>openSystem(gi,ri),260)}});
 /* первые шаги */
 let ts=0;
-const PSTEPS=['Знакомство','О вас','Первый анализ','По желанию'];
-const OPTC=[
- {k:'cmp',t:'Жалобы',w:'Что беспокоит и с какого времени. Врач увидит это первым'},
- {k:'med',t:'Препараты и курсы',w:'Покажем на графиках, как препарат влияет на анализы'},
- {k:'weight',t:'Вес',w:'Динамика веса рядом с анализами; резкое снижение будет отмечено'},
- {k:'ill',t:'Болезни за последний год',w:'С максимальной температурой. Объясняет, например, повышенные лейкоциты после ОРВИ'},
- {k:'hosp',t:'Госпитализации',w:'Помогает понять, откуда могла появиться инфекция'},
- {k:'all',t:'Аллергии',w:'С типом реакции: сыпь, отёк или другое'}];
-const segT=(k,o,cur)=>`<div class="seg" role="radiogroup">${o.map(([v,l])=>`<label><input type="radio" name="t-${k}" value="${v}" ${v===cur?'checked':''}><span>${l}</span></label>`).join('')}</div>`;
-const STEPS=[
- {h:()=>`<p>Один вход для всех ваших анализов: из любых лабораторий, с диспансеризации, из санатория, из больницы. Загружайте всё, отмечайте повод, а мы сведём результаты в динамику и поможем показать врачу. Дальше два коротких шага.</p><p class="why" style="margin-top:10px">Сервис показывает только факты с ваших бланков и ваши данные. Диагнозы ставит врач.</p>`},
- {h:()=>`<p>От этого зависит, какую норму лаборатории показывать.</p><div class="fgrid"><div class="field"><label>Пол</label>${segT('sex',[['m','Мужской'],['f','Женский']],P.sex)}</div><div class="field"><label for="t-dob">Дата рождения</label><input id="t-dob" type="date" value="${esc(P.dob||'')}"></div></div>`,
-},
- {h:()=>`<p>Добавьте бланк из любой лаборатории. Мы распознаем показатели, а вы проверите их перед сохранением.</p><div class="upbtns big"><button class="btn pri" type="button" data-up="camera">${svgI(PIC.camera,20)} Сфотографировать</button><button class="btn" type="button" data-up="gallery">${svgI(PIC.gallery,20)} Из галереи</button><button class="btn" type="button" data-up="files">${svgI(PIC.files,20)} Файл или PDF</button></div><p class="why" style="margin-top:10px">Приложение попросит доступ к камере, галерее или файлам. Можно загрузить позже в разделе «Мои анализы».</p>`},
- {h:()=>`<p>Это не обязательно, но поможет врачу понять ваши анализы. Заполните, что знаете, остальное можно добавить позже в профиле.</p><div class="ocards">${OPTC.map(c=>{const list=c.k==='all'?P.alls:EV[c.k];const done=list&&list.length;return `<div class="ocard${done?' done':''}"><button type="button" class="oc-h" data-oc="${c.k}" aria-expanded="false"><span class="oc-ck" aria-hidden="true">${done?'✓':''}</span><span><b>${c.t}</b><small>${c.w}</small></span><span class="oc-go">${done?'Изменить':'Заполнить'}</span></button><div class="oc-b" hidden><div class="evl" data-tevl="${c.k}">${(list&&list.length?list:[{}]).map(e=>evRow(c.k,e)).join('')}</div><button class="btn" type="button" data-tadd="${c.k}">+ Ещё</button></div></div>`}).join('')}</div>`}];
-function drawTut(){const s=STEPS[ts];const opt=ts===3;
-  $('#tS').textContent=opt?'По желанию · поможет врачу':'Шаг '+(ts+1)+' из 3';$('#tT').textContent=['Все анализы в одном месте','Немного о вас','Первый анализ','Что ещё поможет врачу'][ts];
-  $('#tP').innerHTML=PSTEPS.map((l,i)=>`<span class="tp${i<ts?' done':''}${i===ts?' on':''}${i===3?' tpopt':''}"><i></i><em>${l}</em></span>`).join('');
-  $('#tB').innerHTML=s.h();s.after&&s.after();
-  $('#tPrev').style.visibility=ts?'visible':'hidden';$('#tNext').textContent=opt?'Готово':ts===2?'Дальше':'Дальше';
-  $('#tSkip').style.visibility=ts>=2?'visible':'hidden';$('#tSkip').textContent=ts===2?'Загружу позже':'Пропустить'}
-function readTut(){const r=n=>{const c=document.querySelector(`#tB input[name="t-${n}"]:checked`);return c?c.value:null};
-  if(r('sex'))P.sex=r('sex');if($('#t-dob'))P.dob=$('#t-dob').value;
-  document.querySelectorAll('#tB [data-tevl]').forEach(h=>{const v=readEv(h);if(h.dataset.tevl==='all')P.alls=v;else EV[h.dataset.tevl]=v})}
-document.addEventListener('click',e=>{const h=e.target.closest('[data-oc]');if(h){const b=h.nextElementSibling;b.hidden=!b.hidden;h.setAttribute('aria-expanded',!b.hidden)}
-  const a=e.target.closest('[data-tadd]');if(a){a.previousElementSibling.insertAdjacentHTML('beforeend',evRow(a.dataset.tadd,{}))}});
+const tourSteps=[
+ ['files','Мои анализы','Нажмите «Добавить анализ», выберите фото или PDF и укажите повод сдачи.'],
+ ['summary','Сводка','Откройте показатель в таблице. Включите график, чтобы посмотреть динамику и препараты по датам.'],
+ ['profile','Профиль','Здесь можно добавить болезнь, препарат или госпитализацию. Кнопка «Записать с AI» соберёт несколько записей из одного рассказа.'],
+ ['share','Доступ специалисту','Выберите период результатов и срок доступа. Откройте «Вид для врача» или сохраните PDF через печать.']
+];
+function drawTut(){const [page,title,body]=tourSteps[ts];show(page);$('#tS').textContent='Шаг '+(ts+1)+' из 4 · демо для взрослых';$('#tT').textContent=title;$('#tP').textContent='';$('#tB').textContent=body;$('#tPrev').hidden=!ts;$('#tNext').textContent=ts===3?'Готово':'Дальше';$('#tSkip').textContent='Закрыть тур'}
 function openTut(){ts=0;drawTut();$('#tut').classList.add('on')}
-function closeTut(){store.set('oh2-profile',P);store.set('oh2-ev',EV);store.set('oh2-tut',1);fillForm();afterEvChange();$('#tut').classList.remove('on')}
-$('#tNext').onclick=()=>{readTut();if(ts<STEPS.length-1){ts++;drawTut()}else{closeTut();toast('Готово. Дополнить данные можно в разделе «Профиль».')}};
-$('#tPrev').onclick=()=>{readTut();ts=Math.max(0,ts-1);drawTut()};
-$('#tSkip').onclick=()=>{readTut();if(ts===2){ts=3;drawTut()}else{closeTut();toast('Профиль можно дополнить позже, он заполнен частично')}};
-$('#tutOpen').onclick=openTut;
-
+function closeTut(){store.set('oh10-tour',1);$('#tut').classList.remove('on');show('summary')}
+$('#tNext').onclick=()=>{if(ts===3)closeTut();else{ts++;drawTut()}};
+$('#tPrev').onclick=()=>{if(ts){ts--;drawTut()}};
+$('#tSkip').onclick=closeTut;$('#tutOpen').onclick=openTut;
 /* кнопка «Добавить анализ» */
 function openAdd(){openModal('Добавить анализ',`<div class="addopts">
   <button type="button" class="ao" data-up="camera"><span class="ao-i">${svgI(PIC.camera,24)}</span><span><b>Сфотографировать бланк</b><small>Снимите бланк целиком, чтобы были видны дата и нормы</small></span></button>
@@ -2534,7 +2516,7 @@ function openCtxAsk(){const act=EV.med.map((e,i)=>({e,i})).filter(x=>x.e.f&&medA
 /* старт */
 renderTabs('summary');updLogin();fillForm();renderSummary();renderCtx();renderBlocks();renderUploads();drawQR();renderDocs();renderShared();renderBook();{const co=store.get('oh3-ctx',true);$('#cCtx').classList.toggle('closed',!co);$('#cCtx .fh').setAttribute('aria-expanded',co)}
 document.addEventListener('click',e=>{const f=e.target.closest('#cCtx .fh');if(f)store.set('oh3-ctx',!$('#cCtx').classList.contains('closed'))});
-if(!store.get('oh2-tut',0))openTut();
+if(!store.get('oh10-tour',0))openTut();
 
 function actUpd(btn,on,t){const sp=specOfKey(btn.dataset.adds||btn.dataset.addb);
   btn.querySelector('.act-ic').innerHTML=on?ACT_OK:(t==='b'?ACT_LAB:spIc(sp[0]));
@@ -2713,10 +2695,70 @@ document.addEventListener('click',e=>{
   if(e.target.closest('[data-mclose]'))closeModal()});
 /* повод в виде для врача: под датой сдачи */
 {const _s=openSpecView;openSpecView=function(){_s.apply(this,arguments);
-  const ths=[...document.querySelectorAll('#pvBody table.alld thead th.num')];ths.forEach((th,i)=>{const r=RSN['d'+i];if(r)th.insertAdjacentHTML('beforeend',`<span class="rsnh">${esc(r)}</span>`)});
+  const ths=[...document.querySelectorAll('#pvBody table.alld thead th.num')];ths.forEach((th,i)=>{const r=RSN['d'+DATES.indexOf(th.firstChild.textContent)];if(r)th.insertAdjacentHTML('beforeend',`<span class="rsnh">${esc(r)}</span>`)});
   document.querySelectorAll('#pvBody .evlist div').forEach(dv=>{const d=(dv.querySelector('.num')||{}).textContent;const i=DATES.indexOf(d);const r=RSN['d'+i];if(r)dv.querySelector('.num').insertAdjacentHTML('afterend',` <b class="rsnl">${esc(r)}.</b>`)})}}
 try{renderUploads()}catch(_){}
 
+
+const captureTypes={ill:'Болезнь',med:'Препарат',hosp:'Госпитализация',cmp:'Жалоба',weight:'Вес',all:'Аллергия',travel:'Поездка'};
+const sampleStory='С 10.11.2026 болел ОРВИ, с 11.11.2026 принимал витамин D. Был в санатории в Кисловодске.';
+function captureStart(){
+ openModal('Записать с AI · демо подписки','<p>Расскажите, что произошло. Затем проверьте записи и добавьте детали.</p><div class="field"><label for="story10">Ваш рассказ</label><textarea id="story10" rows="5" placeholder="Болел, принимал препарат, был в санатории…"></textarea></div><div class="row-end"><button class="btn" id="dict10">Диктовать</button><button class="btn" id="sample10">Пример</button><button class="btn pri" id="parse10">Разобрать рассказ</button></div><p id="voiceStatus" role="status" class="why">Демо разбирает текст по ключевым словам. Для диктовки можно использовать микрофон клавиатуры.</p>');
+ const input=$('#story10'),status=$('#voiceStatus');
+ $('#sample10').onclick=()=>{input.value=sampleStory};
+ let speech;
+ $('#dict10').onclick=()=>{
+  if(speech){speech.stop();return}
+  const Voice=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!Voice){status.textContent='Включите диктовку на клавиатуре устройства или введите текст.';input.focus();return}
+  speech=new Voice();speech.lang='ru-RU';speech.continuous=true;
+  speech.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++)if(e.results[i].isFinal)input.value+=' '+e.results[i][0].transcript};
+  speech.onerror=()=>{status.textContent='Диктовка недоступна. Рассказ можно ввести с клавиатуры.'};
+  const watch=new MutationObserver(()=>{if(!input.isConnected||!$('#modal').classList.contains('on')||$('#modal').classList.contains('closing'))speech?.stop()});
+  watch.observe($('#modal'),{attributes:true,childList:true,subtree:true});
+  speech.onend=()=>{watch.disconnect();speech=null;if($('#dict10'))$('#dict10').textContent='Диктовать'};
+  try{speech.start();$('#dict10').textContent='Остановить диктовку';status.textContent='Идёт диктовка средствами браузера.'}catch{watch.disconnect();speech=null;status.textContent='Введите текст с клавиатуры.'}
+ };
+ $('#parse10').onclick=()=>{const story=input.value.trim();if(!story){input.focus();return}speech?.stop();captureReview(story)};
+}
+function captureReview(story){
+ const chunks=story.split(/[.!?](?=\s|$)|[;\n]|,\s*(?=(?:с \d|приним|болел|лежал|был))|\s+и\s+(?=приним|болел|лежал|был)/i).map(t=>t.trim()).filter(Boolean);
+ openModal('Проверьте записи','<details><summary>Исходный рассказ</summary><p>'+esc(story)+'</p></details><form id="check10"><div id="drafts10"></div><p class="why">Можно дополнить рассказ другими записями.</p><select aria-label="Добавить раздел" id="extra10"></select> <button class="btn" type="button" id="add10">Дополнить</button><div class="row-end"><button class="btn" type="button" data-mclose>Отмена</button><button class="btn pri">Подтвердить и сохранить</button></div></form>');
+ const choices=Object.entries(captureTypes).map(([k,t])=>'<option value="'+k+'">'+t+'</option>').join('');
+ $('#extra10').innerHTML=choices;
+ function add(k,n='',date=''){
+  const box=document.createElement('fieldset');box.className='field';
+  box.innerHTML='<legend>Запись</legend><label>Раздел <select class="kind">'+choices+'</select></label><div class="inputs"></div><button type="button" class="link remove">Убрать запись</button>';
+  $('#drafts10').append(box);const kind=box.querySelector('.kind');kind.value=k;
+  function fields(name,start){
+   const type=kind.value, host=box.querySelector('.inputs');
+   host.innerHTML=type==='travel'?'<label>Где и когда <input data-k="n"></label>':EVF[type]({});
+   const title=host.querySelector('[data-k="n"],[data-k="kg"]');title.value=type==='weight'?(name.match(/\d+(?:[.,]\d+)?/)||[''])[0].replace(',','.'):name;title.required=true;
+   const from=host.querySelector('[data-k="f"],[data-k="d"]');if(from){from.value=start;from.required=true}
+   host.querySelectorAll('input,select').forEach(i=>{if(i.placeholder&&!i.getAttribute('aria-label'))i.setAttribute('aria-label',i.placeholder)});
+   if(type==='all')host.querySelector('select').insertAdjacentHTML('afterbegin','<option selected value="">Реакция не указана</option>');
+  }
+  fields(n,date);
+  kind.onchange=()=>fields(box.querySelector('[data-k="n"],[data-k="kg"]').value,box.querySelector('[data-k="f"],[data-k="d"]')?.value||'');
+  box.querySelector('.remove').onclick=()=>box.remove();
+ }
+ for(const chunk of chunks){
+  let k=/приним|назнач|таблет|лекарств|препарат|пил[аи]? /i.test(chunk)?'med':/стационар|больниц|госпитал/i.test(chunk)?'hosp':/болел|болела|перебол|забол/i.test(chunk)?'ill':/аллерг/i.test(chunk)?'all':/санатор|поездк|был[аи]? в|ездил/i.test(chunk)?'travel':/вес|вешу/i.test(chunk)?'weight':'cmp';
+  const d=chunk.match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);
+  const title=(d&&k!=='travel'?chunk.replace(d[0],''):chunk).replace(/^\s*(?:с\s+)?(?:я\s+)?(?:болел[аи]?|принимал[аи]?|переболел[аи]?)\s+/i,'').trim();
+  add(k,title||chunk,d?d[3]+'-'+d[2].padStart(2,'0')+'-'+d[1].padStart(2,'0'):'');
+ }
+ const kinds=[...$('#drafts10').querySelectorAll('.kind')].map(el=>el.value);
+ const suggested=kinds.includes('med')?'cmp':kinds.includes('ill')?'med':'hosp';
+ $('#extra10').value=suggested;
+ $('#extra10').previousElementSibling.textContent=kinds.includes('med')?'Хотите уточнить, что беспокоило в этот период?':kinds.includes('ill')?'Принимали что-нибудь во время болезни? Можно добавить препарат.':'Можно добавить связанное событие из профиля.';
+ $('#add10').onclick=()=>add($('#extra10').value);
+ $('#check10').onsubmit=e=>{e.preventDefault();const records=[...$('#drafts10').children].map(box=>[box.querySelector('.kind').value,Object.fromEntries([...box.querySelectorAll('[data-k]')].map(i=>[i.dataset.k,i.value.trim()]))]);
+ if(!records.length){toast('Добавьте запись');return}
+ if(records.some(([,v])=>(!v.n&&!v.kg)||(v.f&&v.t&&v.f>v.t))){toast('Проверьте название и даты записи');return}
+ requireLogin(()=>{for(const [k,v] of records){if(k==='travel')P.travel=[P.travel,v.n].filter(Boolean).join('; ');else evArr(k).push(v)}saveAll();closeModal();show('profile');toast('Добавлено записей: '+records.length)})};
+}
+document.querySelectorAll('[data-capture]').forEach(b=>b.onclick=captureStart);
 </script>
 </body>
 </html>
