@@ -1267,7 +1267,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 .swwrap .sw-has .sw-pet:not(.on){opacity:.72}
 .swwrap .dragging .sw-rot,.swwrap .dragging .sw-upright{transition:none}
 @media(prefers-reduced-motion:reduce){.swwrap .sw-rot,.swwrap .sw-upright{transition:none}}
-</style></head>
+</style><style>#reportRange{max-width:1040px;margin:12px auto;padding:8px 16px}#reportRange summary{cursor:pointer;font-weight:600}#reportRange .field{max-width:420px;margin-top:10px}.date-pair:not([hidden]){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}.date-pair input{width:100%;min-width:0}@media print{#reportRange{display:none!important}}</style><style>.smoking-fields{display:grid;align-content:start;gap:10px;min-width:0}</style></head>
 <body>
 <div class="app" id="app">
 <header class="top">
@@ -1396,7 +1396,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
         <canvas class="qr" id="qr" width="180" height="180" aria-label="QR-код со ссылкой на анализы (демо)"></canvas>
         <div>
           <div class="field"><label>Срок доступа</label></div>
-          <div class="opts" id="dur"></div><div class="field"><label for="period10">Период анализов</label><select id="period10"><option value="0">Вся история</option><option value="30">Последние 30 дней до последней сдачи</option><option value="180">Последние 180 дней до последней сдачи</option></select></div>
+          <div class="opts" id="dur"></div><div class="field" id="shareRange"><label for="period10">Период анализов</label><select id="period10"><option value="0">Вся история</option><option value="30">Последние 30 дней до последней сдачи</option><option value="180">Последние 180 дней до последней сдачи</option><option value="custom">Свой диапазон</option></select><div class="date-pair" hidden><label>С <input type="date" data-from></label><label>По <input type="date" data-to></label></div></div>
           <div class="field"><label>Что показать</label></div>
           <div class="opts" id="scope"></div>
           <div class="linkbox"><span class="code" id="slink">orange-health.ru/s/7K2-QX9</span><button class="btn" id="copy">Скопировать ссылку</button><button class="btn" id="spdf">PDF для печати</button><button class="btn pri" id="specPrev">Вид для врача</button></div>
@@ -1453,7 +1453,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 <!-- предпросмотр печати -->
 <div class="pv" id="pv">
   <div class="pv-bar"><button class="btn" id="pvBack">← Назад</button><button class="btn pri" id="pvPrint">Печать / сохранить PDF</button><button class="btn" id="sendPDF">Передать PDF</button><span class="why" id="pvNote"></span></div>
-  <div class="pv-in" id="pvBody"></div>
+  <details id="reportRange"><summary>Фильтр по датам</summary><div class="field"><label for="reportPeriod">Период анализов</label><select id="reportPeriod"><option value="0">Вся история</option><option value="30">Последние 30 дней до последней сдачи</option><option value="180">Последние 180 дней до последней сдачи</option><option value="custom">Свой диапазон</option></select><div class="date-pair" hidden><label>С <input type="date" data-from></label><label>По <input type="date" data-to></label></div></div></details><div class="pv-in" id="pvBody"></div>
 </div>
 
 <div class="tut" id="tut" role="dialog" aria-modal="true" aria-labelledby="tT">
@@ -1654,6 +1654,10 @@ const DEF={name:'Алексей',phone:'+7 921 000-00-00',email:'',sex:'m',dob:'
  dx:'Сахарный диабет 2 типа (с 2023 г.), дислипидемия',surg:'',fam:'Отец: диабет 2 типа',vac:'',other:'',
  alls:[{n:'Клещ домашней пыли',r:'Насморк, чихание'},{n:'Шерсть кошки',r:'Сыпь, крапивница'}],notif:['tg']};
 let P=Object.assign({},DEF,store.get('oh2-profile',{}));
+if(P.packsPerDay==null && P.cigs!=null && String(P.cigs).trim()!==''){
+ const cigarettes=Number(P.cigs);
+ if(Number.isFinite(cigarettes)&&cigarettes>=0)P.packsPerDay=String(cigarettes/20);
+}
 const EVDEF={
  med:[{n:'Метформин 1000 мг, 2 раза в день',m:'Постоянно',f:'2023-03-01',t:''},{n:'Аторвастатин 10 мг',m:'Курс',f:'2024-10-01',t:'2025-02-28'},{n:'Витамин D 4000 МЕ',m:'Курс',f:'2026-06-01',t:'2026-09-30'}],
  weight:[{d:'2023-07-25',kg:'96'},{d:'2024-09-01',kg:'95'},{d:'2024-12-01',kg:'94'},{d:'2025-03-20',kg:'92'},{d:'2025-09-04',kg:'90'},{d:'2026-05-31',kg:'89'},{d:'2026-08-02',kg:'87'},{d:'2026-09-06',kg:'85'},{d:'2026-10-06',kg:'82'}],
@@ -1820,7 +1824,7 @@ function psForm(k){
   if(k==='base')return `<p class="why" style="margin-bottom:10px">Пол и возраст определяют, какую норму лаборатории показывать.</p><div class="fgrid">${fl('sex','Пол',fse('sex',[['m','Мужской'],['f','Женский']]))}${fl('dob','Дата рождения',fin('dob','date'))}${fl('h','Рост, см',fin('h','number','','min="100" max="230"'),'ИМТ считается по последнему весу из блока «Вес»')}${fl('waist','Обхват талии, см',fin('waist','number','','min="40" max="200"'),'Необязательно')}</div>
    <div class="fgrid" id="p-fem" style="margin-top:12px">${fl('cycle','День цикла в дату сдачи',fin('cycle','text','например, 5-й'),'Важно для половых гормонов')}</div>`;
   if(k==='health')return `<p class="why" style="margin-bottom:10px">Краткий анамнез со слов пациента: что серьёзное было за всю жизнь. Постоянные препараты укажите в разделе «Препараты».</p><div class="fgrid">${fl('dx','Хронические заболевания',fta('dx','Например: сахарный диабет 2 типа с 2023 г.'))}${fl('surg','Операции и травмы',fta('surg','Что и когда'))}${fl('fam','Наследственные и генетические заболевания, если знаете',fta('fam','У вас или у близких: диабет, болезни сердца, онкология…'))}</div><div style="margin-top:12px">${fl('other','Другое, что важно знать врачу',fta('other'))}</div>`;
-  return `<div class="fgrid">${fl('city','Город',fin('city'))}${fl('travel','Поездки за последний год: куда и когда',fin('travel','text','Например: Таиланд, февраль 2026'),'Часть инфекций и показателей зависит от региона')}${fl('act','Спорт и физическая активность',fse('act',[['1','Почти нет: сидячая работа, без спорта'],['2','1–2 тренировки или прогулки в неделю'],['3','3–4 тренировки в неделю'],['4','5 и больше тренировок или физический труд']]))}${fl('sportNote','Вид спорта',fin('sportNote'))}${fl('foodNote','Особенности питания',fta('foodNote'))}${fl('cigs','Сигарет в день',fin('cigs','number','','min="0"'))}${fl('stress','Был ли сильный стресс за последний месяц',fse('stress',['Нет','Да, эпизодически','Да, почти постоянно']))}${fl('sleep','Сон, в среднем часов в сутки',fin('sleep','number','','min="3" max="14" step="0.5"'),'Обычная ночь за последний месяц')}${fl('food','Тип питания',fse('food',['Обычное','Вегетарианское','Веганское','Низкоуглеводное / кето','Интервальное голодание']))}${fl('smoke','Курение',fse('smoke',['Не курю','Курю','Бросил(а)']))}${fl('alc','Алкоголь, как часто',fse('alc',['Не пью','Реже раза в неделю','1–3 раза в неделю','Чаще']))}${fl('alcv','Алкоголь, сколько за раз',fse('alcv',[['','—'],'1–2 бокала вина или пива','3–4 бокала','5 и больше бокалов','Крепкий: до 100 мл','Крепкий: 100–250 мл','Крепкий: больше 250 мл']))}</div>`}
+  return `<div class="fgrid">${fl('city','Город',fin('city'))}${fl('travel','Поездки за последний год: куда и когда',fin('travel','text','Например: Таиланд, февраль 2026'),'Часть инфекций и показателей зависит от региона')}${fl('act','Спорт и физическая активность',fse('act',[['1','Почти нет: сидячая работа, без спорта'],['2','1–2 тренировки или прогулки в неделю'],['3','3–4 тренировки в неделю'],['4','5 и больше тренировок или физический труд']]))}${fl('sportNote','Вид спорта',fin('sportNote'))}${fl('foodNote','Особенности питания',fta('foodNote'))}${fl('stress','Был ли сильный стресс за последний месяц',fse('stress',['Нет','Да, эпизодически','Да, почти постоянно']))}${fl('sleep','Сон, в среднем часов в сутки',fin('sleep','number','','min="3" max="14" step="0.5"'),'Обычная ночь за последний месяц')}${fl('food','Тип питания',fse('food',['Обычное','Вегетарианское','Веганское','Низкоуглеводное / кето','Интервальное голодание']))}<div class="smoking-fields">${fl('smoke','Курение',fse('smoke',['Не курю','Курю','Бросил(а)']))}${fl('packsPerDay','Пачек в день',fin('packsPerDay','number','Например, 0,5','min="0" step="any"'))}</div>${fl('alc','Алкоголь, как часто',fse('alc',['Не пью','Реже раза в неделю','1–3 раза в неделю','Чаще']))}${fl('alcv','Алкоголь, сколько за раз',fse('alcv',[['','—'],'1–2 бокала вина или пива','3–4 бокала','5 и больше бокалов','Крепкий: до 100 мл','Крепкий: 100–250 мл','Крепкий: больше 250 мл']))}</div>`}
 function drawPsec(k){const b=$('#psb');if(!b)return;
   if(k==='docs'){b.innerHTML=`<p class="why">Скоро здесь можно будет хранить заключения инструментальных исследований рядом с анализами. Врачу их часто не хватает.</p>
     <div class="docl">${[['ЭКГ','10–14 дней перед госпитализацией'],['УЗИ',''],['Флюорография','действует год'],['Рентген','действует год, после травмы повторять'],['КТ и МРТ','действуют год']].map(([n,v])=>`<div class="docr">${svgI(PIC2.docs,18)}<span><b>${n}</b>${v?`<small>${v}</small>`:''}</span><span class="chip c-none">скоро</span></div>`).join('')}</div>
@@ -2299,19 +2303,24 @@ function openSpecView(print){const a=age(P.dob),w=lastWeight(),b=bmi(),out=lates
     <dt>Госпитализации</dt><dd>${L(EV.hosp,e=>esc(e.n)+', '+esc([e.w,e.results].filter(Boolean).join(' · '))+' <span class="why">· '+dfmt(e.f)+'–'+dfmt(e.t)+'</span>')}</dd></dl></div>
     <div class="svc"><h3>Рост, вес, ИМТ</h3><dl class="svdl"><dt>Рост</dt><dd>${esc(P.h||'—')} см</dd><dt>Вес</dt><dd>${w?esc(w.kg)+' кг · '+dfmt(w.d):'—'}</dd><dt>ИМТ</dt><dd><b>${b??'—'}</b></dd></dl>
     ${weightAlert()?`<p class="why" style="margin-top:6px">Вес снизился на ${weightAlert().pct}% за ${weightAlert().mo} мес.</p>`:''}
-    <h3 style="margin-top:12px">Образ жизни</h3><dl class="svdl"><dt>Питание</dt><dd>${esc([P.food,P.foodNote].filter(Boolean).join(" · "))}</dd><dt>Спорт</dt><dd>${esc(P.sportNote||"")} ${ACT[P.act]||'—'}</dd><dt>Сон</dt><dd>в среднем ${esc(P.sleep||'—')} ч</dd><dt>Курение</dt><dd>${esc((P.smoke||'—').toLowerCase())} ${P.smoke==='Курю' && P.cigs ? esc(P.cigs)+' сиг./день':''}</dd><dt>Алкоголь</dt><dd>${esc((P.alc||'—').toLowerCase())}${P.alcv?', '+esc(P.alcv.toLowerCase()):''}</dd></dl></div></div>`;
+    <h3 style="margin-top:12px">Образ жизни</h3><dl class="svdl"><dt>Питание</dt><dd>${esc([P.food,P.foodNote].filter(Boolean).join(" · "))}</dd><dt>Спорт</dt><dd>${esc(P.sportNote||"")} ${ACT[P.act]||'—'}</dd><dt>Сон</dt><dd>в среднем ${esc(P.sleep||'—')} ч</dd><dt>Курение</dt><dd>${esc((P.smoke||'—').toLowerCase())} ${P.smoke==='Курю' && P.packsPerDay ? esc(String(P.packsPerDay).replace('.',','))+' пач./день':''}</dd><dt>Алкоголь</dt><dd>${esc((P.alc||'—').toLowerCase())}${P.alcv?', '+esc(P.alcv.toLowerCase()):''}</dd></dl></div></div>`;
   const mon=G.filter(g=>[1,8,9,0,5].includes(g.gi)).flatMap(g=>g.rows).filter(m=>m.cur&&(LAST-pd(m.cur.d))/864e5<=31);
   const isKey=m=>KEYM.some(r=>r.test(m.n))||m.st!=='ok';
   const keyN=mon.filter(isKey).length,restN=mon.length-keyN;
   const main=`<h2>ОАК и биохимия за последний месяц</h2>${mon.length?`<p class="why" style="margin:-4px 0 8px">Главные показатели и всё, что вне нормы${restN&&!print?`. Остальные ${restN} — по кнопке ниже`:''}.</p><table class="svt svmon${print?' all':''}">${SVH}<tbody>${mon.map(m=>svRow(m,isKey(m)?'':'svx')).join('')}</tbody></table>${restN&&!print?`<button type="button" class="btn svmore" data-svmore>Показать все ${mon.length}</button>`:''}`:'<p class="why">За последний месяц ОАК и биохимию не сдавали.</p>'}`;
   const outT=`<h2>Вне референса при сдаче ${DATES.at(-1)}: ${out.length}</h2><table class="svt">${SVH}<tbody>${out.map(m=>svRow(m)).join('')}</tbody></table>`;
-  const period=Number($('#period10').value);
-  const selectedDates=DATES.filter(d=>!period || (LAST-pd(d))/864e5<period);
-  const evList=`<div class="evlist"><b>События рядом с датами сдачи</b>${selectedDates.map((d,i)=>{const c=[ctxFor(d),medicationAt(d)].filter(Boolean).join(' · ');return c?`<div><span class="num">${d}</span> ${esc(c)}</div>`:''}).join('')}</div>`;
+  const mode=$('#period10').value, period=mode==='custom' || Number(mode)>0;
+  const bounds=$('#shareRange');
+  const from=bounds.querySelector('[data-from]').value,to=bounds.querySelector('[data-to]').value;
+  const inPeriod=date=>mode==='custom'?(!from || date>=evDate(from)) && (!to || date<=evDate(to)):!period || (date<=LAST && (LAST-date)/864e5<Number(mode));
+  const selectedDates=DATES.filter(d=>inPeriod(pd(d)));
+  const caption=mode==='custom'?[from?'с '+dfmt(from):'',to?'по '+dfmt(to):''].filter(Boolean).join(' ')||'за все даты':selectedDates[0]+' – '+selectedDates.at(-1);
+  $('#reportRange summary').textContent='Фильтр по датам · '+caption;
+  const evList=`<div class="evlist"><b>События рядом с датами сдачи</b>${selectedDates.slice().reverse().map(d=>{const c=[ctxFor(d),medicationAt(d)].filter(Boolean).join(' · ');return c?`<div><span class="num">${d}</span> ${esc(c)}</div>`:''}).join('')}</div>`;
   const evRowT=`<tr class="evrow"><td><b>События рядом с датой</b></td><td></td><td></td>${selectedDates.map(d=>`<td>${esc([ctxFor(d),medicationAt(d)].filter(Boolean).join(" · "))}</td>`).join('')}</tr>`;
-  const all=`<h2>Результаты за период ${selectedDates[0]} – ${selectedDates.at(-1)}</h2>${evList}<p class="mobnote">На телефоне показаны последние 3 сдачи; все даты — на компьютере или в PDF.</p><table class="alld"><thead><tr><th>Показатель</th><th class="u-c">Ед.</th><th>Норма</th>${selectedDates.map((d,i)=>`<th class="num">${d}<br><span style="font-weight:500;color:var(--ink3);font-size:10px">${LABS[DATES.indexOf(d)]}</span></th>`).join('')}</tr></thead><tbody>${evRowT}`+
+  const all=!selectedDates.length?`<h2>Результаты ${caption}</h2><p>За выбранный период сдач нет.</p>`:`<h2>Результаты ${caption}</h2>${evList}<p class="mobnote">На телефоне показаны последние 3 сдачи; все даты — на компьютере или в PDF.</p><table class="alld"><thead><tr><th>Показатель</th><th class="u-c">Ед.</th><th>Норма</th>${selectedDates.map((d,i)=>`<th class="num">${d}<br><span style="font-weight:500;color:var(--ink3);font-size:10px">${LABS[DATES.indexOf(d)]}</span></th>`).join('')}</tr></thead><tbody>${evRowT}`+
    G.filter(g=>g.rows.length).map(g=>`<tr class="grp"><td>${esc(g.title)}</td><td></td><td></td>${selectedDates.map(()=>"<td></td>").join("")}</tr>`+g.rows.map(m=>`<tr><td>${esc(m.n)}${U(m.u)?`<span class="u-m">, ${esc(U(m.u))}</span>`:''}</td><td class="u-c">${esc(U(m.u))}</td><td class="num">${esc(refText(m))}</td>${selectedDates.map((d,i)=>{const p=m.pts.find(q=>q.i===DATES.indexOf(d));return `<td class="num" style="${p&&p.st!=='ok'?'font-weight:700;color:var(--'+(p.st==='high'?'hi':'lo')+')':''}">${p?esc(p.raw)+(p.st==='high'?' ↑':p.st==='low'?' ↓':''):'—'}</td>`}).join('')}</tr>`).join('')).join('')+'</tbody></table>';
-  $('#pvBody').innerHTML=`<div class="svbar">${print?'Так выглядит PDF для печати':'Так специалист видит анализы по ссылке или QR-коду: без регистрации, только просмотр'}</div><h1>Анализы: ${esc(P.name||'А. Иванов')}</h1><div class="svsearch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="svq" type="search" placeholder="Найти показатель: ферритин, ЛПНП, глюкоза…" aria-label="Найти показатель"><button type="button" class="btn" data-sugar>Динамика сахара</button><span id="svqn"></span></div><p class="why">Сформировано по загруженным бланкам и данным со слов пациента. Нормы указаны лабораториями. Отклонения отмечены ↑ ↓, чтобы их было видно и на чёрно-белой печати. Сервис не ставит диагнозов.</p>`+(period ? "" : card+main+outT)+all+diaryReport(period)+`<p class="why" style="margin-top:14px">Оригиналы бланков доступны по ссылке. Распознанные значения подтверждены пациентом.</p>`;
+  $('#pvBody').innerHTML=`<div class="svbar">${print?'Так выглядит PDF для печати':'Так специалист видит анализы по ссылке или QR-коду: без регистрации, только просмотр'}</div><h1>Анализы: ${esc(P.name||'А. Иванов')}</h1><div class="svsearch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="svq" type="search" placeholder="Найти показатель: ферритин, ЛПНП, глюкоза…" aria-label="Найти показатель"><button type="button" class="btn" data-sugar>Динамика сахара</button><span id="svqn"></span></div><p class="why">Сформировано по загруженным бланкам и данным со слов пациента. Нормы указаны лабораториями. Отклонения отмечены ↑ ↓, чтобы их было видно и на чёрно-белой печати. Сервис не ставит диагнозов.</p>`+(period ? "" : card+main+outT)+all+diaryReport(inPeriod)+`<p class="why" style="margin-top:14px">Оригиналы бланков доступны по ссылке. Распознанные значения подтверждены пациентом.</p>`;
   $('#pvNote').textContent='';document.body.classList.add('preview');window.scrollTo(0,0)}
 
 /* ключевые показатели ОАК и биохимии для экрана врача (список на проверке у Маши) */
@@ -2849,8 +2858,8 @@ const diaryKinds={
  pressure:{name:'Давление',fields:['Верхнее, мм рт. ст.','Нижнее, мм рт. ст.']},
  sleep:{name:'Сон',fields:['Продолжительность, ч']}
 };
-function diaryReport(period){
- const rows=(P.diary||[]).filter(r=>!period || (evDate(r.day)<=LAST && (LAST-evDate(r.day))/864e5<period));
+function diaryReport(inPeriod){
+ const rows=(P.diary||[]).filter(r=>inPeriod(evDate(r.day)));
  if(!rows.length)return '';
  return '<section class="svc"><h3>Домашние измерения со слов пациента</h3>'+diaryList(rows)+'</section>';
 }
@@ -2879,6 +2888,20 @@ $('#sendPDF').onclick=()=>{
  input.onchange=async()=>{const file=input.files[0];if(file && navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'Анализы'})}catch(e){if(e.name!=='AbortError')note.textContent='Приложите сохранённый PDF к письму.'}}};
  input.click()
 };
+const rangeBoxes=[$('#shareRange'),$('#reportRange')];
+for(const box of rangeBoxes){
+ box.addEventListener('change',e=>{
+  const mode=box.querySelector('select').value,from=box.querySelector('[data-from]'),to=box.querySelector('[data-to]');
+  if(mode==='custom' && from.value && to.value && from.value>to.value){
+   if(e.target===from)to.value=from.value;else from.value=to.value;
+  }
+  for(const other of rangeBoxes){
+   other.querySelector('select').value=mode;other.querySelector('.date-pair').hidden=mode!=='custom';
+   other.querySelector('[data-from]').value=from.value;other.querySelector('[data-to]').value=to.value;
+  }
+  if(document.body.classList.contains('preview'))openSpecView(false);
+ });
+}
 </script>
 </body>
 </html>
