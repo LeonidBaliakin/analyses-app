@@ -1153,7 +1153,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 .docr{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:9px 12px}
 .docr b{display:block;font-size:13.5px}.docr small{display:block;font-size:12px;color:var(--ink3)}
 .evr-ill{grid-template-columns:1fr 1fr!important}
-.evr-ill [data-k="n"],.evr-ill [data-k="ab"]{grid-column:1/-1}
+.evr-ill [data-k="n"]{grid-column:1/-1}
 .svmon:not(.all) tr.svx{display:none}
 .svmore{margin:8px 0 4px}
 @media print{.svmon tr.svx{display:table-row!important}.svmore{display:none}}
@@ -1267,7 +1267,90 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 .swwrap .sw-has .sw-pet:not(.on){opacity:.72}
 .swwrap .dragging .sw-rot,.swwrap .dragging .sw-num{transition:none}
 @media(prefers-reduced-motion:reduce){.swwrap .sw-rot,.swwrap .sw-num{transition:none}}
-</style><style>#reportRange{max-width:1040px;margin:12px auto;padding:8px 16px}#reportRange summary{cursor:pointer;font-weight:600}#reportRange .field{max-width:420px;margin-top:10px}.date-pair:not([hidden]){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}.date-pair input{width:100%;min-width:0}@media print{#reportRange{display:none!important}}</style><style>.smoking-fields{display:grid;align-content:start;gap:10px;min-width:0}</style></head>
+</style><style>#reportRange{max-width:1040px;margin:12px auto;padding:8px 16px}#reportRange summary{cursor:pointer;font-weight:600}#reportRange .field{max-width:420px;margin-top:10px}.date-pair:not([hidden]){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}.date-pair input{width:100%;min-width:0}@media print{#reportRange{display:none!important}}</style><style>.smoking-fields{display:grid;align-content:start;gap:10px;min-width:0}</style><style>
+.visit-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start;margin:12px 0 16px}
+.visit17{min-width:0;padding:14px 16px;border-top:3px solid var(--visit-accent)}
+.visit17{--visit-accent:#7956d9;--visit-tint:#f0e9ff}
+.visit-events{--visit-accent:#c65b17;--visit-tint:#fff0e5}
+.visit-head{display:flex;align-items:center;gap:10px;min-width:0}
+.visit-head h1,.visit-title{display:block;font-size:clamp(13px,2.6vw,19px);line-height:1.25;margin:0;font-weight:800}
+.visit-meta{display:block;font-size:12px;color:var(--ink2);font-weight:650;margin-top:2px}
+.visit-icon{display:grid;place-items:center;background:var(--visit-tint);color:var(--visit-accent);border-radius:12px;width:38px;height:38px;flex:none}
+.visit-icon svg,.visit-chevron{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.visit17 summary{cursor:pointer;list-style:none}
+.visit17 summary::-webkit-details-marker{display:none}
+.visit-chevron{margin-left:auto;flex:none;color:var(--visit-accent)}
+.visit-compare[open]>summary .visit-chevron{transform:rotate(180deg)}
+.visit-compare{margin:12px 0 0;border-top:1px solid var(--line);padding-top:8px}
+.visit-compare summary{display:flex;align-items:center;gap:4px;color:var(--ink);font-size:12px;font-weight:700;min-height:32px}
+.visit-body{padding-top:10px;overflow-wrap:anywhere}
+.visit-events{display:flex;flex-direction:column;box-sizing:border-box}
+.visit-events:not(.expanded){height:var(--visit-height,auto)}
+#ctx{display:flex;flex:1;flex-direction:column;min-height:0;gap:8px}
+.ctx-list{display:grid;align-content:start;gap:7px;min-height:0;flex:1}
+.ctx-list [hidden],.ctx-actions [hidden]{display:none}
+.ctx-actions{display:flex;flex-direction:column;align-items:flex-start;gap:4px;flex:none}
+.ctx-actions #visitMoreEvents{min-height:24px}
+.visit-events.compact:not(.expanded) .ctx-extra{display:none}
+.visit-events.compact:not(.expanded) .ctxr b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.visit-events.compact:not(.expanded) .ctx-list{gap:5px}
+#ctx .visit-doctor{margin:0}
+#ctx .ctxr{min-width:0;border-top:0;margin:0;padding:7px 6px}
+.visit-events.compact:not(.expanded) #ctx .ctxr{padding-block:4px}
+#ctx .ctxr:not(.cmp):not(.warn){border-radius:10px;background:var(--paper)}
+#ctx [data-capture]{white-space:normal}
+@media(max-width:480px){#ctx .ctxr{grid-template-columns:14px minmax(0,1fr);gap:4px;font-size:12px}#ctx .ctxr svg{width:14px;height:14px}#ctx .ctxr.warn{padding-inline:5px}}
+.visit-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin-top:8px}
+.visit-filters button{display:flex;justify-content:space-between;align-items:center;gap:4px;padding:5px 7px;text-align:left;min-height:36px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font-size:12px;line-height:1.2}
+.visit-filters button:hover{border-color:var(--visit-accent)}
+.visit-filters b{flex:none}
+.visit-filters [data-modal="ok"] b{color:var(--ok)}
+.visit-filters [data-modal="out"] b{color:var(--hi)}
+@media(max-width:540px){.visit-filters{grid-template-columns:1fr}.visit-filters button{min-height:32px}}
+.visit-grid > .visit17:first-child{display:flex;flex-direction:column;align-items:flex-start;box-sizing:border-box}
+.visit-grid > .visit17:first-child .visit-compare,.visit-filters{width:100%}
+.visit-filters{margin-bottom:8px}
+.visit-doctor{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;height:36px;flex:none;color:var(--visit-accent)}
+#visitDoctor{margin-top:0}
+.visit-tools{display:flex;align-items:center;flex-wrap:wrap;gap:4px 12px;margin:8px 0}
+.visit-tools button{min-height:40px}
+@media(max-width:480px){
+  .visit-grid{gap:8px}
+  .visit17{padding:10px}
+  .visit-head{gap:5px}
+  .visit-icon{width:25px;height:25px;border-radius:8px}
+  .visit-icon svg,.visit-chevron{width:15px;height:15px}
+  .visit-doctor{padding-inline:7px}
+}
+#pgo[hidden]{display:none}
+@media(max-width:620px){
+  #v-summary .supchips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
+  #v-summary .supc{flex:none}
+  #v-summary .sec{margin-top:12px}
+}
+#tabs .sbtn:not(.fab):not([aria-current="page"]){color:#4a4660}
+.report-groups:not([hidden]){display:grid;gap:6px;margin:8px 0}
+.report-events{display:block;margin:12px 0}
+.report-scroll{max-width:100%;overflow:auto}
+.report-table{width:max-content;min-width:100%}
+#pvBody .report-table th,#pvBody .report-table td{display:table-cell;min-width:88px}
+#pvBody .report-table th:first-child,#pvBody .report-table td:first-child{min-width:155px}
+#pvBody .report-table .grp th{text-align:left;padding:8px;background:var(--paper)}
+.report-high{font-weight:700;color:var(--hi)}
+.report-low{font-weight:700;color:var(--lo)}
+@media print{#pvBody .report-table tr.svhide{display:table-row!important}.report-scroll{overflow:visible}.report-table{width:100%;table-layout:fixed}#pvBody .report-table th,#pvBody .report-table td{min-width:0;overflow-wrap:anywhere}}
+.mbox:has(.capture-entry){max-width:465px}
+.capture-entry{display:grid;gap:8px}
+.capture-entry label{font-weight:750}
+.capture-entry textarea{width:100%;box-sizing:border-box;resize:vertical}
+.capture-actions{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px}
+.capture-actions .pri{margin-left:auto}
+#dict10{display:inline-flex;align-items:center;gap:6px}
+#dict10 svg{width:17px;height:17px;fill:none;stroke:var(--accent);stroke-width:1.8;stroke-linecap:round}
+#dict10[aria-pressed="true"]{background:var(--accent-soft)}
+.capture-example{padding:9px 11px;border-radius:9px;background:var(--paper);font-size:13px}
+#voiceStatus:empty{margin:0;height:0;display:none}
+</style></head>
 <body>
 <div class="app" id="app">
 <header class="top">
@@ -1286,32 +1369,45 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
   <div class="demo" id="demoBar"></div>
 
   <!-- СВОДКА -->
-  <section class="view on" id="v-summary" aria-label="Сводка"><button class="btn pri" type="button" data-capture>Записать с AI</button>
-    <div class="sum">
-      <div class="card fold closed" id="cChg">
-        <button class="card-h fh" aria-expanded="false"><h2>Что изменилось с прошлой сдачи</h2><span class="fsum" id="chgSum"></span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
-        <div class="card-b fb" id="changes"></div>
-      </div>
-      <div class="card fold closed" id="cDev">
-        <button class="card-h fh" aria-expanded="false"><h2>В норме и не в норме</h2><span class="chip c-high" id="devN"></span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
-        <div class="fb"><div class="card-b" style="padding-bottom:0"><div class="mini" id="stats"></div></div>
-        <div class="card-b"><div class="devt">Сейчас не в норме</div><div class="devl" id="devList"></div></div></div>
-      </div>
-<div class="card fold ctxcard" id="cCtx">
-        <button class="card-h fh" aria-expanded="true"><h2>Контекст к последней сдаче</h2><span class="fsum" id="ctxSum"></span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
-        <div class="card-b fb" id="ctx"></div>
-      </div>
+  <section class="view on" id="v-summary" aria-label="Сводка">
+    <div class="visit-grid">
+      <section class="visit17 card" aria-labelledby="visit-title">
+        <div class="visit-head"><span class="visit-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg></span><div><h1 id="visit-title">Последняя сдача</h1><span class="visit-meta" id="visitDate"></span></div></div>
+        <details class="visit-compare"><summary><span id="chgSum">Сравнить сдачи</span><svg class="visit-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></summary><div class="visit-body" id="changes"></div></details>
+        <div class="visit-filters" role="group" aria-label="Фильтры показателей">
+          <button type="button" data-modal="ok" aria-haspopup="dialog">В норме <b id="visitOkCount"></b></button>
+          <button type="button" data-modal="out" aria-haspopup="dialog">Не в норме <b id="visitOutCount"></b></button>
+          <button type="button" data-modal="old" aria-haspopup="dialog">Давно не сдавали <b id="visitOldCount"></b></button>
+          <button type="button" data-modal="all" aria-haspopup="dialog">Все показатели <b id="visitAllCount"></b></button>
+        </div>
+        <button type="button" class="btn visit-doctor" id="visitDoctor">Показать врачу</button>
+      </section>
+      <section class="visit17 visit-events card" id="visitEvents" aria-labelledby="visitEventsTitle">
+        <div class="visit-head"><span class="visit-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="6" width="16" height="14" rx="3"/><path d="M8 4v4m8-4v4M4 11h16m-11 4h2m2 0h2"/></svg></span><span><strong class="visit-title" id="visitEventsTitle">События к сдаче</strong><span class="visit-meta" id="ctxSum"></span></span></div>
+        <div class="visit-body" id="ctx">
+          <div class="ctx-list" id="visitEventList"></div>
+          <div class="ctx-actions">
+            <button class="link" id="visitMoreEvents" type="button" aria-expanded="false" aria-controls="visitEventList" hidden></button>
+            <button class="btn visit-doctor" type="button" data-capture>Добавить событие</button>
+          </div>
+        </div>
+      </section>
     </div>
 
     <div class="sec">
       <h2>Показатели по системам</h2>
-      <button class="btn" id="pmode" aria-pressed="false">Выбрать для печати</button>
-      <button class="btn pri" id="pgo" disabled>Печать выбранных</button>
     </div>
-    <div class="syssearch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" type="search" placeholder="Поиск по системам и показателям: ферритин, ЛПНП, витамин D…" autocomplete="off" aria-label="Поиск по системам и показателям"></div>
+    <div class="syssearch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" type="search" placeholder="Найти показатель или систему" autocomplete="off" aria-label="Поиск по системам и показателям"></div>
+    <div class="visit-tools">
+      <button type="button" class="link" id="visitTour">Посмотреть подсказки</button>
+    </div>
     <div class="tiles" id="blocks"></div>
     <p class="why" id="noHit" hidden>Ничего не найдено. Проверьте написание или поищите по системе, например «печень».</p>
 
+    <div class="row-end visit-print">
+      <button class="btn" id="pmode" aria-pressed="false">Выбрать для печати</button>
+      <button class="btn pri" id="pgo" disabled hidden>Печать выбранных</button>
+    </div>
     <button class="htease" id="hOpen" aria-haspopup="dialog">
       <span class="ht-ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11M15 9v11"/></svg></span>
       <span class="ht-t"><b>Полная история всех показателей</b><span id="hTeaseSub"></span></span>
@@ -1345,7 +1441,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
   </section>
 
   <!-- ПРОФИЛЬ -->
-  <section class="view" id="v-profile" aria-label="Профиль"><button class="btn" id="diaryOpen">Дневники измерений</button> <button class="btn pri" type="button" data-capture>Записать с AI</button>
+  <section class="view" id="v-profile" aria-label="Профиль"><button class="btn" id="diaryOpen">Дневники измерений</button> <button class="btn" type="button" data-capture>Добавить событие</button>
     <div class="panel"><h2>Профиль</h2>
       <p class="lead">Данные о вас, которые помогают врачу читать анализы. Препараты, вес и болезни показываются на графиках анализов по тем же датам. Сервис сам ничего по профилю не оценивает.</p>
       <div class="pfill"><div class="pfill-t"><b>Профиль заполнен на <span id="pfPct" class="num">0</span>%</b><span class="why" id="pfHint"></span></div><div class="pbar"><i id="pfBar"></i></div></div>
@@ -1399,6 +1495,9 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
           <div class="opts" id="dur"></div><div class="field" id="shareRange"><label for="period10">Период анализов</label><select id="period10"><option value="0">Вся история</option><option value="30">Последние 30 дней до последней сдачи</option><option value="180">Последние 180 дней до последней сдачи</option><option value="custom">Свой диапазон</option></select><div class="date-pair" hidden><label>С <input type="date" data-from></label><label>По <input type="date" data-to></label></div></div>
           <div class="field"><label>Что показать</label></div>
           <div class="opts" id="scope"></div>
+<div id="reportGroups" class="report-groups" hidden></div>
+<label class="report-events"><input type="checkbox" id="reportEvents"> Включить события рядом со сдачами и дневники за выбранный период</label>
+<p class="why">Ссылка и QR-код демонстрационные. Предпросмотр и PDF используют выбранный период и состав отчёта.</p>
           <div class="linkbox"><span class="code" id="slink">orange-health.ru/s/7K2-QX9</span><button class="btn" id="copy">Скопировать ссылку</button><button class="btn" id="spdf">PDF для печати</button><button class="btn pri" id="specPrev">Вид для врача</button></div>
         </div>
       </div>
@@ -1682,7 +1781,7 @@ function weightAlert(){const w=EV.weight.filter(e=>e.d&&e.kg).sort((a,b)=>a.d<b.
 const EVF={
  med:e=>`<label class="dl"><span>Опыт приёма</span><select data-k="course" aria-label="Опыт приёма">${["","Первый курс","Повторный курс","Не помню"].map(c=>`<option value="${c}" ${e.course===c?"selected":""}>${c||"Не указано"}</option>`).join("")}</select></label><input data-k="who" placeholder="Какой специалист назначил" value="${esc(e.who||'')}"><input data-k="why" placeholder="Причина назначения" value="${esc(e.why||'')}"><input data-k="n" placeholder="Препарат и дозировка" value="${esc(e.n||'')}" aria-label="Препарат и дозировка"><select data-k="m" aria-label="Как принимаете">${['Курс','Постоянно'].map(o=>`<option ${o===(e.m||'Курс')?'selected':''}>${o}</option>`).join('')}</select><label class="dl"><span>с</span><input type="date" data-k="f" value="${e.f||''}"></label><label class="dl"><span>по</span><input type="date" data-k="t" value="${e.t||''}" ${e.m==='Постоянно'?'disabled':''}></label>`,
  weight:e=>`<label class="dl"><span>дата</span><input type="date" data-k="d" value="${e.d||''}"></label><label class="dl"><span>кг</span><input type="number" step="0.1" min="20" max="300" data-k="kg" value="${esc(e.kg||'')}"></label>`,
- ill:e=>`<input data-k="n" placeholder="Чем болели" value="${esc(e.n||'')}" aria-label="Чем болели"><label class="dl"><span>с</span><input type="date" data-k="f" value="${e.f||''}"></label><label class="dl"><span>по</span><input type="date" data-k="t" value="${e.t||''}"></label><label class="dl"><span>макс. t°</span><input type="number" step="0.1" min="35" max="42" data-k="tmax" value="${esc(e.tmax||'')}" aria-label="Максимальная температура"></label><input data-k="ab" placeholder="Антибиотики, если это было не ОРВИ" value="${esc(e.ab||'')}" aria-label="Антибиотики">`,
+ ill:e=>`<input data-k="n" placeholder="Чем болели" value="${esc(e.n||'')}" aria-label="Чем болели"><label class="dl"><span>с</span><input type="date" data-k="f" value="${e.f||''}"></label><label class="dl"><span>по</span><input type="date" data-k="t" value="${e.t||''}"></label><label class="dl"><span>макс. t°</span><input type="number" step="0.1" min="35" max="42" data-k="tmax" value="${esc(e.tmax||'')}" aria-label="Максимальная температура"></label>${e.ab?`<input type="hidden" data-k="ab" value="${esc(e.ab)}">`:''}`,
  cmp:e=>`<input data-k="n" placeholder="Что беспокоит" value="${esc(e.n||'')}" aria-label="Что беспокоит"><label class="dl"><span>с</span><input type="date" data-k="f" value="${e.f||''}"></label>`,
  hosp:e=>`<input data-k="results" placeholder="Показатели из выписки с датами" value="${esc(e.results||'')}"><input data-k="n" placeholder="Причина" value="${esc(e.n||'')}" aria-label="Причина госпитализации"><input data-k="w" placeholder="Где: больница" value="${esc(e.w||'')}" aria-label="Где лежали"><label class="dl"><span>с</span><input type="date" data-k="f" value="${e.f||''}"></label><label class="dl"><span>по</span><input type="date" data-k="t" value="${e.t||''}"></label>`,
  all:e=>`<input data-k="n" placeholder="На что аллергия" value="${esc(e.n||'')}" aria-label="На что аллергия"><select data-k="r" aria-label="Как проявляется">${ALLR.map(o=>`<option ${o===e.r?'selected':''}>${o}</option>`).join('')}</select>`};
@@ -1875,30 +1974,81 @@ function nearEvents(dstr,days){const d=pd(dstr);const out=[];
 function ctxFor(dstr){return nearEvents(dstr,21).map(x=>x.k==='med'?(x.e.m==='Постоянно'?'':(x.ago!=null?'курс '+short(x.e.n)+' закончен '+x.ago+' дн. назад':'курс '+short(x.e.n))):(x.k==='ill'?'болел: '+x.e.n+(x.ago>0?', '+x.ago+' дн. назад':', во время болезни'):'госпитализация: '+x.e.n)).filter(Boolean).join('; ')}
 function short(n){const s=String(n).split(',')[0];return s.length>24?s.slice(0,23)+'…':s}
 function ctxHTML(){const dl=DATES[DATES.length-1];const items=[];const w=weightAlert();
-  (EV.cmp||[]).slice().sort((a,b)=>a.f<b.f?-1:1).forEach(e=>items.push(`<div class="ctxr cmp">${ICC}<span><b>Жалоба: ${esc(e.n)}</b> · беспокоит с ${dfmt(e.f)}</span></div>`));
-  if(w)items.push(`<div class="ctxr warn">${ICW}<span><b>Вес снизился на ${w.kg} кг (−${w.pct}%) за ${w.mo} мес.</b> ${esc(w.from)} → ${esc(w.to)} кг, ${dfmt(w.fd)}–${dfmt(w.td)} <span class="why" title="Отметка ставится при снижении на 5% и больше за 6 месяцев (справочник MSD)">· порог: −5% за 6 мес.</span></span></div>`);
+  const add=(date,html)=>items.push({date:date||'',html});
+  (EV.cmp||[]).forEach(e=>add(e.f,`<div class="ctxr cmp">${ICC}<span><b>Жалоба: ${esc(e.n)}</b><span class="ctx-extra"> · беспокоит с ${dfmt(e.f)}</span></span></div>`));
+  if(w)add(w.td,`<div class="ctxr warn">${ICW}<span><b>Вес снизился на ${w.kg} кг (−${w.pct}%) за ${w.mo} мес.</b><span class="ctx-extra"> ${esc(w.from)} → ${esc(w.to)} кг, ${dfmt(w.fd)}–${dfmt(w.td)} <span class="why" title="Отметка ставится при снижении на 5% и больше за 6 месяцев (справочник MSD)">· порог: −5% за 6 мес.</span></span></span></div>`);
   nearEvents(dl,45).forEach(x=>{const e=x.e;
-    if(x.k==='ill')items.push(`<div class="ctxr">${ICI}<span><b>Болел: ${esc(e.n)}</b>${e.tmax?', до '+esc(e.tmax)+'°':''}${e.ab?', антибиотики: '+esc(e.ab):''}, ${dfmt(e.f)}–${dfmt(e.t)}${x.ago>0?' · за '+x.ago+' дн. до сдачи':' · во время сдачи'}</span></div>`);
-    if(x.k==='hosp')items.push(`<div class="ctxr">${ICH}<span><b>Госпитализация: ${esc(e.n)}</b>, ${esc(e.w||'')} ${dfmt(e.f)}–${dfmt(e.t)}</span></div>`);
-    if(x.k==='med')items.push(`<div class="ctxr">${ICM}<span><b>${esc(e.n)}</b> · ${e.m==='Постоянно'?'постоянно с '+dfmt(e.f):'курс '+dfmt(e.f)+'–'+dfmt(e.t)+(x.ago?' · закончен за '+x.ago+' дн. до сдачи':'')}</span></div>`)});
-  return items.join('')||'<p class="why">Рядом с последней сдачей событий нет.</p>'}
-function renderCtx(){const n=(EV.cmp||[]).length+(weightAlert()?1:0)+nearEvents(DATES[DATES.length-1],45).length;$('#ctxSum').textContent=n?n+' событ.':'нет событий';$('#ctx').innerHTML=`<p class="why" style="margin-bottom:8px">Сдача ${DATES[DATES.length-1]}: что происходило рядом. Данные из профиля.</p>`+ctxHTML()+`<button class="link" data-tab-go="profile" style="margin-top:8px">Добавить событие →</button>`}
+    if(x.k==='ill')add(e.f,`<div class="ctxr">${ICI}<span><b>Болел: ${esc(e.n)}</b><span class="ctx-extra">${e.tmax?', до '+esc(e.tmax)+'°':''}${e.ab?', антибиотики: '+esc(e.ab):''}, ${dfmt(e.f)}–${dfmt(e.t)}${x.ago>0?' · за '+x.ago+' дн. до сдачи':' · во время сдачи'}</span></span></div>`);
+    if(x.k==='hosp')add(e.f,`<div class="ctxr">${ICH}<span><b>Госпитализация: ${esc(e.n)}</b>, ${esc(e.w||'')} ${dfmt(e.f)}–${dfmt(e.t)}</span></div>`);
+    if(x.k==='med')add(e.f,`<div class="ctxr">${ICM}<span><b>${esc(e.n)}</b><span class="ctx-extra"> · ${e.m==='Постоянно'?'постоянно с '+dfmt(e.f):'курс '+dfmt(e.f)+'–'+dfmt(e.t)+(x.ago?' · закончен за '+x.ago+' дн. до сдачи':'')}</span></span></div>`)});
+  return items.sort((a,b)=>b.date.localeCompare(a.date)).map(item=>item.html).join('')||'<p class="why">Рядом с последней сдачей событий нет.</p>'}
+function renderCtx(){
+  const list=$('#visitEventList');
+  list.innerHTML=ctxHTML();
+  const n=list.querySelectorAll('.ctxr').length;
+  const forms={one:'событие',few:'события',many:'событий',other:'событий'};
+  $('#ctxSum').textContent=n?n+' '+forms[new Intl.PluralRules('ru').select(n)]:'';
+  fitVisitEvents();
+}
+function fitVisitEvents(){
+  const card=$('#visitEvents'), source=$('#visit-title').closest('.visit17');
+  const height=source.getBoundingClientRect().height;
+  if(!height)return;
+  card.style.setProperty('--visit-height',height+'px');
+
+  const list=$('#visitEventList'), more=$('#visitMoreEvents');
+  const rows=[...list.querySelectorAll('.ctxr')];
+  rows.forEach(row=>{row.hidden=false});
+  if(card.classList.contains('expanded')&&rows.length){
+    more.textContent='Свернуть';
+    more.hidden=false;
+    more.setAttribute('aria-expanded','true');
+    return;
+  }
+  card.classList.remove('expanded','compact');
+  more.setAttribute('aria-expanded','false');
+  more.hidden=true;
+  if(!rows.length||list.scrollHeight<=list.clientHeight+1)return;
+
+  card.classList.add('compact');
+  more.hidden=false;
+  rows.forEach(row=>{row.hidden=true});
+  let hidden=rows.length;
+  for(const row of rows){
+    row.hidden=false;
+    more.textContent=hidden>1?'Ещё '+(hidden-1):'Подробнее';
+    if(row.getBoundingClientRect().bottom>list.getBoundingClientRect().bottom+0.1){
+      row.hidden=true;
+      break;
+    }
+    hidden--;
+  }
+  more.textContent=hidden?'Ещё '+hidden:'Подробнее';
+}
 
 /* сводка */
 function latestTests(){return ALL.filter(m=>m.cur && m.cur.i===DATES.length-1)}
+function olderTests(){
+  return ALL.filter(m=>m.cur&&m.cur.i<DATES.length-1&&(TODAY-pd(m.cur.d))/864e5>183)
+    .sort((a,b)=>pd(a.cur.d)-pd(b.cur.d));
+}
 function renderSummary(){
-  const ok=latestTests().filter(m=>m.st==='ok'),out=latestTests().filter(m=>m.st==='high'||m.st==='low'),old=ALL.filter(m=>m.cur&&m.old);
-  $('#stats').innerHTML=`<p class="why">Результаты последней сдачи · ${DATES.at(-1)}</p><button class="mc" data-modal="ok"><b class="num" style="color:var(--ok)">${ok.length}</b> в норме</button><button class="mc" data-modal="out"><b class="num" style="color:var(--hi)">${out.length}</b> не в норме</button><button class="mc" data-modal="old"><b class="num">${old.length}</b> давно не сдавали</button><button class="mc" data-modal="all"><b class="num">${ALL.length}</b> показателей всего</button><button class="info" data-modal="ref" aria-label="Что значит норма">?</button>`;
-  const li=DATES.length-1;const withPrev=ALL.filter(m=>m.cur&&m.cur.i===li);
-  const newOut=withPrev.filter(m=>m.prev&&m.prev.st==='ok'&&m.st!=='ok'),back=withPrev.filter(m=>m.prev&&m.prev.st!=='ok'&&m.st==='ok'),
-        still=withPrev.filter(m=>m.prev&&m.prev.st!=='ok'&&m.st!=='ok'),first=withPrev.filter(m=>!m.prev);
+  const li=DATES.length-1, pi=li-1;
+  const withPrev=latestTests().map(m=>({...m,prev:m.pts.find(p=>p.i===pi)}));
+  const out=withPrev.filter(m=>m.st==='high'||m.st==='low');
+  const newOut=withPrev.filter(m=>m.prev?.st==='ok'&&m.st!=='ok');
+  const back=withPrev.filter(m=>m.prev&&m.prev.st!=='ok'&&m.st==='ok');
+  const still=withPrev.filter(m=>m.prev&&m.prev.st!=='ok'&&m.st!=='ok');
+  const first=withPrev.filter(m=>!m.prev);
+  $('#visitDate').textContent=DATES[li]+' · '+LABS[li];
   const grp=(title,arr,col)=>arr.length?`<div class="chg"><div class="chg-t"><i style="background:${col}"></i>${title} <span class="why">${arr.length}</span></div>${arr.map(m=>`<button class="chg-r" data-goto="${m.gi},${m.ri}"><span>${esc(m.n)}</span><span class="num">${m.prev?esc(m.prev.raw)+' → ':''}<b>${esc(m.cur.raw)}</b></span></button>`).join('')}</div>`:'';
-  $('#changes').innerHTML=`<p class="why" style="margin-bottom:8px">Сдача ${DATES[li]} (${LABS[li]}) в сравнении с предыдущим результатом каждого показателя.</p>`+
-   (grp('Вышли за норму',newOut,'var(--hi)')+grp('Вернулись в норму',back,'var(--okm)')+grp('По-прежнему не в норме',still,'#F59E0B')+grp('Сданы впервые',first,'var(--accent)')||'<p class="why">Изменений нет.</p>');
-  $('#chgSum').textContent=`${newOut.length} вышли за норму · ${back.length} вернулись`;
-  $('#devN').textContent=out.length;
-  $('#devList').innerHTML=`<div class="devr devhd" style="font-size:11.5px;color:var(--ink3);font-weight:700"><span>Показатель</span><span>Значение</span><span>Норма <button class="info" data-modal="ref" aria-label="Что значит норма">?</button></span></div>`+
-   out.map(m=>`<button class="devr" data-goto="${m.gi},${m.ri}"><span class="devn">${esc(m.n)}</span><span class="devv num" style="color:var(--${m.st==='high'?'hi':'lo'})">${esc(m.cur.raw)} <small style="font-weight:500;color:var(--ink3)">${esc(U(m.u))}</small> ${m.st==='high'?'↑':'↓'}</span><span class="devf num"><span class="mob">норма </span>${esc(refText(m))} · ${m.cur.d}</span></button>`).join('');
+  $('#changes').innerHTML=`<p class="why" style="margin-bottom:8px">Сдача ${DATES[li]} (${LABS[li]}) в сравнении со сдачей ${DATES[pi]} (${LABS[pi]}).</p>`+
+   (grp('Вышли за диапазон лаборатории',newOut,'var(--hi)')+grp('Вернулись в диапазон лаборатории',back,'var(--okm)')+grp('По-прежнему не в норме',still,'#F59E0B')+grp('Нет результата в предыдущей сдаче',first,'var(--accent)')||'<p class="why">Изменений нет.</p>');
+  $('#chgSum').textContent='Сравнить со сдачей '+DATES[pi];
+  $('#visitOkCount').textContent=withPrev.filter(m=>m.st==='ok').length;
+  $('#visitOutCount').textContent=out.length;
+  $('#visitOldCount').textContent=olderTests().length;
+  $('#visitAllCount').textContent=withPrev.length;
 }
 document.addEventListener('click',e=>{const d=e.target.closest('[data-day]');if(d){const i=+d.dataset.day;const rows=ALL.filter(m=>m.pts.some(p=>p.i===i));
   openModal(`Сдача ${DATES[i]} · ${LABS[i]}`,`<div class="row-end" style="margin:0 0 8px"><button class="btn" data-blank="${i}">Открыть бланк</button></div><div class="mlist">`+rows.map(m=>{const p=m.pts.find(q=>q.i===i);return `<button data-goto="${m.gi},${m.ri}"><span>${esc(m.n)} <span class="g">${esc(G[m.gi].title)}</span></span><span class="num" style="font-weight:700;color:${p.st==='ok'?'var(--ok)':p.st==='high'?'var(--hi)':'var(--lo)'}">${esc(p.raw)} ${esc(U(m.u))}</span><span class="chip ${SC[p.st]}">${SL[p.st]}</span></button>`}).join('')+'</div>')}});
@@ -1914,9 +2064,11 @@ const MODALS={
   ref(){openModal('Что значит «норма»',REFTEXT)},
   ok(){const a=latestTests().filter(m=>m.st==='ok');openModal(`В норме: ${a.length}`,`<p>Последний результат внутри нормы, которую лаборатория указала в бланке.</p>${listHTML(a,true)}`)},
   out(){const a=latestTests().filter(m=>m.st==='high'||m.st==='low');openModal(`Не в норме: ${a.length}`,`<p>Последний результат выше или ниже нормы, которую лаборатория указала в бланке. Это не диагноз — что он значит, объясняет врач.</p>${listHTML(a,true)}`)},
-  old(){const a=ALL.filter(m=>m.cur&&m.old);openModal(`Давно не сдавали: ${a.length}`,`<p>Эти анализы последний раз сдавали больше полугода назад (считаем от последней сдачи ${DATES[DATES.length-1]}). Нужно ли пересдать, решает врач.</p>${listHTML(a,false)}`)},
-  all(){openModal(`Все показатели: ${ALL.length}`,`<input class="mfilter" id="mf" type="search" placeholder="Фильтр по названию" aria-label="Фильтр по названию"><div id="mfl"></div>`);
-    const draw=q=>{q=(q||'').toLowerCase();$('#mfl').innerHTML=G.filter(g=>g.rows.length).map(g=>{const r=g.rows.filter(m=>m.n.toLowerCase().includes(q));return r.length?`<div class="gh">${esc(g.title)}</div>`+listHTML(r,false):''}).join('')||'<p>Ничего не найдено</p>'};
+  old(){const a=olderTests();openModal('Давно не сдавали: '+a.length,
+    '<p>Показатели из истории, которых нет в последней сдаче и которые последний раз проверяли больше полугода назад. Нужно ли пересдать, решает врач.</p>'+
+    (a.length?listHTML(a,false):'<p>Таких показателей нет.</p>'))},
+  all(){const a=latestTests();openModal(`Все показатели за ${DATES.at(-1)}: ${a.length}`,`<input class="mfilter" id="mf" type="search" placeholder="Фильтр по названию" aria-label="Фильтр по названию"><div id="mfl"></div>`);
+    const draw=q=>{q=(q||'').toLowerCase();$('#mfl').innerHTML=G.filter(g=>g.rows.length).map(g=>{const r=a.filter(m=>m.gi===g.gi&&m.n.toLowerCase().includes(q));return r.length?`<div class="gh">${esc(g.title)}</div>`+listHTML(r,true):''}).join('')||'<p>Ничего не найдено</p>'};
     draw('');$('#mf').oninput=e=>draw(e.target.value);$('#mf').focus()},
   dates(){openModal('Даты сдачи анализов',`<p>По каждой дате указано, сколько показателей сдано.</p><div class="mlist">`+DATES.map((d,i)=>{const n=ALL.filter(m=>m.pts.some(p=>p.i===i)).length;return `<button data-tab-to="files"><span>${d}</span><span class="num">${n} показ.</span><span class="g">файл</span></button>`}).slice().reverse().join('')+'</div>')}
 };
@@ -2059,8 +2211,8 @@ document.addEventListener('click',e=>{const tg=e.target.closest('[data-tab-go]')
 function toggleRow(el,force){const on=force??!el.classList.contains('open');const b=el.querySelector('.mrow-b');
   if(on&&b.dataset.lazy){const[g,r]=el.id.slice(1).split('_').map(Number);b.innerHTML=detailHTML(G[g].rows[r]);delete b.dataset.lazy}
   el.classList.toggle('open',on);el.querySelector('.mrow-h').setAttribute('aria-expanded',on)}
-$('#pmode').onclick=e=>{printMode=!printMode;e.target.setAttribute('aria-pressed',printMode);e.target.textContent=printMode?'Готово':'Выбрать для печати';$('#blocks').classList.toggle('printmode',printMode);updP()};
-function updP(){const b=$('#pgo');b.disabled=!sel.size;b.textContent=sel.size?`Печать выбранных (${sel.size})`:'Печать выбранных'}
+$('#pmode').onclick=e=>{printMode=!printMode;e.target.setAttribute('aria-pressed',printMode);e.target.textContent=printMode?'Готово':'Выбрать для печати';$('#blocks').classList.toggle('printmode',printMode);updP();if(printMode)$('#blocks').scrollIntoView({block:'start'})};
+function updP(){const b=$('#pgo');b.disabled=!sel.size;b.hidden=!sel.size;b.textContent=sel.size?`Печать выбранных (${sel.size})`:'Печать выбранных'}
 function goTo(gi,ri){show('summary');setTimeout(()=>openSystem(gi,ri),RM?0:260)}
 
 /* печать */
@@ -2185,7 +2337,7 @@ function validInfo(g){const v=VALID[g.gi];if(!v)return null;
   if(!lastD)return {cls:'vnone',txt:'срок '+v.t,full:base,act:'book'};
   const left=v.d-Math.round((TODAY-lastD)/864e5);
   return left>0?{cls:'vok',txt:'ещё '+left+' дн.',full:`${base} Сдан ${fmtD(lastD)}, осталось ${left} дн. Напомним за 3 дня до конца.`,act:'book'}
-    :{cls:'vexp',txt:'устарел',full:`${base} Сдан ${fmtD(lastD)}, срок прошёл.`,act:'renew'}}
+    :{cls:'vexp',txt:'уточнить срок для госпитализации',full:`${base} Сдан ${fmtD(lastD)}, срок прошёл.`,act:'renew'}}
 const CLK='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
 
 const HID=new Set(store.get('oh4-hid',[]));const saveHid=()=>store.set('oh4-hid',[...HID]);
@@ -2267,7 +2419,9 @@ document.addEventListener('click',e=>{const u=e.target.closest('[data-up]');if(!
 function opts(host,list,cur,cb){host.innerHTML=list.map(([v,l])=>`<button class="opt" type="button" aria-pressed="${v===cur}" data-v="${v}">${l}</button>`).join('');
   host.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{host.querySelectorAll('.opt').forEach(x=>x.setAttribute('aria-pressed',x===b));cb&&cb(b.dataset.v)})}
 opts($('#dur'),[['24h','24 часа'],['7d','7 дней'],['30d','30 дней']],'24h',()=>{drawQR();toast('Новая ссылка создана, старая перестала работать')});
-opts($('#scope'),[['all','Все анализы'],['out','Только не в норме'],['sel','Выбранные блоки']],'all');
+const reportGroups=$('#reportGroups');
+reportGroups.innerHTML=G.filter(g=>g.rows.length).map(g=>`<label><input type="checkbox" value="${g.gi}"> ${esc(g.title)}</label>`).join('');
+opts($('#scope'),[['all','Все анализы'],['out','Только вне референса'],['sel','Выбранные блоки']],'all',scope=>{reportGroups.hidden=scope!=='sel'});
 function drawQR(){const c=$('#qr'),x=c.getContext('2d'),n=25,s=c.width/n;x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.fillStyle='#14202A';
   let seed=(Date.now()%9973)+7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
   for(let i=0;i<n;i++)for(let j=0;j<n;j++){const f=(a,b)=>a<7&&b<7;if(f(i,j)||f(n-1-i,j)||f(i,n-1-j))continue;if(rnd()<.45)x.fillRect(i*s,j*s,s,s)}
@@ -2296,53 +2450,55 @@ $('#viewBack').onclick=()=>{$('#viewing').hidden=true;document.body.classList.re
 
 /* как увидит специалист */
 const svRow=(m,cls)=>`<tr class="${cls||''}"><td class="sv-n">${esc(m.n)}</td><td class="num sv-v" style="${m.st!=='ok'?'font-weight:700;color:var(--'+(m.st==='high'?'hi':'lo')+')':''}">${esc(m.cur.raw)} ${esc(U(m.u))}${m.st==='high'?' ↑':m.st==='low'?' ↓':''}</td><td class="num sv-r">${esc(refText(m))}</td><td class="num sv-d">${m.cur.d}</td><td class="num sv-p">${m.prev?esc(m.prev.raw)+' <span class="why">· '+m.prev.d+'</span>':'—'}</td></tr>`;
-const SVH='<thead><tr><th>Показатель</th><th>Значение</th><th>Норма лаборатории</th><th class="nw">Дата</th><th>Предыдущее</th></tr></thead>';
-function openSpecView(print){const a=age(P.dob),w=lastWeight(),b=bmi(),out=latestTests().filter(m=>m.st==='high'||m.st==='low');
-  const meds=EV.med.filter(e=>e.f&&(e.m==='Постоянно'||!e.t||(LAST-evDate(e.t))/864e5<=60));
-  const cmps=(EV.cmp||[]).slice().sort((x,y)=>x.f<y.f?-1:1);
-  const yr=EV.ill.filter(e=>e.f&&(LAST-evDate(e.f))/864e5<=366).sort((x,y)=>x.f<y.f?1:-1);
-  const constMeds=EV.med.filter(e=>e.m==='Постоянно'&&e.f),curMeds=meds.filter(e=>e.m!=='Постоянно');
-  const L=(arr,f)=>arr.length?arr.map(f).join('<br>'):'—';
-  const card=`<div class="svc svcmp"><h3>Жалобы</h3>${cmps.length?`<ul class="svl">${cmps.map(e=>`<li><b>${esc(e.n)}</b><span class="svsince">беспокоит с ${dfmt(e.f)}</span></li>`).join('')}</ul>`:'<p class="why">Пациент жалоб не указал.</p>'}</div>
-   <div class="svg2"><div class="svc"><h3>Краткий анамнез</h3><dl class="svdl">
-    <dt>Пациент</dt><dd>${esc(P.name||'А. Иванов')}, ${P.sex==='f'?'жен.':'муж.'}, ${a??'—'} лет</dd>
-    <dt>Хронические заболевания</dt><dd>${esc(P.dx||'—')}</dd>
-    <dt>Постоянные препараты</dt><dd>${L(constMeds,e=>esc(e.n)+' <span class="why">· с '+dfmt(e.f)+'</span>')}</dd>
-    <dt>Курсы</dt><dd>${L(curMeds,e=>esc(e.n)+' <span class="why">· '+dfmt(e.f)+'–'+dfmt(e.t)+'</span>')}</dd>
-    <dt>Операции и травмы</dt><dd>${esc(P.surg||'—')}</dd>
-    <dt>Наследственность</dt><dd>${esc(P.fam||'—')}</dd>
-    <dt>Аллергии</dt><dd>${L(P.alls||[],x=>esc(x.n)+' <span class="why">· '+esc((x.r||'').toLowerCase())+'</span>')}</dd>
-    <dt>Болезни за год</dt><dd>${L(yr,e=>esc(e.n)+' <span class="why">· '+dfmt(e.f)+'–'+dfmt(e.t)+(e.tmax?', до '+esc(e.tmax)+'°':'')+(e.ab?', антибиотики: '+esc(e.ab):'')+'</span>')}</dd>
-    <dt>Госпитализации</dt><dd>${L(EV.hosp,e=>esc(e.n)+', '+esc([e.w,e.results].filter(Boolean).join(' · '))+' <span class="why">· '+dfmt(e.f)+'–'+dfmt(e.t)+'</span>')}</dd></dl></div>
-    <div class="svc"><h3>Рост, вес, ИМТ</h3><dl class="svdl"><dt>Рост</dt><dd>${esc(P.h||'—')} см</dd><dt>Вес</dt><dd>${w?esc(w.kg)+' кг · '+dfmt(w.d):'—'}</dd><dt>ИМТ</dt><dd><b>${b??'—'}</b></dd></dl>
-    ${weightAlert()?`<p class="why" style="margin-top:6px">Вес снизился на ${weightAlert().pct}% за ${weightAlert().mo} мес.</p>`:''}
-    <h3 style="margin-top:12px">Образ жизни</h3><dl class="svdl"><dt>Питание</dt><dd>${esc([P.food,P.foodNote].filter(Boolean).join(" · "))}</dd><dt>Спорт</dt><dd>${esc(P.sportNote||"")} ${ACT[P.act]||'—'}</dd><dt>Сон</dt><dd>в среднем ${esc(P.sleep||'—')} ч</dd><dt>Курение</dt><dd>${esc((P.smoke||'—').toLowerCase())} ${P.smoke==='Курю' && P.packsPerDay ? esc(packLabel(Number(P.packsPerDay)).toLowerCase())+' в день':''}</dd><dt>Алкоголь</dt><dd>${esc((P.alc||'—').toLowerCase())}${P.alcv?', '+esc(P.alcv.toLowerCase()):''}</dd></dl></div></div>`;
-  const mon=G.filter(g=>[1,8,9,0,5].includes(g.gi)).flatMap(g=>g.rows).filter(m=>m.cur&&(LAST-pd(m.cur.d))/864e5<=31);
-  const isKey=m=>KEYM.some(r=>r.test(m.n))||m.st!=='ok';
-  const keyN=mon.filter(isKey).length,restN=mon.length-keyN;
-  const main=`<h2>ОАК и биохимия за последний месяц</h2>${mon.length?`<p class="why" style="margin:-4px 0 8px">Главные показатели и всё, что вне нормы${restN&&!print?`. Остальные ${restN} — по кнопке ниже`:''}.</p><table class="svt svmon${print?' all':''}">${SVH}<tbody>${mon.map(m=>svRow(m,isKey(m)?'':'svx')).join('')}</tbody></table>${restN&&!print?`<button type="button" class="btn svmore" data-svmore>Показать все ${mon.length}</button>`:''}`:'<p class="why">За последний месяц ОАК и биохимию не сдавали.</p>'}`;
-  const outT=`<h2>Вне референса при сдаче ${DATES.at(-1)}: ${out.length}</h2><table class="svt">${SVH}<tbody>${out.map(m=>svRow(m)).join('')}</tbody></table>`;
+function openSpecView(print){
   const mode=$('#period10').value, period=mode==='custom' || Number(mode)>0;
   const bounds=$('#shareRange');
   const from=bounds.querySelector('[data-from]').value,to=bounds.querySelector('[data-to]').value;
   const inPeriod=date=>mode==='custom'?(!from || date>=evDate(from)) && (!to || date<=evDate(to)):!period || (date<=LAST && (LAST-date)/864e5<Number(mode));
   const selectedDates=DATES.filter(d=>inPeriod(pd(d)));
-  const caption=mode==='custom'?[from?'с '+dfmt(from):'',to?'по '+dfmt(to):''].filter(Boolean).join(' ')||'за все даты':selectedDates[0]+' – '+selectedDates.at(-1);
+  const caption=mode==='custom'
+    ? [from?'с '+dfmt(from):'',to?'по '+dfmt(to):''].filter(Boolean).join(' ')||'за все даты'
+    : selectedDates.length ? selectedDates[0]+' – '+selectedDates.at(-1) : 'за выбранный период';
+  const scope=$('#scope [aria-pressed="true"]')?.dataset.v||'all';
+  const scopeLabel=$('#scope [aria-pressed="true"]')?.textContent||'Все анализы';
+  const groupIds=new Set([...reportGroups.querySelectorAll('input:checked')].map(input=>Number(input.value)));
+  const includeEvents=$('#reportEvents').checked;
+  const indices=selectedDates.map(d=>DATES.indexOf(d));
+  const point=(m,i)=>m.pts.find(p=>p.i===i&&(scope!=='out'||p.st==='high'||p.st==='low'));
+  const groups=G.filter(g=>scope!=='sel'||groupIds.has(g.gi))
+    .map(g=>({title:g.title,rows:g.rows.filter(m=>indices.some(i=>point(m,i)))}))
+    .filter(g=>g.rows.length);
+  const empty=scope==='sel'&&!groupIds.size?'Выберите блоки в разделе «Показать врачу».'
+    : !selectedDates.length?'За выбранный период сдач нет.':'Нет результатов для выбранных условий.';
+  const cells=(m,i)=>{
+    const p=point(m,i), direction=p?.st==='high'?' ↑':p?.st==='low'?' ↓':'';
+    return '<td class="num '+(direction?(p.st==='high'?'report-high':'report-low'):'')+'">'+
+      (p?esc(p.raw)+direction:'—')+'</td>';
+  };
+  const eventRows=includeEvents?selectedDates.slice().reverse().flatMap(d=>{
+    const detail=[ctxFor(d),medicationAt(d)].filter(Boolean).join(' · ');
+    return detail?['<li><strong>'+esc(d)+'</strong> · '+esc(detail)+'</li>']:[];
+  }):[];
+  const dateHead=indices.map(i=>'<th scope="col">'+esc(DATES[i])+'<br><small>'+esc(LABS[i])+'</small></th>').join('');
+  const tableRows=groups.map(g=>'<tr class="grp"><th scope="rowgroup" colspan="'+(indices.length+3)+'">'+esc(g.title)+'</th></tr>'+
+    g.rows.map(m=>'<tr><td>'+esc(m.n)+'</td><td>'+esc(U(m.u))+'</td><td>'+esc(refText(m))+'</td>'+
+      indices.map(i=>cells(m,i)).join('')+'</tr>').join('')).join('');
+  const results=groups.length?'<div class="report-scroll" tabindex="0" role="region" aria-label="Таблица результатов"><table class="alld report-table"><thead><tr><th scope="col">Показатель</th><th scope="col">Ед.</th><th scope="col">Референс</th>'+dateHead+'</tr></thead><tbody>'+tableRows+'</tbody></table></div>'
+    : '<p>'+esc(empty)+'</p>';
+  const search=groups.length?'<div class="svsearch"><input id="svq" type="search" placeholder="Найти показатель" aria-label="Найти показатель"><span id="svqn" aria-live="polite"></span></div>':'';
+  const events=eventRows.length?'<details class="report-context" open><summary>События рядом с датами сдачи</summary><ul>'+eventRows.join('')+'</ul></details>':'';
   $('#reportRange summary').textContent='Фильтр по датам · '+caption;
-  const evList=`<div class="evlist"><b>События рядом с датами сдачи</b>${selectedDates.slice().reverse().map(d=>{const c=[ctxFor(d),medicationAt(d)].filter(Boolean).join(' · ');return c?`<div><span class="num">${d}</span> ${esc(c)}</div>`:''}).join('')}</div>`;
-  const evRowT=`<tr class="evrow"><td><b>События рядом с датой</b></td><td></td><td></td>${selectedDates.map(d=>`<td>${esc([ctxFor(d),medicationAt(d)].filter(Boolean).join(" · "))}</td>`).join('')}</tr>`;
-  const all=!selectedDates.length?`<h2>Результаты ${caption}</h2><p>За выбранный период сдач нет.</p>`:`<h2>Результаты ${caption}</h2>${evList}<p class="mobnote">На телефоне показаны последние 3 сдачи; все даты — на компьютере или в PDF.</p><table class="alld"><thead><tr><th>Показатель</th><th class="u-c">Ед.</th><th>Норма</th>${selectedDates.map((d,i)=>`<th class="num">${d}<br><span style="font-weight:500;color:var(--ink3);font-size:10px">${LABS[DATES.indexOf(d)]}</span></th>`).join('')}</tr></thead><tbody>${evRowT}`+
-   G.filter(g=>g.rows.length).map(g=>`<tr class="grp"><td>${esc(g.title)}</td><td></td><td></td>${selectedDates.map(()=>"<td></td>").join("")}</tr>`+g.rows.map(m=>`<tr><td>${esc(m.n)}${U(m.u)?`<span class="u-m">, ${esc(U(m.u))}</span>`:''}</td><td class="u-c">${esc(U(m.u))}</td><td class="num">${esc(refText(m))}</td>${selectedDates.map((d,i)=>{const p=m.pts.find(q=>q.i===DATES.indexOf(d));return `<td class="num" style="${p&&p.st!=='ok'?'font-weight:700;color:var(--'+(p.st==='high'?'hi':'lo')+')':''}">${p?esc(p.raw)+(p.st==='high'?' ↑':p.st==='low'?' ↓':''):'—'}</td>`}).join('')}</tr>`).join('')).join('')+'</tbody></table>';
-  $('#pvBody').innerHTML=`<div class="svbar">${print?'Так выглядит PDF для печати':'Так специалист видит анализы по ссылке или QR-коду: без регистрации, только просмотр'}</div><h1>Анализы: ${esc(P.name||'А. Иванов')}</h1><div class="svsearch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="svq" type="search" placeholder="Найти показатель: ферритин, ЛПНП, глюкоза…" aria-label="Найти показатель"><button type="button" class="btn" data-sugar>Динамика сахара</button><span id="svqn"></span></div><p class="why">Сформировано по загруженным бланкам и данным со слов пациента. Нормы указаны лабораториями. Отклонения отмечены ↑ ↓, чтобы их было видно и на чёрно-белой печати. Сервис не ставит диагнозов.</p>`+(period ? "" : card+main+outT)+all+diaryReport(inPeriod)+`<p class="why" style="margin-top:14px">Оригиналы бланков доступны по ссылке. Распознанные значения подтверждены пациентом.</p>`;
-  $('#pvNote').textContent='';document.body.classList.add('preview');window.scrollTo(0,0)}
+  $('#pvBody').innerHTML='<div class="svbar">'+(print?'Предпросмотр PDF':'Предпросмотр для врача')+
+    ' · '+esc(scopeLabel)+' · '+esc(caption)+'</div><h1>Анализы: '+esc(P.name||'А. Иванов')+'</h1>'+
+    search+results+events+(includeEvents?diaryReport(inPeriod):'');
+  $('#pvNote').textContent='';
+  document.body.classList.add('preview');
+  window.scrollTo(0,0);
+}
 
-/* ключевые показатели ОАК и биохимии для экрана врача (список на проверке у Маши) */
-const KEYM=[/^гемоглобин$/i,/^эритроциты$/i,/^лейкоциты$/i,/^тромбоциты$/i,/^соэ$/i,/^глюкоза$/i,/^креатинин$/i,/^алат$/i,/^асат$/i,/^билирубин общий$/i,/^мочевина$/i];
-document.addEventListener('click',e=>{const b=e.target.closest('[data-svmore]');if(!b)return;const t=b.previousElementSibling;const on=t.classList.toggle('all');const n=t.querySelectorAll('tbody tr').length;b.textContent=on?'Свернуть':'Показать все '+n});
 /* поиск на экране врача */
 document.addEventListener('input',e=>{if(e.target.id!=='svq')return;const q=e.target.value.trim().toLowerCase();const alt=Object.keys(SYN).filter(k=>q&&q.includes(k)).map(k=>SYN[k]);
   const body=$('#pvBody');body.classList.toggle('svsearching',!!q);let n=0;
-  body.querySelectorAll('.svmon').forEach(t=>t.classList.toggle('all',!!q||t.classList.contains('was-all')));
   body.querySelectorAll('table tbody tr').forEach(tr=>{if(tr.classList.contains('grp')||tr.classList.contains('evrow'))return;const nm=(tr.querySelector('td')||{}).textContent||'';const l=nm.toLowerCase();
     const hit=!q||l.includes(q)||alt.some(a=>l.includes(a));tr.classList.toggle('svhide',!hit);if(q&&hit)n++});
   body.querySelectorAll('table.alld tbody tr.grp').forEach(g=>{let x=g.nextElementSibling,any=false;while(x&&!x.classList.contains('grp')){if(!x.classList.contains('svhide')&&!x.classList.contains('evrow'))any=true;x=x.nextElementSibling}g.classList.toggle('svhide',!!q&&!any)});
@@ -2527,15 +2683,24 @@ let ts=0;
 const tourSteps=[
  ['files','Мои анализы','Нажмите «Добавить анализ», выберите фото или PDF и укажите повод сдачи.'],
  ['summary','Сводка','Откройте показатель в таблице. Включите график, чтобы посмотреть динамику и препараты по датам.'],
- ['profile','Профиль','Здесь можно добавить болезнь, препарат или госпитализацию. Кнопка «Записать с AI» соберёт несколько записей из одного рассказа.'],
+ ['profile','Профиль','Здесь можно добавить болезнь, препарат или госпитализацию. Откройте «Добавить событие», чтобы описать или продиктовать несколько событий.'],
  ['share','Доступ специалисту','Выберите период результатов и срок доступа. Откройте «Вид для врача» или сохраните PDF через печать.']
 ];
 function drawTut(){const [page,title,body]=tourSteps[ts];show(page);$('#tS').textContent='Шаг '+(ts+1)+' из 4 · демо для взрослых';$('#tT').textContent=title;$('#tP').textContent='';$('#tB').textContent=body;$('#tPrev').hidden=!ts;$('#tNext').textContent=ts===3?'Готово':'Дальше';$('#tSkip').textContent='Закрыть тур'}
-function openTut(){ts=0;drawTut();$('#tut').classList.add('on')}
-function closeTut(){store.set('oh10-tour',1);$('#tut').classList.remove('on');show('summary')}
+let tourTrigger;
+function openTut(){tourTrigger=document.activeElement;ts=0;drawTut();$('#app').inert=true;$('#tut').classList.add('on');$('#tNext').focus()}
+function closeTut(){store.set('oh10-tour',1);$('#tut').classList.remove('on');$('#app').inert=false;show('summary');(tourTrigger?.id==='visitTour'?tourTrigger:$('#visitTour')).focus()}
 $('#tNext').onclick=()=>{if(ts===3)closeTut();else{ts++;drawTut()}};
 $('#tPrev').onclick=()=>{if(ts){ts--;drawTut()}};
 $('#tSkip').onclick=closeTut;$('#tutOpen').onclick=openTut;
+$('#tut').addEventListener('keydown',e=>{
+  if(e.key==='Escape'){e.preventDefault();closeTut();return}
+  if(e.key!=='Tab')return;
+  const buttons=[...$('#tut').querySelectorAll('button:not([hidden])')];
+  const first=buttons[0],last=buttons.at(-1);
+  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+  if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+});
 /* кнопка «Добавить анализ» */
 function openAdd(){openModal('Добавить анализ',`<div class="addopts">
   <button type="button" class="ao" data-up="camera"><span class="ao-i">${svgI(PIC.camera,24)}</span><span><b>Сфотографировать бланк</b><small>Снимите бланк целиком, чтобы были видны дата и нормы</small></span></button>
@@ -2569,18 +2734,15 @@ function openCtxAsk(){const act=EV.med.map((e,i)=>({e,i})).filter(x=>x.e.f&&medA
     saveAll();closeModal();toast(n?'Контекст сохранён: видно в сводке и на графиках':'Сохранено')}}
 
 /* старт */
-renderTabs('summary');updLogin();fillForm();renderSummary();renderCtx();renderBlocks();renderUploads();drawQR();renderDocs();renderShared();renderBook();{const co=store.get('oh3-ctx',true);$('#cCtx').classList.toggle('closed',!co);$('#cCtx .fh').setAttribute('aria-expanded',co)}
-document.addEventListener('click',e=>{const f=e.target.closest('#cCtx .fh');if(f)store.set('oh3-ctx',!$('#cCtx').classList.contains('closed'))});
-if(!store.get('oh10-tour',0))openTut();
-
-function actUpd(btn,on,t){const sp=specOfKey(btn.dataset.adds||btn.dataset.addb);
-  btn.querySelector('.act-ic').innerHTML=on?ACT_OK:(t==='b'?ACT_LAB:spIc(sp[0]));
-  btn.querySelector('.act-t b').textContent=on?(t==='b'?'В списке на сдачу':'В поиске врача'):(t==='b'?'Добавить к сдаче':'Расшифровывает');
-  if(t==='b')btn.querySelector('.act-t small').textContent=on?'ещё раз — убрать':'где ближе и дешевле';
-  const cta=btn.closest('.cta2');let l=cta.querySelector('.ctal');const inB=cta.querySelector('[data-addb]').classList.contains('on'),inS=cta.querySelector('[data-adds]').classList.contains('on');
-  if(!inB&&!inS){l&&l.remove();return}if(!l){cta.insertAdjacentHTML('beforeend','<span class="ctal"></span>');l=cta.querySelector('.ctal')}
-  l.innerHTML=(inB?'<button class="link" data-tab-go="book">Где сдать →</button>':'')+(inS?'<button class="link" data-tab-go="docs">Врачи рядом →</button>':'')}
-
+renderTabs('summary');updLogin();fillForm();renderSummary();renderCtx();renderBlocks();renderUploads();drawQR();renderDocs();renderShared();renderBook();
+$('#visitDoctor').onclick=()=>show('share');
+$('#visitMoreEvents').onclick=()=>{
+  $('#visitEvents').classList.toggle('expanded');
+  fitVisitEvents();
+};
+new ResizeObserver(fitVisitEvents).observe($('#visit-title').closest('.visit17'));
+document.fonts.ready.then(fitVisitEvents);
+$('#visitTour').onclick=openTut;
 /* база Маши: специалист → какие анализы смотрит (16.11) */
 const SPB={
  'терапевт':{note:'Терапевт поможет понять, в чём проблема, подскажет, к кому обратиться дальше, и поможет составить план обследования. В госполиклинике к узкому специалисту обычно попадают через терапевта.',a:[['Общий анализ крови',/лейкоцит|гемоглобин/],['Глюкоза',/^глюкоза/],['Биохимия: печень',/алат|асат/],['Биохимия: почки',/креатинин/],['Холестерин',/холестерин общий/],['ТТГ',/^ттг/],['Общий анализ мочи',null]]},
@@ -2646,118 +2808,6 @@ document.addEventListener('click',e=>{
 try{renderSpec()}catch(_){}
 
 /* сводка-апельсин: три дольки вместо трёх плашек */
-(function(){
-  const sum=document.querySelector('#v-summary .sum');if(!sum||$('#sw'))return;
-  const W=[{id:'cChg',t:'Что изменилось',sh:'Изменилось',a:'#FFC266',b:'#F5820F',r:'#E06A00'},
-           {id:'cDev',t:'В норме и не в норме',sh:'Не в норме',a:'#FF9A5C',b:'#EE4A12',r:'#D33A06'},
-           {id:'cCtx',t:'Контекст к сдаче',sh:'Контекст',a:'#FFD978',b:'#F6A21E',r:'#E58F0A'}];
-  const colors=['#6350b9','#cb542e','#078473'];
-  const symbols=['M-6 -3h12l-3 -3 M6 3H-6l3 3','M0 -7l7 13H-7Z M0 -2v3 M0 3v.3','M-6 -4h12v10H-6Z M-6 -1H6 M-3 -6v4 M3 -6v4'];
-  const icon=i=>`<path d="${symbols[i]}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>`;
-  /* долька: смотрит вверх, острый край к центру, несимметричная как у настоящей дольки */
-  const SEG='M2 -12 C-6 -13 -26 -32 -36 -52 C-44 -68 -32 -88 -8 -90 C14 -92 36 -82 40 -64 C43 -50 26 -26 10 -14 C7 -12 4 -11.5 2 -12 Z';
-  const HL='M-24 -62 C-26 -72 -18 -82 -4 -83 C-12 -78 -18 -70 -20 -60 Z';
-  const veins=[-30,-15,0,15,30].map(a=>{const r=a*Math.PI/180;return `<path d="M2 -20 L${(2+62*Math.sin(r)).toFixed(1)} ${(-20-62*Math.cos(r)).toFixed(1)}"/>`}).join('');
-  let d='<defs><filter id="swsh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#F06A10" flood-opacity=".28"/></filter>'
-   +W.map((x,i)=>`<radialGradient id="swg${i}" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="${x.a}"/><stop offset="1" stop-color="${x.b}"/></radialGradient><clipPath id="swc${i}"><path d="${SEG}"/></clipPath>`).join('')
-   +'<marker id="swar" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#F6A06A"/></marker></defs>'
-   +'<g class="sw-rot">';
-  W.forEach((x,i)=>{d+=`<g transform="translate(100 100) rotate(${i*120})"><g class="sw-pet" data-sw="${i}" filter="url(#swsh)"><title>${x.t}</title>
-    <path d="${SEG}" fill="url(#swg${i})" stroke="${x.r}" stroke-width="1.6"/>
-    <g clip-path="url(#swc${i})" stroke="#fff" stroke-opacity=".16" stroke-width="1.2" fill="none">${veins}</g>
-    <path d="${SEG}" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2.5" transform="translate(0 -51) scale(.88) translate(0 51)"/>
-    <path d="${HL}" fill="#fff" opacity=".45"/></g>
-    <g transform="translate(2 -54)"><text class="sw-num" data-swn="${i}" text-anchor="middle" y="8"></text></g></g>`});
-  d+='</g>';
-  const wrap=document.createElement('div');wrap.className='swwrap';wrap.id='swwrap';
-  wrap.innerHTML=`<div class="sw-wheel"><svg viewBox="0 0 200 200" role="img" aria-label="Сводка последней сдачи: три дольки">${d}</svg></div>
-   <div class="sw card" id="sw"><div class="sw-cards">${W.map((x,i)=>`<button type="button" class="sw-cd" style="--c:${colors[i]}" data-sw="${i}" aria-expanded="false"><svg width="18" height="18" viewBox="-10 -10 20 20" style="color:${colors[i]}" aria-hidden="true">${icon(i)}</svg><span class="sw-n" data-swc="${i}"></span><span class="sw-t"><b>${x.t}</b><b class="sw-sh">${x.sh}</b><small data-sws="${i}"></small></span><svg class="sw-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>`).join('')}</div>
-   <div class="sw-panel"><div class="sw-pin"><div class="sw-pi"><div class="sw-ph"><span class="sw-pt"></span><button type="button" class="sw-x" aria-label="Свернуть">×</button></div><div class="sw-body"></div></div></div></div></div>`;
-  sum.parentNode.insertBefore(wrap,sum);
-  wrap.insertAdjacentHTML('afterend','<button type="button" class="docview" data-docview><span class="dv-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><span class="dv-t"><b>Вид для врача</b><small>Так врач увидит ваши анализы по ссылке или QR-коду</small></span><svg class="dv-ch" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>');
-  document.addEventListener('click',e=>{if(e.target.closest('[data-docview]'))openSpecView(false)});
-  const box=wrap;
-  const body=box.querySelector('.sw-body');
-  W.forEach((x,i)=>{const c=$('#'+x.id);const fb=c.querySelector('.fb');fb.classList.add('sw-pane');fb.dataset.pane=i;body.appendChild(fb)});
-  sum.hidden=true;sum.classList.add('sw-gone');
-  box.querySelector('.sw-panel').insertAdjacentHTML('beforebegin','<div class="sw-empty">Поверните дольки или выберите раздел</div>');
-
-  const rot=box.querySelector('.sw-rot'),svg=box.querySelector('.sw-wheel svg'),panel=box.querySelector('.sw-panel');
-  const fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
-  let sel=store.get('oh4-sw',store.get('oh3-ctx',true)?2:-1),base=0,hov=-1;
-  function nums(){
-    const li=DATES.length-1,w=ALL.filter(m=>m.cur&&m.cur.i===li);
-    const nOut=w.filter(m=>m.prev&&m.prev.st==='ok'&&m.st!=='ok').length,nBack=w.filter(m=>m.prev&&m.prev.st!=='ok'&&m.st==='ok').length;
-    const out=latestTests().filter(m=>m.st==='high'||m.st==='low').length;
-    const ncmp=(EV.cmp||[]).length,nc=ncmp+(weightAlert()?1:0)+nearEvents(DATES[li],45).length;
-    const v=[[nOut+nBack,`${nOut} вышли за норму · ${nBack} вернулись`],[out,`из ${w.length} за ${DATES[li]}`],[nc,nc?(ncmp?'жалобы и события рядом со сдачей':'события рядом со сдачей'):'событий нет']];
-    v.forEach(([n,s],i)=>{box.querySelector(`[data-swn="${i}"]`).textContent=n;box.querySelector(`[data-swc="${i}"]`).textContent=n;box.querySelector(`[data-sws="${i}"]`).textContent=s})}
-  function paint(anim){const a=hov>=0?hov:sel;
-    svg.classList.toggle('sw-has',a>=0);
-    box.querySelectorAll('.sw-pet').forEach(p=>p.classList.toggle('on',+p.dataset.sw===a));
-    box.querySelectorAll('.sw-cd').forEach(c=>{const on=+c.dataset.sw===sel;c.classList.toggle('on',+c.dataset.sw===a);c.setAttribute('aria-expanded',on)});
-    if(sel>=0){let t=180-sel*120;while(t-base>180)t-=360;while(t-base<-180)t+=360;base=t}
-    rotate(base);
-    box.classList.toggle('sw-open',sel>=0);if(sel<0){panel.classList.remove('open');return}
-    const pt=box.querySelector('.sw-pt');pt.textContent=W[sel].t;pt.style.color=W[sel].r;
-    box.querySelectorAll('.sw-pane').forEach(p=>p.hidden=+p.dataset.pane!==sel);
-    if(anim){panel.classList.remove('open');void panel.offsetWidth}
-    panel.classList.add('open');
-    if(anim&&!RM){const pane=box.querySelector('.sw-pane:not([hidden])');const items=[...pane.querySelectorAll('.card-b > *, .chg > *, .devl > *, .mini > *')].filter(el=>el.offsetParent!==null).slice(0,14);
-      items.forEach((el,k)=>el.animate([{opacity:0,transform:'translateY(8px)'},{opacity:1,transform:'none'}],{duration:320,delay:120+k*35,easing:'cubic-bezier(0.23,1,0.32,1)',fill:'backwards'}))}
-  }
-  function rotate(angle){
-    rot.style.transform=`rotate(${angle}deg)`;
-    box.querySelectorAll('.sw-num').forEach((el,i)=>el.style.transform=`rotate(${-angle-120*i}deg)`);
-  }
-  let gesture=null,ignoreClick=false;
-  const delta=(a,b)=>(a-b+540)%360-180;
-  function direction(e,g){return Math.atan2(e.clientY-g.cy,e.clientX-g.cx)*180/Math.PI}
-  svg.addEventListener('pointerdown',e=>{
-    if(!e.isPrimary||e.button!==0||gesture)return;
-    ignoreClick=false;
-    const r=svg.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
-    const distance=Math.hypot(e.clientX-cx,e.clientY-cy);
-    if(distance<r.width*.07||distance>r.width*.5)return;
-    gesture={id:e.pointerId,cx,cy,x:e.clientX,y:e.clientY,time:e.timeStamp,velocity:0,active:false};
-    gesture.last=direction(e,gesture);
-  });
-  svg.addEventListener('pointermove',e=>{
-    const g=gesture;if(!g||e.pointerId!==g.id)return;
-    if(!g.active){
-      const dx=e.clientX-g.x,dy=e.clientY-g.y;
-      if(Math.hypot(dx,dy)<6)return;
-      if(e.pointerType==='touch'&&Math.abs(dy)>Math.abs(dx)*1.3){gesture=null;return}
-      const matrix=new DOMMatrix(getComputedStyle(rot).transform);
-      const shown=Math.atan2(matrix.b,matrix.a)*180/Math.PI;
-      base+=delta(shown,((base%360)+360)%360);
-      g.active=true;svg.classList.add('dragging');svg.setPointerCapture(e.pointerId);
-    }
-    const next=direction(e,g),step=delta(next,g.last);
-    g.velocity=step/Math.max(1,e.timeStamp-g.time);g.time=e.timeStamp;g.last=next;
-    base+=step;rotate(base);
-  });
-  function finish(e){
-    const g=gesture;if(!g||e.pointerId!==g.id)return;
-    gesture=null;if(!g.active)return;
-    svg.classList.remove('dragging');ignoreClick=true;
-    if(e.type==='pointerup'){
-      const coast=RM||e.timeStamp-g.time>90?0:Math.max(-100,Math.min(100,g.velocity*100));
-      sel=((Math.round((180-base-coast)/120)%3)+3)%3;store.set('oh4-sw',sel);
-    }
-    hov=-1;paint(false);
-  }
-  svg.addEventListener('pointerup',finish);svg.addEventListener('pointercancel',finish);
-  svg.addEventListener('lostpointercapture',finish);
-  svg.addEventListener('pointerleave',()=>{if(gesture&&!gesture.active)gesture=null});
-  svg.addEventListener('click',e=>{if(ignoreClick){ignoreClick=false;e.stopPropagation()}},true);
-  box.addEventListener('click',e=>{if(e.target.closest('.sw-x')){sel=-1;store.set('oh4-sw',sel);paint();return}
-    const t=e.target.closest('[data-sw]');if(!t)return;const i=+t.dataset.sw;sel=i;hov=-1;store.set('oh4-sw',sel);paint(true);
-    if(sel>=0&&innerWidth<620&&t.closest('svg'))setTimeout(()=>{const r=panel.getBoundingClientRect();if(r.top>innerHeight-160)scrollBy({top:r.top-innerHeight+260,behavior:'smooth'})},300)});
-  {const rs=renderSummary;renderSummary=function(){rs.apply(this,arguments);nums()};const rc=renderCtx;renderCtx=function(){rc.apply(this,arguments);nums()}}
-  nums();paint(false);
-})();
-
 /* повод сдачи: диспансеризация, санаторий и т. п.; свои варианты запоминаются */
 const RSN_DEF=['Диспансеризация','Санаторий','Чекап','По назначению врача','Перед госпитализацией или операцией','В больнице','Профосмотр','Сам решил проверить'];
 let RSN_MY=store.get('oh5-rsnmy',['Санаторий «Белые ночи»']);
@@ -2804,9 +2854,23 @@ try{renderUploads()}catch(_){}
 const captureTypes={ill:'Болезнь',med:'Препарат',hosp:'Госпитализация',cmp:'Жалоба',weight:'Вес',all:'Аллергия',travel:'Поездка'};
 const sampleStory='С 10.11.2026 болел ОРВИ, с 11.11.2026 принимал витамин D. Был в санатории в Кисловодске.';
 function captureStart(){
- openModal('Записать с AI · демо подписки','<p>Расскажите, что произошло. Затем проверьте записи и добавьте детали.</p><div class="field"><label for="story10">Ваш рассказ</label><textarea id="story10" rows="5" placeholder="Болел, принимал препарат, был в санатории…"></textarea></div><div class="row-end"><button class="btn" id="dict10">Диктовать</button><button class="btn" id="sample10">Пример</button><button class="btn pri" id="parse10">Разобрать рассказ</button></div><p id="voiceStatus" role="status" class="why">Демо разбирает текст по ключевым словам. Для диктовки можно использовать микрофон клавиатуры.</p>');
- const input=$('#story10'),status=$('#voiceStatus');
- $('#sample10').onclick=()=>{input.value=sampleStory};
+ openModal('Добавить событие',`<div class="capture-entry">
+  <label for="story10">Что произошло?</label>
+  <textarea id="story10" rows="4" placeholder="Напишите, что произошло…"></textarea>
+  <div class="capture-actions">
+    <button class="btn" type="button" id="dict10" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11v1a7 7 0 0 0 14 0v-1m-7 8v3m-3 0h6"/></svg><span>Диктовать</span></button>
+    <button class="link" type="button" id="sample10" aria-expanded="false" aria-controls="captureExample">Посмотреть пример</button>
+    <button class="btn pri" type="button" id="parse10">Проверить записи</button>
+  </div>
+  <p class="capture-example" id="captureExample" hidden>${esc(sampleStory)}</p>
+  <p id="voiceStatus" role="status" class="why"></p>
+ </div>`);
+ const input=$('#story10'),status=$('#voiceStatus'),dict=$('#dict10'),sample=$('#sample10'),example=$('#captureExample');
+ sample.onclick=()=>{
+  example.hidden=!example.hidden;
+  sample.setAttribute('aria-expanded',String(!example.hidden));
+  sample.textContent=example.hidden?'Посмотреть пример':'Скрыть пример';
+ };
  let speech;
  $('#dict10').onclick=()=>{
   if(speech){speech.stop();return}
@@ -2817,17 +2881,38 @@ function captureStart(){
   speech.onerror=()=>{status.textContent='Диктовка недоступна. Рассказ можно ввести с клавиатуры.'};
   const watch=new MutationObserver(()=>{if(!input.isConnected||!$('#modal').classList.contains('on')||$('#modal').classList.contains('closing'))speech?.stop()});
   watch.observe($('#modal'),{attributes:true,childList:true,subtree:true});
-  speech.onend=()=>{watch.disconnect();speech=null;if($('#dict10'))$('#dict10').textContent='Диктовать'};
-  try{speech.start();$('#dict10').textContent='Остановить диктовку';status.textContent='Идёт диктовка средствами браузера.'}catch{watch.disconnect();speech=null;status.textContent='Введите текст с клавиатуры.'}
+  speech.onend=()=>{watch.disconnect();speech=null;dict.querySelector('span').textContent='Диктовать';dict.setAttribute('aria-pressed','false')};
+  try{speech.start();dict.querySelector('span').textContent='Остановить';dict.setAttribute('aria-pressed','true');status.textContent='Идёт диктовка средствами браузера.'}catch{watch.disconnect();speech=null;status.textContent='Введите текст с клавиатуры.'}
  };
  $('#parse10').onclick=()=>{const story=input.value.trim();if(!story){input.focus();return}speech?.stop();captureReview(story)};
 }
+const captureMonths=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+function captureDate(text){
+ const numeric=text.match(/(?:^|(?<=[\s,(]))(\d{1,2})[.\/-](\d{1,2})(?:[.\/-](\d{4}|\d{2}))?(?![\d.\/-])/);
+ const named=text.match(new RegExp('(?:^|(?<=[\\s,(]))(\\d{1,2})\\s+('+captureMonths.join('|')+')(?:\\s+(\\d{4})(?:\\s+года)?)?(?![а-яё\\d])','i'));
+ const relative=text.match(/(?:^|(?<=[\s,(]))(позавчера|вчера|сегодня)(?![а-яё])/i);
+ const match=numeric||named||relative;
+ if(!match)return null;
+ const now=new Date();
+ if(relative&&!numeric&&!named){
+  now.setDate(now.getDate()-({сегодня:0,вчера:1,позавчера:2})[relative[1].toLowerCase()]);
+  return {text:match[0],value:localCaptureDate(now)};
+ }
+ const day=Number(match[1]),month=numeric?Number(match[2]):captureMonths.indexOf(match[2].toLowerCase())+1;
+ const year=match[3]?Number(match[3])+(match[3].length===2?2000:0):now.getFullYear();
+ const date=new Date(year,month-1,day);
+ if(date.getFullYear()!==year||date.getMonth()!==month-1||date.getDate()!==day)return null;
+ return {text:match[0],value:localCaptureDate(date)};
+}
+function localCaptureDate(date){
+ return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');
+}
 function captureReview(story){
- const chunks=story.split(/[.!?](?=\s|$)|[;\n]|,\s*(?=(?:с \d|приним|болел|лежал|был[аи]?(?=\s|$)))|\s+и\s+(?=приним|болел|лежал|был[аи]?(?=\s|$))/i).map(t=>t.trim()).filter(Boolean);
+ const chunks=story.split(/[.!?](?=\s|$)|[;\n]|(?:,\s*|\s+и\s+|\s+затем\s+|\s+потом\s+)(?=(?:с \d|приним|пропис|назнач|антибиотик|болел|заболел|лежал|госпитал|был[аи]?(?=\s|$)))/i).map(t=>t.trim()).filter(Boolean);
  openModal('Проверьте записи','<details><summary>Исходный рассказ</summary><p>'+esc(story)+'</p></details><form id="check10"><div id="drafts10"></div><p class="why">Можно дополнить рассказ другими записями.</p><div class="add-draft"><select aria-label="Добавить раздел" id="extra10"></select> <button class="btn" type="button" id="add10">Добавить</button></div><div class="row-end"><button class="btn" type="button" data-mclose>Отмена</button><button class="btn pri">Подтвердить и сохранить</button></div></form>');
  const choices=Object.entries(captureTypes).map(([k,t])=>'<option value="'+k+'">'+t+'</option>').join('');
  $('#extra10').innerHTML=choices;
- function add(k,n='',date=''){
+ function add(k,n='',date='',temperature=''){
   const box=document.createElement('fieldset');box.className='field';
   box.innerHTML='<label>Раздел <select class="kind">'+choices+'</select></label><div class="inputs"></div><button type="button" class="link remove">Удалить запись</button>';
   $('#drafts10').append(box);const kind=box.querySelector('.kind');kind.value=k;
@@ -2835,8 +2920,8 @@ function captureReview(story){
    const type=kind.value, host=box.querySelector('.inputs');
    host.innerHTML=type==='travel'?'<label>Где и когда <input data-k="n"></label>':EVF[type]({});
    const controls=Object.fromEntries([...host.querySelectorAll('[data-k]')].map(el=>[el.dataset.k,el]));
-   const order=['n','kg','d','f','t','m','course','who','why','w','results','time','ab','tmax','r'];
-   const labels={n:{ill:'Чем болели',med:'Препарат и дозировка',cmp:'Что беспокоит',all:'На что аллергия',travel:'Где и когда',hosp:'Причина госпитализации'}[type],kg:'Вес, кг',d:'Дата измерения',f:'Дата начала',t:'Дата окончания',m:'Режим приёма',course:'Опыт приёма',who:'Кто назначил',why:'Причина назначения',w:'Название стационара',results:'Показатели из выписки',ab:'Антибиотики',tmax:'Максимальная температура, °C',r:'Реакция'};
+   const order=['n','kg','d','f','t','m','course','who','why','w','results','time','tmax','r'];
+   const labels={n:{ill:'Чем болели',med:'Препарат и дозировка',cmp:'Что беспокоит',all:'На что аллергия',travel:'Где и когда',hosp:'Причина госпитализации'}[type],kg:'Вес, кг',d:'Дата измерения',f:'Дата начала',t:'Дата окончания',m:'Режим приёма',course:'Опыт приёма',who:'Кто назначил',why:'Причина назначения',w:'Название стационара',results:'Показатели из выписки',tmax:'Максимальная температура, °C (необязательно)',r:'Реакция'};
    host.replaceChildren();
    for(const key of order){
     if(!controls[key])continue;
@@ -2844,6 +2929,7 @@ function captureReview(story){
     if(key==='n'){input=document.createElement('textarea');input.dataset.k=key;input.rows=2;input.value=name;input.required=true}
     if(key==='kg'){input.value=(name.match(/\d+(?:[.,]\d+)?/)||[''])[0].replace(',','.');input.required=true}
     if(key==='f'||key==='d'){input.value=start;input.required=true}
+    if(key==='tmax')input.value=temperature;
     if(key==='r')input.insertAdjacentHTML('afterbegin','<option selected value="">Не указано</option>');
     input.removeAttribute('placeholder');input.removeAttribute('aria-label');
     const label=document.createElement('label');label.textContent=labels[key]||key;label.append(input);host.append(label);
@@ -2856,15 +2942,23 @@ function captureReview(story){
   box.querySelector('.remove').onclick=()=>{box.remove();updateSuggestion()};
  }
  for(const chunk of chunks){
-  let k=/приним|назнач|таблет|лекарств|препарат|пил[аи]? /i.test(chunk)?'med':/стационар|больниц|госпитал/i.test(chunk)?'hosp':/болел|болела|перебол|забол/i.test(chunk)?'ill':/аллерг/i.test(chunk)?'all':/санатор|поездк|был[аи]? в|ездил/i.test(chunk)?'travel':/вес|вешу/i.test(chunk)?'weight':'cmp';
-  const d=chunk.match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);
-  const title=(d&&k!=='travel'?chunk.replace(d[0],''):chunk).replace(/^\s*(?:с\s+)?(?:я\s+)?(?:болел[аи]?|принимал[аи]?|переболел[аи]?)\s+/i,'').trim();
-  add(k,title||chunk,d?d[3]+'-'+d[2].padStart(2,'0')+'-'+d[1].padStart(2,'0'):'');
+  const kind=/пропис|приним|назнач|антибиотик|таблет|лекарств|препарат|пил[аи]?\s/i.test(chunk)?'med'
+   :/стационар|больниц|госпитал/i.test(chunk)?'hosp'
+   :/болел|перебол|забол|орви|грипп|простуд/i.test(chunk)?'ill'
+   :/аллерг/i.test(chunk)?'all'
+   :/санатор|поездк|был[аи]? в|ездил/i.test(chunk)?'travel'
+   :/вес|вешу/i.test(chunk)?'weight':'cmp';
+  const date=captureDate(chunk);
+  const description=date&&kind!=='travel'?chunk.replace(date.text,'').replace(/(?:^|\s)с\s*(?=,|$)/i,' ').replace(/\s+,/g,','):chunk;
+  const temperature=kind==='ill'?description.match(/(?:макс(?:имальная)?\.?\s*)?(?:температура|температуры|темп\.|t°)\s*(?:(?:была|до)\s*)?[:=]?\s*(\d{2}(?:[.,]\d+)?)(?:\s*°\s*[сc]?)?(?!\d)/i):null;
+  const details=temperature?description.replace(temperature[0],''):description;
+  const title=details.replace(/^\s*(?:с\s+)?(?:я\s+)?(?:болел[аи]?|заболел[аи]?|принимал[аи]?|переболел[аи]?|прописали|назначили|антибиотик(?:и)?)\s+/i,'').trim().replace(/(?:,\s*|\s+)(?:заболел[аи]?|болел[аи]?)\s*$/i,'').replace(/^[,\s]+|[,\s]+$/g,'');
+  add(kind,title||chunk,date?.value||'',temperature?.[1].replace(',','.')||'');
  }
  function updateSuggestion(){const kinds=[...$('#drafts10').querySelectorAll('.kind')].map(el=>el.value);
  const suggested=kinds.includes('med')?'cmp':kinds.includes('ill')?'med':'hosp';
  $('#extra10').value=suggested;
- $('#extra10').parentElement.previousElementSibling.textContent=kinds.includes('med')?'Хотите уточнить, что беспокоило в этот период?':kinds.includes('ill')?'Принимали что-нибудь во время болезни? Можно добавить препарат.':'Можно добавить связанное событие из профиля.';
+ $('#extra10').parentElement.previousElementSibling.textContent=kinds.includes('med')?'Хотите уточнить, что беспокоило в этот период?':kinds.includes('ill')?'Принимали лекарство? Добавьте его отдельной записью «Препарат».':'Можно добавить связанное событие из профиля.';
  }
  updateSuggestion();
  $('#add10').onclick=()=>{add($('#extra10').value);updateSuggestion();$('#drafts10').lastElementChild.scrollIntoView({block:'start'})};
@@ -2873,7 +2967,7 @@ function captureReview(story){
  if(records.some(([,v])=>(!v.n&&!v.kg)||(v.f&&v.t&&v.f>v.t))){toast('Проверьте название и даты записи');return}
  requireLogin(()=>{for(const [k,v] of records){if(k==='travel')P.travel=[P.travel,v.n].filter(Boolean).join('; ');else evArr(k).push(v)}saveAll();closeModal();show('profile');toast('Добавлено записей: '+records.length)})};
 }
-document.querySelectorAll('[data-capture]').forEach(b=>b.onclick=captureStart);
+document.addEventListener('click',e=>{if(e.target.closest('[data-capture]'))captureStart()});
 
 document.addEventListener('change',event=>{
  const field=event.target.closest('[data-course-index]');if(!field)return;
@@ -2903,10 +2997,6 @@ $('#diaryOpen').onclick=()=>{
  $('#diaryForm').onsubmit=e=>{e.preventDefault();const item={kind:$('#diaryKind').value,day:$('#diaryDay').value,time:$('#diaryTime').value,values:[...document.querySelectorAll('#diaryFields input')].map(i=>i.value)};
  requireLogin(()=>{(P.diary||=[]).push(item);saveAll();$('#diaryOpen').click();$('#diaryKind').value=item.kind;draw();toast('Измерение сохранено')})}
 };
-document.addEventListener('click',e=>{
- if(!e.target.closest('[data-sugar]'))return;
- const field=$('#svq');field.value='глюкоза';field.dispatchEvent(new Event('input',{bubbles:true}));$('#pvBody table.alld')?.scrollIntoView({block:'start'});
-});
 $('#sendPDF').onclick=()=>{
  const note=$('#pvNote');
  note.textContent='Выберите «Печать / сохранить PDF», сохраните файл и приложите его к письму врачу.';
@@ -2926,7 +3016,7 @@ for(const box of rangeBoxes){
    other.querySelector('select').value=mode;other.querySelector('.date-pair').hidden=mode!=='custom';
    other.querySelector('[data-from]').value=from.value;other.querySelector('[data-to]').value=to.value;
   }
-  if(document.body.classList.contains('preview'))openSpecView(false);
+  if(document.body.classList.contains('preview'))openSpecView($('#pvBody .svbar')?.textContent.startsWith('Предпросмотр PDF'));
  });
 }
 </script>
