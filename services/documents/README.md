@@ -69,3 +69,6 @@ Bootstrap, фиксированная квота и один локальный 
 
 Полный серверный стек, включая контейнерную LLM, разворачивается через
 [Ansible](../../infra/ansible/README.md). Этот локальный development-стенд не заменяет серверный deployment.
+
+Подтверждённые записи синхронизируются через отдельный [Records API](../../docs/reports-and-sync.md),
+проксируемый Documents. Development Compose использует профиль `sync`.

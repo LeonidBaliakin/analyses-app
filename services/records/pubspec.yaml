@@ -1,0 +1,20 @@
+name: records_service
+description: Authorized, versioned health record synchronization service.
+publish_to: none
+environment:
+  sdk: ^3.14.0
+dependencies:
+  record_sync:
+    path: ../../packages/record_sync
+  medical_domain:
+    path: ../../packages/medical_domain
+  crypto: ^3.0.7
+  http: ^1.6.0
+  postgres: 3.7.0
+  shelf: ^1.4.2
+dev_dependencies:
+  lints: ^6.1.0
+  test: ^1.26.3
+dependency_overrides:
+  medical_domain:
+    path: ../../packages/medical_domain

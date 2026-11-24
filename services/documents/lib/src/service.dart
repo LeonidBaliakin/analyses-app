@@ -22,24 +22,29 @@ final class DocumentsService {
     required this.identities,
     this.allowedOrigins = const {},
     this.processingEndpoint,
+    this.recordsEndpoint,
   });
   final DocumentsStore store;
   final List<TokenIdentity> identities;
   final Set<String> allowedOrigins;
   final Uri? processingEndpoint;
+  final Uri? recordsEndpoint;
   final http.Client _processingClient = http.Client();
 
-  Future<Response> _processing(Request req) async {
+  Future<Response> _processing(Request req, {Uri? endpoint}) async {
     final request = http.Request(
       req.method,
-      processingEndpoint!.resolve(req.url.path),
+      (endpoint ?? processingEndpoint!).resolveUri(req.url),
     )..followRedirects = false;
     request.headers.addAll({
       'authorization': req.headers['authorization'] ?? '',
       'content-type': 'application/json',
     });
     if (req.method == 'POST') {
-      request.bodyBytes = await readBounded(req.read(), 8192);
+      request.bodyBytes = await readBounded(
+        req.read(),
+        endpoint == null ? 8192 : 262144,
+      );
     }
     final response = await _processingClient
         .send(request)
@@ -118,6 +123,23 @@ final class DocumentsService {
         final profile = p[2];
         checkId(profile);
         if (p.length == 4 &&
+            ['sync-access', 'sync-changes', 'sync-operations'].contains(p[3]) &&
+            recordsEndpoint != null) {
+          final access = await store.processingAccess(owner, profile);
+          if (p[3] == 'sync-operations' &&
+              access['processingAllowed'] != true) {
+            throw const ApiError(403, 'cloud_disabled');
+          }
+          response = await _processing(req, endpoint: recordsEndpoint);
+          if (p[3] == 'sync-access' &&
+              response.statusCode == 200 &&
+              access['processingAllowed'] != true) {
+            final capability = jsonDecode(
+              await response.readAsString(),
+            ) as Map<String, dynamic>;
+            response = json(200, {...capability, 'canWrite': false});
+          }
+        } else if (p.length == 4 &&
             p[3] == 'processing-access' &&
             req.method == 'GET') {
           response = json(200, await store.processingAccess(owner, profile));

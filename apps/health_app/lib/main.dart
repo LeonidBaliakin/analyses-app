@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
@@ -12,6 +13,10 @@ import 'data/documents/export_original.dart';
 import 'data/processing/local_engine.dart';
 import 'data/processing/remote_engine.dart';
 import 'features/processing/processing.dart';
+import 'features/reports/reports.dart';
+import 'features/sync/sync.dart';
+import 'data/sync/http_sync_gateway.dart';
+import 'data/reports/export_report.dart';
 import 'data/device_access/plugin_device_access.dart';
 import 'features/device_access/device_access.dart';
 import 'features/settings/settings.dart';
@@ -78,6 +83,27 @@ Future<void> main() async {
     newId: const Uuid().v4,
     onConfirmed: records.load,
   );
+  final reports = ReportsViewModel(
+    records: records,
+    clock: DateTime.now,
+    export: exportReport,
+    canExport: canExportReportFile,
+    copy: (text) => Clipboard.setData(ClipboardData(text: text)),
+  );
+  final sync = SyncViewModel(
+    store: database,
+    profileId: RecordsViewModel.profileId,
+    newId: const Uuid().v4,
+    clock: DateTime.now,
+    changes: records,
+    gatewayFactory: (uri, token) => HttpSyncGateway(
+      endpoint: uri,
+      token: token,
+      profileId: RecordsViewModel.profileId,
+    ),
+    onChanged: records.load,
+  );
+  await sync.refresh();
   runApp(
     HealthApp(
       settings: settings,
@@ -86,6 +112,8 @@ Future<void> main() async {
       records: records,
       originals: originals,
       processing: processing,
+      reports: reports,
+      sync: sync,
     ),
   );
 }

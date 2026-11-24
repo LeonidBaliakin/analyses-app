@@ -10,6 +10,11 @@ Tesseract/LLM worker, сохранение OCR, отмена, восстанов
 [Реальный срез и пределы](document-processing.md), [ADR 0009](adr/0009-shared-processing-draft.md).
 Описанные ниже orchestrator/inference-gateway остаются целевой декомпозицией.
 
+`services/records` реализует первый `health-records-sync`: собственная PostgreSQL БД,
+CAS-версии, курсор commit-порядка, idempotency receipts, tombstone и RecordChanged outbox.
+Documents проксирует его API; облачная копия оригинала не подменяет синхронизацию записей.
+[Протокол пункта 6](reports-and-sync.md), [ADR 0011](adr/0011-period-reports-and-record-sync.md).
+
 ## Развёртывание
 
 Все серверные сервисы запускаются через Docker Compose и имеют Ansible deployment.

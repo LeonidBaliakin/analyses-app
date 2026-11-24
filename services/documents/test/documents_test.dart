@@ -142,6 +142,25 @@ void main() {
     ) as Map;
     expect(disabled['processingAllowed'], isFalse);
   });
+  test(
+    'records writes are denied when cloud writes are revoked, before proxying',
+    () async {
+      await db.execute(
+        "UPDATE profile_access SET cloud_enabled=false WHERE owner_id='a'",
+      );
+      service = DocumentsService(
+        store,
+        identities: service.identities,
+        recordsEndpoint: Uri.parse('http://127.0.0.1:1/'),
+      );
+      final denied = await call(
+        'POST',
+        'p/sync-operations',
+        json: {'synthetic': 'not forwarded'},
+      );
+      expect(denied.statusCode, 403);
+    },
+  );
   test('HTTP contract: replay, finalization, full and ranged reads, private access', () async {
     await staged();
     for (var i = 0; i < 2; i++) {

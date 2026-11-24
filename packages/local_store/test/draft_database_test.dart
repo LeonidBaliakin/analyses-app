@@ -192,6 +192,12 @@ void main() {
     'schema3 original and legacy outbox migrate without alteration',
     () async {
       for (final table in [
+        'sync_scopes',
+        'sync_versions',
+        'sync_attempts',
+        'sync_acks',
+        'sync_conflicts',
+        'sync_remote_history',
         'processing_jobs',
         'processing_drafts',
         'draft_history',

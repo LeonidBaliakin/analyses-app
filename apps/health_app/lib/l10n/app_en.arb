@@ -487,5 +487,71 @@
     }
   },
   "processingManual": "Review OCR manually",
-  "processingAddRow": "Add result"
+  "processingAddRow": "Add result",
+  "reportTitle": "Period report",
+  "reportSummary": "Period summary",
+  "reportFrom": "From",
+  "reportTo": "Through",
+  "reportInvalid": "Enter a valid period: YYYY-MM-DD",
+  "reportScope": "Results and measurements use their source dates; courses are included when they overlap the period. The full profile is included. Original files are not included.",
+  "reportNoInterpretation": "Original values and references are preserved without conversion.",
+  "reportPrevious": "Previous compatible result in period",
+  "reportExport": "Save HTML for viewing and printing",
+  "reportSaved": "Report saved",
+  "reportExportError": "Could not save the report. Try again.",
+  "reportOriginal": "Original document fragment",
+  "syncTitle": "Record synchronization",
+  "syncScope": "Confirmed records and deletions are synchronized. Local saving works offline. Originals and recognition drafts are separate. Connecting enables exchange and retries while the app is open; the token stays in memory.",
+  "syncConnect": "Connect and synchronize",
+  "syncConnected": "Connected to record storage",
+  "syncNow": "Synchronize / retry",
+  "syncDisconnect": "Disconnect",
+  "syncPending": "Awaiting server acknowledgement: {count}",
+  "@syncPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncConflictCount": "Edit conflicts: {count}",
+  "@syncConflictCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncLast": "Last completed exchange: {date}",
+  "@syncLast": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "syncRetryAt": "Automatic retry after: {date}",
+  "@syncRetryAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "syncUnauthorized": "The token is invalid. Reconnect with a valid token.",
+  "syncAccess": "The server denied exchange. Local records are preserved.",
+  "syncAccount": "This local profile is already bound to another record storage or owner.",
+  "syncServerChanged": "The server history changed or was restored from a different copy. The binding needs review; local data is preserved.",
+  "syncConflictChanged": "A version changed during selection. Review the refreshed data and try again.",
+  "syncFailed": "Exchange did not finish. The queue is preserved; you can retry.",
+  "syncLocalVersion": "On this device",
+  "syncRemoteVersion": "On the server",
+  "syncDeleted": "Deleted",
+  "syncResolveHint": "Both versions remain in history. Choosing the local version after a server deletion restores the record when sent.",
+  "syncKeepLocal": "Use local version",
+  "syncUseServer": "Use server version",
+  "reportSaveUnavailable": "Saving a file is unavailable on this device. You can copy the report.",
+  "reportCopy": "Copy report",
+  "reportCopied": "Report copied",
+  "reportCopyError": "Could not copy the report."
 }

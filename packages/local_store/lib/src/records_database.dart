@@ -6,16 +6,20 @@ import 'package:document_domain/document_domain.dart';
 
 import 'record_codec.dart';
 import 'draft_store.dart';
+import 'sync_store.dart';
 
 /// SQL schema and transactions stay here; only domain values cross the port.
 final class RecordsDatabase extends GeneratedDatabase
-    with DraftStorage
+    with DraftStorage, SyncStorage
     implements HealthRecordsRepository, OriginalRepository {
   RecordsDatabase(super.executor, {DateTime Function()? clock})
     : _clock = clock ?? DateTime.now;
   final DateTime Function() _clock;
   @override
   DateTime get draftNow => _clock();
+
+  @override
+  DateTime get syncNow => _clock();
 
   static const recordsSql = '''CREATE TABLE records (
     id TEXT PRIMARY KEY NOT NULL, profile_id TEXT NOT NULL,
@@ -43,7 +47,7 @@ final class RecordsDatabase extends GeneratedDatabase
   )''';
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
   @override
   Iterable<TableInfo<Table, Object?>> get allTables => const [];
   @override
@@ -53,6 +57,7 @@ final class RecordsDatabase extends GeneratedDatabase
     OnCreateQuery(historySql),
     OnCreateQuery(originalsSql),
     for (final sql in DraftStorage.schema) OnCreateQuery(sql),
+    for (final sql in SyncStorage.schema) OnCreateQuery(sql),
     OnCreateQuery(
       'CREATE INDEX records_profile ON records(profile_id, deleted)',
     ),
@@ -61,7 +66,7 @@ final class RecordsDatabase extends GeneratedDatabase
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) => m.createAll(),
     onUpgrade: (m, from, to) async {
-      if (from < 1 || from > 3 || to != 4) {
+      if (from < 1 || from > 4 || to != 5) {
         throw StateError('Unsupported database migration');
       }
       await transaction(() async {
@@ -76,7 +81,12 @@ final class RecordsDatabase extends GeneratedDatabase
           );
         }
         if (from < 3) await customStatement(originalsSql);
-        for (final sql in DraftStorage.schema) {
+        if (from < 4) {
+          for (final sql in DraftStorage.schema) {
+            await customStatement(sql);
+          }
+        }
+        for (final sql in SyncStorage.schema) {
           await customStatement(sql);
         }
       });

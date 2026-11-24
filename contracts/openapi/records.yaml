@@ -1,0 +1,171 @@
+openapi: 3.0.3
+info:
+  title: Confirmed health record synchronization
+  version: 1.0.0
+  description: >-
+    Pilot API through Documents; the records service owns its PostgreSQL data.
+    Bearer owner/profile/write rights are checked on every request, including replay.
+    Medical records use the shared record_sync codec formats 1/2/3; source strings,
+    precision, calendar dates, coding context and document provenance are retained.
+    No original file bytes or recognition drafts are transferred by this protocol.
+servers:
+  - url: http://127.0.0.1:18088
+security:
+  - bearerAuth: []
+paths:
+  /v1/profiles/{profileId}/sync-access:
+    parameters:
+      - $ref: '#/components/parameters/Profile'
+    get:
+      operationId: recordSyncIdentity
+      responses:
+        '200':
+          description: Authorized owner/profile and stable dataset epoch. Token rotation does not change owner binding.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [schemaVersion, ownerId, profileId, epoch, canWrite]
+                properties:
+                  schemaVersion: {type: integer, enum: [1]}
+                  ownerId: {type: string}
+                  profileId: {type: string}
+                  epoch: {type: string, minLength: 1}
+                  canWrite: {type: boolean}
+        default:
+          $ref: '#/components/responses/Error'
+  /v1/profiles/{profileId}/sync-operations:
+    parameters:
+      - $ref: '#/components/parameters/Profile'
+    post:
+      operationId: submitRecordOperation
+      description: >-
+        Request limited to 262144 UTF-8 bytes. Owner/deviceId/operationId is immutable
+        and idempotent; a changed replay returns 409. baseVersion is the server version,
+        independent of the local editor revision. Profile must exist before child records.
+        A concurrent edit/deletion returns applied=false with a retained current snapshot;
+        resolve explicitly using a new operationId and its version as the new base.
+        Profile deletion is not supported. An explicit put against a current tombstone
+        restores that record. Receipt, current record, ordered change and outbox are atomic.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [epoch, operationId, deviceId, baseVersion, payload, deleted]
+              properties:
+                epoch: {type: string}
+                operationId: {type: string, pattern: '^[A-Za-z0-9_:-]{1,400}$'}
+                deviceId: {type: string, pattern: '^[A-Za-z0-9_-]{1,100}$'}
+                baseVersion: {type: integer, minimum: 0}
+                payload:
+                  $ref: '#/components/schemas/Record'
+                deleted: {type: boolean}
+      responses:
+        '200':
+          description: Stable receipt. applied=false is a conflict, not acknowledgement of the submitted medical value.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [schemaVersion, applied, current]
+                properties:
+                  schemaVersion: {type: integer, enum: [1]}
+                  applied: {type: boolean}
+                  current:
+                    $ref: '#/components/schemas/RemoteRecord'
+        default:
+          $ref: '#/components/responses/Error'
+  /v1/profiles/{profileId}/sync-changes:
+    parameters:
+      - $ref: '#/components/parameters/Profile'
+    get:
+      operationId: pullRecordChanges
+      description: >-
+        Ordered commit sequence scoped to owner/profile, up to 100 changes and 3 MiB.
+        The sequence counter is locked in the mutation transaction; uncommitted lower
+        sequence numbers cannot appear after the cursor has advanced. Apply a whole
+        page and cursor atomically. Replayed changes must not create new outbox entries.
+        Read access is retained when cloud writes are disabled.
+      parameters:
+        - in: query
+          name: cursor
+          required: true
+          schema: {type: integer, minimum: 0}
+        - in: query
+          name: epoch
+          required: true
+          schema: {type: string}
+      responses:
+        '200':
+          description: Next committed prefix. cursor equals the last sequence or the supplied cursor for an empty page.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [schemaVersion, epoch, cursor, more, records]
+                properties:
+                  schemaVersion: {type: integer, enum: [1]}
+                  epoch: {type: string}
+                  cursor: {type: integer, minimum: 0}
+                  more: {type: boolean}
+                  records:
+                    type: array
+                    maxItems: 100
+                    items:
+                      $ref: '#/components/schemas/RemoteRecord'
+        default:
+          $ref: '#/components/responses/Error'
+components:
+  securitySchemes:
+    bearerAuth: {type: http, scheme: bearer}
+  parameters:
+    Profile:
+      in: path
+      name: profileId
+      required: true
+      schema: {type: string, pattern: '^[A-Za-z0-9_-]{1,100}$'}
+  responses:
+    Error:
+      description: 400 schema, 401 identity, 403 cloud writes, 404 scope, 409 epoch/cursor/operation binding, 413 size, 503 unavailable. Client data and outbox remain local.
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [error]
+            properties:
+              error: {type: string}
+  schemas:
+    RemoteRecord:
+      type: object
+      required: [payload, version, deleted, sequence, deviceId, operationId]
+      properties:
+        payload:
+          $ref: '#/components/schemas/Record'
+        version: {type: integer, minimum: 1}
+        deleted: {type: boolean}
+        sequence: {type: integer, minimum: 1}
+        deviceId: {type: string, description: May be empty on a conflict snapshot.}
+        operationId: {type: string, description: May be empty on a conflict snapshot.}
+    Record:
+      type: object
+      description: >-
+        Exact shared codec payload. Profile fields name/birthDate/history/allergies/notes;
+        result fields name/raw/valueKind/date/category/unit/reference/laboratory/method/specimen/notes,
+        optional coding, and documentSource for format 3. Medication fields name/start/end/dosage/
+        schedule/prescribedBy/notes. Measurement fields name/raw/valueKind/date/unit/sourceLabel/
+        minuteOfDay/utcOffsetMinutes/notes. Unknown/missing fields that do not round-trip through
+        encodeRecord(decodeRecord(payload)) are rejected. Source values and all dates are strings;
+        date-only fields use YYYY-MM-DD, nullable complete dates are not replaced with today.
+        Coding retains release/indicator/unit IDs and exact source context. documentSource includes
+        original/document/job/row IDs, SHA-256, draftRevision, immutable source fields and versions.
+      required: [format, id, profileId, kind, source, name]
+      properties:
+        format: {type: integer, enum: [1, 2, 3]}
+        id: {type: string, pattern: '^[A-Za-z0-9_-]{1,200}$'}
+        profileId: {type: string}
+        kind: {type: string, enum: [profile, result, medication, measurement]}
+        source: {type: string, enum: [manual, document]}
+        name: {type: string, minLength: 1}
+      additionalProperties: true

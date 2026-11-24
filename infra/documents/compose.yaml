@@ -33,6 +33,7 @@ services:
       DOCUMENTS_S3_SECRET_KEY: ${S3_SECRET_KEY:?Run init_dev.py}
       DOCUMENTS_S3_BUCKET: analyses-originals
       DOCUMENTS_PROCESSING_ENDPOINT: http://processing:8081/
+      DOCUMENTS_RECORDS_ENDPOINT: http://records:8082/
       DOCUMENTS_IDENTITIES_FILE: /run/secrets/identities.json
       DOCUMENTS_ALLOWED_ORIGINS: http://localhost:7357,http://127.0.0.1:7357
     ports:
@@ -45,6 +46,35 @@ services:
         condition: service_healthy
       seaweed:
         condition: service_started
+  records-db:
+    profiles: [sync]
+    image: postgres:18.1-alpine3.22
+    environment:
+      PGHOST: postgres
+      PGUSER: documents
+      PGDATABASE: postgres
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Run init_dev.py}
+    volumes:
+      - ../server/records.sql:/bootstrap/records.sql:ro
+    command: [psql, -v, ON_ERROR_STOP=1, -f, /bootstrap/records.sql]
+    depends_on:
+      postgres:
+        condition: service_healthy
+  records:
+    profiles: [sync]
+    build:
+      context: ../..
+      dockerfile: services/records/Dockerfile
+    environment:
+      RECORDS_DATABASE_URL: postgresql://documents:${POSTGRES_PASSWORD}@postgres:5432/records?sslmode=disable
+      RECORDS_IDENTITIES_FILE: /run/secrets/identities.json
+      RECORDS_BIND: 0.0.0.0
+    secrets:
+      - source: identities
+        target: identities.json
+    depends_on:
+      records-db:
+        condition: service_completed_successfully
   processing:
     profiles: [processing]
     build:

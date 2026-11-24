@@ -1339,4 +1339,138 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get processingAddRow => 'Добавить результат';
+
+  @override
+  String get reportTitle => 'Отчёт за период';
+
+  @override
+  String get reportSummary => 'Сводка за период';
+
+  @override
+  String get reportFrom => 'Начало периода';
+
+  @override
+  String get reportTo => 'Конец периода';
+
+  @override
+  String get reportInvalid => 'Укажите допустимый период: ГГГГ-ММ-ДД';
+
+  @override
+  String get reportScope =>
+      'Результаты и измерения включены по исходной дате; курсы — при пересечении периода. Профиль приведён целиком. Файлы оригиналов не включены.';
+
+  @override
+  String get reportNoInterpretation =>
+      'Исходные значения и референсы приведены без преобразований.';
+
+  @override
+  String get reportPrevious => 'Предыдущее сопоставимое в периоде';
+
+  @override
+  String get reportExport => 'Сохранить HTML для просмотра и печати';
+
+  @override
+  String get reportSaved => 'Отчёт сохранён';
+
+  @override
+  String get reportExportError =>
+      'Не удалось сохранить отчёт. Повторите попытку.';
+
+  @override
+  String get reportOriginal => 'Исходный фрагмент документа';
+
+  @override
+  String get syncTitle => 'Синхронизация записей';
+
+  @override
+  String get syncScope =>
+      'Синхронизируются подтверждённые записи и удаления. Локальное сохранение работает без сети. Оригиналы и черновики распознавания передаются отдельно. Подключение включает обмен и повторы, пока приложение открыто; токен хранится только в памяти.';
+
+  @override
+  String get syncConnect => 'Подключить и синхронизировать';
+
+  @override
+  String get syncConnected => 'Подключено к облаку записей';
+
+  @override
+  String get syncNow => 'Синхронизировать / повторить';
+
+  @override
+  String get syncDisconnect => 'Отключить';
+
+  @override
+  String syncPending(int count) {
+    return 'Ожидают подтверждения сервера: $count';
+  }
+
+  @override
+  String syncConflictCount(int count) {
+    return 'Конфликтов правок: $count';
+  }
+
+  @override
+  String syncLast(String date) {
+    return 'Последний завершённый обмен: $date';
+  }
+
+  @override
+  String syncRetryAt(String date) {
+    return 'Автоматический повтор после: $date';
+  }
+
+  @override
+  String get syncUnauthorized =>
+      'Токен недействителен. Подключитесь с действующим токеном.';
+
+  @override
+  String get syncAccess =>
+      'Сервер не разрешил обмен. Локальные записи сохранены.';
+
+  @override
+  String get syncAccount =>
+      'Этот локальный профиль уже связан с другим облачным хранилищем или владельцем.';
+
+  @override
+  String get syncServerChanged =>
+      'История сервера изменилась или восстановлена из другой копии. Нужна проверка привязки; локальные данные сохранены.';
+
+  @override
+  String get syncConflictChanged =>
+      'Версия изменилась во время выбора. Проверьте обновлённые данные и повторите.';
+
+  @override
+  String get syncFailed =>
+      'Обмен не завершён. Очередь сохранена; можно повторить отправку.';
+
+  @override
+  String get syncLocalVersion => 'На этом устройстве';
+
+  @override
+  String get syncRemoteVersion => 'На сервере';
+
+  @override
+  String get syncDeleted => 'Удалено';
+
+  @override
+  String get syncResolveHint =>
+      'Обе версии сохранены в истории. Выбор локальной версии после удаления на сервере восстановит запись при отправке.';
+
+  @override
+  String get syncKeepLocal => 'Использовать локальную версию';
+
+  @override
+  String get syncUseServer => 'Использовать версию сервера';
+
+  @override
+  String get reportSaveUnavailable =>
+      'Выбор файла для сохранения на этом устройстве недоступен. Можно скопировать отчёт.';
+
+  @override
+  String get reportCopy => 'Скопировать отчёт';
+
+  @override
+  String get reportCopied => 'Отчёт скопирован';
+
+  @override
+  String get reportCopyError => 'Не удалось скопировать отчёт.';
 }

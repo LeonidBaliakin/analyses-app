@@ -6,6 +6,7 @@ resolution: workspace
 environment:
   sdk: ^3.14.0
 dependencies:
+  record_sync: ^0.1.0
   medical_domain: ^0.1.0
   document_domain: ^0.1.0
   document_processing: ^0.1.0

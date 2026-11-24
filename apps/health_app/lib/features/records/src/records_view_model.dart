@@ -59,12 +59,8 @@ final class RecordsViewModel extends ChangeNotifier {
     error = null;
     _notify();
     try {
-      final revision = await _records.save(mutation);
-      _entries = List.unmodifiable([
-        for (final e in _entries)
-          if (e.record.id != mutation.record.id) e,
-        if (!mutation.delete) RecordEntry(mutation.record, revision),
-      ]);
+      await _records.save(mutation);
+      _entries = List.unmodifiable(await _records.repository.read(profileId));
       return true;
     } on RecordConflict {
       error = RecordsError.conflict;

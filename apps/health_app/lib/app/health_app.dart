@@ -10,6 +10,8 @@ import '../features/settings/settings.dart';
 import '../features/records/records.dart';
 import '../features/documents/documents.dart';
 import '../features/processing/processing.dart';
+import '../features/reports/reports.dart';
+import '../features/sync/sync.dart';
 import '../features/device_access/device_access.dart';
 import '../presentation/demo_catalog.dart';
 import '../l10n/generated/app_localizations.dart';
@@ -25,6 +27,8 @@ class HealthApp extends StatefulWidget {
     this.records,
     this.originals,
     this.processing,
+    this.reports,
+    this.sync,
     super.key,
   });
 
@@ -35,6 +39,8 @@ class HealthApp extends StatefulWidget {
   final RecordsViewModel? records;
   final OriginalsViewModel? originals;
   final ProcessingViewModel? processing;
+  final ReportsViewModel? reports;
+  final SyncViewModel? sync;
 
   @override
   State<HealthApp> createState() => _HealthAppState();
@@ -52,6 +58,8 @@ class _HealthAppState extends State<HealthApp> {
     records: widget.records,
     originals: widget.originals,
     processing: widget.processing,
+    reports: widget.reports,
+    sync: widget.sync,
     showDemo: _showDemo,
     initialLocation: widget.initialLocation,
   );
@@ -108,6 +116,8 @@ class _HealthAppState extends State<HealthApp> {
     widget.settings.removeListener(_applyAppearance);
     _router.dispose();
     _showDemo.dispose();
+    widget.sync?.dispose();
+    widget.reports?.dispose();
     widget.records?.dispose();
     widget.originals?.dispose();
     widget.processing?.dispose();

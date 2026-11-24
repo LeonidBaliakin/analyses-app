@@ -1,7 +1,7 @@
 # Развёртывание серверного стека
 
 Все серверные процессы запускаются через [Docker Compose](../server/compose.yaml):
-PostgreSQL, SeaweedFS OSS, Documents, Processing с OCR и отдельный CPU inference.
+PostgreSQL, SeaweedFS OSS, Documents, Processing с OCR, records sync и отдельный CPU inference.
 LLM не требует запуска процесса на хосте. Закреплён официальный multiarch-образ
 llama.cpp b12679 (source `af5c58347fdbc2cd19e65b278e81c8f528f8a175`) по digest; модель и rus/eng tessdata проверяются SHA-256.
 
@@ -31,9 +31,9 @@ cp inventory.example.yml inventory/hosts.yml
 
 Плейбук создаёт `/opt/analyses-app`, копирует минимальный build context, генерирует
 секреты один раз, загружает закреплённые веса (~1,12 ГБ) и OCR-данные, создаёт БД
-Processing через одноразовый Compose-job и поднимает контейнеры. На повторе секреты
+Processing и records через одноразовые Compose jobs и поднимает контейнеры. На повторе секреты
 и named volumes сохраняются. Исходники пересобираются при изменении; развёртывание
-завершается проверкой `/health` и авторизованной processing capability.
+завершается проверкой `/health`, авторизованных processing capability и sync-access.
 
 Параметры роли находятся в [defaults/main.yml](roles/analyses_server/defaults/main.yml).
 Обычно меняются `analyses_root`, `analyses_api_port`, `analyses_allowed_origins`,
@@ -72,7 +72,7 @@ sudo docker compose stop
 sudo docker compose up -d --wait
 ```
 
-`processing-db` штатно имеет состояние exited(0): это идемпотентное создание БД,
+`processing-db` и `records-db` штатно имеют состояние exited(0): это идемпотентное создание БД,
 а не постоянно работающий сервис. `stop` сохраняет volumes. Не используйте `down -v`
 для обычного обновления. Бэкапы PostgreSQL, SeaweedFS volume и `.secrets` нужно хранить
 согласованно; автоматический backup/restore пока не входит в этот срез.
@@ -92,3 +92,5 @@ python3 infra/server/smoke.py /absolute/path/to/deployment
 
 Он проверяет SHA при загрузке/скачивании, приватный доступ, повтор задания и реальный
 OCR/LLM по внутреннему адресу inference. Используется только сгенерированный пример.
+
+[Синхронизация записей и двухклиентский probe](../../docs/reports-and-sync.md).

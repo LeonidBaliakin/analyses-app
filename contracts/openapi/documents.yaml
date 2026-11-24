@@ -1,12 +1,13 @@
 openapi: 3.0.3
 info:
   title: Documents original storage
-  version: 1.1.0
+  version: 1.2.0
   description: >-
     Local pilot protocol. The bearer identity supplies the owner; the server
     authorizes the path profile and checks cloud writes and quota.
     Responses include X-Request-ID for correlation.
     Processing routes are described separately in processing.yaml and proxied by Documents.
+    Record synchronization routes are described in records.yaml; query cursors are preserved.
     Owner plus originalId is the immutable idempotency key. No S3 keys or
     upload URLs are returned. Uploads expire after 24 hours; retry transfers
     the entire bounded file. A new original requires new document/original IDs.

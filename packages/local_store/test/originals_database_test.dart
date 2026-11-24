@@ -117,6 +117,12 @@ void main() {
       final sql = sqlite3.open(file.path);
       sql.execute('DROP TABLE originals');
       for (final table in [
+        'sync_scopes',
+        'sync_versions',
+        'sync_attempts',
+        'sync_acks',
+        'sync_conflicts',
+        'sync_remote_history',
         'processing_jobs',
         'processing_drafts',
         'draft_history',

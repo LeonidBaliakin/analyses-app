@@ -1335,4 +1335,137 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get processingAddRow => 'Add result';
+
+  @override
+  String get reportTitle => 'Period report';
+
+  @override
+  String get reportSummary => 'Period summary';
+
+  @override
+  String get reportFrom => 'From';
+
+  @override
+  String get reportTo => 'Through';
+
+  @override
+  String get reportInvalid => 'Enter a valid period: YYYY-MM-DD';
+
+  @override
+  String get reportScope =>
+      'Results and measurements use their source dates; courses are included when they overlap the period. The full profile is included. Original files are not included.';
+
+  @override
+  String get reportNoInterpretation =>
+      'Original values and references are preserved without conversion.';
+
+  @override
+  String get reportPrevious => 'Previous compatible result in period';
+
+  @override
+  String get reportExport => 'Save HTML for viewing and printing';
+
+  @override
+  String get reportSaved => 'Report saved';
+
+  @override
+  String get reportExportError => 'Could not save the report. Try again.';
+
+  @override
+  String get reportOriginal => 'Original document fragment';
+
+  @override
+  String get syncTitle => 'Record synchronization';
+
+  @override
+  String get syncScope =>
+      'Confirmed records and deletions are synchronized. Local saving works offline. Originals and recognition drafts are separate. Connecting enables exchange and retries while the app is open; the token stays in memory.';
+
+  @override
+  String get syncConnect => 'Connect and synchronize';
+
+  @override
+  String get syncConnected => 'Connected to record storage';
+
+  @override
+  String get syncNow => 'Synchronize / retry';
+
+  @override
+  String get syncDisconnect => 'Disconnect';
+
+  @override
+  String syncPending(int count) {
+    return 'Awaiting server acknowledgement: $count';
+  }
+
+  @override
+  String syncConflictCount(int count) {
+    return 'Edit conflicts: $count';
+  }
+
+  @override
+  String syncLast(String date) {
+    return 'Last completed exchange: $date';
+  }
+
+  @override
+  String syncRetryAt(String date) {
+    return 'Automatic retry after: $date';
+  }
+
+  @override
+  String get syncUnauthorized =>
+      'The token is invalid. Reconnect with a valid token.';
+
+  @override
+  String get syncAccess =>
+      'The server denied exchange. Local records are preserved.';
+
+  @override
+  String get syncAccount =>
+      'This local profile is already bound to another record storage or owner.';
+
+  @override
+  String get syncServerChanged =>
+      'The server history changed or was restored from a different copy. The binding needs review; local data is preserved.';
+
+  @override
+  String get syncConflictChanged =>
+      'A version changed during selection. Review the refreshed data and try again.';
+
+  @override
+  String get syncFailed =>
+      'Exchange did not finish. The queue is preserved; you can retry.';
+
+  @override
+  String get syncLocalVersion => 'On this device';
+
+  @override
+  String get syncRemoteVersion => 'On the server';
+
+  @override
+  String get syncDeleted => 'Deleted';
+
+  @override
+  String get syncResolveHint =>
+      'Both versions remain in history. Choosing the local version after a server deletion restores the record when sent.';
+
+  @override
+  String get syncKeepLocal => 'Use local version';
+
+  @override
+  String get syncUseServer => 'Use server version';
+
+  @override
+  String get reportSaveUnavailable =>
+      'Saving a file is unavailable on this device. You can copy the report.';
+
+  @override
+  String get reportCopy => 'Copy report';
+
+  @override
+  String get reportCopied => 'Report copied';
+
+  @override
+  String get reportCopyError => 'Could not copy the report.';
 }

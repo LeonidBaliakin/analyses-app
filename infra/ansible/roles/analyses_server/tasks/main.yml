@@ -19,6 +19,9 @@
     mode: '0755'
   loop:
     - source/services/documents
+    - source/services/records
+    - source/packages/medical_domain
+    - source/packages/record_sync
     - source/services/processing
     - source/workers/document_processing
     - runtime/tessdata
@@ -34,6 +37,15 @@
     mode: '0644'
     directory_mode: '0755'
   loop:
+    - packages/medical_domain/pubspec.yaml
+    - packages/medical_domain/lib/
+    - packages/record_sync/pubspec.yaml
+    - packages/record_sync/lib/
+    - services/records/Dockerfile
+    - services/records/pubspec.yaml
+    - services/records/pubspec.lock
+    - services/records/lib/
+    - services/records/bin/
     - .dockerignore
     - services/documents/Dockerfile
     - services/documents/pubspec.yaml
@@ -54,7 +66,7 @@
     src: "{{ analyses_source_root }}/infra/server/{{ item }}"
     dest: "{{ analyses_root }}/{{ item }}"
     mode: '0644'
-  loop: [compose.yaml, processing.sql, bootstrap_secrets.py]
+  loop: [compose.yaml, processing.sql, records.sql, bootstrap_secrets.py]
 - name: Generate persistent server credentials once
   ansible.builtin.command:
     argv: ["{{ ansible_facts.python.executable }}", "{{ analyses_root }}/bootstrap_secrets.py", "{{ analyses_root }}/.secrets/bootstrap.json"]
@@ -122,6 +134,18 @@
     return_content: true
   register: processing_health
   until: processing_health.status == 200 and processing_health.json.ready | default(false)
+  retries: 30
+  delay: 2
+  no_log: true
+
+- name: Verify authorized records synchronization capability
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ analyses_api_port }}/v1/profiles/{{ analyses_profile_id }}/sync-access"
+    headers:
+      Authorization: "Bearer {{ analyses_secrets.client_token }}"
+    return_content: true
+  register: records_health
+  until: records_health.status == 200 and records_health.json.schemaVersion | default(0) == 1
   retries: 30
   delay: 2
   no_log: true

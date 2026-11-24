@@ -2537,6 +2537,234 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add result'**
   String get processingAddRow;
+
+  /// No description provided for @reportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Period report'**
+  String get reportTitle;
+
+  /// No description provided for @reportSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Period summary'**
+  String get reportSummary;
+
+  /// No description provided for @reportFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get reportFrom;
+
+  /// No description provided for @reportTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Through'**
+  String get reportTo;
+
+  /// No description provided for @reportInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid period: YYYY-MM-DD'**
+  String get reportInvalid;
+
+  /// No description provided for @reportScope.
+  ///
+  /// In en, this message translates to:
+  /// **'Results and measurements use their source dates; courses are included when they overlap the period. The full profile is included. Original files are not included.'**
+  String get reportScope;
+
+  /// No description provided for @reportNoInterpretation.
+  ///
+  /// In en, this message translates to:
+  /// **'Original values and references are preserved without conversion.'**
+  String get reportNoInterpretation;
+
+  /// No description provided for @reportPrevious.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous compatible result in period'**
+  String get reportPrevious;
+
+  /// No description provided for @reportExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Save HTML for viewing and printing'**
+  String get reportExport;
+
+  /// No description provided for @reportSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Report saved'**
+  String get reportSaved;
+
+  /// No description provided for @reportExportError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the report. Try again.'**
+  String get reportExportError;
+
+  /// No description provided for @reportOriginal.
+  ///
+  /// In en, this message translates to:
+  /// **'Original document fragment'**
+  String get reportOriginal;
+
+  /// No description provided for @syncTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Record synchronization'**
+  String get syncTitle;
+
+  /// No description provided for @syncScope.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed records and deletions are synchronized. Local saving works offline. Originals and recognition drafts are separate. Connecting enables exchange and retries while the app is open; the token stays in memory.'**
+  String get syncScope;
+
+  /// No description provided for @syncConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect and synchronize'**
+  String get syncConnect;
+
+  /// No description provided for @syncConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected to record storage'**
+  String get syncConnected;
+
+  /// No description provided for @syncNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Synchronize / retry'**
+  String get syncNow;
+
+  /// No description provided for @syncDisconnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect'**
+  String get syncDisconnect;
+
+  /// No description provided for @syncPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting server acknowledgement: {count}'**
+  String syncPending(int count);
+
+  /// No description provided for @syncConflictCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit conflicts: {count}'**
+  String syncConflictCount(int count);
+
+  /// No description provided for @syncLast.
+  ///
+  /// In en, this message translates to:
+  /// **'Last completed exchange: {date}'**
+  String syncLast(String date);
+
+  /// No description provided for @syncRetryAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic retry after: {date}'**
+  String syncRetryAt(String date);
+
+  /// No description provided for @syncUnauthorized.
+  ///
+  /// In en, this message translates to:
+  /// **'The token is invalid. Reconnect with a valid token.'**
+  String get syncUnauthorized;
+
+  /// No description provided for @syncAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'The server denied exchange. Local records are preserved.'**
+  String get syncAccess;
+
+  /// No description provided for @syncAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'This local profile is already bound to another record storage or owner.'**
+  String get syncAccount;
+
+  /// No description provided for @syncServerChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'The server history changed or was restored from a different copy. The binding needs review; local data is preserved.'**
+  String get syncServerChanged;
+
+  /// No description provided for @syncConflictChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'A version changed during selection. Review the refreshed data and try again.'**
+  String get syncConflictChanged;
+
+  /// No description provided for @syncFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange did not finish. The queue is preserved; you can retry.'**
+  String get syncFailed;
+
+  /// No description provided for @syncLocalVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'On this device'**
+  String get syncLocalVersion;
+
+  /// No description provided for @syncRemoteVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'On the server'**
+  String get syncRemoteVersion;
+
+  /// No description provided for @syncDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted'**
+  String get syncDeleted;
+
+  /// No description provided for @syncResolveHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Both versions remain in history. Choosing the local version after a server deletion restores the record when sent.'**
+  String get syncResolveHint;
+
+  /// No description provided for @syncKeepLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Use local version'**
+  String get syncKeepLocal;
+
+  /// No description provided for @syncUseServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Use server version'**
+  String get syncUseServer;
+
+  /// No description provided for @reportSaveUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving a file is unavailable on this device. You can copy the report.'**
+  String get reportSaveUnavailable;
+
+  /// No description provided for @reportCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy report'**
+  String get reportCopy;
+
+  /// No description provided for @reportCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Report copied'**
+  String get reportCopied;
+
+  /// No description provided for @reportCopyError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not copy the report.'**
+  String get reportCopyError;
 }
 
 class _AppLocalizationsDelegate

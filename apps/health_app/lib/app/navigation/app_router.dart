@@ -7,6 +7,8 @@ import '../../features/device_access/device_access.dart';
 import '../../features/directory/directory.dart';
 import '../../features/documents/documents.dart';
 import '../../features/processing/processing.dart';
+import '../../features/reports/reports.dart';
+import '../../features/sync/sync.dart';
 import '../../features/introduction/introduction.dart';
 import '../../features/profile/profile.dart';
 import '../../features/records/records.dart';
@@ -24,6 +26,8 @@ GoRouter createAppRouter(
   RecordsViewModel? records,
   OriginalsViewModel? originals,
   ProcessingViewModel? processing,
+  ReportsViewModel? reports,
+  SyncViewModel? sync,
   ValueNotifier<bool>? showDemo,
   String? initialLocation,
 }) {
@@ -61,6 +65,11 @@ GoRouter createAppRouter(
               : RecordsPage(
                   model: records,
                   section: section,
+                  reports: reports,
+                  sync: sync,
+                  onOpenReport: () =>
+                      router.goNamed(AppDestination.sharing.name),
+                  onOpenSync: sync == null ? null : () => router.go('/sync'),
                   onOpenOriginals: originals == null
                       ? null
                       : () => router.goNamed(AppDestination.documents.name),
@@ -70,6 +79,14 @@ GoRouter createAppRouter(
     initialLocation: initialLocation,
     restorationScopeId: 'app-router',
     routes: [
+      if (sync != null)
+        GoRoute(
+          path: '/sync',
+          builder: (context, state) => SyncPage(
+            model: sync,
+            onClose: () => router.goNamed(AppDestination.summary.name),
+          ),
+        ),
       StatefulShellRoute.indexedStack(
         restorationScopeId: 'main-shell',
         builder: (context, state, shell) => DeviceAccessIntroduction(
@@ -187,7 +204,14 @@ GoRouter createAppRouter(
               GoRoute(
                 path: AppDestination.sharing.path,
                 name: AppDestination.sharing.name,
-                builder: (context, state) => SharingPage(catalog: catalog),
+                builder: (context, state) => reports == null
+                    ? SharingPage(catalog: catalog)
+                    : ValueListenableBuilder<bool>(
+                        valueListenable: showDemo!,
+                        builder: (context, example, _) => example
+                            ? SharingPage(catalog: catalog)
+                            : ReportsPage(model: reports),
+                      ),
               ),
             ],
           ),

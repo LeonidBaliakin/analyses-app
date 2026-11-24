@@ -7,6 +7,8 @@ import '../../../presentation/category_presentation.dart';
 import 'record_editor.dart';
 import 'record_history.dart';
 import 'records_view_model.dart';
+import '../../reports/reports.dart';
+import '../../sync/sync.dart';
 
 enum RecordsSection { summary, results, profile }
 
@@ -15,11 +17,18 @@ class RecordsPage extends StatefulWidget {
     required this.model,
     required this.section,
     this.onOpenOriginals,
+    this.reports,
+    this.sync,
+    this.onOpenReport,
+    this.onOpenSync,
     super.key,
   });
   final RecordsViewModel model;
   final RecordsSection section;
   final VoidCallback? onOpenOriginals;
+  final ReportsViewModel? reports;
+  final SyncViewModel? sync;
+  final VoidCallback? onOpenReport, onOpenSync;
   @override
   State<RecordsPage> createState() => _RecordsPageState();
 }
@@ -88,7 +97,20 @@ class _RecordsPageState extends State<RecordsPage> with WidgetsBindingObserver {
                           ],
                         ),
                         const SizedBox(height: 8),
-                        Text(l.localOnly),
+                        if (widget.sync == null)
+                          Text(l.localOnly)
+                        else
+                          ListenableBuilder(
+                            listenable: widget.sync!,
+                            builder: (context, _) =>
+                                Text(l.syncPending(widget.sync!.pending)),
+                          ),
+                        if (widget.onOpenSync != null)
+                          TextButton.icon(
+                            onPressed: widget.onOpenSync,
+                            icon: const Icon(Icons.sync),
+                            label: Text(l.syncTitle),
+                          ),
                         if (widget.onOpenOriginals != null)
                           TextButton.icon(
                             onPressed: widget.onOpenOriginals,
@@ -189,12 +211,19 @@ class _RecordsPageState extends State<RecordsPage> with WidgetsBindingObserver {
                       ),
                       const SizedBox(height: 12),
                       if (widget.section == RecordsSection.summary) ...[
-                        AdaptiveTiles(
-                          children: [
-                            for (final category in AnalysisCategory.values)
-                              _categoryTile(category),
-                          ],
-                        ),
+                        if (widget.reports != null &&
+                            widget.onOpenReport != null)
+                          ReportsSummary(
+                            model: widget.reports!,
+                            onOpen: widget.onOpenReport!,
+                          )
+                        else
+                          AdaptiveTiles(
+                            children: [
+                              for (final category in AnalysisCategory.values)
+                                _categoryTile(category),
+                            ],
+                          ),
                         const SizedBox(height: 20),
                       ],
                       if (widget.section == RecordsSection.results ||
