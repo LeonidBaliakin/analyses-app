@@ -1246,7 +1246,32 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 .event-month h3{margin:0 0 8px;font-size:15px;line-height:1.45;color:var(--text,#282339)}
 .event-month h3::first-letter{text-transform:uppercase}
 .event-month h3::before{content:"";position:absolute;left:-6px;top:6px;width:10px;height:10px;background:#8059ca;border-radius:50%}
-.event-month .ctxr{margin:5px 0;background-color:var(--surface,#f6f4fa);border:0;border-radius:10px}
+.event-month .ctxr{margin:0;background-color:var(--surface,#f6f4fa);border:0;border-radius:10px}
+.event-month .ctxr+.ctxr{margin-top:10px}
+.report-pan{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:8px 0;color:var(--ink2)}
+.report-pan[hidden],.quit-fields[hidden]{display:none}
+.report-pan .btn{min-height:36px;padding:5px 10px}
+.report-pan .btn:disabled{opacity:.5}
+.optional-measurements,.quit-fields{min-width:0;padding:10px;border:1px solid var(--line);border-radius:10px}
+.optional-measurements{margin:12px 0}
+.quit-fields{display:grid;gap:8px;margin:0}
+.optional-measurements legend,.quit-fields legend{padding:0 4px;font-size:13px;font-weight:600}
+.report-pan small{flex:1 1 150px}
+@media print{.report-pan{display:none!important}}
+.psb .psadd .evr-med{grid-template-columns:repeat(2,minmax(0,1fr))}
+.psb .psadd .evr-med>.med-field{grid-column:1/-1}
+.psb .psadd .evr-med :is(input,select){width:100%;min-width:0}
+.psb [data-course-index]{display:block;margin:7px 0 3px;max-width:100%;padding:4px 7px;border:1px solid var(--line);border-radius:7px;background:var(--paper);color:inherit;font:inherit}
+.history-fields,.history-entry{display:grid;gap:9px}
+.history-fields fieldset{min-width:0;margin:0;padding:10px;border:1px solid var(--line);border-radius:12px}
+.history-fields legend{font-size:13px;font-weight:600}
+.history-entry{padding:8px 0}
+.history-entry+.history-entry{border-top:1px solid var(--line)}
+.history-when{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,145px),1fr));gap:8px}
+.psb .field[hidden]{display:none}
+#diaryForm,#diaryFields,#diaryForm label{display:grid;gap:8px;min-width:0}
+#diaryForm label{gap:4px}
+#diaryForm :is(input,select){width:100%;min-width:0;box-sizing:border-box}
 .event-month .ctxr.warn{background-color:var(--warn-soft,#fff0e5)}
 .event-month .ctxr.cmp{background-color:var(--accent-soft,#f1ecff)}
 .rx-panel{padding:12px 14px;margin:12px 0;border:1px solid var(--border,#ded8ec);border-radius:12px;background:var(--card,#fff);overflow-wrap:anywhere}
@@ -1384,7 +1409,16 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 @media screen{
  #pvBody .report-table{table-layout:auto;width:max-content;min-width:100%;max-width:none;border-collapse:collapse}
  #pvBody .report-table th,#pvBody .report-table td{width:auto;white-space:nowrap;word-break:normal;overflow-wrap:normal;padding:8px}
- #pvBody .report-table td:first-child{white-space:normal;min-width:150px;max-width:245px}
+ #pvBody .report-table tr:not(.grp)>:first-child{
+   position:sticky;left:0;z-index:1;background:var(--paper);
+   box-shadow:1px 0 var(--line);min-width:clamp(128px,40vw,200px);
+   width:clamp(128px,40vw,200px);max-width:clamp(128px,40vw,200px);
+   white-space:normal;overflow-wrap:anywhere
+ }
+ #pvBody .report-table .grp span{
+   position:sticky;left:8px;display:inline-block;max-width:clamp(120px,44vw,240px);
+   white-space:normal
+ }
  .report-scroll{width:100%;max-width:100%;overflow-x:auto}
 }
 #v-files #rsnFilter{margin-top:16px}
@@ -1560,7 +1594,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
       <h3 class="seth">Аккаунт</h3>
       <div class="fgrid">
         <div class="field"><label for="sName">Имя</label><input id="sName" data-acc="name" type="text"></div>
-        <div class="field"><label for="sPhone">Телефон</label><input id="sPhone" data-acc="phone" type="tel" placeholder="+7"></div>
+        <div class="field"><label for="sPhone">Телефон</label><input id="sPhone" data-acc="phone" type="tel" autocomplete="tel" placeholder="+7 (___) ___-__-__"></div>
         <div class="field"><label for="sEmail">Почта</label><input id="sEmail" data-acc="email" type="email"></div>
       </div>
       <p class="why" id="accNote" style="margin-top:8px"></p>
@@ -1828,7 +1862,7 @@ function weightAlert(){const w=EV.weight.filter(e=>e.d&&e.kg).sort((a,b)=>a.d<b.
   if(pct<5)return null;const mo=Math.max(1,Math.round((lt-evDate(mx.d))/864e5/30.4));
   return {kg:fmtNum(drop),pct:Math.round(pct),mo,from:mx.kg,to:last.kg,fd:mx.d,td:last.d}}
 const EVF={
- med:e=>`<label class="dl"><span>Опыт приёма</span><select data-k="course" aria-label="Опыт приёма">${["","Первый курс","Повторный курс","Не помню"].map(c=>`<option value="${c}" ${e.course===c?"selected":""}>${c||"Не указано"}</option>`).join("")}</select></label><input data-k="who" placeholder="Какой специалист назначил" value="${esc(e.who||'')}"><input data-k="why" placeholder="Причина назначения" value="${esc(e.why||'')}"><input data-k="n" placeholder="Препарат и дозировка" value="${esc(e.n||'')}" aria-label="Препарат и дозировка"><select data-k="m" aria-label="Как принимаете">${['Курс','Постоянно'].map(o=>`<option ${o===(e.m||'Курс')?'selected':''}>${o}</option>`).join('')}</select><label class="dl"><span>с</span><input type="date" data-k="f" value="${e.f||''}"></label><label class="dl"><span>по</span><input type="date" data-k="t" value="${e.t||''}" ${e.m==='Постоянно'?'disabled':''}></label>`,
+ med:e=>`<label class="dl"><span>Опыт приёма</span><select data-k="course" aria-label="Опыт приёма">${["","Первый курс","Повторный курс","Не помню"].map(c=>`<option value="${c}" ${e.course===c?"selected":""}>${c||"Выбрать опыт"}</option>`).join("")}</select></label><input data-k="who" placeholder="Какой специалист назначил" value="${esc(e.who||'')}"><input data-k="why" placeholder="Причина назначения" value="${esc(e.why||'')}"><input data-k="n" placeholder="Препарат и дозировка" value="${esc(e.n||'')}" aria-label="Препарат и дозировка"><select data-k="m" aria-label="Как принимаете">${['Курс','Постоянно'].map(o=>`<option ${o===(e.m||'Курс')?'selected':''}>${o}</option>`).join('')}</select><label class="dl"><span>с</span><input type="date" data-k="f" value="${e.f||''}"></label><label class="dl"><span>по</span><input type="date" data-k="t" value="${e.t||''}" ${e.m==='Постоянно'?'disabled':''}></label>`,
  weight:e=>`<label class="dl"><span>дата</span><input type="date" data-k="d" value="${e.d||''}"></label><label class="dl"><span>кг</span><input type="number" step="0.1" min="20" max="300" data-k="kg" value="${esc(e.kg||'')}"></label>`,
  ill:e=>`<input data-k="n" placeholder="Чем болели" value="${esc(e.n||'')}" aria-label="Чем болели"><label class="dl"><span>с</span><input type="date" data-k="f" value="${e.f||''}"></label><label class="dl"><span>по</span><input type="date" data-k="t" value="${e.t||''}"></label><label class="dl"><span>макс. t°</span><input type="number" step="0.1" min="35" max="42" data-k="tmax" value="${esc(e.tmax||'')}" aria-label="Максимальная температура"></label>${e.ab?`<input type="hidden" data-k="ab" value="${esc(e.ab)}">`:''}`,
  cmp:e=>`<input data-k="n" placeholder="Что беспокоит" value="${esc(e.n||'')}" aria-label="Что беспокоит"><label class="dl"><span>с</span><input type="date" data-k="f" value="${e.f||''}"></label>`,
@@ -1957,7 +1991,7 @@ let PSG=store.get('oh3-psg',{});let psCur=null;
 const delB=(k,i)=>`<td class="r"><button class="evx sm" type="button" aria-label="Удалить" data-psdel="${k},${i}">×</button></td>`;
 function psTable(k){const arr=evArr(k).map((e,i)=>({e,i}));if(!arr.length)return '<p class="why" style="margin:8px 0">Пока нет записей.</p>';
   const by=f=>arr.slice().sort((a,b)=>(a.e[f]||'')<(b.e[f]||'')?1:-1);let h,r;
-  if(k==='med'){h=['Препарат и дозировка','Приём','С','По','Статус',''];r=by('f').map(({e,i})=>`<tr><td><b>${esc(e.n)}</b><small>${esc([e.who,e.why].filter(Boolean).join(" · "))}</small><select aria-label="Опыт приёма" data-course-index="${i}">${["","Первый курс","Повторный курс","Не помню"].map(c=>`<option value="${c}" ${e.course===c?"selected":""}>${c||"Не указано"}</option>`).join("")}</select></td><td>${e.m==='Постоянно'?'постоянно':'курс'}</td><td class="num">${dfmt(e.f)}</td><td class="num">${e.m==='Постоянно'||!e.t?'—':dfmt(e.t)}</td><td><span class="chip ${medActive(e)?'c-ok':'c-none'}">${medActive(e)?'принимает':'закончен'}</span></td>${delB(k,i)}</tr>`)}
+  if(k==='med'){h=['Препарат и дозировка','Приём','С','По','Статус',''];r=by('f').map(({e,i})=>`<tr><td><b>${esc(e.n)}</b><small>${esc([e.who,e.why].filter(Boolean).join(" · "))}</small><select aria-label="Опыт приёма" data-course-index="${i}">${["","Первый курс","Повторный курс","Не помню"].map(c=>`<option value="${c}" ${e.course===c?"selected":""}>${c||"Опыт приёма"}</option>`).join("")}</select></td><td>${e.m==='Постоянно'?'постоянно':'курс'}</td><td class="num">${dfmt(e.f)}</td><td class="num">${e.m==='Постоянно'||!e.t?'—':dfmt(e.t)}</td><td><span class="chip ${medActive(e)?'c-ok':'c-none'}">${medActive(e)?'принимает':'закончен'}</span></td>${delB(k,i)}</tr>`)}
   if(k==='weight'){const s=by('d');const hm=+P.h/100;h=['Дата','Вес, кг','Изменение','ИМТ',''];r=s.map(({e,i},j)=>{const p=s[j+1];const d=p?+e.kg-+p.e.kg:null;return `<tr><td class="num">${dfmt(e.d)}</td><td class="num"><b>${esc(e.kg)}</b></td><td class="num">${d==null?'—':d===0?'=':(d>0?'▲ +':'▼ ')+fmtNum(d)}</td><td class="num">${hm>0?Math.round(+e.kg/(hm*hm)*10)/10:'—'}</td>${delB(k,i)}</tr>`})}
   if(k==='ill'){h=['Чем болели','С','По','Макс. t°','Антибиотики',''];r=by('f').map(({e,i})=>`<tr><td><b>${esc(e.n)}</b></td><td class="num">${dfmt(e.f)}</td><td class="num">${dfmt(e.t)}</td><td class="num">${e.tmax?esc(e.tmax)+'°':'—'}</td><td>${esc(e.ab||'—')}</td>${delB(k,i)}</tr>`)}
   if(k==='cmp'){h=['Что беспокоит','С какого времени','Сколько',''];r=by('f').map(({e,i})=>{const d=e.f?Math.round((LAST-evDate(e.f))/864e5):null;return `<tr><td><b>${esc(e.n)}</b></td><td class="num">${dfmt(e.f)}</td><td class="num">${d==null?'—':d<60?d+' дн.':Math.round(d/30.4)+' мес.'}</td>${delB(k,i)}</tr>`})}
@@ -1981,34 +2015,135 @@ function packOptions(value){
   }
   return options;
 }
+const historyLabels={dx:'Хронические заболевания',surg:'Операции и травмы',fam:'Наследственные и генетические заболевания',other:'Другое, что важно знать врачу'};
+function historyEntry(entry={}){
+  const mode=entry.mode||'';
+  const options=[['','Дата неизвестна'],['date','Точная дата'],['year','Примерный год'],['childhood','С детства']];
+  return `<div class="history-entry">
+    <label class="field">Описание<textarea data-history-text rows="2">${esc(entry.text||'')}</textarea></label>
+    <div class="history-when">
+      <label class="field">Когда<select data-history-mode>${options.map(([value,label])=>`<option value="${value}" ${mode===value?'selected':''}>${label}</option>`).join('')}</select></label>
+      <label class="field" ${mode==='date'?'':'hidden'}>Точная дата<input type="date" data-history-date value="${esc(entry.date||'')}"></label>
+      <label class="field" ${mode==='year'||mode==='childhood'?'':'hidden'}>Год (если помните)<input type="number" min="1000" max="9999" inputmode="numeric" data-history-year value="${esc(entry.year||'')}"></label>
+    </div>
+    <div><button type="button" class="link" data-history-remove>Удалить запись</button></div>
+  </div>`;
+}
+function readHistory(){
+  return Object.fromEntries([...document.querySelectorAll('#psb [data-history]')].map(group=>{
+    const entries=[...group.querySelectorAll('.history-entry')].map(row=>{
+      const mode=row.querySelector('[data-history-mode]').value;
+      return {text:row.querySelector('[data-history-text]').value.trim(),mode,
+        date:mode==='date'?row.querySelector('[data-history-date]').value:'',
+        year:mode==='year'||mode==='childhood'?row.querySelector('[data-history-year]').value:''};
+    }).filter(entry=>entry.text);
+    return [group.dataset.history,entries];
+  }));
+}
+function quitFields(key,label){
+  const max=todayISO();
+  return `<fieldset class="quit-fields" data-quit="${key}" hidden><legend>${label}</legend>
+    ${fl(key+'QuitMode','Когда',fse(key+'QuitMode',[['','Не помню'],['date','Точная дата'],['year','Примерный год']]))}
+    ${fl(key+'QuitDate','Дата',fin(key+'QuitDate','date','','max="'+max+'"'))}
+    ${fl(key+'QuitYear','Примерный год',fin(key+'QuitYear','number','','min="1000" max="'+max.slice(0,4)+'" inputmode="numeric"'))}
+  </fieldset>`;
+}
+function syncHabitFields(){
+  const smoke=$('#p-smoke').value, alcohol=$('#p-alc').value;
+  const packs=$('#p-packsPerDay').closest('.field'), amount=$('#p-alcv').closest('.field');
+  packs.hidden=smoke==='Не курю';
+  packs.querySelector('label').textContent=smoke==='Бросил(а)'?'Сколько пачек в день курили':'Пачек в день';
+  amount.hidden=alcohol==='Не пью';
+  for(const [key,former] of [['smoke',smoke==='Бросил(а)'],['alc',alcohol==='Раньше пил(а)']]){
+    const fields=document.querySelector('[data-quit="'+key+'"]');
+    const mode=$('#p-'+key+'QuitMode').value;
+    fields.hidden=!former;
+    $('#p-'+key+'QuitDate').closest('.field').hidden=mode!=='date';
+    $('#p-'+key+'QuitYear').closest('.field').hidden=mode!=='year';
+  }
+  amount.querySelector('label').textContent=alcohol==='Раньше пил(а)'?'Сколько раньше выпивали за раз':'Алкоголь, сколько за раз';
+}
 function psForm(k){
-  if(k==='base')return `<p class="why" style="margin-bottom:10px">Пол и возраст определяют, какую норму лаборатории показывать.</p><div class="fgrid">${fl('sex','Пол',fse('sex',[['m','Мужской'],['f','Женский']]))}${fl('dob','Дата рождения',fin('dob','date'))}${fl('h','Рост, см',fin('h','number','','min="100" max="230"'),'ИМТ считается по последнему весу из блока «Вес»')}${fl('waist','Обхват талии, см',fin('waist','number','','min="40" max="200"'),'Необязательно')}</div>
+  if(k==='base')return `<p class="why" style="margin-bottom:10px">Пол и возраст определяют, какую норму лаборатории показывать.</p><div class="fgrid">${fl('sex','Пол',fse('sex',[['m','Мужской'],['f','Женский']]))}${fl('dob','Дата рождения',fin('dob','date'))}${fl('h','Рост, см',fin('h','number','','min="100" max="230"'),'ИМТ считается по последнему весу из блока «Вес»')}</div><fieldset class="optional-measurements"><legend>Обхваты · необязательно</legend><div class="fgrid">${fl('waist','Обхват талии, см',fin('waist','number','','min="40" max="200"'))}${fl('hips','Обхват бёдер, см',fin('hips','number','','min="1" step="0.1"'))}${fl('chest','Обхват груди, см',fin('chest','number','','min="1" step="0.1"'))}</div></fieldset>
    <div class="fgrid" id="p-fem" style="margin-top:12px">${fl('cycle','День цикла в дату сдачи',fin('cycle','text','например, 5-й'),'Важно для половых гормонов')}</div>`;
-  if(k==='health')return `<p class="why" style="margin-bottom:10px">Краткий анамнез со слов пациента: что серьёзное было за всю жизнь. Постоянные препараты укажите в разделе «Препараты».</p><div class="fgrid">${fl('dx','Хронические заболевания',fta('dx','Например: сахарный диабет 2 типа с 2023 г.'))}${fl('surg','Операции и травмы',fta('surg','Что и когда'))}${fl('fam','Наследственные и генетические заболевания, если знаете',fta('fam','У вас или у близких: диабет, болезни сердца, онкология…'))}</div><div style="margin-top:12px">${fl('other','Другое, что важно знать врачу',fta('other'))}</div>`;
-  return `<div class="fgrid">${fl('city','Город',fin('city'))}${fl('travel','Поездки за последний год: куда и когда',fin('travel','text','Например: Таиланд, февраль 2026'),'Часть инфекций и показателей зависит от региона')}${fl('act','Спорт и физическая активность',fse('act',[['1','Почти нет: сидячая работа, без спорта'],['2','1–2 тренировки или прогулки в неделю'],['3','3–4 тренировки в неделю'],['4','5 и больше тренировок или физический труд']]))}${fl('sportNote','Вид спорта',fin('sportNote'))}${fl('foodNote','Особенности питания',fta('foodNote'))}${fl('stress','Был ли сильный стресс за последний месяц',fse('stress',['Нет','Да, эпизодически','Да, почти постоянно']))}${fl('sleep','Сон, в среднем часов в сутки',fin('sleep','number','','min="3" max="14" step="0.5"'),'Обычная ночь за последний месяц')}${fl('food','Тип питания',fse('food',['Обычное','Вегетарианское','Веганское','Низкоуглеводное / кето','Интервальное голодание']))}<div class="smoking-fields">${fl('smoke','Курение',fse('smoke',['Не курю','Курю','Бросил(а)']))}${fl('packsPerDay','Пачек в день',fse('packsPerDay',packOptions(P.packsPerDay)))}</div>${fl('alc','Алкоголь, как часто',fse('alc',['Не пью','Реже раза в неделю','1–3 раза в неделю','Чаще']))}${fl('alcv','Алкоголь, сколько за раз',fse('alcv',[['','—'],'1–2 бокала вина или пива','3–4 бокала','5 и больше бокалов','Крепкий: до 100 мл','Крепкий: 100–250 мл','Крепкий: больше 250 мл']))}</div>`}
+  if(k==='health')return '<div class="history-fields">'+Object.entries(historyLabels).map(([key,label])=>`<fieldset data-history="${key}"><legend>${label}</legend><div>${(P.historyEntries?.[key]??(P[key]?[{text:P[key]}]:[])).map(historyEntry).join('')}</div><button type="button" class="btn" data-history-add>+ Добавить запись</button></fieldset>`).join('')+'</div>';
+  return `<div class="fgrid">${fl('city','Город',fin('city'))}${fl('travel','Поездки за последний год: куда и когда',fin('travel','text','Например: Таиланд, февраль 2026'),'Часть инфекций и показателей зависит от региона')}${fl('act','Спорт и физическая активность',fse('act',[['1','Почти нет: сидячая работа, без спорта'],['2','1–2 тренировки или прогулки в неделю'],['3','3–4 тренировки в неделю'],['4','5 и больше тренировок или физический труд']]))}${fl('sportNote','Вид спорта',fin('sportNote'))}${fl('foodNote','Особенности питания',fta('foodNote'))}${fl('stress','Был ли сильный стресс за последний месяц',fse('stress',['Нет','Да, эпизодически','Да, почти постоянно']))}${fl('sleep','Сон, в среднем часов в сутки',fin('sleep','number','','min="3" max="14" step="0.5"'),'Обычная ночь за последний месяц')}${fl('food','Тип питания',fse('food',['Обычное','Вегетарианское','Веганское','Низкоуглеводное / кето','Интервальное голодание']))}<div class="smoking-fields">${fl('smoke','Курение',fse('smoke',['Не курю','Курю','Бросил(а)']))}${fl('packsPerDay','Пачек в день',fse('packsPerDay',packOptions(P.packsPerDay)))}${quitFields('smoke','Когда бросили курить')}</div><div class="smoking-fields">${fl('alc','Алкоголь, как часто',fse('alc',['Не пью','Раньше пил(а)','Реже раза в неделю','1–3 раза в неделю','Чаще']))}${fl('alcv','Алкоголь, сколько за раз',fse('alcv',[['','—'],'1–2 бокала вина или пива','3–4 бокала','5 и больше бокалов','Крепкий: до 100 мл','Крепкий: 100–250 мл','Крепкий: больше 250 мл']))}${quitFields('alc','Когда бросили пить')}</div></div>`}
 function drawPsec(k){const b=$('#psb');if(!b)return;
   if(k==='docs'){b.innerHTML=`<p class="why">Скоро здесь можно будет хранить заключения инструментальных исследований рядом с анализами. Врачу их часто не хватает.</p>
     <div class="docl">${[['ЭКГ','10–14 дней перед госпитализацией'],['УЗИ',''],['Флюорография','действует год'],['Рентген','действует год, после травмы повторять'],['КТ и МРТ','действуют год']].map(([n,v])=>`<div class="docr">${svgI(PIC2.docs,18)}<span><b>${n}</b>${v?`<small>${v}</small>`:''}</span><span class="chip c-none">скоро</span></div>`).join('')}</div>
     <p class="why" style="margin-top:10px">Можно будет сфотографировать заключение или загрузить PDF. Срок действия покажем так же, как у анализов.</p>`;return}
-  if(k in PWHY){const g=k!=='all';
+  if(k in PWHY){const g=k!=='all'&&k!=='cmp';
     b.innerHTML=`<p class="why">${PWHY[k]}</p>${psTable(k)}${g&&evArr(k).length?`<label class="chk ctog"><input type="checkbox" data-psg="${k}" ${PSG[k]?'checked':''}> Показать на графике</label><div class="cwrap" ${PSG[k]?'':'hidden'}>${psChart(k)}<div class="legend"><span><i style="background:var(--accent);border-radius:2px"></i>даты сдачи анализов</span></div></div>`:''}
      <div class="psadd"><h4>Добавить запись</h4>${evRow(k,{})}<button class="btn pri" type="button" data-psadd="${k}">Добавить</button></div>`}
-  else{b.innerHTML=psForm(k)+`<div class="row-end"><button class="btn pri" type="button" data-pssave="${k}">Сохранить</button></div>`;
+  if(k==='med')layoutMedicineForm(b.querySelector('.evr-med'));
+  if(!(k in PWHY)){b.innerHTML=psForm(k)+`<div class="row-end"><button class="btn pri" type="button" data-pssave="${k}">Сохранить</button></div>`;
     b.querySelectorAll('[data-p]').forEach(i=>i.value=P[i.dataset.p]??'');
+    if(k==='life')syncHabitFields();
     if(k==='base'){const f=()=>{$('#p-fem').style.display=$('#p-sex').value==='f'?'':'none'};$('#p-sex').onchange=f;f()}}}
+function layoutMedicineForm(form){
+  const fields={n:'Препарат и дозировка',m:'Режим приёма',course:'Опыт приёма',who:'Кто назначил',why:'Причина назначения'};
+  const dates=form.querySelector('[data-k="f"]').closest('label');
+  for(const [key,title] of Object.entries(fields)){
+    const input=form.querySelector('[data-k="'+key+'"]');
+    const oldLabel=input.closest('label');
+    const label=document.createElement('label');
+    label.className='dl med-field';
+    const caption=document.createElement('span');
+    caption.textContent=title;
+    label.append(caption,input);
+    oldLabel?.remove();
+    form.insertBefore(label,dates);
+  }
+  form.querySelector('[data-k="who"]').placeholder='Например, терапевт';
+}
+
 function openPsec(k){psCur=k;const s=PSEC.find(x=>x.k===k);openModal(s.t,'<div id="psb" class="psb"></div>');$('#modal .mbox').classList.add('wide');drawPsec(k)}
 function saveAll(){store.set('oh2-profile',P);store.set('oh2-ev',EV);afterEvChange()}
 document.addEventListener('click',e=>{
+  const historyAdd=e.target.closest('[data-history-add]');
+  if(historyAdd){const list=historyAdd.previousElementSibling;list.insertAdjacentHTML('beforeend',historyEntry());list.lastElementChild.querySelector('textarea').focus();return}
+  const historyRemove=e.target.closest('[data-history-remove]');
+  if(historyRemove){historyRemove.closest('.history-entry').remove();return}
   const o=e.target.closest('[data-psec]');if(o){openPsec(o.dataset.psec);return}
   const a=e.target.closest('[data-psadd]');if(a){const k=a.dataset.psadd;const v=readEv(a.closest('.psadd'))[0];
     const ok=v&&(k==='weight'?v.d&&v.kg:k==='all'?v.n:v.n&&v.f);if(!ok){toast(k==='weight'?'Укажите дату и вес':k==='all'?'Укажите, на что аллергия':'Укажите название и дату начала');return}
     requireLogin(()=>{evArr(k).push(v);saveAll();openPsec(k);toast('Запись добавлена')});return}
   const d=e.target.closest('[data-psdel]');if(d){const[k,i]=d.dataset.psdel.split(',');requireLogin(()=>{evArr(k).splice(+i,1);saveAll();openPsec(k)});return}
   const sv=e.target.closest('[data-pssave]');if(sv){const vals={};$('#psb').querySelectorAll('[data-p]').forEach(i=>vals[i.dataset.p]=i.value);const k=sv.dataset.pssave;
+    if(k==='health'||k==='base'||k==='life'){
+      const invalid=[...document.querySelectorAll('#psb input:invalid')].find(input=>input.getClientRects().length);
+      if(invalid){invalid.reportValidity();return}
+    }
+    if(k==='health'){
+      vals.historyEntries=readHistory();
+      for(const [key,entries] of Object.entries(vals.historyEntries))vals[key]=entries.map(entry=>entry.text).join('\n');
+    }
     requireLogin(()=>{Object.assign(P,vals);if(P.sex!=='f'){P.preg='no'}saveAll();closeModal();toast('Сохранено')})}});
 document.addEventListener('change',e=>{if(e.target.matches('[data-psg]')){const k=e.target.dataset.psg;PSG[k]=e.target.checked;store.set('oh3-psg',PSG);e.target.closest('.psb').querySelector('.cwrap').hidden=!e.target.checked}
-  if(e.target.matches('[data-acc]')){P[e.target.dataset.acc]=e.target.value;store.set('oh2-profile',P);updLogin()}});
-function renderSettings(){document.querySelectorAll('[data-acc]').forEach(i=>i.value=P[i.dataset.acc]||'');notifOpts($('#notif'));renderPerms();
+  if(e.target.matches('#p-smoke,#p-alc,[data-p$="QuitMode"]'))syncHabitFields();
+  if(e.target.matches('[data-history-mode]')){
+    const fields=e.target.closest('.history-when'), mode=e.target.value;
+    fields.querySelector('[data-history-date]').closest('label').hidden=mode!=='date';
+    fields.querySelector('[data-history-year]').closest('label').hidden=mode!=='year'&&mode!=='childhood';
+  }
+  if(e.target.matches('[data-acc]')){P[e.target.dataset.acc]=e.target.id==='sPhone'&&e.target.value==='+7'?'':e.target.value;store.set('oh2-profile',P);updLogin()}});
+function formatAccountPhone(value){
+  let digits=value.replace(/\D/g,'');
+  if(value.startsWith('+7')||digits.length>=11&&/^[78]/.test(digits)||digits==='8')digits=digits.slice(1);
+  const n=digits.slice(0,10);
+  return '+7'+(n?' ('+n.slice(0,3):'')+(n.length>3?') '+n.slice(3,6):'')+(n.length>6?'-'+n.slice(6,8):'')+(n.length>8?'-'+n.slice(8):'');
+}
+$('#sPhone').addEventListener('input',e=>{
+  const field=e.target, value=field.value, atEnd=field.selectionStart===value.length;
+  const digitsRight=value.slice(field.selectionStart).replace(/\D/g,'').length;
+  field.value=formatAccountPhone(value==='+78'?'+7':value);
+  if(!atEnd){
+    let pos=field.value.length, count=digitsRight;
+    while(pos>2&&count>0)if(/\d/.test(field.value[--pos]))count--;
+    field.setSelectionRange(pos,pos);
+  }
+});
+function renderSettings(){document.querySelectorAll('[data-acc]').forEach(i=>i.value=i.id==='sPhone'?formatAccountPhone(P.phone||''):(P[i.dataset.acc]||''));notifOpts($('#notif'));renderPerms();
   $('#accNote').innerHTML=LOG?'Вы вошли. Данные сохраняются в аккаунте и доступны на всех устройствах.':'Вы не вошли: приложение работает на демо-данных. <button class="link" type="button" id="accLogin">Войти или зарегистрироваться</button>';const b=$('#accLogin');if(b)b.onclick=()=>openLogin()}
 function fillForm(){renderProfile();renderSettings()}
 function afterEvChange(){renderCtx();renderProfile();document.querySelectorAll('[data-cw]').forEach(w=>{const[g,r]=w.dataset.cw.split(',').map(Number);w.innerHTML=chartBox(G[g].rows[r])})}
@@ -2550,10 +2685,10 @@ function openSpecView(print){
     return detail?['<li><strong>'+esc(d)+'</strong> · '+esc(detail)+'</li>']:[];
   }):[];
   const dateHead=indices.map(i=>'<th scope="col">'+esc(DATES[i])+'<br><small>'+esc(LABS[i])+'</small></th>').join('');
-  const tableRows=groups.map(g=>'<tr class="grp"><th scope="rowgroup" colspan="'+(indices.length+3)+'">'+esc(g.title)+'</th></tr>'+
+  const tableRows=groups.map(g=>'<tr class="grp"><th scope="rowgroup" colspan="'+(indices.length+3)+'">'+ '<span>'+esc(g.title)+'</span></th></tr>'+
     g.rows.map(m=>'<tr><td>'+esc(m.n)+'</td><td>'+esc(U(m.u))+'</td><td>'+esc(refText(m))+'</td>'+
       indices.map(i=>cells(m,i)).join('')+'</tr>').join('')).join('');
-  const results=groups.length?'<div class="report-scroll" tabindex="0" role="region" aria-label="Таблица результатов"><table class="report-table"><thead><tr><th scope="col">Показатель</th><th scope="col">Ед.</th><th scope="col">Референс</th>'+dateHead+'</tr></thead><tbody>'+tableRows+'</tbody></table></div>'
+  const results=groups.length?'<div class="report-pan" hidden><small>Листайте таблицу по датам. На ПК можно нажать кнопки или использовать Shift + колесо мыши.</small><button class="btn" type="button" data-report-pan="-1" aria-label="Прокрутить влево">← Влево</button><button class="btn" type="button" data-report-pan="1" aria-label="Прокрутить вправо">Вправо →</button></div><div class="report-scroll" tabindex="0" role="region" aria-label="Таблица результатов"><table class="report-table"><thead><tr><th scope="col">Показатель</th><th scope="col">Ед.</th><th scope="col">Референс</th>'+dateHead+'</tr></thead><tbody>'+tableRows+'</tbody></table></div>'
     : '<p>'+esc(empty)+'</p>';
   const search=groups.length?'<div class="svsearch"><input id="svq" type="search" placeholder="Найти показатель" aria-label="Найти показатель"><span id="svqn" aria-live="polite"></span></div>':'';
   const events=eventRows.length?'<details class="report-context" open><summary>События рядом с датами сдачи</summary><ul>'+eventRows.join('')+'</ul></details>':'';
@@ -2563,6 +2698,7 @@ function openSpecView(print){
     search+results+events+(includeEvents?diaryReport(inPeriod):'');
   $('#pvNote').textContent='';
   document.body.classList.add('preview');
+  bindReportPan();
   window.scrollTo(0,0);
 }
 
@@ -3123,6 +3259,33 @@ const diaryKinds={
  pressure:{name:'Давление',fields:['Верхнее, мм рт. ст.','Нижнее, мм рт. ст.']},
  sleep:{name:'Сон',fields:['Продолжительность, ч']}
 };
+let reportPanObserver;
+function bindReportPan(){
+  reportPanObserver?.disconnect();
+  const scroller=$('#pvBody .report-scroll'), controls=$('#pvBody .report-pan');
+  if(!scroller)return;
+  const [left,right]=controls.querySelectorAll('button');
+  function update(){
+    const max=scroller.scrollWidth-scroller.clientWidth;
+    controls.hidden=max<2;
+    left.disabled=scroller.scrollLeft<2;
+    right.disabled=scroller.scrollLeft>=max-2;
+  }
+  controls.onclick=e=>{
+    const button=e.target.closest('[data-report-pan]');
+    if(button)scroller.scrollBy({left:Number(button.dataset.reportPan)*scroller.clientWidth*.8,behavior:RM?'auto':'smooth'});
+  };
+  scroller.addEventListener('wheel',e=>{
+    if(!e.shiftKey||e.deltaX||!e.deltaY||scroller.scrollWidth<=scroller.clientWidth)return;
+    e.preventDefault();
+    scroller.scrollLeft+=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?scroller.clientWidth:1);
+  },{passive:false});
+  scroller.addEventListener('scroll',update,{passive:true});
+  reportPanObserver=new ResizeObserver(update);
+  reportPanObserver.observe(scroller);
+  reportPanObserver.observe(scroller.firstElementChild);
+  update();
+}
 function diaryReport(inPeriod){
  const rows=(P.diary||[]).filter(r=>inPeriod(evDate(r.day)));
  if(!rows.length)return '';
