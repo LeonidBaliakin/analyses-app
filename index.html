@@ -1240,6 +1240,24 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 @media(max-width:620px){.rsnt{max-width:96px;white-space:normal;line-height:1.25;overflow-wrap:anywhere}}
 
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+.event-months{padding:0 0 0 8px}
+.event-month{position:relative;padding:0 0 18px 17px;border-left:2px solid var(--border,#ded8ec)}
+.event-month:last-child{padding-bottom:0}
+.event-month h3{margin:0 0 8px;font-size:15px;line-height:1.45;color:var(--text,#282339)}
+.event-month h3::first-letter{text-transform:uppercase}
+.event-month h3::before{content:"";position:absolute;left:-6px;top:6px;width:10px;height:10px;background:#8059ca;border-radius:50%}
+.event-month .ctxr{margin:5px 0;background-color:var(--surface,#f6f4fa);border:0;border-radius:10px}
+.event-month .ctxr.warn{background-color:var(--warn-soft,#fff0e5)}
+.event-month .ctxr.cmp{background-color:var(--accent-soft,#f1ecff)}
+.rx-panel{padding:12px 14px;margin:12px 0;border:1px solid var(--border,#ded8ec);border-radius:12px;background:var(--card,#fff);overflow-wrap:anywhere}
+.rx-panel h4{font-size:14px;margin:0;color:inherit}
+.rx-panel small{display:block;font-size:12px;line-height:1.45;color:var(--muted,#655e74)}
+.rx-prior{border-inline-start:3px solid var(--accent)}
+.rx-panel summary{cursor:pointer;font-weight:700}
+.rx-history section{margin-top:12px;padding-top:12px;border-top:1px solid var(--border,#ded8ec)}
+.rx-history h4{color:var(--accent);margin-bottom:6px}
+.rx-list{margin:7px 0 0;padding:0;list-style:none}
+.rx-list li{padding:4px 0;font-size:14px;line-height:1.45}
 </style>
 <style>#drafts10 fieldset{border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0}#drafts10 .inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:8px 0}[data-capture]{margin:8px 0 14px}</style><style>
 #drafts10 fieldset{display:block;min-inline-size:0;padding:16px;margin:14px 0;border-radius:14px}
@@ -2004,7 +2022,7 @@ function nearEvents(dstr,days){const d=pd(dstr);const out=[];
   return out}
 function ctxFor(dstr){return nearEvents(dstr,21).map(x=>x.k==='med'?(x.e.m==='Постоянно'?'':(x.ago!=null?'курс '+short(x.e.n)+' закончен '+x.ago+' дн. назад':'курс '+short(x.e.n))):(x.k==='ill'?'болел: '+x.e.n+(x.ago>0?', '+x.ago+' дн. назад':', во время болезни'):'госпитализация: '+x.e.n)).filter(Boolean).join('; ')}
 function short(n){const s=String(n).split(',')[0];return s.length>24?s.slice(0,23)+'…':s}
-function ctxHTML(){const dl=DATES[DATES.length-1];const items=[];const w=weightAlert();
+function ctxHTML(byMonth=false){const dl=DATES[DATES.length-1];const items=[];const w=weightAlert();
   const add=(date,html)=>items.push({date:date||'',html});
   (EV.cmp||[]).forEach(e=>add(e.f,`<div class="ctxr cmp">${ICC}<span><b>Жалоба: ${esc(e.n)}</b><span class="ctx-extra"> · беспокоит с ${dfmt(e.f)}</span></span></div>`));
   if(w)add(w.td,`<div class="ctxr warn">${ICW}<span><b>Вес снизился на ${w.kg} кг (−${w.pct}%) за ${w.mo} мес.</b><span class="ctx-extra"> ${esc(w.from)} → ${esc(w.to)} кг, ${dfmt(w.fd)}–${dfmt(w.td)} <span class="why" title="Отметка ставится при снижении на 5% и больше за 6 месяцев (справочник MSD)">· порог: −5% за 6 мес.</span></span></span></div>`);
@@ -2012,7 +2030,22 @@ function ctxHTML(){const dl=DATES[DATES.length-1];const items=[];const w=weightA
     if(x.k==='ill')add(e.f,`<div class="ctxr">${ICI}<span><b>Болел: ${esc(e.n)}</b><span class="ctx-extra">${e.tmax?', до '+esc(e.tmax)+'°':''}${e.ab?', антибиотики: '+esc(e.ab):''}, ${dfmt(e.f)}–${dfmt(e.t)}${x.ago>0?' · за '+x.ago+' дн. до сдачи':' · во время сдачи'}</span></span></div>`);
     if(x.k==='hosp')add(e.f,`<div class="ctxr">${ICH}<span><b>Госпитализация: ${esc(e.n)}</b>, ${esc(e.w||'')} ${dfmt(e.f)}–${dfmt(e.t)}</span></div>`);
     if(x.k==='med')add(e.f,`<div class="ctxr">${ICM}<span><b>${esc(e.n)}</b><span class="ctx-extra"> · ${e.m==='Постоянно'?'постоянно с '+dfmt(e.f):'курс '+dfmt(e.f)+'–'+dfmt(e.t)+(x.ago?' · закончен за '+x.ago+' дн. до сдачи':'')}</span></span></div>`)});
-  return items.sort((a,b)=>b.date.localeCompare(a.date)).map(item=>item.html).join('')||'<p class="why">Рядом с последней сдачей событий нет.</p>'}
+  items.sort((a,b)=>b.date.localeCompare(a.date));
+  if(!items.length)return '<p class="why">Рядом с последней сдачей событий нет.</p>';
+  if(!byMonth)return items.map(item=>item.html).join('');
+  const months=new Map();
+  for(const item of items){
+    const key=item.date.slice(0,7);
+    if(!months.has(key))months.set(key,[]);
+    months.get(key).push(item.html);
+  }
+  const monthLabel=new Intl.DateTimeFormat('ru',{month:'long',year:'numeric'});
+  return '<div class="event-months">'+Array.from(months,([key,rows])=>{
+    const date=evDate(key && key+'-01');
+    const label=date && Number.isFinite(+date)?monthLabel.format(date):'Без даты';
+    return '<section class="event-month"><h3>'+label+'</h3>'+rows.join('')+'</section>';
+  }).join('')+'</div>';
+}
 function renderCtx(){
   const list=$('#visitEventList');
   list.innerHTML=ctxHTML();
@@ -2186,19 +2219,36 @@ function chartSVG(m){
       const al=weightAlert();if(al){const ax=xt(evDate(al.td).getTime());s+=`<g transform="translate(${ax-26},${yw(+al.to)-9})"><path d="M7 0l7 12H0z" fill="var(--prev)"/><path d="M7 4v4M7 9.6v.4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><title>Вес снизился на ${al.kg} кг (−${al.pct}%) за ${al.mo} мес.</title></g>`}}
   });
   return s+'</svg>'}
+function activeMedicines(day){
+  return EV.med.filter(e=>e.f && evDate(e.f)<=day && (!e.t || evDate(e.t)>=day));
+}
 function medicationAt(date){
   const day=pd(date);
-  const active=EV.med.filter(e=>e.f && evDate(e.f)<=day && (!e.t || evDate(e.t)>=day));
+  const active=activeMedicines(day);
   return active.map(e=>e.n+' · с '+dfmt(e.f)+' ('+(1+Math.round((day-evDate(e.f))/864e5))+' дн.)'+(e.course?' · '+e.course:'')+(e.who?' · '+e.who:'')+(e.why?' · '+e.why:'')).join(', ') || 'Препараты на эту дату не указаны';
 }
 function priorCourses(m){
   if(!m.pts.length)return '';
   const first=pd(m.pts[0].d);
   const prior=EV.med.filter(e=>e.f && evDate(e.f)<first && (!e.t || evDate(e.t)>=first));
-  return prior.length?`<div class="why"><b>Приём начался до первого анализа</b>${prior.map(e=>`<div>${esc(e.n)} · с ${dfmt(e.f)}${e.course?' · '+esc(e.course):''}</div>`).join('')}</div>`:'';
+  return prior.length?`<section class="rx-panel rx-prior"><h4>Уже принимали к первому анализу</h4><small>Первая сдача · ${esc(m.pts[0].d)}</small>${medicineList(prior)}</section>`:'';
+}
+function medicineList(meds,day){
+  if(!meds.length)return '<small>Приём препаратов не указан</small>';
+  return '<ul class="rx-list">'+meds.map(e=>{
+    const days=day?1+Math.round((day-evDate(e.f))/864e5):null;
+    const meta=['С '+dfmt(e.f),days && days+' дн. приёма',e.course,e.who && 'Назначил: '+e.who,e.why && 'Причина: '+e.why].filter(Boolean);
+    return '<li><strong>'+esc(e.n)+'</strong><small>'+meta.map(esc).join(' · ')+'</small></li>';
+  }).join('')+'</ul>';
+}
+function medicineHistory(m){
+  return '<details class="rx-panel rx-history"><summary>Препараты на даты анализов</summary>'+m.pts.slice().reverse().map(p=>{
+    const day=pd(p.d);
+    return '<section><h4>Сдача '+esc(p.d)+'</h4>'+medicineList(activeMedicines(day),day)+'</section>';
+  }).join('')+'</details>';
 }
 function chartBox(m){
-  return `<div class="ovsw"><span class="why">На графике:</span>${[['med','препараты'],['ill','болезни и стационар'],['w','вес']].map(([k,l])=>`<label class="chk"><input type="checkbox" data-ov="${k}" ${OV[k]?'checked':''}> ${l}</label>`).join('')}</div>`+chartSVG(m)+priorCourses(m)+`<details><summary>Препараты на даты анализов</summary>${m.pts.map(p=>'<p>'+esc(p.d)+' · '+esc(medicationAt(p.d))+'</p>').join('')}</details>`+
+  return `<div class="ovsw"><span class="why">На графике:</span>${[['med','препараты'],['ill','болезни и стационар'],['w','вес']].map(([k,l])=>`<label class="chk"><input type="checkbox" data-ov="${k}" ${OV[k]?'checked':''}> ${l}</label>`).join('')}</div>`+chartSVG(m)+priorCourses(m)+medicineHistory(m)+
   `<div class="legend"><span><i style="background:var(--accent)"></i>последний результат</span><span><i style="background:var(--prev)"></i>предыдущий</span><span><i style="background:var(--band);border:1px solid var(--ok)"></i>норма лаборатории</span>${OV.ill?'<span><i style="background:var(--ill)"></i>болезнь</span><span><i style="background:var(--hosp)"></i>стационар</span>':''}${OV.med?'<span><i style="background:var(--med-soft);border:1px solid var(--med)"></i>приём препарата</span>':''}</div>`}
 function detailHTML(m){
   const key=m.gi+','+m.ri;
@@ -2833,7 +2883,7 @@ function openVisitDialog(title,html){
  openModal(title,'<div class="visit-full-content">'+html+'</div>');
 }
 $('#visitCompare').onclick=()=>openVisitDialog('Сравнение сдач',$('#changes').innerHTML);
-$('#visitMoreEvents').onclick=()=>openVisitDialog('События к сдаче · '+DATES.at(-1),ctxHTML());
+$('#visitMoreEvents').onclick=()=>openVisitDialog('События к сдаче · '+DATES.at(-1),ctxHTML(true));
 new ResizeObserver(fitVisitEvents).observe($('#visit-title').closest('.visit17'));
 document.fonts.ready.then(fitVisitEvents);
 $('#visitTour').onclick=openTut;
