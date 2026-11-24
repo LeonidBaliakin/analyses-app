@@ -1878,7 +1878,7 @@ document.addEventListener('click',e=>{
 document.addEventListener('change',e=>{if(e.target.matches('.evr [data-k="m"]')){const t=e.target.closest('.evr').querySelector('[data-k="t"]');t.disabled=e.target.value==='Постоянно';if(t.disabled)t.value=''}});
 
 /* уведомления, разрешения, вход */
-const CH=[['tg','Telegram'],['wa','WhatsApp'],['max','MAX'],['email','Почта'],['push','Push']];
+const CH=[['tg','Telegram'],['vk','VK'],['max','MAX'],['email','Почта'],['push','Push']];
 function notifOpts(host){host.innerHTML=CH.map(([v,l])=>`<button class="opt" type="button" data-ch="${v}" aria-pressed="${(P.notif||[]).includes(v)}">${l}</button>`).join('')}
 document.addEventListener('click',e=>{const c=e.target.closest('[data-ch]');if(!c)return;const v=c.dataset.ch;P.notif=P.notif||[];
   P.notif=P.notif.includes(v)?P.notif.filter(x=>x!==v):P.notif.concat(v);store.set('oh2-profile',P);document.querySelectorAll('[data-ch="'+v+'"]').forEach(b=>b.setAttribute('aria-pressed',P.notif.includes(v)));

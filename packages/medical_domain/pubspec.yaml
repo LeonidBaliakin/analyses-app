@@ -1,0 +1,10 @@
+name: medical_domain
+description: Platform-independent medical domain value types and rules.
+version: 0.1.0
+publish_to: none
+resolution: workspace
+environment:
+  sdk: ^3.14.0
+dev_dependencies:
+  lints: ^6.1.0
+  test: ^1.26.3

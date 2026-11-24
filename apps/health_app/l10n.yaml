@@ -1,0 +1,9 @@
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-dir: lib/l10n/generated
+output-localization-file: app_localizations.dart
+nullable-getter: false
+header: |
+  // Flutter 3.50 gen_l10n still emits deprecated compatibility delegates.
+  // Keep this exception limited to SDK-generated localization code.
+  // ignore_for_file: deprecated_member_use

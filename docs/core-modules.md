@@ -68,7 +68,7 @@
 | Доступ и данные | Identity, Access & Sharing, Health Records & Sync, Documents, Billing & Entitlements |
 | Словари | Terminology и адаптеры импорта словарей; локальный пакет `medical_terminology` читает опубликованную копию |
 | Хранение | Documents владеет метаданными и сессиями, SeaweedFS OSS — байтами; [схема оригиналов](document-storage.md) |
-| Уведомления | Orchestrator и отдельные delivery-сервисы Telegram, WhatsApp, MAX, email, push и подключаемых каналов |
+| Уведомления | Orchestrator и отдельные delivery-сервисы Telegram, VK, MAX, email, push и подключаемых каналов |
 | Внешние источники | Orchestrator и отдельный connector на каждый сайт или API; Provider Directory хранит проверенный каталог |
 | Обработка | Orchestrator, подготовка документа, OCR/ASR, отдельные parser-workers лабораторных результатов, выписок и событий |
 | Выполнение LLM | Inference Gateway, собственные серверные runtimes моделей и адаптеры внешних API |

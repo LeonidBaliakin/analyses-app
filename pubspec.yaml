@@ -1,0 +1,11 @@
+name: analyses_workspace
+publish_to: none
+environment:
+  sdk: ^3.14.0
+workspace:
+  - apps/health_app
+  - packages/medical_domain
+  - packages/design_system
+  - packages/local_store
+dev_dependencies:
+  lints: ^6.1.0
