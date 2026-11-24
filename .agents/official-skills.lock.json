@@ -1,0 +1,141 @@
+{
+  "version": 1,
+  "reviewed_on": "2026-11-24",
+  "sources": [
+    {
+      "repository": "flutter/agent-plugins",
+      "revision": "ff6d472ee66dbed566c4500edee460c94fde0a02",
+      "license": "BSD-3-Clause",
+      "skills": [
+        {
+          "name": "flutter-add-integration-test",
+          "path": "skills/flutter-add-integration-test",
+          "files": {
+            "LICENSE": "bc505e3cf9a80178600e24441bd40758cb72dbb1255f7e715351615d7c3f47ac",
+            "SKILL.md": "e38e18324ce5769021568ad80d69865df5037f5b0590b6a4a51d3e886c319b79"
+          },
+          "upstream_files": {
+            "SKILL.md": "8d81b053c5fdf5b61aa7d0165cbc35e7a9a1c5bdcd7a301b8293a108771e6bab",
+            "LICENSE": "bc505e3cf9a80178600e24441bd40758cb72dbb1255f7e715351615d7c3f47ac"
+          }
+        },
+        {
+          "name": "flutter-add-widget-test",
+          "path": "skills/flutter-add-widget-test",
+          "files": {
+            "LICENSE": "bc505e3cf9a80178600e24441bd40758cb72dbb1255f7e715351615d7c3f47ac",
+            "SKILL.md": "50954d33798d0b65e736be82905935b4fe0bf9f81fae6fd582ad110b53ca3479"
+          },
+          "upstream_files": {
+            "SKILL.md": "6c449ebd844e331e661b12630b6ad2a218e84d1bd8ea8377ba9dbd62ffe2798a",
+            "LICENSE": "bc505e3cf9a80178600e24441bd40758cb72dbb1255f7e715351615d7c3f47ac"
+          }
+        },
+        {
+          "name": "flutter-apply-architecture-best-practices",
+          "path": "skills/flutter-apply-architecture-best-practices",
+          "files": {
+            "LICENSE": "bc505e3cf9a80178600e24441bd40758cb72dbb1255f7e715351615d7c3f47ac",
+            "SKILL.md": "ae76cf569e050de7b3115d8bc7dd0ede0db9200396a2924d6563e5e96b2e83fd"
+          },
+          "upstream_files": {
+            "SKILL.md": "00497869976a903c83f509a59d4b6a501d409fa711eb8e1f89945921e1983b65",
+            "LICENSE": "bc505e3cf9a80178600e24441bd40758cb72dbb1255f7e715351615d7c3f47ac"
+          }
+        },
+        {
+          "name": "flutter-build-responsive-layout",
+          "path": "skills/flutter-build-responsive-layout",
+          "files": {
+            "LICENSE": "bc505e3cf9a80178600e24441bd40758cb72dbb1255f7e715351615d7c3f47ac",
+            "SKILL.md": "c7a5d18071c625137cad2def9b13f3579d9bdf0aae29621a1825f12b560394c0"
+          },
+          "upstream_files": {
+            "SKILL.md": "c7a5d18071c625137cad2def9b13f3579d9bdf0aae29621a1825f12b560394c0",
+            "LICENSE": "bc505e3cf9a80178600e24441bd40758cb72dbb1255f7e715351615d7c3f47ac"
+          }
+        },
+        {
+          "name": "flutter-fix-layout-issues",
+          "path": "skills/flutter-fix-layout-issues",
+          "files": {
+            "LICENSE": "bc505e3cf9a80178600e24441bd40758cb72dbb1255f7e715351615d7c3f47ac",
+            "SKILL.md": "317dfcfebc2e451934da6db13fe7fc730eb0396c1eb69149a26da54de0d71dd0"
+          },
+          "upstream_files": {
+            "SKILL.md": "e82c82b4245ef502bd93bc543d4f5968f4ee8043fa7556ffebcb34f30651fc9b",
+            "LICENSE": "bc505e3cf9a80178600e24441bd40758cb72dbb1255f7e715351615d7c3f47ac"
+          }
+        },
+        {
+          "name": "flutter-implement-json-serialization",
+          "path": "skills/flutter-implement-json-serialization",
+          "files": {
+            "LICENSE": "bc505e3cf9a80178600e24441bd40758cb72dbb1255f7e715351615d7c3f47ac",
+            "SKILL.md": "bc6b24760350ff7b9653904aab71ab918d7b2e94032e829a737df571b5f77fc8"
+          },
+          "upstream_files": {
+            "SKILL.md": "05a4478e0a3d119f26ae6e6983da3d5c2ea134763aeff59a06cef346bef391b1",
+            "LICENSE": "bc505e3cf9a80178600e24441bd40758cb72dbb1255f7e715351615d7c3f47ac"
+          }
+        },
+        {
+          "name": "flutter-setup-declarative-routing",
+          "path": "skills/flutter-setup-declarative-routing",
+          "files": {
+            "LICENSE": "bc505e3cf9a80178600e24441bd40758cb72dbb1255f7e715351615d7c3f47ac",
+            "SKILL.md": "1aa50fbe6146b2615522818bee55a7dfa2b7421db7b61ef6e9145c27a92cb83b"
+          },
+          "upstream_files": {
+            "SKILL.md": "3a52fc5663cf37d68b6e096ef3e59f5056a01e9151b64cdf0728672a13398953",
+            "LICENSE": "bc505e3cf9a80178600e24441bd40758cb72dbb1255f7e715351615d7c3f47ac"
+          }
+        },
+        {
+          "name": "flutter-setup-localization",
+          "path": "skills/flutter-setup-localization",
+          "files": {
+            "LICENSE": "bc505e3cf9a80178600e24441bd40758cb72dbb1255f7e715351615d7c3f47ac",
+            "SKILL.md": "42afae7be4ac6dfd2379d2caf5789720d613e119bc56ed030debfcccfcbccb92"
+          },
+          "upstream_files": {
+            "SKILL.md": "dda4ef8b74976a3e51faa43d7ad00f03eab64d6d5ed0ef89cf4184a04196da17",
+            "LICENSE": "bc505e3cf9a80178600e24441bd40758cb72dbb1255f7e715351615d7c3f47ac"
+          }
+        }
+      ]
+    },
+    {
+      "repository": "dart-lang/skills",
+      "revision": "f84b16872b5d186f4e877511b49b93c204a1c4ef",
+      "license": "BSD-3-Clause",
+      "skills": [
+        {
+          "name": "dart-add-unit-test",
+          "path": "skills/dart-add-unit-test",
+          "files": {
+            "LICENSE": "a85383d7fa49c812ba9f44f63320099104549080668c76aaca4bbd281e2b3df9",
+            "SKILL.md": "02428fa20c2cb90afcaf17a52c559641b85eb04f2765a54da2bc72ca858c1fce"
+          },
+          "upstream_files": {
+            "SKILL.md": "02428fa20c2cb90afcaf17a52c559641b85eb04f2765a54da2bc72ca858c1fce",
+            "LICENSE": "a85383d7fa49c812ba9f44f63320099104549080668c76aaca4bbd281e2b3df9"
+          }
+        },
+        {
+          "name": "dart-run-static-analysis",
+          "path": "skills/dart-run-static-analysis",
+          "files": {
+            "LICENSE": "a85383d7fa49c812ba9f44f63320099104549080668c76aaca4bbd281e2b3df9",
+            "SKILL.md": "75206b00e19c22c30d72d9bf40cbd8725de9f8ceacac62b3d1a931b1469b0bce"
+          },
+          "upstream_files": {
+            "SKILL.md": "5e41a03011647bcaee182ddc5d4471122f45f93fec6570480c237077e7f9438c",
+            "LICENSE": "a85383d7fa49c812ba9f44f63320099104549080668c76aaca4bbd281e2b3df9"
+          }
+        }
+      ]
+    }
+  ],
+  "normalization": "Strip trailing whitespace from each SKILL.md line; ensure one final newline."
+}

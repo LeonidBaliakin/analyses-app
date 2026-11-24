@@ -18,6 +18,9 @@
 - [Медицинские словари, специальности и МКБ](docs/terminology.md)
 - [Предложение по Flutter/Dart](docs/adr/0002-flutter-dart-shared-core.md)
 - [Термины предметной области](CONTEXT.md)
+- [Агентная разработка: навыки, правила и проверки](docs/agent-development.md)
+- [Постоянные инструкции для агентов](AGENTS.md)
+- [Flutter SDK, официальные навыки и Dart/Flutter MCP](docs/development-environment.md)
 
 ## Версии
 

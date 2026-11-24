@@ -1,0 +1,8 @@
+[mcp_servers.dart_flutter]
+command = "dart"
+args = ["mcp-server", "--enable=dart_format,run_tests,dart_fix,launch_app,list_devices,stop_app"]
+startup_timeout_sec = 60
+tool_timeout_sec = 120
+
+[mcp_servers.dart_flutter.env]
+FLUTTER_SUPPRESS_ANALYTICS = "true"
