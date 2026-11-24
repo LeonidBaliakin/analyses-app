@@ -1324,7 +1324,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 }
 #pgo[hidden]{display:none}
 @media(max-width:620px){
-  #v-summary .supchips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
+  #v-summary .supchips{flex-wrap:wrap;overflow:visible}
   #v-summary .supc{flex:none}
   #v-summary .sec{margin-top:12px}
 }
@@ -1350,6 +1350,37 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 #dict10[aria-pressed="true"]{background:var(--accent-soft)}
 .capture-example{padding:9px 11px;border-radius:9px;background:var(--paper);font-size:13px}
 #voiceStatus:empty{margin:0;height:0;display:none}
+
+.visit-compare-open{display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%;min-height:36px;border:0;padding:0;background:transparent;text-align:left;color:var(--ink);font:inherit;font-size:12px;font-weight:700}
+#modal:has(.visit-full-content){padding:0;align-items:stretch;z-index:1200}
+#modal:has(.visit-full-content) .mbox{display:flex;flex-direction:column;width:100%;height:100dvh;max-width:none;max-height:none;border-radius:0;margin:0}
+#modal:has(.visit-full-content) #mB{flex:1;min-height:0;overflow:auto;max-height:none}
+.visit-full-content{max-width:850px;margin:auto;display:grid;gap:8px}
+.visit-full-content .ctxr{margin:0;padding:10px}
+#ctx .ctx-list{gap:3px}
+.visit-events.compact:not(.expanded) #ctx .ctxr{padding-block:2px}
+.record-actions{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.btn[data-capture],.btn[data-diary],#ctx .visit-doctor{background:#fff1e6;color:#893900;border-color:#eab387;margin:0}
+.doctor-entry,#visitDoctor{background:#6944be;color:white;border-color:#6944be;font-weight:700}
+.doctor-entry{margin:8px 0 12px}
+@media screen{
+ #pvBody .report-table{table-layout:auto;width:max-content;min-width:100%;max-width:none;border-collapse:collapse}
+ #pvBody .report-table th,#pvBody .report-table td{width:auto;white-space:nowrap;word-break:normal;overflow-wrap:normal;padding:8px}
+ #pvBody .report-table td:first-child{white-space:normal;min-width:150px;max-width:245px}
+ .report-scroll{width:100%;max-width:100%;overflow-x:auto}
+}
+#v-files #rsnFilter{margin-top:16px}
+#tut{padding:0;overflow:hidden;background:transparent;backdrop-filter:none;z-index:1500}
+#tut::before{content:"";position:absolute;inset:0;background:rgb(16 13 29 / 70%);backdrop-filter:blur(3px);clip-path:var(--tour-mask)}
+.tour-target{position:absolute;border-radius:12px;background:transparent;border:2px solid #ffa45e;box-shadow:0 0 0 2px #fff8;cursor:pointer}
+#tut .tbox{position:absolute;max-width:350px;width:calc(100% - 16px);max-height:65dvh;overflow:auto;background:#252034;color:#fff;border:1px solid #625669;border-radius:15px}
+#tut .tbox-h,#tut .tbox-b,#tut .tbox-f{background:none;color:inherit}
+#tut .tbox-h{padding:14px 16px 0}#tut .tbox-b{padding:8px 16px 12px;font-size:14px}
+#tut .tbox-f{padding:8px 12px 12px;border:0;flex-wrap:nowrap}
+#tut .tbox-f button{flex:0 1 auto}#tut #tNext{background:#ffac65;color:#321900;border-color:transparent}
+#tP{display:flex;gap:4px;margin-top:7px}#tP i{height:3px;width:16px;border-radius:3px;background:#766d81}#tP i.active{background:#ffac65}
+#tut #tSkip,#tut #tPrev{color:#292237;background:#f9f7fc;border-color:#cfc6da}
+#tut button:focus-visible{outline:3px solid #ffd5aa;outline-offset:2px}
 </style></head>
 <body>
 <div class="app" id="app">
@@ -1373,7 +1404,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
     <div class="visit-grid">
       <section class="visit17 card" aria-labelledby="visit-title">
         <div class="visit-head"><span class="visit-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg></span><div><h1 id="visit-title">Последняя сдача</h1><span class="visit-meta" id="visitDate"></span></div></div>
-        <details class="visit-compare"><summary><span id="chgSum">Сравнить сдачи</span><svg class="visit-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></summary><div class="visit-body" id="changes"></div></details>
+        <div class="visit-compare"><button class="visit-compare-open" id="visitCompare" type="button" aria-haspopup="dialog"><span id="chgSum">Сравнить сдачи</span><svg class="visit-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button><div class="visit-body" id="changes" hidden></div></div>
         <div class="visit-filters" role="group" aria-label="Фильтры показателей">
           <button type="button" data-modal="ok" aria-haspopup="dialog">В норме <b id="visitOkCount"></b></button>
           <button type="button" data-modal="out" aria-haspopup="dialog">Не в норме <b id="visitOutCount"></b></button>
@@ -1387,7 +1418,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
         <div class="visit-body" id="ctx">
           <div class="ctx-list" id="visitEventList"></div>
           <div class="ctx-actions">
-            <button class="link" id="visitMoreEvents" type="button" aria-expanded="false" aria-controls="visitEventList" hidden></button>
+            <button class="link" id="visitMoreEvents" type="button" aria-haspopup="dialog"></button>
             <button class="btn visit-doctor" type="button" data-capture>Добавить событие</button>
           </div>
         </div>
@@ -1418,7 +1449,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
   </section>
 
   <!-- МОИ АНАЛИЗЫ -->
-  <section class="view" id="v-files" aria-label="Мои анализы">
+  <section class="view" id="v-files" aria-label="Мои анализы"><div class="record-actions"><button class="btn" type="button" data-capture>Добавить событие</button><button class="btn" type="button" data-diary>Дневник измерений</button></div>
     <div class="panel">
       <h2>Загрузка анализов</h2>
       <p class="lead">Добавьте бланк из любой лаборатории. Сервис распознает показатели, а вы проверите их перед сохранением. Оригинал файла хранится вместе с результатами.</p>
@@ -1441,7 +1472,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
   </section>
 
   <!-- ПРОФИЛЬ -->
-  <section class="view" id="v-profile" aria-label="Профиль"><button class="btn" id="diaryOpen">Дневники измерений</button> <button class="btn" type="button" data-capture>Добавить событие</button>
+  <section class="view" id="v-profile" aria-label="Профиль"><div class="record-actions"><button class="btn" type="button" data-capture>Добавить событие</button><button class="btn" type="button" data-diary>Дневник измерений</button></div>
     <div class="panel"><h2>Профиль</h2>
       <p class="lead">Данные о вас, которые помогают врачу читать анализы. Препараты, вес и болезни показываются на графиках анализов по тем же датам. Сервис сам ничего по профилю не оценивает.</p>
       <div class="pfill"><div class="pfill-t"><b>Профиль заполнен на <span id="pfPct" class="num">0</span>%</b><span class="why" id="pfHint"></span></div><div class="pbar"><i id="pfBar"></i></div></div>
@@ -1486,7 +1517,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
   <!-- ДОСТУП ВРАЧУ -->
   <section class="view" id="v-share" aria-label="Доступ специалисту">
     <div class="panel">
-      <h2>Показать анализы специалисту</h2>
+      <h2>Показать анализы специалисту</h2><button class="btn pri doctor-entry" id="specPrev">Открыть вид для врача <span aria-hidden="true">→</span></button>
       <p class="lead">Разовый доступ: специалист сканирует QR-код или открывает ссылку. Регистрация ему не нужна. Если специалисту нужен постоянный доступ, он регистрируется, и вы открываете доступ его аккаунту. Закрыть доступ можно в любой момент.</p>
       <div class="share">
         <canvas class="qr" id="qr" width="180" height="180" aria-label="QR-код со ссылкой на анализы (демо)"></canvas>
@@ -1498,7 +1529,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 <div id="reportGroups" class="report-groups" hidden></div>
 <label class="report-events"><input type="checkbox" id="reportEvents"> Включить события рядом со сдачами и дневники за выбранный период</label>
 <p class="why">Ссылка и QR-код демонстрационные. Предпросмотр и PDF используют выбранный период и состав отчёта.</p>
-          <div class="linkbox"><span class="code" id="slink">orange-health.ru/s/7K2-QX9</span><button class="btn" id="copy">Скопировать ссылку</button><button class="btn" id="spdf">PDF для печати</button><button class="btn pri" id="specPrev">Вид для врача</button></div>
+          <div class="linkbox"><span class="code" id="slink">orange-health.ru/s/7K2-QX9</span><button class="btn" id="copy">Скопировать ссылку</button><button class="btn" id="spdf">PDF для печати</button></div>
         </div>
       </div>
       <p class="why" style="margin-top:14px">Кому уже открыт доступ и чьи анализы доступны вам, смотрите в настройках. <button class="link" data-go="settings">Открыть настройки →</button></p>
@@ -1556,7 +1587,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 </div>
 
 <div class="tut" id="tut" role="dialog" aria-modal="true" aria-labelledby="tT">
-  <div class="tbox"><div class="tbox-h"><small id="tS"></small><h3 id="tT"></h3><div class="tprog" id="tP"></div></div><div class="tbox-b" id="tB"></div>
+  <button type="button" class="tour-target" id="tourTarget"></button><div class="tbox"><div class="tbox-h"><small id="tS"></small><h3 id="tT"></h3><div class="tprog" id="tP"></div></div><div class="tbox-b" id="tB"></div>
   <div class="tbox-f"><button class="btn" id="tSkip">Пропустить</button><span class="tsp"></span><button class="btn" id="tPrev">Назад</button><button class="btn pri" id="tNext">Дальше</button></div></div>
 </div>
 <div class="hm" id="hm" role="dialog" aria-modal="true" aria-labelledby="hmT" hidden>
@@ -1999,31 +2030,20 @@ function fitVisitEvents(){
   const list=$('#visitEventList'), more=$('#visitMoreEvents');
   const rows=[...list.querySelectorAll('.ctxr')];
   rows.forEach(row=>{row.hidden=false});
-  if(card.classList.contains('expanded')&&rows.length){
-    more.textContent='Свернуть';
-    more.hidden=false;
-    more.setAttribute('aria-expanded','true');
-    return;
-  }
-  card.classList.remove('expanded','compact');
-  more.setAttribute('aria-expanded','false');
-  more.hidden=true;
-  if(!rows.length||list.scrollHeight<=list.clientHeight+1)return;
-
   card.classList.add('compact');
-  more.hidden=false;
+  more.textContent='Ещё';
   rows.forEach(row=>{row.hidden=true});
   let hidden=rows.length;
   for(const row of rows){
     row.hidden=false;
-    more.textContent=hidden>1?'Ещё '+(hidden-1):'Подробнее';
+    more.textContent=hidden>1?'Ещё '+(hidden-1):'Ещё';
     if(row.getBoundingClientRect().bottom>list.getBoundingClientRect().bottom+0.1){
       row.hidden=true;
       break;
     }
     hidden--;
   }
-  more.textContent=hidden?'Ещё '+hidden:'Подробнее';
+  more.textContent=hidden?'Ещё '+hidden:'Ещё';
 }
 
 /* сводка */
@@ -2463,7 +2483,7 @@ function openSpecView(print){
   const scopeLabel=$('#scope [aria-pressed="true"]')?.textContent||'Все анализы';
   const groupIds=new Set([...reportGroups.querySelectorAll('input:checked')].map(input=>Number(input.value)));
   const includeEvents=$('#reportEvents').checked;
-  const indices=selectedDates.map(d=>DATES.indexOf(d));
+  const indices=selectedDates.map(d=>DATES.indexOf(d)).reverse();
   const point=(m,i)=>m.pts.find(p=>p.i===i&&(scope!=='out'||p.st==='high'||p.st==='low'));
   const groups=G.filter(g=>scope!=='sel'||groupIds.has(g.gi))
     .map(g=>({title:g.title,rows:g.rows.filter(m=>indices.some(i=>point(m,i)))}))
@@ -2483,7 +2503,7 @@ function openSpecView(print){
   const tableRows=groups.map(g=>'<tr class="grp"><th scope="rowgroup" colspan="'+(indices.length+3)+'">'+esc(g.title)+'</th></tr>'+
     g.rows.map(m=>'<tr><td>'+esc(m.n)+'</td><td>'+esc(U(m.u))+'</td><td>'+esc(refText(m))+'</td>'+
       indices.map(i=>cells(m,i)).join('')+'</tr>').join('')).join('');
-  const results=groups.length?'<div class="report-scroll" tabindex="0" role="region" aria-label="Таблица результатов"><table class="alld report-table"><thead><tr><th scope="col">Показатель</th><th scope="col">Ед.</th><th scope="col">Референс</th>'+dateHead+'</tr></thead><tbody>'+tableRows+'</tbody></table></div>'
+  const results=groups.length?'<div class="report-scroll" tabindex="0" role="region" aria-label="Таблица результатов"><table class="report-table"><thead><tr><th scope="col">Показатель</th><th scope="col">Ед.</th><th scope="col">Референс</th>'+dateHead+'</tr></thead><tbody>'+tableRows+'</tbody></table></div>'
     : '<p>'+esc(empty)+'</p>';
   const search=groups.length?'<div class="svsearch"><input id="svq" type="search" placeholder="Найти показатель" aria-label="Найти показатель"><span id="svqn" aria-live="polite"></span></div>':'';
   const events=eventRows.length?'<details class="report-context" open><summary>События рядом с датами сдачи</summary><ul>'+eventRows.join('')+'</ul></details>':'';
@@ -2501,7 +2521,7 @@ document.addEventListener('input',e=>{if(e.target.id!=='svq')return;const q=e.ta
   const body=$('#pvBody');body.classList.toggle('svsearching',!!q);let n=0;
   body.querySelectorAll('table tbody tr').forEach(tr=>{if(tr.classList.contains('grp')||tr.classList.contains('evrow'))return;const nm=(tr.querySelector('td')||{}).textContent||'';const l=nm.toLowerCase();
     const hit=!q||l.includes(q)||alt.some(a=>l.includes(a));tr.classList.toggle('svhide',!hit);if(q&&hit)n++});
-  body.querySelectorAll('table.alld tbody tr.grp').forEach(g=>{let x=g.nextElementSibling,any=false;while(x&&!x.classList.contains('grp')){if(!x.classList.contains('svhide')&&!x.classList.contains('evrow'))any=true;x=x.nextElementSibling}g.classList.toggle('svhide',!!q&&!any)});
+  body.querySelectorAll('table.report-table tbody tr.grp').forEach(g=>{let x=g.nextElementSibling,any=false;while(x&&!x.classList.contains('grp')){if(!x.classList.contains('svhide')&&!x.classList.contains('evrow'))any=true;x=x.nextElementSibling}g.classList.toggle('svhide',!!q&&!any)});
   $('#svqn').textContent=q?(n?'найдено строк: '+n:'ничего не найдено'):''});
 /* где сдать: каталог и специалисты */
 const CAT=[
@@ -2620,7 +2640,7 @@ function openLoc(){openModal('Где вы находитесь?',`<p class="why"
   <div class="row-end"><button class="btn pri" type="button" id="locOk">Готово</button></div>`);
   $('#locOk').onclick=()=>{const v=$('#locM').value.trim();if(v)setLoc(v);else store.set('oh3-locset',1);closeModal()}}
 document.addEventListener('click',e=>{if(e.target.closest('[data-locedit]'))openLoc()});
-const _show=show;show=function(id){_show(id);if((id==='book'||id==='docs')&&!store.get('oh3-locset',0))setTimeout(openLoc,300)};
+const _show=show;show=function(id){_show(id);if(!$('#tut').classList.contains('on')&&(id==='book'||id==='docs')&&!store.get('oh3-locset',0))setTimeout(openLoc,300)};
 $('#bq').oninput=bSearch;$('#bq').onfocus=bSearch;$('#sqs').oninput=sSearch;$('#sqs').onfocus=sSearch;
 document.addEventListener('click',e=>{
   if(!e.target.closest('.addsearch'))document.querySelectorAll('.addres').forEach(r=>r.classList.remove('on'));
@@ -2681,17 +2701,90 @@ document.addEventListener('click',e=>{const g=e.target.closest('[data-hgo]');if(
 /* первые шаги */
 let ts=0;
 const tourSteps=[
- ['files','Мои анализы','Нажмите «Добавить анализ», выберите фото или PDF и укажите повод сдачи.'],
- ['summary','Сводка','Откройте показатель в таблице. Включите график, чтобы посмотреть динамику и препараты по датам.'],
- ['profile','Профиль','Здесь можно добавить болезнь, препарат или госпитализацию. Откройте «Добавить событие», чтобы описать или продиктовать несколько событий.'],
- ['share','Доступ специалисту','Выберите период результатов и срок доступа. Откройте «Вид для врача» или сохраните PDF через печать.']
+ ['profile','[data-psec="base"]','Заполните профиль','Начните с возраста, пола и роста. Жалобы и препараты можно добавить позже.','Открыть основные данные'],
+ ['files','#tabs .fab','Добавьте первый анализ','Нажмите плюс и выберите фото или PDF. Перед сохранением можно сверить значения с бланком.','Открыть способы загрузки'],
+ ['summary','#visitDoctor','Посмотрите результаты','Сводка показывает последнюю сдачу и изменения. Нажмите «Показать врачу», чтобы открыть отчёт.','Посмотреть отчёт'],
+ ['book','#labs .lab','Сравните лаборатории','Для вашего списка анализов здесь видны итоговая цена и расстояние. Выберите подходящую лабораторию.','Посмотреть лабораторию'],
+ ['docs','#specs .spec','Найдите специалиста','В карточке врача можно посмотреть, какие анализы взять. Для записи нажмите «Записаться на сайте».','Открыть карточку врача'],
+ ['docs','#specs .spec [data-site]','Запишитесь на приём','Выбрав врача, перейдите к записи в клинике. В демо можно посмотреть этот шаг.','Посмотреть переход к записи']
 ];
-function drawTut(){const [page,title,body]=tourSteps[ts];show(page);$('#tS').textContent='Шаг '+(ts+1)+' из 4 · демо для взрослых';$('#tT').textContent=title;$('#tP').textContent='';$('#tB').textContent=body;$('#tPrev').hidden=!ts;$('#tNext').textContent=ts===3?'Готово':'Дальше';$('#tSkip').textContent='Закрыть тур'}
-let tourTrigger;
-function openTut(){tourTrigger=document.activeElement;ts=0;drawTut();$('#app').inert=true;$('#tut').classList.add('on');$('#tNext').focus()}
-function closeTut(){store.set('oh10-tour',1);$('#tut').classList.remove('on');$('#app').inert=false;show('summary');(tourTrigger?.id==='visitTour'?tourTrigger:$('#visitTour')).focus()}
-$('#tNext').onclick=()=>{if(ts===3)closeTut();else{ts++;drawTut()}};
+let tourTrigger,tourOrigin,tourFrame=0,tourResume;
+const guide=$('#tut'),spot=$('#tourTarget'),guideCard=guide.querySelector('.tbox');
+function guideTarget(){
+ const step=tourSteps[ts];
+ return document.querySelector(step[1])||document.querySelector(step[0]==='docs'?'#sqs':'#bq');
+}
+function placeGuide(){
+ if(!guide.classList.contains('on'))return;
+ const target=guideTarget();
+ if(!target||!target.getClientRects().length)return;
+ const bounds=[target.getBoundingClientRect()];
+ if(target.matches('.fab'))for(const part of target.querySelectorAll('svg,span'))bounds.push(part.getBoundingClientRect());
+ const w=document.documentElement.clientWidth,h=innerHeight;
+ const x=Math.max(2,Math.min(...bounds.map(r=>r.left))-4),y=Math.max(2,Math.min(...bounds.map(r=>r.top))-4);
+ const right=Math.min(w-2,Math.max(...bounds.map(r=>r.right))+4),bottom=Math.min(h-2,Math.max(...bounds.map(r=>r.bottom))+4);
+ if(right<=x||bottom<=y)return;
+ const radius=Math.min(12,(right-x)/2,(bottom-y)/2);
+ const hole=`M ${x+radius} ${y} H ${right-radius} Q ${right} ${y} ${right} ${y+radius} V ${bottom-radius} Q ${right} ${bottom} ${right-radius} ${bottom} H ${x+radius} Q ${x} ${bottom} ${x} ${bottom-radius} V ${y+radius} Q ${x} ${y} ${x+radius} ${y} Z`;
+ guide.style.setProperty('--tour-mask',`path(evenodd, "M0 0H${w}V${h}H0Z ${hole}")`);
+ Object.assign(spot.style,{left:x+'px',top:y+'px',width:Math.max(0,right-x)+'px',height:Math.max(0,bottom-y)+'px'});
+ const top=bottom+12+guideCard.offsetHeight<h-8?bottom+12:Math.max(8,y-guideCard.offsetHeight-12);
+ guideCard.style.top=top+'px';
+ guideCard.style.left=Math.max(8,Math.min(w-guideCard.offsetWidth-8,x))+'px';
+}
+function drawTut(){
+ cancelAnimationFrame(tourFrame);
+ const [page,selector,title,body,action]=tourSteps[ts];
+ show(page);
+ $('#tS').textContent='Шаг '+(ts+1)+' из '+tourSteps.length;
+ $('#tT').textContent=title;$('#tB').textContent=body;
+ $('#tP').innerHTML=tourSteps.map((_,i)=>'<i class="'+(i===ts?'active':'')+'"></i>').join('');
+ $('#tPrev').hidden=ts===0;$('#tNext').textContent=ts===tourSteps.length-1?'Готово':'Дальше';
+ $('#tSkip').textContent='Закрыть';spot.setAttribute('aria-label',action);
+ let scrolled=false,until=performance.now()+1000;
+ function align(){
+  const target=guideTarget();
+  if(target&&target.getClientRects().length){
+   if(!scrolled){target.scrollIntoView({block:'center',behavior:RM?'instant':'smooth'});scrolled=true}
+   placeGuide();
+  }
+  if(performance.now()<until)tourFrame=requestAnimationFrame(align);
+ }
+ tourFrame=requestAnimationFrame(align);
+}
+function openTut(){
+ tourTrigger=document.activeElement;tourOrigin=cur;ts=0;
+ guide.classList.add('on');$('#app').inert=true;drawTut();$('#tNext').focus();
+}
+function dismissGuide(){
+ cancelAnimationFrame(tourFrame);guide.classList.remove('on');$('#app').inert=false;
+}
+function closeTut(){
+ tourResume?.disconnect();tourResume=null;dismissGuide();store.set('oh10-tour',1);
+ show(tourOrigin||'summary');setTimeout(()=>tourTrigger?.focus({preventScroll:true}),RM?0:200);
+}
+function advanceGuide(){if(ts===tourSteps.length-1)closeTut();else{ts++;drawTut()}}
+$('#tNext').onclick=advanceGuide;
 $('#tPrev').onclick=()=>{if(ts){ts--;drawTut()}};
+spot.onclick=()=>{
+ const target=guideTarget();if(!target)return;
+ const button=target.matches('button')?target:target.querySelector('[data-sptk],button');
+ dismissGuide();
+ button?.click();
+ const modal=$('#modal');
+ function resume(){
+  if(modal.classList.contains('on')||document.body.classList.contains('preview'))return;
+  tourResume?.disconnect();tourResume=null;
+  if(ts===tourSteps.length-1){closeTut();return}
+  guide.classList.add('on');$('#app').inert=true;advanceGuide();$('#tNext').focus();
+ }
+ tourResume=new MutationObserver(resume);
+ tourResume.observe(modal,{attributes:true,attributeFilter:['class']});
+ tourResume.observe(document.body,{attributes:true,attributeFilter:['class']});
+ resume();
+};
+window.addEventListener('resize',placeGuide);
+window.addEventListener('scroll',placeGuide,{passive:true});
 $('#tSkip').onclick=closeTut;$('#tutOpen').onclick=openTut;
 $('#tut').addEventListener('keydown',e=>{
   if(e.key==='Escape'){e.preventDefault();closeTut();return}
@@ -2702,7 +2795,7 @@ $('#tut').addEventListener('keydown',e=>{
   if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
 });
 /* кнопка «Добавить анализ» */
-function openAdd(){openModal('Добавить анализ',`<div class="addopts">
+function openAdd(){openModal('Добавить анализ',`<div class="record-actions"><button class="btn" type="button" data-capture>Добавить событие</button><button class="btn" type="button" data-diary>Дневник измерений</button></div><div class="addopts">
   <button type="button" class="ao" data-up="camera"><span class="ao-i">${svgI(PIC.camera,24)}</span><span><b>Сфотографировать бланк</b><small>Снимите бланк целиком, чтобы были видны дата и нормы</small></span></button>
   <button type="button" class="ao" data-up="gallery"><span class="ao-i">${svgI(PIC.gallery,24)}</span><span><b>Фото или скриншот из галереи</b><small>Например, скриншот из приложения лаборатории</small></span></button>
   <button type="button" class="ao" data-up="files"><span class="ao-i">${svgI(PIC.files,24)}</span><span><b>Файл или PDF</b><small>Из почты или личного кабинета лаборатории</small></span></button>
@@ -2735,11 +2828,12 @@ function openCtxAsk(){const act=EV.med.map((e,i)=>({e,i})).filter(x=>x.e.f&&medA
 
 /* старт */
 renderTabs('summary');updLogin();fillForm();renderSummary();renderCtx();renderBlocks();renderUploads();drawQR();renderDocs();renderShared();renderBook();
-$('#visitDoctor').onclick=()=>show('share');
-$('#visitMoreEvents').onclick=()=>{
-  $('#visitEvents').classList.toggle('expanded');
-  fitVisitEvents();
-};
+$('#visitDoctor').onclick=()=>openSpecView(false);
+function openVisitDialog(title,html){
+ openModal(title,'<div class="visit-full-content">'+html+'</div>');
+}
+$('#visitCompare').onclick=()=>openVisitDialog('Сравнение сдач',$('#changes').innerHTML);
+$('#visitMoreEvents').onclick=()=>openVisitDialog('События к сдаче · '+DATES.at(-1),ctxHTML());
 new ResizeObserver(fitVisitEvents).observe($('#visit-title').closest('.visit17'));
 document.fonts.ready.then(fitVisitEvents);
 $('#visitTour').onclick=openTut;
@@ -2832,7 +2926,7 @@ function rsnBindPicker(root,onPick){
   const base=DATES.map((d,i)=>({k:'d'+i})).reverse();const list=pending.map(p=>({k:p.id})).concat(base);
   const rows=[...document.querySelectorAll('#upTable tbody tr')];
   rows.forEach((tr,i)=>{const k=list[i]&&list[i].k;if(!k)return;const r=RSN[k];tr.dataset.rsn=r||'';
-    tr.cells[0].insertAdjacentHTML('beforeend',`<button type="button" class="rsnt${r?'':' none'}" data-rsnedit="${k}">${r?esc(r):'+ повод'}</button>`);
+    tr.cells[0].insertAdjacentHTML('beforeend',`<button type="button" class="rsnt${r?'':' none'}" data-rsnedit="${k}">${r==='По назначению врача'?'Назначил врач':r?esc(r):'+ повод'}</button>`);
     tr.hidden=!!RSNF&&r!==RSNF});
   const host=$('#upTable').closest('.tblw');let f=$('#rsnFilter');if(!f){host.insertAdjacentHTML('beforebegin','<div class="rsnf" id="rsnFilter"></div>');f=$('#rsnFilter')}
   const cnt={};list.forEach(x=>{const r=RSN[x.k];if(r)cnt[r]=(cnt[r]||0)+1});
@@ -2987,7 +3081,8 @@ function diaryReport(inPeriod){
 function diaryList(rows){
  return rows.slice().sort((a,b)=>(b.day+b.time).localeCompare(a.day+a.time)).map(r=>'<p>'+dfmt(r.day)+' '+esc(r.time)+' · '+esc(diaryKinds[r.kind].fields.map((label,i)=>label+' — '+r.values[i]).join(', '))+'</p>').join('');
 }
-$('#diaryOpen').onclick=()=>{
+document.addEventListener('click',e=>{if(e.target.closest('[data-diary]'))openDiary()});
+function openDiary(){
  openModal('Дневники измерений','<form id="diaryForm" class="field"><label>Дневник <select id="diaryKind">'+Object.entries(diaryKinds).map(([k,v])=>'<option value="'+k+'">'+v.name+'</option>').join('')+'</select></label><label>Дата <input type="date" required id="diaryDay"></label><label>Время <input type="time" id="diaryTime"></label><div id="diaryFields"></div><button class="btn pri">Сохранить измерение</button></form><div id="diaryHistory"></div>');
  $('#diaryDay').value=todayISO();
  function draw(){const kind=$('#diaryKind').value;
@@ -2995,7 +3090,7 @@ $('#diaryOpen').onclick=()=>{
  $('#diaryHistory').innerHTML=diaryList((P.diary||[]).filter(r=>r.kind===kind))||'<p>Записей пока нет.</p>'}
  $('#diaryKind').onchange=draw;draw();
  $('#diaryForm').onsubmit=e=>{e.preventDefault();const item={kind:$('#diaryKind').value,day:$('#diaryDay').value,time:$('#diaryTime').value,values:[...document.querySelectorAll('#diaryFields input')].map(i=>i.value)};
- requireLogin(()=>{(P.diary||=[]).push(item);saveAll();$('#diaryOpen').click();$('#diaryKind').value=item.kind;draw();toast('Измерение сохранено')})}
+ requireLogin(()=>{(P.diary||=[]).push(item);saveAll();openDiary();$('#diaryKind').value=item.kind;draw();toast('Измерение сохранено')})}
 };
 $('#sendPDF').onclick=()=>{
  const note=$('#pvNote');
