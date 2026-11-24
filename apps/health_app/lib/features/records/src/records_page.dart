@@ -135,6 +135,7 @@ class _RecordsPageState extends State<RecordsPage> with WidgetsBindingObserver {
                             for (final (label, value) in recordFields(
                               l,
                               profile.record,
+                              terminology: model.terminology,
                             ))
                               if (value.isNotEmpty)
                                 Padding(
@@ -372,7 +373,11 @@ class _RecordsPageState extends State<RecordsPage> with WidgetsBindingObserver {
               children: [
                 if (record is LabResult)
                   Text(categoryPresentation(context, record.category).title),
-                for (final (label, value) in recordFields(l, record))
+                for (final (label, value) in recordFields(
+                  l,
+                  record,
+                  terminology: widget.model.terminology,
+                ))
                   if (value.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),

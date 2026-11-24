@@ -1,4 +1,5 @@
 import 'calendar_date.dart';
+import 'lab_result_coding.dart';
 
 /// Stable user-selected display groups, not normalized medical concepts.
 enum AnalysisCategory {
@@ -102,11 +103,13 @@ final class LabResult extends HealthRecord {
     this.method = '',
     this.specimen = '',
     this.notes = '',
+    this.coding,
   });
   final String name, unit, reference, laboratory, method, specimen, notes;
   final SourceValue value;
   final CalendarDate date;
   final AnalysisCategory category;
+  final LabResultCoding? coding;
   @override
   RecordKind get kind => RecordKind.result;
   @override
@@ -114,6 +117,16 @@ final class LabResult extends HealthRecord {
     super.validate();
     _required(name, 'name');
     value.validate();
+    if (coding != null &&
+        !coding!.describes(
+          name: name,
+          unit: unit,
+          laboratory: laboratory,
+          specimen: specimen,
+          method: method,
+        )) {
+      throw const InvalidRecord('coding');
+    }
   }
 }
 

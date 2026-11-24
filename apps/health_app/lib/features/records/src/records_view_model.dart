@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:medical_domain/medical_domain.dart';
+import 'package:medical_terminology/medical_terminology.dart';
 
 enum RecordsError { load, save, conflict, invalid }
 
@@ -11,9 +12,12 @@ final class RecordsViewModel extends ChangeNotifier {
     required HealthRecordsRepository repository,
     required this.newId,
     required this.clock,
-  }) : _records = HealthRecords(repository);
+    TerminologyCatalog? terminology,
+  }) : _records = HealthRecords(repository),
+       terminology = terminology ?? bundledTerminology;
   static const profileId = 'local-profile';
   final HealthRecords _records;
+  final TerminologyCatalog terminology;
   final String Function() newId;
   final DateTime Function() clock;
   List<RecordEntry> _entries = const [];

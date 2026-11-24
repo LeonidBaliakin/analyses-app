@@ -7,3 +7,5 @@
 порт `HealthRecordsRepository` и сценарий сохранения `HealthRecords`.
 Хранение и JSON DTO принадлежат `local_store`; публичный вход ядра —
 `lib/medical_domain.dart`. [Контракт и ограничения](../../docs/local-records.md).
+
+`LabResultCoding` хранит выбранные пользователем ID показателя/единицы, выпуск словаря и исходный контекст отдельно от медицинского значения. `LabResult.validate` отклоняет привязку с устаревшим контекстом. Поиск словаря находится в соседнем чистом пакете `medical_terminology`.

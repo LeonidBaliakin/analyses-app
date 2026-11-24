@@ -1099,4 +1099,41 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get addManually => 'Ввести вручную';
+
+  @override
+  String get terminologyTitle => 'Словарь показателей';
+
+  @override
+  String get terminologyHint =>
+      'Выберите показатель и единицу для этого результата. Исходный текст сохранится. Привязка необязательна.';
+
+  @override
+  String get terminologyUnknown =>
+      'Точного совпадения нет. Выберите понятие или сохраните без привязки.';
+
+  @override
+  String get terminologyAmbiguous =>
+      'Найдено несколько понятий. Уточните материал и выберите показатель или оставьте без привязки.';
+
+  @override
+  String terminologySuggestion(String name) {
+    return 'Возможное соответствие: $name. Для привязки выберите его явно.';
+  }
+
+  @override
+  String get terminologyChanged =>
+      'Исходные сведения изменены. При необходимости выберите понятие заново.';
+
+  @override
+  String get terminologyIndicator => 'Показатель из словаря';
+
+  @override
+  String get terminologyUnit => 'Единица из словаря';
+
+  @override
+  String get terminologyUnlinked => 'Без привязки';
+
+  @override
+  String get terminologySelected =>
+      'Выбор сохранится вместе с результатом. Значение и референсы останутся в исходном виде.';
 }

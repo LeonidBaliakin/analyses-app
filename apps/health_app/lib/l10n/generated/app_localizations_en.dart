@@ -1096,4 +1096,41 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addManually => 'Add manually';
+
+  @override
+  String get terminologyTitle => 'Indicator dictionary';
+
+  @override
+  String get terminologyHint =>
+      'Link this result to an indicator and unit. Your original text is kept. Linking is optional.';
+
+  @override
+  String get terminologyUnknown =>
+      'No exact match. Choose a concept or save without linking.';
+
+  @override
+  String get terminologyAmbiguous =>
+      'Several concepts match. Check the specimen and choose, or leave unlinked.';
+
+  @override
+  String terminologySuggestion(String name) {
+    return 'Suggested: $name. Select explicitly to link.';
+  }
+
+  @override
+  String get terminologyChanged =>
+      'Source details changed. Choose the concept again if needed.';
+
+  @override
+  String get terminologyIndicator => 'Dictionary indicator';
+
+  @override
+  String get terminologyUnit => 'Dictionary unit';
+
+  @override
+  String get terminologyUnlinked => 'Leave unlinked';
+
+  @override
+  String get terminologySelected =>
+      'Your selection will be saved with this result. Values and reference ranges are kept as entered.';
 }

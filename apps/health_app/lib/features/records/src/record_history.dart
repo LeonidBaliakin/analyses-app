@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:medical_domain/medical_domain.dart';
+import 'package:medical_terminology/medical_terminology.dart';
 
 import '../../../l10n/generated/app_localizations.dart';
 import 'records_view_model.dart';
@@ -11,7 +12,11 @@ String recordName(HealthRecord r) => switch (r) {
   HomeMeasurement() => r.name,
 };
 
-List<(String, String)> recordFields(AppLocalizations l, HealthRecord r) => [
+List<(String, String)> recordFields(
+  AppLocalizations l,
+  HealthRecord r, {
+  TerminologyCatalog? terminology,
+}) => [
   (l.nameLabel, recordName(r)),
   ...switch (r) {
     MedicalProfile() => [
@@ -28,6 +33,24 @@ List<(String, String)> recordFields(AppLocalizations l, HealthRecord r) => [
       (l.labLabel, r.laboratory),
       (l.localMethod, r.method),
       (l.localSpecimen, r.specimen),
+      if (r.coding case final c?) ...[
+        (
+          l.terminologyIndicator,
+          (terminology ?? bundledTerminology).releases[c.terminologyReleaseId]
+                  ?.indicator(c.indicatorId)
+                  ?.label
+                  .inLanguage(l.localeName) ??
+              c.indicatorId,
+        ),
+        if (c.unitId != null)
+          (
+            l.terminologyUnit,
+            (terminology ?? bundledTerminology).releases[c.terminologyReleaseId]
+                    ?.unit(c.unitId!)
+                    ?.symbol ??
+                c.unitId!,
+          ),
+      ],
       (l.localNotes, r.notes),
     ],
     MedicationCourse() => [
@@ -105,6 +128,7 @@ Future<void> showRecordHistory(
                       for (final (label, value) in recordFields(
                         l,
                         entry.record,
+                        terminology: model.terminology,
                       ))
                         if (value.isNotEmpty)
                           Padding(

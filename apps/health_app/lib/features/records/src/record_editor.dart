@@ -6,6 +6,8 @@ import '../../../l10n/generated/app_localizations.dart';
 import 'category_presentation.dart';
 import 'record_history.dart';
 import 'records_view_model.dart';
+import 'result_coding_view_model.dart';
+import 'result_coding_fields.dart';
 
 Future<void> showRecordEditor(
   BuildContext context,
@@ -48,6 +50,7 @@ class _RecordEditorState extends State<_RecordEditor> {
   ResultValueKind _valueKind = ResultValueKind.numeric;
   bool _dirty = false;
   String? _invalidField;
+  late final ResultCodingViewModel _coding;
 
   @override
   void initState() {
@@ -128,6 +131,11 @@ class _RecordEditorState extends State<_RecordEditor> {
     ]) {
       _fields[key] = TextEditingController(text: values[key] ?? '');
     }
+    _coding = ResultCodingViewModel(
+      widget.model.terminology,
+      initial: r is LabResult ? r.coding : null,
+    );
+    _updateCodingSource();
   }
 
   static String _time(int minutes) =>
@@ -144,8 +152,17 @@ class _RecordEditorState extends State<_RecordEditor> {
     _invalidField = null;
   }
 
+  void _updateCodingSource() => _coding.updateSource(
+    name: _text('name'),
+    unit: _text('unit'),
+    laboratory: _text('laboratory'),
+    specimen: _text('specimen'),
+    method: _text('method'),
+  );
+
   @override
   void dispose() {
+    _coding.dispose();
     for (final c in _fields.values) {
       c.dispose();
     }
@@ -166,7 +183,19 @@ class _RecordEditorState extends State<_RecordEditor> {
       child: TextFormField(
         key: Key('record-$key'),
         controller: _fields[key],
-        onChanged: (_) => _changed(),
+        onChanged: (_) {
+          _changed();
+          if (widget.kind == RecordKind.result &&
+              const [
+                'name',
+                'unit',
+                'laboratory',
+                'specimen',
+                'method',
+              ].contains(key)) {
+            _updateCodingSource();
+          }
+        },
         minLines: lines,
         maxLines: lines == 1 ? 1 : 6,
         decoration: InputDecoration(
@@ -223,6 +252,7 @@ class _RecordEditorState extends State<_RecordEditor> {
           laboratory: _text('laboratory'),
           method: _text('method'),
           specimen: _text('specimen'),
+          coding: _coding.coding,
           notes: _text('notes'),
         );
       case RecordKind.medication:
@@ -461,6 +491,10 @@ class _RecordEditorState extends State<_RecordEditor> {
                                   _input('laboratory', l.labLabel),
                                   _input('method', l.localMethod),
                                   _input('specimen', l.localSpecimen),
+                                  ResultCodingFields(
+                                    model: _coding,
+                                    onChanged: _changed,
+                                  ),
                                   Text(l.localNoInterpretation),
                                   const SizedBox(height: 16),
                                 ],

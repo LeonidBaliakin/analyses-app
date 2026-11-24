@@ -10,7 +10,8 @@ import 'package:health_app/features/settings/settings.dart';
 import 'package:health_app/features/records/records.dart';
 import 'package:medical_domain/medical_domain.dart';
 
-import '../test/records_flow_test.dart' show launch, tap, withProfile;
+import '../test/records_flow_test.dart'
+    show launch, tap, enter, selectTerm, withProfile;
 
 void main() {
   for (final dark in [false, true]) {
@@ -71,6 +72,14 @@ void main() {
       await capture(dark ? 'dark' : 'light');
       await tap(tester, find.text('Добавить вручную'));
       await capture(dark ? 'editor-dark' : 'editor-light');
+      await enter(tester, 'name', 'HGB');
+      await enter(tester, 'value', '0,0100');
+      await enter(tester, 'unit', 'г/л');
+      await selectTerm(tester, 'indicator', 'Гемоглобин в крови');
+      await selectTerm(tester, 'unit', 'g/L · Грамм на литр');
+      await tester.ensureVisible(find.byKey(const Key('term-indicator')));
+      await tester.pumpAndSettle();
+      await capture(dark ? 'terminology-dark' : 'terminology-light');
       expect(tester.takeException(), isNull);
     });
   }

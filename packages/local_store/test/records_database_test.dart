@@ -12,6 +12,7 @@ const profile = MedicalProfile(id: 'p', name: 'Synthetic profile');
 LabResult result({
   String laboratory = 'Synthetic lab',
   String raw = '< 0,0100',
+  LabResultCoding? coding,
 }) => LabResult(
   id: 'r',
   profileId: 'p',
@@ -24,6 +25,7 @@ LabResult result({
   reference: 'source reference',
   method: 'source method',
   specimen: 'source specimen',
+  coding: coding,
 );
 RecordMutation command(
   String id,
@@ -49,6 +51,162 @@ void main() {
   tearDown(() async {
     await db.close();
     directory.deleteSync(recursive: true);
+  });
+
+  const coding = LabResultCoding(
+    terminologyReleaseId: 'synthetic-v1',
+    indicatorId: 'synthetic-indicator',
+    unitId: 'synthetic-unit',
+    sourceName: 'Synthetic test',
+    sourceUnit: 'test-unit',
+    sourceLaboratory: 'Synthetic lab',
+    sourceSpecimen: 'source specimen',
+    sourceMethod: 'source method',
+  );
+  test(
+    'coding, originals, history and outbox survive restart and replay',
+    () async {
+      await db.commit(command('p1', profile));
+      await db.commit(command('raw-r', result()));
+      final selected = result(coding: coding);
+      final mutation = command('coded-r', selected, revision: 1);
+      expect(await db.commit(mutation), 2);
+      await db.close();
+      db = RecordsDatabase(NativeDatabase(file));
+      expect(await db.commit(mutation), 2);
+      final read =
+          (await db.read('p')).singleWhere((e) => e.record is LabResult).record
+              as LabResult;
+      expect(read.value.raw, '< 0,0100');
+      expect(read.unit, 'test-unit');
+      expect(read.coding!.terminologyReleaseId, 'synthetic-v1');
+      expect(read.coding!.indicatorId, 'synthetic-indicator');
+      expect(read.coding!.unitId, 'synthetic-unit');
+      expect(read.coding!.sourceSpecimen, 'source specimen');
+      final history = await db.history('p', 'r');
+      expect(history, hasLength(2));
+      expect((history.last.record as LabResult).coding, isNull);
+      expect(
+        (history.first.record as LabResult).coding!.verification,
+        'userConfirmed',
+      );
+      final outbox = await db
+          .customSelect(
+            "SELECT request FROM outbox WHERE operation_id = 'coded-r'",
+          )
+          .getSingle();
+      final request =
+          jsonDecode(outbox.read<String>('request')) as Map<String, dynamic>;
+      expect(
+        request['payload']['coding']['indicatorId'],
+        'synthetic-indicator',
+      );
+      expect(request['payload']['coding']['scope'], 'record');
+      expect(await db.customSelect('SELECT * FROM outbox').get(), hasLength(3));
+    },
+  );
+
+  test(
+    'a failed coded revision rolls back current record, history and outbox',
+    () async {
+      await db.commit(command('p1', profile));
+      await db.commit(command('raw-r', result()));
+      await db.customStatement('''CREATE TRIGGER fail_coded_outbox
+      BEFORE INSERT ON outbox WHEN NEW.operation_id = 'coded-r'
+      BEGIN SELECT RAISE(ABORT, 'synthetic failure'); END''');
+      await expectLater(
+        db.commit(command('coded-r', result(coding: coding), revision: 1)),
+        throwsA(isA<Exception>()),
+      );
+      final history = await db.history('p', 'r');
+      expect(history, hasLength(1));
+      expect((history.single.record as LabResult).coding, isNull);
+      expect(
+        ((await db.read('p')).singleWhere((e) => e.record is LabResult).record
+                as LabResult)
+            .coding,
+        isNull,
+      );
+      expect(
+        await db
+            .customSelect("SELECT * FROM outbox WHERE operation_id = 'coded-r'")
+            .get(),
+        isEmpty,
+      );
+    },
+  );
+
+  test('legacy payload and operation fingerprints remain unchanged', () async {
+    await db.commit(command('p1', profile));
+    final legacyPayload = <String, Object?>{
+      'format': 1,
+      'id': 'r',
+      'profileId': 'p',
+      'kind': 'result',
+      'source': 'manual',
+      'name': 'Synthetic test',
+      'raw': '< 0,0100',
+      'valueKind': 'comparison',
+      'date': '2026-11-24',
+      'category': 'blood',
+      'unit': 'test-unit',
+      'reference': 'source reference',
+      'laboratory': 'Synthetic lab',
+      'method': 'source method',
+      'specimen': 'source specimen',
+      'notes': '',
+    };
+    final encoded = jsonEncode(legacyPayload);
+    final request = jsonEncode({
+      'payload': legacyPayload,
+      'expectedRevision': 0,
+      'delete': false,
+    });
+    await db.customStatement(
+      'INSERT INTO records VALUES (?, ?, ?, ?, ?, ?, ?)',
+      ['r', 'p', 'result', encoded, 1, 0, 'fixture'],
+    );
+    await db.customStatement(
+      'INSERT INTO record_history VALUES (?, ?, ?, ?, ?, ?)',
+      ['r', 'p', 1, encoded, 0, 'fixture'],
+    );
+    await db.customStatement('INSERT INTO outbox VALUES (?, ?, ?, ?, ?, ?)', [
+      'old-r',
+      'p',
+      'r',
+      1,
+      request,
+      'fixture',
+    ]);
+    expect(jsonEncode(encodeRecord(result())), encoded);
+    await db.close();
+    db = RecordsDatabase(NativeDatabase(file));
+    expect(await db.commit(command('old-r', result())), 1);
+    expect((await db.history('p', 'r')).single.revision, 1);
+    expect(
+      ((await db.read('p')).singleWhere((e) => e.record is LabResult).record
+              as LabResult)
+          .coding,
+      isNull,
+    );
+  });
+
+  test('unknown payload versions and coding provenance fail explicitly', () {
+    final encoded = encodeRecord(result(coding: coding));
+    final j = jsonDecode(jsonEncode(encoded)) as Map<String, dynamic>;
+    j['coding']['verification'] = 'modelGuess';
+    expect(() => decodeRecord(j), throwsFormatException);
+    expect(
+      () => decodeRecord({...encodeRecord(profile), 'format': 2}),
+      throwsFormatException,
+    );
+    final stale = jsonDecode(jsonEncode(encoded)) as Map<String, dynamic>;
+    stale['laboratory'] = 'Different lab';
+    expect(() => decodeRecord(stale), throwsA(isA<InvalidRecord>()));
+    expect(
+      () => decodeRecord({...encoded, 'format': 3}),
+      throwsFormatException,
+    );
   });
 
   test(

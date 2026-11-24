@@ -2123,6 +2123,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add manually'**
   String get addManually;
+
+  /// No description provided for @terminologyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Indicator dictionary'**
+  String get terminologyTitle;
+
+  /// No description provided for @terminologyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Link this result to an indicator and unit. Your original text is kept. Linking is optional.'**
+  String get terminologyHint;
+
+  /// No description provided for @terminologyUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'No exact match. Choose a concept or save without linking.'**
+  String get terminologyUnknown;
+
+  /// No description provided for @terminologyAmbiguous.
+  ///
+  /// In en, this message translates to:
+  /// **'Several concepts match. Check the specimen and choose, or leave unlinked.'**
+  String get terminologyAmbiguous;
+
+  /// No description provided for @terminologySuggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested: {name}. Select explicitly to link.'**
+  String terminologySuggestion(String name);
+
+  /// No description provided for @terminologyChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Source details changed. Choose the concept again if needed.'**
+  String get terminologyChanged;
+
+  /// No description provided for @terminologyIndicator.
+  ///
+  /// In en, this message translates to:
+  /// **'Dictionary indicator'**
+  String get terminologyIndicator;
+
+  /// No description provided for @terminologyUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Dictionary unit'**
+  String get terminologyUnit;
+
+  /// No description provided for @terminologyUnlinked.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave unlinked'**
+  String get terminologyUnlinked;
+
+  /// No description provided for @terminologySelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Your selection will be saved with this result. Values and reference ranges are kept as entered.'**
+  String get terminologySelected;
 }
 
 class _AppLocalizationsDelegate

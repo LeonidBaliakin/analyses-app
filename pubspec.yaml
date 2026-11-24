@@ -5,6 +5,7 @@ environment:
 workspace:
   - apps/health_app
   - packages/medical_domain
+  - packages/medical_terminology
   - packages/design_system
   - packages/local_store
 dev_dependencies:

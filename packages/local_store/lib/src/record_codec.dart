@@ -2,7 +2,8 @@ import 'package:medical_domain/medical_domain.dart';
 
 /// Versioned storage DTO. Domain types do not expose JSON or database rows.
 Map<String, Object?> encodeRecord(HealthRecord r) => {
-  'format': 1,
+  // Keep legacy commands byte-for-byte stable for outbox idempotency.
+  'format': r is LabResult && r.coding != null ? 2 : 1,
   'id': r.id,
   'profileId': r.profileId,
   'kind': r.kind.name,
@@ -27,6 +28,7 @@ Map<String, Object?> encodeRecord(HealthRecord r) => {
       'method': r.method,
       'specimen': r.specimen,
       'notes': r.notes,
+      if (r.coding case final c?) 'coding': _encodeCoding(c),
     },
     MedicationCourse() => {
       'name': r.name,
@@ -52,7 +54,8 @@ Map<String, Object?> encodeRecord(HealthRecord r) => {
 };
 
 HealthRecord decodeRecord(Map<String, dynamic> j) {
-  if (j['format'] != 1) {
+  if ((j['format'] != 1 && j['format'] != 2) ||
+      (j['format'] == 2 && j['kind'] != 'result')) {
     throw const FormatException('Unsupported record format');
   }
   String text(String key) => j[key] as String;
@@ -61,7 +64,7 @@ HealthRecord decodeRecord(Map<String, dynamic> j) {
     text('raw'),
     ResultValueKind.values.byName(text('valueKind')),
   );
-  return switch (RecordKind.values.byName(text('kind'))) {
+  final record = switch (RecordKind.values.byName(text('kind'))) {
     RecordKind.profile => MedicalProfile(
       id: text('id'),
       name: text('name'),
@@ -77,6 +80,9 @@ HealthRecord decodeRecord(Map<String, dynamic> j) {
       value: value(),
       date: date('date'),
       category: AnalysisCategory.values.byName(text('category')),
+      coding: j['format'] == 2
+          ? _decodeCoding(j['coding'] as Map<String, dynamic>)
+          : null,
       unit: text('unit'),
       reference: text('reference'),
       laboratory: text('laboratory'),
@@ -108,4 +114,40 @@ HealthRecord decodeRecord(Map<String, dynamic> j) {
       notes: text('notes'),
     ),
   };
+  if (j['format'] == 2) record.validate();
+  return record;
+}
+
+Map<String, Object?> _encodeCoding(LabResultCoding c) => {
+  'terminologyReleaseId': c.terminologyReleaseId,
+  'indicatorId': c.indicatorId,
+  'unitId': c.unitId,
+  'sourceName': c.sourceName,
+  'sourceUnit': c.sourceUnit,
+  'sourceLaboratory': c.sourceLaboratory,
+  'sourceSpecimen': c.sourceSpecimen,
+  'sourceMethod': c.sourceMethod,
+  'scope': c.scope,
+  'relation': c.relation,
+  'matchMethod': c.matchMethod,
+  'verification': c.verification,
+};
+
+LabResultCoding _decodeCoding(Map<String, dynamic> j) {
+  if (j['scope'] != 'record' ||
+      j['relation'] != 'exact' ||
+      j['matchMethod'] != 'userSelection' ||
+      j['verification'] != 'userConfirmed') {
+    throw const FormatException('Unsupported coding provenance');
+  }
+  return LabResultCoding(
+    terminologyReleaseId: j['terminologyReleaseId'] as String,
+    indicatorId: j['indicatorId'] as String,
+    unitId: j['unitId'] as String?,
+    sourceName: j['sourceName'] as String,
+    sourceUnit: j['sourceUnit'] as String,
+    sourceLaboratory: j['sourceLaboratory'] as String,
+    sourceSpecimen: j['sourceSpecimen'] as String,
+    sourceMethod: j['sourceMethod'] as String,
+  );
 }

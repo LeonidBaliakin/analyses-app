@@ -404,5 +404,22 @@
   "introductionNext": "Next",
   "introductionDone": "Done",
   "introductionSaveError": "Could not save completion. Tap Skip or Done again to retry.",
-  "addManually": "Add manually"
+  "addManually": "Add manually",
+  "terminologyTitle": "Indicator dictionary",
+  "terminologyHint": "Link this result to an indicator and unit. Your original text is kept. Linking is optional.",
+  "terminologyUnknown": "No exact match. Choose a concept or save without linking.",
+  "terminologyAmbiguous": "Several concepts match. Check the specimen and choose, or leave unlinked.",
+  "terminologySuggestion": "Suggested: {name}. Select explicitly to link.",
+  "terminologyChanged": "Source details changed. Choose the concept again if needed.",
+  "terminologyIndicator": "Dictionary indicator",
+  "terminologyUnit": "Dictionary unit",
+  "terminologyUnlinked": "Leave unlinked",
+  "terminologySelected": "Your selection will be saved with this result. Values and reference ranges are kept as entered.",
+  "@terminologySuggestion": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

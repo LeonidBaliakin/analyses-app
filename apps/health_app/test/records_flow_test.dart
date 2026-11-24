@@ -11,6 +11,7 @@ import 'package:health_app/features/records/records.dart';
 import 'package:health_app/features/settings/settings.dart';
 import 'package:health_app/presentation/demo_catalog.dart';
 import 'package:medical_domain/medical_domain.dart';
+import 'package:medical_terminology/medical_terminology.dart';
 
 import 'support/memory_preferences_repository.dart';
 import 'support/memory_records_repository.dart';
@@ -22,12 +23,14 @@ Future<RecordsViewModel> launch(
   AppLanguage language = AppLanguage.en,
   AppThemeMode theme = AppThemeMode.light,
   GlobalKey? captureKey,
+  TerminologyCatalog? terminology,
 }) async {
   var sequence = 0;
   final model = RecordsViewModel(
     repository: repository,
     newId: () => 'id-${sequence++}',
     clock: () => DateTime(2026, 11, 24),
+    terminology: terminology,
   );
   await model.load();
   final settingsRepository = MemoryPreferencesRepository()
@@ -65,6 +68,11 @@ Future<void> enter(WidgetTester tester, String field, String value) async {
   await tester.pump();
 }
 
+Future<void> selectTerm(WidgetTester tester, String field, String label) async {
+  await tap(tester, find.byKey(Key('term-$field')));
+  await tap(tester, find.widgetWithText(MenuItemButton, label).last);
+}
+
 MemoryRecordsRepository withProfile() => MemoryRecordsRepository()
   ..entries[RecordsViewModel.profileId] = const RecordEntry(
     MedicalProfile(id: RecordsViewModel.profileId, name: 'Synthetic person'),
@@ -72,6 +80,178 @@ MemoryRecordsRepository withProfile() => MemoryRecordsRepository()
   );
 
 void main() {
+  testWidgets(
+    'editing a value preserves the saved release and historical label',
+    (tester) async {
+      final active = bundledTerminology.active;
+      final old = TerminologyRelease(
+        id: 'synthetic-historical-release',
+        source: 'Synthetic fixture',
+        usage: 'Test only',
+        indicators: [
+          for (final c in active.indicators)
+            IndicatorConcept(
+              id: c.id,
+              label: c.id == 'indicator.hemoglobin.blood'
+                  ? const TerminologyLabel(
+                      ru: 'Историческое название',
+                      en: 'Historical hemoglobin',
+                    )
+                  : c.label,
+              specimen: c.specimen,
+              specimenNames: c.specimenNames,
+              unitIds: c.unitIds,
+            ),
+        ],
+        units: active.units,
+        indicatorAliases: active.indicatorAliases,
+        unitAliases: active.unitAliases,
+      );
+      final repository = withProfile()
+        ..entries['historical-result'] = RecordEntry(
+          LabResult(
+            id: 'historical-result',
+            profileId: RecordsViewModel.profileId,
+            name: 'HGB',
+            unit: 'г/л',
+            value: const SourceValue('1,00', ResultValueKind.numeric),
+            date: CalendarDate(2026, 11, 24),
+            category: AnalysisCategory.blood,
+            coding: old.confirm(
+              indicatorId: 'indicator.hemoglobin.blood',
+              unitId: 'unit.g-per-l',
+              sourceName: 'HGB',
+              sourceUnit: 'г/л',
+              sourceLaboratory: '',
+              sourceSpecimen: '',
+              sourceMethod: '',
+            ),
+          ),
+          1,
+        );
+      await launch(
+        tester,
+        repository,
+        terminology: TerminologyCatalog(
+          releases: [old, active],
+          activeReleaseId: active.id,
+        ),
+      );
+      await tap(tester, find.text('HGB'));
+      expect(
+        find.text('Dictionary indicator: Historical hemoglobin'),
+        findsOneWidget,
+      );
+      await tap(tester, find.text('Edit'));
+      expect(find.text('Historical hemoglobin'), findsOneWidget);
+      await enter(tester, 'value', '9,00');
+      await tap(tester, find.byKey(const Key('record-save')));
+      expect(
+        (repository.mutations.single.record as LabResult)
+            .coding!
+            .terminologyReleaseId,
+        old.id,
+      );
+      expect(
+        (repository.mutations.single.record as LabResult).value.raw,
+        '9,00',
+      );
+    },
+  );
+
+  for (final language in [AppLanguage.en, AppLanguage.ru]) {
+    testWidgets(
+      'explicit dictionary selection, retry and resizing in ${language.name}',
+      (tester) async {
+        final ru = language == AppLanguage.ru;
+        tester.view.physicalSize = const Size(375, 844);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
+        final repository = withProfile()..failWrite = true;
+        await launch(
+          tester,
+          repository,
+          language: language,
+          theme: ru ? AppThemeMode.dark : AppThemeMode.light,
+        );
+        await tap(tester, find.text(ru ? 'Добавить вручную' : 'Add manually'));
+        await enter(tester, 'name', 'HGB');
+        await enter(tester, 'value', '0,0100');
+        await enter(tester, 'unit', 'г/л');
+        final indicator = ru ? 'Гемоглобин в крови' : 'Hemoglobin in blood';
+        await selectTerm(tester, 'indicator', indicator);
+        await selectTerm(
+          tester,
+          'unit',
+          ru ? 'g/L · Грамм на литр' : 'g/L · Gram per litre',
+        );
+        tester.view.physicalSize = const Size(1000, 800);
+        tester.view.displayFeatures = const [
+          DisplayFeature(
+            bounds: Rect.fromLTWH(490, 0, 20, 800),
+            type: DisplayFeatureType.hinge,
+            state: DisplayFeatureState.postureHalfOpened,
+          ),
+        ];
+        await tester.pumpAndSettle();
+        tester.view.displayFeatures = const [];
+        tester.view.physicalSize = const Size(844, 390);
+        tester.platformDispatcher.textScaleFactorTestValue = 2;
+        tester.platformDispatcher.accessibilityFeaturesTestValue =
+            const FakeAccessibilityFeatures(disableAnimations: true);
+        addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+        addTearDown(
+          tester.platformDispatcher.clearAccessibilityFeaturesTestValue,
+        );
+        await tester.pumpAndSettle();
+        expect(find.text(indicator), findsOneWidget);
+        expect(tester.takeException(), isNull);
+        await tap(tester, find.byKey(const Key('record-save')));
+        expect(repository.mutations, isEmpty);
+        expect(find.text(indicator), findsOneWidget);
+        repository.failWrite = false;
+        await tap(tester, find.byKey(const Key('record-save')));
+        final saved = repository.mutations.single.record as LabResult;
+        expect(saved.name, 'HGB');
+        expect(saved.unit, 'г/л');
+        expect(saved.value.raw, '0,0100');
+        expect(saved.coding!.indicatorId, 'indicator.hemoglobin.blood');
+        expect(saved.coding!.unitId, 'unit.g-per-l');
+        expect(
+          saved.coding!.terminologyReleaseId,
+          bundledTerminology.activeReleaseId,
+        );
+        await tap(tester, find.text('HGB'));
+        expect(
+          find.text(
+            '${ru ? 'Показатель из словаря' : 'Dictionary indicator'}: $indicator',
+          ),
+          findsOneWidget,
+        );
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  testWidgets(
+    'source changes clear an explicit selection without rewriting the input',
+    (tester) async {
+      final repository = withProfile();
+      await launch(tester, repository);
+      await tap(tester, find.text('Add manually'));
+      await enter(tester, 'name', 'Glucose');
+      await enter(tester, 'value', '5,20');
+      expect(find.textContaining('Several concepts match.'), findsOneWidget);
+      await selectTerm(tester, 'indicator', 'Glucose in plasma');
+      await enter(tester, 'laboratory', 'Changed synthetic lab');
+      expect(find.textContaining('Source details changed.'), findsOneWidget);
+      expect(find.text('Leave unlinked'), findsOneWidget);
+      await tap(tester, find.byKey(const Key('record-save')));
+      expect((repository.mutations.single.record as LabResult).coding, isNull);
+      expect((repository.mutations.single.record as LabResult).name, 'Glucose');
+    },
+  );
+
   testWidgets('real SQLite flow: correction history, restart and deletion', (
     tester,
   ) async {
@@ -100,6 +280,9 @@ void main() {
     await tap(tester, find.text('Add manually'));
     await enter(tester, 'name', 'Synthetic durable assay');
     await enter(tester, 'value', '1,00');
+    await enter(tester, 'unit', 'г/л');
+    await selectTerm(tester, 'indicator', 'Hemoglobin in blood');
+    await selectTerm(tester, 'unit', 'g/L · Gram per litre');
     await tap(tester, find.byKey(const Key('record-save')));
     await tap(tester, find.text('Synthetic durable assay'));
     await tap(tester, find.text('Edit'));
@@ -110,6 +293,7 @@ void main() {
     );
     final result = before!.singleWhere((e) => e.record is LabResult);
     expect(result.revision, 2);
+    expect((result.record as LabResult).coding!.unitId, 'unit.g-per-l');
     final history = await tester.runAsync(
       () => db.history(RecordsViewModel.profileId, result.record.id),
     );
@@ -122,6 +306,7 @@ void main() {
     expect(find.text('Synthetic durable assay'), findsOneWidget);
     await tap(tester, find.text('Synthetic durable assay'));
     await tap(tester, find.text('Edit'));
+    expect(find.text('Hemoglobin in blood'), findsOneWidget);
     expect(
       tester
           .widget<TextFormField>(find.byKey(const Key('record-value')))
