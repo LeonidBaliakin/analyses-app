@@ -1,0 +1,45 @@
+- name: Require the supported Ubuntu server
+  ansible.builtin.assert:
+    that:
+      - ansible_facts.distribution == 'Ubuntu'
+      - ansible_facts.distribution_version == '24.04'
+      - ansible_facts.architecture in ['x86_64', 'aarch64']
+    fail_msg: Automatic Docker installation currently supports Ubuntu 24.04 amd64/arm64. Set analyses_install_docker=false only for a host with Docker/Compose already installed.
+- name: Install repository prerequisites
+  ansible.builtin.apt:
+    name: [ca-certificates, python3]
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+- name: Create Docker keyring directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+- name: Install Docker repository signing key
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /etc/apt/keyrings/docker.asc
+    mode: '0644'
+- name: Configure official Docker repository
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/docker.sources
+    mode: '0644'
+    content: |
+      Types: deb
+      URIs: https://download.docker.com/linux/ubuntu
+      Suites: noble
+      Components: stable
+      Architectures: {{ 'amd64' if ansible_facts.architecture == 'x86_64' else 'arm64' }}
+      Signed-By: /etc/apt/keyrings/docker.asc
+  register: docker_repository
+- name: Install Docker Engine and Compose plugin
+  ansible.builtin.apt:
+    name: [docker-ce, docker-ce-cli, containerd.io, docker-buildx-plugin, docker-compose-plugin]
+    state: present
+    update_cache: "{{ docker_repository.changed }}"
+- name: Enable Docker at boot
+  ansible.builtin.systemd_service:
+    name: docker
+    enabled: true
+    state: started

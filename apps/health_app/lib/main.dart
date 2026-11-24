@@ -9,6 +9,9 @@ import 'features/records/records.dart';
 import 'features/documents/documents.dart';
 import 'data/documents/documents_http_gateway.dart';
 import 'data/documents/export_original.dart';
+import 'data/processing/local_engine.dart';
+import 'data/processing/remote_engine.dart';
+import 'features/processing/processing.dart';
 import 'data/device_access/plugin_device_access.dart';
 import 'features/device_access/device_access.dart';
 import 'features/settings/settings.dart';
@@ -52,6 +55,28 @@ Future<void> main() async {
     saveCopy: exportOriginal,
     gatewayFactory: (endpoint, token) =>
         DocumentsHttpGateway(endpoint: endpoint, token: token),
+    processingFactory: (gateway) => gateway is DocumentsHttpGateway
+        ? RemoteProcessingEngine(
+            endpoint: gateway.endpoint,
+            token: gateway.token,
+            profileId: RecordsViewModel.profileId,
+          )
+        : null,
+  );
+  final processing = ProcessingViewModel(
+    repository: database,
+    originals: database,
+    local: createLocalProcessingEngine(),
+    server: () => originals.processingEngine,
+    serverOriginalReady: (o) =>
+        originals.isCurrentDestination(o) &&
+        originals.originals.any(
+          (current) =>
+              current.originalId == o.originalId &&
+              current.cloudState.name == 'ready',
+        ),
+    newId: const Uuid().v4,
+    onConfirmed: records.load,
   );
   runApp(
     HealthApp(
@@ -60,6 +85,7 @@ Future<void> main() async {
       deviceAccess: deviceAccess,
       records: records,
       originals: originals,
+      processing: processing,
     ),
   );
 }

@@ -32,6 +32,7 @@ services:
       DOCUMENTS_S3_ACCESS_KEY: ${S3_ACCESS_KEY:?Run init_dev.py}
       DOCUMENTS_S3_SECRET_KEY: ${S3_SECRET_KEY:?Run init_dev.py}
       DOCUMENTS_S3_BUCKET: analyses-originals
+      DOCUMENTS_PROCESSING_ENDPOINT: http://processing:8081/
       DOCUMENTS_IDENTITIES_FILE: /run/secrets/identities.json
       DOCUMENTS_ALLOWED_ORIGINS: http://localhost:7357,http://127.0.0.1:7357
     ports:
@@ -44,6 +45,25 @@ services:
         condition: service_healthy
       seaweed:
         condition: service_started
+  processing:
+    profiles: [processing]
+    build:
+      context: ../..
+      dockerfile: services/processing/Dockerfile
+    environment:
+      PROCESSING_DATABASE_URL: postgresql://documents:${POSTGRES_PASSWORD}@postgres:5432/processing?sslmode=disable
+      PROCESSING_DOCUMENTS_ENDPOINT: http://documents:8080/
+      PROCESSING_BIND: 0.0.0.0
+      PROCESSING_WORKER: /worker/worker.py
+      PROCESSING_CONFIG: /tmp/processing-config.json
+      PROCESSING_LLM_URL: http://host.docker.internal:18089
+      PROCESSING_TESSDATA: /runtime/tessdata
+    volumes:
+      - ../../.runtime/processing/manifest.json:/runtime/manifest.json:ro
+      - ../../.runtime/processing/tessdata:/runtime/tessdata:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
 secrets:
   s3_config:
     file: .secrets/s3.json

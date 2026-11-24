@@ -2345,6 +2345,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saved through a different connection. Upload again to confirm this storage destination.'**
   String get originalsOtherConnection;
+
+  /// No description provided for @processingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Document draft'**
+  String get processingTitle;
+
+  /// No description provided for @processingConsent.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose where to process this original. Local mode sends nothing to the server. Server mode uses your own server; no external AI API is enabled. All fields require review before medical records are created.'**
+  String get processingConsent;
+
+  /// No description provided for @processingLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Process locally'**
+  String get processingLocal;
+
+  /// No description provided for @processingServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Process on my server'**
+  String get processingServer;
+
+  /// No description provided for @processingCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel processing'**
+  String get processingCancel;
+
+  /// No description provided for @processingBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'You can leave this screen. The job is kept and can be resumed.'**
+  String get processingBackground;
+
+  /// No description provided for @processingDateRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a complete result date before confirming. An unknown date is never replaced with today.'**
+  String get processingDateRequired;
+
+  /// No description provided for @processingUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing in this mode is unavailable on this device. Review the document manually or choose another mode.'**
+  String get processingUnavailable;
+
+  /// No description provided for @processingUploadFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload this original to the connected Documents storage before server processing.'**
+  String get processingUploadFirst;
+
+  /// No description provided for @processingAlreadyConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'This original already has confirmed records. Edit those records instead of importing it again.'**
+  String get processingAlreadyConfirmed;
+
+  /// No description provided for @processingConflict.
+  ///
+  /// In en, this message translates to:
+  /// **'The draft changed elsewhere. Reopen the saved draft before continuing.'**
+  String get processingConflict;
+
+  /// No description provided for @processingRuntimeChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'The processing runtime changed. Start a new run to use the new version.'**
+  String get processingRuntimeChanged;
+
+  /// No description provided for @processingEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No result rows were extracted. Review the OCR text or enter results manually.'**
+  String get processingEmpty;
+
+  /// No description provided for @processingCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing cancelled. Saved originals and drafts are kept.'**
+  String get processingCancelled;
+
+  /// No description provided for @processingFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing or saving failed. The original and saved draft are kept. You can retry or review the OCR text.'**
+  String get processingFailed;
+
+  /// No description provided for @processingRuns.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing runs'**
+  String get processingRuns;
+
+  /// No description provided for @processingQueued.
+  ///
+  /// In en, this message translates to:
+  /// **'Queued'**
+  String get processingQueued;
+
+  /// No description provided for @processingOcr.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading document (OCR)'**
+  String get processingOcr;
+
+  /// No description provided for @processingLlm.
+  ///
+  /// In en, this message translates to:
+  /// **'Extracting fields (LLM)'**
+  String get processingLlm;
+
+  /// No description provided for @processingReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft — review and correct'**
+  String get processingReview;
+
+  /// No description provided for @processingConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Records confirmed'**
+  String get processingConfirmed;
+
+  /// No description provided for @processingReviewHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Check names, values, comparison signs, units, references and dates against the original. Dictionary matches are suggestions until you select them. Excluded rows are not confirmed.'**
+  String get processingReviewHint;
+
+  /// No description provided for @processingOcrText.
+  ///
+  /// In en, this message translates to:
+  /// **'Recognized source text'**
+  String get processingOcrText;
+
+  /// No description provided for @processingUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown — check the original'**
+  String get processingUnknown;
+
+  /// No description provided for @processingUnbacked.
+  ///
+  /// In en, this message translates to:
+  /// **'The AI field differs from the source or combines columns. Check the OCR and fill it in manually.'**
+  String get processingUnbacked;
+
+  /// No description provided for @processingSourceValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Extracted source: {value}'**
+  String processingSourceValue(String value);
+
+  /// No description provided for @processingSaveDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Save draft'**
+  String get processingSaveDraft;
+
+  /// No description provided for @processingConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm selected results'**
+  String get processingConfirm;
+
+  /// No description provided for @processingOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Recognize and review'**
+  String get processingOpen;
+
+  /// No description provided for @processingImported.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed from a document'**
+  String get processingImported;
+
+  /// No description provided for @processingManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Review OCR manually'**
+  String get processingManual;
+
+  /// No description provided for @processingAddRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Add result'**
+  String get processingAddRow;
 }
 
 class _AppLocalizationsDelegate

@@ -1,0 +1,13 @@
+name: document_processing
+description: Shared grounded draft, normalization and explicit confirmation contracts.
+version: 0.1.0
+publish_to: none
+resolution: workspace
+environment:
+  sdk: ^3.14.0
+dependencies:
+  medical_domain: ^0.1.0
+  medical_terminology: ^0.1.0
+  document_domain: ^0.1.0
+dev_dependencies:
+  test: ^1.26.3

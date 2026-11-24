@@ -1224,4 +1224,115 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get originalsOtherConnection =>
       'Saved through a different connection. Upload again to confirm this storage destination.';
+
+  @override
+  String get processingTitle => 'Document draft';
+
+  @override
+  String get processingConsent =>
+      'Choose where to process this original. Local mode sends nothing to the server. Server mode uses your own server; no external AI API is enabled. All fields require review before medical records are created.';
+
+  @override
+  String get processingLocal => 'Process locally';
+
+  @override
+  String get processingServer => 'Process on my server';
+
+  @override
+  String get processingCancel => 'Cancel processing';
+
+  @override
+  String get processingBackground =>
+      'You can leave this screen. The job is kept and can be resumed.';
+
+  @override
+  String get processingDateRequired =>
+      'Enter a complete result date before confirming. An unknown date is never replaced with today.';
+
+  @override
+  String get processingUnavailable =>
+      'Processing in this mode is unavailable on this device. Review the document manually or choose another mode.';
+
+  @override
+  String get processingUploadFirst =>
+      'Upload this original to the connected Documents storage before server processing.';
+
+  @override
+  String get processingAlreadyConfirmed =>
+      'This original already has confirmed records. Edit those records instead of importing it again.';
+
+  @override
+  String get processingConflict =>
+      'The draft changed elsewhere. Reopen the saved draft before continuing.';
+
+  @override
+  String get processingRuntimeChanged =>
+      'The processing runtime changed. Start a new run to use the new version.';
+
+  @override
+  String get processingEmpty =>
+      'No result rows were extracted. Review the OCR text or enter results manually.';
+
+  @override
+  String get processingCancelled =>
+      'Processing cancelled. Saved originals and drafts are kept.';
+
+  @override
+  String get processingFailed =>
+      'Processing or saving failed. The original and saved draft are kept. You can retry or review the OCR text.';
+
+  @override
+  String get processingRuns => 'Processing runs';
+
+  @override
+  String get processingQueued => 'Queued';
+
+  @override
+  String get processingOcr => 'Reading document (OCR)';
+
+  @override
+  String get processingLlm => 'Extracting fields (LLM)';
+
+  @override
+  String get processingReview => 'Draft — review and correct';
+
+  @override
+  String get processingConfirmed => 'Records confirmed';
+
+  @override
+  String get processingReviewHint =>
+      'Check names, values, comparison signs, units, references and dates against the original. Dictionary matches are suggestions until you select them. Excluded rows are not confirmed.';
+
+  @override
+  String get processingOcrText => 'Recognized source text';
+
+  @override
+  String get processingUnknown => 'Unknown — check the original';
+
+  @override
+  String get processingUnbacked =>
+      'The AI field differs from the source or combines columns. Check the OCR and fill it in manually.';
+
+  @override
+  String processingSourceValue(String value) {
+    return 'Extracted source: $value';
+  }
+
+  @override
+  String get processingSaveDraft => 'Save draft';
+
+  @override
+  String get processingConfirm => 'Confirm selected results';
+
+  @override
+  String get processingOpen => 'Recognize and review';
+
+  @override
+  String get processingImported => 'Confirmed from a document';
+
+  @override
+  String get processingManual => 'Review OCR manually';
+
+  @override
+  String get processingAddRow => 'Add result';
 }

@@ -1,11 +1,12 @@
 openapi: 3.0.3
 info:
   title: Documents original storage
-  version: 1.0.0
+  version: 1.1.0
   description: >-
     Local pilot protocol. The bearer identity supplies the owner; the server
     authorizes the path profile and checks cloud writes and quota.
     Responses include X-Request-ID for correlation.
+    Processing routes are described separately in processing.yaml and proxied by Documents.
     Owner plus originalId is the immutable idempotency key. No S3 keys or
     upload URLs are returned. Uploads expire after 24 hours; retry transfers
     the entire bounded file. A new original requires new document/original IDs.
@@ -14,6 +15,51 @@ servers:
 security:
   - bearerAuth: []
 paths:
+  /v1/profiles/{profileId}/processing-access:
+    parameters:
+      - $ref: '#/components/parameters/Profile'
+    get:
+      operationId: processingAccess
+      description: Authorize owner/profile and expose pilot processing entitlement to Processing.
+      responses:
+        '200':
+          description: Authorized scope; read access does not imply processing entitlement.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [schemaVersion, ownerId, profileId, processingAllowed]
+                properties:
+                  schemaVersion: { type: integer, enum: [1] }
+                  ownerId: { type: string }
+                  profileId: { type: string }
+                  processingAllowed: { type: boolean }
+        default:
+          $ref: '#/components/responses/Error'
+  /v1/profiles/{profileId}/originals/{originalId}:
+    parameters:
+      - $ref: '#/components/parameters/Profile'
+      - $ref: '#/components/parameters/Original'
+    get:
+      operationId: describeReadyOriginal
+      description: Private ready-only metadata for authorized processing; pending/foreign originals return 404.
+      responses:
+        '200':
+          description: Original metadata with schemaVersion 1, state ready, ownerId and profileId.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Metadata'
+                  - type: object
+                    required: [schemaVersion, state, ownerId, profileId]
+                    properties:
+                      schemaVersion: { type: integer, enum: [1] }
+                      state: { type: string, enum: [ready] }
+                      ownerId: { type: string }
+                      profileId: { type: string }
+        default:
+          $ref: '#/components/responses/Error'
   /v1/profiles/{profileId}/uploads:
     parameters:
       - $ref: '#/components/parameters/Profile'

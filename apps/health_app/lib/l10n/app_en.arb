@@ -448,5 +448,44 @@
   "originalsExport": "Save a local copy",
   "originalsUpload": "Upload to cloud",
   "originalsDownloadVerify": "Download and verify",
-  "originalsOtherConnection": "Saved through a different connection. Upload again to confirm this storage destination."
+  "originalsOtherConnection": "Saved through a different connection. Upload again to confirm this storage destination.",
+  "processingTitle": "Document draft",
+  "processingConsent": "Choose where to process this original. Local mode sends nothing to the server. Server mode uses your own server; no external AI API is enabled. All fields require review before medical records are created.",
+  "processingLocal": "Process locally",
+  "processingServer": "Process on my server",
+  "processingCancel": "Cancel processing",
+  "processingBackground": "You can leave this screen. The job is kept and can be resumed.",
+  "processingDateRequired": "Enter a complete result date before confirming. An unknown date is never replaced with today.",
+  "processingUnavailable": "Processing in this mode is unavailable on this device. Review the document manually or choose another mode.",
+  "processingUploadFirst": "Upload this original to the connected Documents storage before server processing.",
+  "processingAlreadyConfirmed": "This original already has confirmed records. Edit those records instead of importing it again.",
+  "processingConflict": "The draft changed elsewhere. Reopen the saved draft before continuing.",
+  "processingRuntimeChanged": "The processing runtime changed. Start a new run to use the new version.",
+  "processingEmpty": "No result rows were extracted. Review the OCR text or enter results manually.",
+  "processingCancelled": "Processing cancelled. Saved originals and drafts are kept.",
+  "processingFailed": "Processing or saving failed. The original and saved draft are kept. You can retry or review the OCR text.",
+  "processingRuns": "Processing runs",
+  "processingQueued": "Queued",
+  "processingOcr": "Reading document (OCR)",
+  "processingLlm": "Extracting fields (LLM)",
+  "processingReview": "Draft — review and correct",
+  "processingConfirmed": "Records confirmed",
+  "processingReviewHint": "Check names, values, comparison signs, units, references and dates against the original. Dictionary matches are suggestions until you select them. Excluded rows are not confirmed.",
+  "processingOcrText": "Recognized source text",
+  "processingUnknown": "Unknown — check the original",
+  "processingUnbacked": "The AI field differs from the source or combines columns. Check the OCR and fill it in manually.",
+  "processingSourceValue": "Extracted source: {value}",
+  "processingSaveDraft": "Save draft",
+  "processingConfirm": "Confirm selected results",
+  "processingOpen": "Recognize and review",
+  "processingImported": "Confirmed from a document",
+  "@processingSourceValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "processingManual": "Review OCR manually",
+  "processingAddRow": "Add result"
 }

@@ -12,6 +12,43 @@ final class DocumentsStore {
   final Pool db;
   final ObjectStorage objects;
   final DateTime Function() clock;
+  Future<Map<String, Object>> processingAccess(String owner, String profile) =>
+      db.run((tx) async {
+        await _access(tx, owner, profile, upload: false);
+        final rows = await tx.execute(
+          Sql.named(
+            'SELECT cloud_enabled FROM profile_access WHERE owner_id=@o AND profile_id=@p',
+          ),
+          parameters: {'o': owner, 'p': profile},
+        );
+        return {
+          'schemaVersion': 1,
+          'ownerId': owner,
+          'profileId': profile,
+          'processingAllowed': rows.single[0] as bool,
+        };
+      });
+  Future<Map<String, Object>> describe(
+    String owner,
+    String profile,
+    String original,
+  ) => db.run((tx) async {
+    await _access(tx, owner, profile, upload: false);
+    final rows = await tx.execute(
+      Sql.named(
+        "SELECT * FROM uploads WHERE owner_id=@o AND profile_id=@p AND original_id=@i AND state='ready'",
+      ),
+      parameters: {'o': owner, 'p': profile, 'i': original},
+    );
+    if (rows.isEmpty) throw const ApiError(404, 'not_found');
+    return {
+      ...metadata(rows.single.toColumnMap()).toJson(),
+      'schemaVersion': 1,
+      'state': 'ready',
+      'ownerId': owner,
+      'profileId': profile,
+    };
+  });
 
   Future<void> migrate() => db.runTx((tx) async {
     await tx.execute('SELECT pg_advisory_xact_lock(5786204)');

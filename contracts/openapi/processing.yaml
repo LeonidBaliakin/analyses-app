@@ -1,0 +1,201 @@
+openapi: 3.0.3
+info:
+  title: Processing draft pilot
+  version: 1.0.0
+  description: >-
+    Served through Documents. Bearer owner/profile access is checked by both services.
+    Only ready Documents originals can be processed. No original bytes or external AI
+    URLs are accepted here. Outputs are unconfirmed derivatives; common Dart validation
+    and normalization precede local review and explicit medical-record confirmation.
+servers:
+  - url: http://127.0.0.1:18088
+security:
+  - bearerAuth: []
+paths:
+  /v1/profiles/{profileId}/processing-capabilities:
+    parameters:
+      - $ref: '#/components/parameters/Profile'
+    get:
+      operationId: processingCapabilities
+      responses:
+        '200':
+          description: Ready requires runtime capability and current processing entitlement.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [schemaVersion, ready, runtimeId]
+                properties:
+                  schemaVersion: { type: integer, enum: [1] }
+                  ready: { type: boolean }
+                  runtimeId: { type: string, nullable: true }
+        default:
+          $ref: '#/components/responses/Error'
+  /v1/profiles/{profileId}/processing-jobs:
+    parameters:
+      - $ref: '#/components/parameters/Profile'
+    post:
+      operationId: createProcessingJob
+      description: >-
+        Owner plus jobId is idempotent. Profile/original/runtime/terminology binding
+        is immutable; changed replay returns 409. Up to three active jobs per owner;
+        excess returns 429. Documents size and SHA-256 are verified before queueing.
+        The pilot uses cloud_enabled as its processing entitlement; denial returns 403.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [jobId, originalId, runtimeId, terminologyReleaseId]
+              properties:
+                jobId: { type: string, pattern: '^[A-Za-z0-9_-]{1,100}$' }
+                originalId: { type: string, pattern: '^[A-Za-z0-9_-]{1,100}$' }
+                runtimeId: { type: string }
+                terminologyReleaseId: { type: string }
+      responses:
+        '200':
+          $ref: '#/components/responses/Job'
+        default:
+          $ref: '#/components/responses/Error'
+  /v1/profiles/{profileId}/processing-jobs/{jobId}:
+    parameters:
+      - $ref: '#/components/parameters/Profile'
+      - $ref: '#/components/parameters/Job'
+    get:
+      operationId: readProcessingJob
+      description: Read status and retained OCR/draft, scoped to authorized owner and profile.
+      responses:
+        '200':
+          $ref: '#/components/responses/Job'
+        default:
+          $ref: '#/components/responses/Error'
+  /v1/profiles/{profileId}/processing-jobs/{jobId}/cancel:
+    parameters:
+      - $ref: '#/components/parameters/Profile'
+      - $ref: '#/components/parameters/Job'
+    post:
+      operationId: cancelProcessingJob
+      description: >-
+        Cancel unfinished work. Repeating is safe. Ready/failed results remain unchanged;
+        the receipt acknowledges the request, so read the job for authoritative status.
+        A cancelled job cannot publish DraftReady; cancellation is not deletion of originals.
+      responses:
+        '200':
+          description: Cancellation acknowledged.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [state]
+                properties:
+                  state: { type: string, enum: [cancelled] }
+        default:
+          $ref: '#/components/responses/Error'
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer }
+  parameters:
+    Profile:
+      in: path
+      name: profileId
+      required: true
+      schema: { type: string, pattern: '^[A-Za-z0-9_-]{1,100}$' }
+    Job:
+      in: path
+      name: jobId
+      required: true
+      schema: { type: string, pattern: '^[A-Za-z0-9_-]{1,100}$' }
+  responses:
+    Job:
+      description: Current persistent job state. No token or public object URL is returned.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Job'
+    Error:
+      description: 400 schema, 401 identity, 403 entitlement, 404 scope, 409 binding/runtime, 422 integrity, 429 queue, 503 unavailable.
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [error]
+            properties:
+              error: { type: string }
+  schemas:
+    Job:
+      type: object
+      required: [schemaVersion, jobId, profileId, originalId, runtimeId, status, error, artifact, draft]
+      properties:
+        schemaVersion: { type: integer, enum: [1] }
+        jobId: { type: string }
+        profileId: { type: string }
+        originalId: { type: string }
+        runtimeId: { type: string }
+        status: { type: string, enum: [queued, ocr, extracting, ready, failed, cancelled] }
+        error: { type: string, nullable: true }
+        artifact:
+          allOf:
+            - $ref: '#/components/schemas/OcrArtifact'
+          nullable: true
+        draft:
+          allOf:
+            - $ref: '#/components/schemas/GeneratedDraft'
+          nullable: true
+    OcrArtifact:
+      type: object
+      required: [runtimeId, versions, pages]
+      properties:
+        runtimeId: { type: string }
+        versions:
+          type: object
+          required: [ocr, model, prompt, worker]
+          additionalProperties: { type: string }
+        pages:
+          type: array
+          minItems: 1
+          maxItems: 5
+          items:
+            type: object
+            required: [number, text]
+            properties:
+              number: { type: integer, minimum: 1, maximum: 5 }
+              text: { type: string, maxLength: 12000 }
+              words:
+                type: array
+                maxItems: 5000
+                items:
+                  type: object
+                  required: [text, left, top, width, height, confidence]
+                  properties:
+                    text: { type: string }
+                    left: { type: integer }
+                    top: { type: integer }
+                    width: { type: integer }
+                    height: { type: integer }
+                    confidence: { type: number }
+    GeneratedDraft:
+      allOf:
+        - $ref: '#/components/schemas/OcrArtifact'
+        - type: object
+          required: [schemaVersion, rows]
+          properties:
+            schemaVersion: { type: integer, enum: [1] }
+            rows:
+              type: array
+              maxItems: 20
+              items:
+                type: object
+                additionalProperties: false
+                required: [page, evidence, name, value, unit, reference, date, laboratory, specimen, method]
+                properties:
+                  page: { type: integer, minimum: 1, maximum: 5 }
+                  evidence: { type: string, minLength: 1, maxLength: 1000 }
+                  name: { type: string, maxLength: 500 }
+                  value: { type: string, maxLength: 500 }
+                  unit: { type: string, maxLength: 500 }
+                  reference: { type: string, maxLength: 500 }
+                  date: { type: string, maxLength: 500 }
+                  laboratory: { type: string, maxLength: 500 }
+                  specimen: { type: string, maxLength: 500 }
+                  method: { type: string, maxLength: 500 }

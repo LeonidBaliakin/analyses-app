@@ -11,6 +11,7 @@ dependencies:
   medical_domain: ^0.1.0
   medical_terminology: ^0.1.0
   document_domain: ^0.1.0
+  document_processing: ^0.1.0
   http: ^1.6.0
   local_store: ^0.1.0
   drift_flutter: ^0.3.1

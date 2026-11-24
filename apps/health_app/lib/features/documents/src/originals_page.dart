@@ -5,11 +5,18 @@ import 'package:material_ui/material_ui.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../platform/device_access.dart';
 import 'originals_view_model.dart';
+import '../../processing/processing.dart';
 
 class OriginalsPage extends StatefulWidget {
-  const OriginalsPage({required this.model, this.onClose, super.key});
+  const OriginalsPage({
+    required this.model,
+    this.onClose,
+    this.processing,
+    super.key,
+  });
   final OriginalsViewModel model;
   final VoidCallback? onClose;
+  final ProcessingViewModel? processing;
   @override
   State<OriginalsPage> createState() => _OriginalsPageState();
 }
@@ -233,6 +240,17 @@ class _OriginalsPageState extends State<OriginalsPage> {
                                 spacing: 8,
                                 runSpacing: 8,
                                 children: [
+                                  if (widget.processing != null)
+                                    TextButton(
+                                      onPressed: model.busy
+                                          ? null
+                                          : () => showProcessing(
+                                              context,
+                                              widget.processing!,
+                                              original,
+                                            ),
+                                      child: Text(l.processingOpen),
+                                    ),
                                   TextButton(
                                     onPressed: model.busy
                                         ? null

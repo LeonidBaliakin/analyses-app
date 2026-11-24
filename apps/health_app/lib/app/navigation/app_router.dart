@@ -6,6 +6,7 @@ import '../../features/capture/capture.dart';
 import '../../features/device_access/device_access.dart';
 import '../../features/directory/directory.dart';
 import '../../features/documents/documents.dart';
+import '../../features/processing/processing.dart';
 import '../../features/introduction/introduction.dart';
 import '../../features/profile/profile.dart';
 import '../../features/records/records.dart';
@@ -22,6 +23,7 @@ GoRouter createAppRouter(
   DemoCatalog catalog, {
   RecordsViewModel? records,
   OriginalsViewModel? originals,
+  ProcessingViewModel? processing,
   ValueNotifier<bool>? showDemo,
   String? initialLocation,
 }) {
@@ -212,6 +214,7 @@ GoRouter createAppRouter(
             : null,
         builder: (context, state) => OriginalsPage(
           model: originals!,
+          processing: processing,
           onClose: () => router.goNamed(AppDestination.results.name),
         ),
       ),

@@ -6,3 +6,6 @@ build/
 .playwright-cli/
 .env
 .secrets/
+.runtime/
+__pycache__/
+infra/ansible/inventory/

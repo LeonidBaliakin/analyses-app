@@ -1,0 +1,127 @@
+- name: Validate deployment settings
+  ansible.builtin.assert:
+    that:
+      - analyses_root.startswith('/')
+      - analyses_root != '/'
+      - analyses_project_name is match('^[a-z0-9][a-z0-9_-]+$')
+      - analyses_owner_id is match('^[A-Za-z0-9_-]{1,100}$')
+      - analyses_profile_id is match('^[A-Za-z0-9_-]{1,100}$')
+      - analyses_api_bind in ['127.0.0.1', '0.0.0.0']
+      - analyses_api_port | int > 1024
+      - analyses_api_port | int < 65536
+      - analyses_quota_bytes | int > 0
+      - analyses_llama_image is match('^ghcr[.]io/ggml-org/llama[.]cpp:[A-Za-z0-9_-]+@sha256:[a-f0-9]{64}$')
+      - "'\n' not in analyses_allowed_origins"
+- name: Create deployment directories
+  ansible.builtin.file:
+    path: "{{ analyses_root }}/{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - source/services/documents
+    - source/services/processing
+    - source/workers/document_processing
+    - runtime/tessdata
+- name: Protect server secret directory
+  ansible.builtin.file:
+    path: "{{ analyses_root }}/.secrets"
+    state: directory
+    mode: '0700'
+- name: Copy only server build inputs
+  ansible.builtin.copy:
+    src: "{{ analyses_source_root }}/{{ item }}"
+    dest: "{{ analyses_root }}/source/{{ item }}"
+    mode: '0644'
+    directory_mode: '0755'
+  loop:
+    - .dockerignore
+    - services/documents/Dockerfile
+    - services/documents/pubspec.yaml
+    - services/documents/pubspec.lock
+    - services/documents/lib/
+    - services/documents/bin/
+    - services/processing/Dockerfile
+    - services/processing/pubspec.yaml
+    - services/processing/pubspec.lock
+    - services/processing/start.sh
+    - services/processing/lib/
+    - services/processing/bin/
+    - workers/document_processing/worker.py
+    - workers/document_processing/make_config.py
+  register: server_source
+- name: Copy Compose and database bootstrap
+  ansible.builtin.copy:
+    src: "{{ analyses_source_root }}/infra/server/{{ item }}"
+    dest: "{{ analyses_root }}/{{ item }}"
+    mode: '0644'
+  loop: [compose.yaml, processing.sql, bootstrap_secrets.py]
+- name: Generate persistent server credentials once
+  ansible.builtin.command:
+    argv: ["{{ ansible_facts.python.executable }}", "{{ analyses_root }}/bootstrap_secrets.py", "{{ analyses_root }}/.secrets/bootstrap.json"]
+    creates: "{{ analyses_root }}/.secrets/bootstrap.json"
+  no_log: true
+- name: Read protected bootstrap credentials
+  ansible.builtin.slurp:
+    src: "{{ analyses_root }}/.secrets/bootstrap.json"
+  register: server_bootstrap
+  no_log: true
+- name: Load bootstrap credentials
+  ansible.builtin.set_fact:
+    analyses_secrets: "{{ server_bootstrap.content | b64decode | from_json }}"
+  no_log: true
+- name: Write environment and private service configuration
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ analyses_root }}/{{ item.dest }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - {src: env.j2, dest: .env, mode: '0600'}
+    # Parent directory is 0700; containers receive only these individual mounts.
+    - {src: s3.json.j2, dest: .secrets/s3.json, mode: '0644'}
+    - {src: identities.json.j2, dest: .secrets/identities.json, mode: '0644'}
+  no_log: true
+- name: Download and verify fixed model and OCR artifacts
+  ansible.builtin.get_url:
+    url: "{{ item.url }}"
+    dest: "{{ analyses_root }}/runtime/{{ item.name }}"
+    checksum: "sha256:{{ item.sha256 }}"
+    mode: '0644'
+    timeout: 60
+  loop: "{{ analyses_runtime_artifacts }}"
+  loop_control:
+    label: "{{ item.name }}"
+- name: Write reproducible runtime manifest
+  ansible.builtin.template:
+    src: manifest.json.j2
+    dest: "{{ analyses_root }}/runtime/manifest.json"
+    mode: '0644'
+- name: Build and start all server services
+  community.docker.docker_compose_v2:
+    project_src: "{{ analyses_root }}"
+    project_name: "{{ analyses_project_name }}"
+    state: present
+    build: "{{ 'always' if server_source.changed else 'policy' }}"
+    wait: true
+    wait_timeout: "{{ analyses_wait_timeout }}"
+    remove_orphans: false
+    remove_volumes: false
+  no_log: true
+- name: Wait for Documents API
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ analyses_api_port }}/health"
+    return_content: false
+  register: documents_health
+  until: documents_health.status == 200
+  retries: 30
+  delay: 2
+- name: Verify authenticated server processing capability
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ analyses_api_port }}/v1/profiles/{{ analyses_profile_id }}/processing-capabilities"
+    headers:
+      Authorization: "Bearer {{ analyses_secrets.client_token }}"
+    return_content: true
+  register: processing_health
+  until: processing_health.status == 200 and processing_health.json.ready | default(false)
+  retries: 30
+  delay: 2
+  no_log: true

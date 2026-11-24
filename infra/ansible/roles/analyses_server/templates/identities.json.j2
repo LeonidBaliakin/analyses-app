@@ -1,0 +1,1 @@
+{{ [{'ownerId': analyses_owner_id, 'profileId': analyses_profile_id, 'tokenSha256': analyses_secrets.client_token | hash('sha256'), 'quotaBytes': analyses_quota_bytes | int}] | to_nice_json }}

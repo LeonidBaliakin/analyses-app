@@ -3,7 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:medical_domain/medical_domain.dart';
 
 import '../../../l10n/generated/app_localizations.dart';
-import 'category_presentation.dart';
+import '../../../presentation/category_presentation.dart';
 import 'record_history.dart';
 import 'records_view_model.dart';
 import 'result_coding_view_model.dart';
@@ -253,6 +253,10 @@ class _RecordEditorState extends State<_RecordEditor> {
           method: _text('method'),
           specimen: _text('specimen'),
           coding: _coding.coding,
+          documentSource: switch (widget.entry?.record) {
+            LabResult(documentSource: final source) => source,
+            _ => null,
+          },
           notes: _text('notes'),
         );
       case RecordKind.medication:

@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:document_domain/document_domain.dart';
+import 'package:document_processing/document_processing.dart';
 
 import '../../../platform/device_access.dart';
 
@@ -15,6 +16,7 @@ final class OriginalsViewModel extends ChangeNotifier {
     required this.saveCopy,
     required this.gatewayFactory,
     this._gateway,
+    this.processingFactory,
   });
   final OriginalRepository repository;
   final String profileId;
@@ -24,6 +26,9 @@ final class OriginalsViewModel extends ChangeNotifier {
   final Future<void> Function(OriginalDocument, Uint8List) saveCopy;
   final DocumentsGateway Function(Uri, String) gatewayFactory;
   DocumentsGateway? _gateway;
+  final ProcessingEngine? Function(DocumentsGateway)? processingFactory;
+  ProcessingEngine? _processingEngine;
+  ProcessingEngine? get processingEngine => _processingEngine;
   bool get connected => _gateway != null;
   bool isCurrentDestination(OriginalDocument original) =>
       _gateway != null && original.cloudDestination == _gateway!.destinationId;
@@ -52,6 +57,8 @@ final class OriginalsViewModel extends ChangeNotifier {
       return;
     }
     _gateway?.close();
+    _processingEngine?.close();
+    _processingEngine = processingFactory?.call(gateway);
     _gateway = gateway;
     error = null;
     _notify();
@@ -61,6 +68,8 @@ final class OriginalsViewModel extends ChangeNotifier {
     if (busy) return;
     _gateway?.close();
     _gateway = null;
+    _processingEngine?.close();
+    _processingEngine = null;
     _notify();
   }
 
@@ -188,6 +197,7 @@ final class OriginalsViewModel extends ChangeNotifier {
   void dispose() {
     _disposed = true;
     _gateway?.close();
+    _processingEngine?.close();
     super.dispose();
   }
 }

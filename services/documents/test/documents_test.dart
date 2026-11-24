@@ -110,6 +110,38 @@ void main() {
     );
   }
 
+  test('processing metadata/access are private and ready-only', () async {
+    expect((await call('GET', 'p/originals/o')).statusCode, 404);
+    final access = jsonDecode(
+      await (await call('GET', 'p/processing-access')).readAsString(),
+    ) as Map;
+    expect(access['ownerId'], 'a');
+    expect(access['processingAllowed'], isTrue);
+    expect(
+      (await call('GET', 'p/processing-access', token: 'b-token')).statusCode,
+      404,
+    );
+    await staged();
+    expect((await call('GET', 'p/originals/o')).statusCode, 404);
+    await call('POST', 'p/uploads/o/finalize');
+    final description = jsonDecode(
+      await (await call('GET', 'p/originals/o')).readAsString(),
+    ) as Map;
+    expect(description['sha256'], digest(bytes));
+    expect(description['ownerId'], 'a');
+    expect(description['state'], 'ready');
+    expect(
+      (await call('GET', 'p/originals/o', token: 'b-token')).statusCode,
+      404,
+    );
+    await db.execute(
+      "UPDATE profile_access SET cloud_enabled=false WHERE owner_id='a'",
+    );
+    final disabled = jsonDecode(
+      await (await call('GET', 'p/processing-access')).readAsString(),
+    ) as Map;
+    expect(disabled['processingAllowed'], isFalse);
+  });
   test('HTTP contract: replay, finalization, full and ranged reads, private access', () async {
     await staged();
     for (var i = 0; i < 2; i++) {

@@ -116,6 +116,15 @@ void main() {
       await db.close();
       final sql = sqlite3.open(file.path);
       sql.execute('DROP TABLE originals');
+      for (final table in [
+        'processing_jobs',
+        'processing_drafts',
+        'draft_history',
+        'draft_confirmations',
+        'confirmed_originals',
+      ]) {
+        sql.execute('DROP TABLE $table');
+      }
       sql.execute('PRAGMA user_version = 2');
       final before = sql
           .select('SELECT payload FROM records')

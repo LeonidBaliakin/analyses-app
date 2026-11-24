@@ -1,0 +1,24 @@
+analyses_root: /opt/analyses-app
+analyses_source_root: "{{ playbook_dir }}/../.."
+analyses_project_name: analyses-server
+analyses_api_bind: 127.0.0.1
+analyses_api_port: 18088
+analyses_allowed_origins: ""
+analyses_owner_id: server-owner
+analyses_profile_id: local-profile
+analyses_quota_bytes: 1073741824
+analyses_wait_timeout: 300
+analyses_llama_image: ghcr.io/ggml-org/llama.cpp:server@sha256:6fab63852916c294cc8a2f1515079c4ca40248193eea8868ae742134335b989b
+analyses_model_revision: 91cad51170dc346986eccefdc2dd33a9da36ead9
+analyses_model_sha256: 6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e
+analyses_tessdata_revision: 87416418657359cb625c412a48b6e1d6d41c29bd
+analyses_runtime_artifacts:
+  - name: qwen2.5-1.5b-instruct-q4_k_m.gguf
+    url: "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/{{ analyses_model_revision }}/qwen2.5-1.5b-instruct-q4_k_m.gguf"
+    sha256: "{{ analyses_model_sha256 }}"
+  - name: tessdata/rus.traineddata
+    url: "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/{{ analyses_tessdata_revision }}/rus.traineddata"
+    sha256: e16e5e036cce1d9ec2b00063cf8b54472625b9e14d893a169e2b0dedeb4df225
+  - name: tessdata/eng.traineddata
+    url: "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/{{ analyses_tessdata_revision }}/eng.traineddata"
+    sha256: 7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2

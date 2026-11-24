@@ -4,6 +4,19 @@
 
 Основная карта ниже остаётся целевой. Минимальный `services/documents` уже реализован: Dart/Shelf, PostgreSQL, закрытый S3-адаптер SeaweedFS OSS, идемпотентные сессии, квота, проверка SHA-256 и outbox. [ADR 0008](adr/0008-originals-and-documents.md) фиксирует локальный bootstrap авторизации и ограничения; [запуск](../services/documents/README.md). Остальные сервисы, каналы и коннекторы включаются по мере реализации. Прикладные сервисы планируются на Dart, специализированные OCR/LLM runtimes используют подходящие для своих движков технологии.
 
+Первый `services/processing` также реализован: собственная PostgreSQL очередь,
+Tesseract/LLM worker, сохранение OCR, отмена, восстановление и DraftReady outbox.
+Общий Dart-клиент нормализует и проверяет оба режима перед подтверждением.
+[Реальный срез и пределы](document-processing.md), [ADR 0009](adr/0009-shared-processing-draft.md).
+Описанные ниже orchestrator/inference-gateway остаются целевой декомпозицией.
+
+## Развёртывание
+
+Все серверные сервисы запускаются через Docker Compose и имеют Ansible deployment.
+Реализованный полный стек, включая собственный LLM-контейнер, — в
+[infra/server](../infra/server/compose.yaml); [быстрый запуск](../infra/ansible/README.md),
+[ADR 0010](adr/0010-docker-compose-ansible.md). Это правило действует и для следующих сервисов.
+
 ## Прикладные сервисы
 
 | Сервис | Владеет и отвечает за |
@@ -84,7 +97,7 @@ Worker может быть самостоятельным процессом б�
 
 Предлагаемый внешний интерфейс:
 
-- `POST /documents/{documentId}/processing-jobs`: запрос обработки конкретного оригинала и режима.
+- Целевой вариант API (фактический pilot — [processing.yaml](../contracts/openapi/processing.yaml)): `POST /documents/{documentId}/processing-jobs`: запрос обработки конкретного оригинала и режима.
 - `GET /processing-jobs/{jobId}`: этап, прогресс, ошибка и ссылка на черновик.
 - `POST /processing-jobs/{jobId}/cancel`: запрос отмены.
 - `GET /processing-jobs/{jobId}/draft`: структурированные кандидаты и происхождение.

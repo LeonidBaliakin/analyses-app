@@ -3,11 +3,15 @@ import 'package:medical_domain/medical_domain.dart';
 /// Versioned storage DTO. Domain types do not expose JSON or database rows.
 Map<String, Object?> encodeRecord(HealthRecord r) => {
   // Keep legacy commands byte-for-byte stable for outbox idempotency.
-  'format': r is LabResult && r.coding != null ? 2 : 1,
+  'format': r is LabResult && r.documentSource != null
+      ? 3
+      : r is LabResult && r.coding != null
+      ? 2
+      : 1,
   'id': r.id,
   'profileId': r.profileId,
   'kind': r.kind.name,
-  'source': 'manual',
+  'source': r is LabResult && r.documentSource != null ? 'document' : 'manual',
   ...switch (r) {
     MedicalProfile() => {
       'name': r.name,
@@ -29,6 +33,17 @@ Map<String, Object?> encodeRecord(HealthRecord r) => {
       'specimen': r.specimen,
       'notes': r.notes,
       if (r.coding case final c?) 'coding': _encodeCoding(c),
+      if (r.documentSource case final s?)
+        'documentSource': {
+          'documentId': s.documentId,
+          'originalId': s.originalId,
+          'sha256': s.originalSha256,
+          'jobId': s.jobId,
+          'draftRevision': s.draftRevision,
+          'rowId': s.rowId,
+          'fields': s.fields,
+          'versions': s.versions,
+        },
     },
     MedicationCourse() => {
       'name': r.name,
@@ -54,8 +69,8 @@ Map<String, Object?> encodeRecord(HealthRecord r) => {
 };
 
 HealthRecord decodeRecord(Map<String, dynamic> j) {
-  if ((j['format'] != 1 && j['format'] != 2) ||
-      (j['format'] == 2 && j['kind'] != 'result')) {
+  if (![1, 2, 3].contains(j['format']) ||
+      (j['format'] != 1 && j['kind'] != 'result')) {
     throw const FormatException('Unsupported record format');
   }
   String text(String key) => j[key] as String;
@@ -80,8 +95,11 @@ HealthRecord decodeRecord(Map<String, dynamic> j) {
       value: value(),
       date: date('date'),
       category: AnalysisCategory.values.byName(text('category')),
-      coding: j['format'] == 2
+      coding: j['coding'] != null && j['format'] != 1
           ? _decodeCoding(j['coding'] as Map<String, dynamic>)
+          : null,
+      documentSource: j['format'] == 3
+          ? _decodeDocumentSource(j['documentSource'] as Map<String, dynamic>)
           : null,
       unit: text('unit'),
       reference: text('reference'),
@@ -114,9 +132,21 @@ HealthRecord decodeRecord(Map<String, dynamic> j) {
       notes: text('notes'),
     ),
   };
-  if (j['format'] == 2) record.validate();
+  if (j['format'] != 1) record.validate();
   return record;
 }
+
+DocumentRecordSource _decodeDocumentSource(Map<String, dynamic> j) =>
+    DocumentRecordSource(
+      documentId: j['documentId'] as String,
+      originalId: j['originalId'] as String,
+      originalSha256: j['sha256'] as String,
+      jobId: j['jobId'] as String,
+      draftRevision: j['draftRevision'] as int,
+      rowId: j['rowId'] as String,
+      fields: Map<String, String>.from(j['fields'] as Map),
+      versions: Map<String, String>.from(j['versions'] as Map),
+    );
 
 Map<String, Object?> _encodeCoding(LabResultCoding c) => {
   'terminologyReleaseId': c.terminologyReleaseId,

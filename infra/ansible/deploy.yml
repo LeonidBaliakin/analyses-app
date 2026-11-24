@@ -1,0 +1,8 @@
+- name: Deploy analyses server services through Docker Compose
+  hosts: analyses
+  become: true
+  gather_facts: true
+  roles:
+    - role: docker_engine
+      when: analyses_install_docker | default(true) | bool
+    - role: analyses_server

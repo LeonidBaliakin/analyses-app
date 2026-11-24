@@ -1228,4 +1228,115 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get originalsOtherConnection =>
       'Сохранён через другое подключение. Для текущего хранилища загрузите оригинал заново.';
+
+  @override
+  String get processingTitle => 'Черновик документа';
+
+  @override
+  String get processingConsent =>
+      'Выберите место обработки оригинала. Локальный режим не отправляет документ на сервер. Серверный режим использует ваш сервер; внешний AI API не включён. Медицинские записи создаются только после вашей проверки.';
+
+  @override
+  String get processingLocal => 'Обработать локально';
+
+  @override
+  String get processingServer => 'Обработать на своём сервере';
+
+  @override
+  String get processingCancel => 'Отменить обработку';
+
+  @override
+  String get processingBackground =>
+      'Экран можно закрыть. Задание сохранено, к нему можно вернуться.';
+
+  @override
+  String get processingDateRequired =>
+      'Перед подтверждением укажите полную дату результата. Неизвестная дата не заменяется сегодняшней.';
+
+  @override
+  String get processingUnavailable =>
+      'Обработка в выбранном режиме недоступна на этом устройстве. Можно проверить документ вручную или выбрать другой режим.';
+
+  @override
+  String get processingUploadFirst =>
+      'Перед серверной обработкой загрузите оригинал в подключённое хранилище Documents.';
+
+  @override
+  String get processingAlreadyConfirmed =>
+      'Для этого оригинала уже созданы подтверждённые записи. Исправьте их вместо повторного импорта.';
+
+  @override
+  String get processingConflict =>
+      'Черновик изменён в другом месте. Откройте сохранённую редакцию перед продолжением.';
+
+  @override
+  String get processingRuntimeChanged =>
+      'Версия обработки изменилась. Для новой версии запустите новый разбор.';
+
+  @override
+  String get processingEmpty =>
+      'Строки результатов не найдены. Проверьте OCR-текст или добавьте результаты вручную.';
+
+  @override
+  String get processingCancelled =>
+      'Обработка отменена. Оригинал и сохранённые черновики не удалены.';
+
+  @override
+  String get processingFailed =>
+      'Обработка или сохранение не выполнены. Оригинал и сохранённый черновик остаются доступны. Повторите действие или проверьте OCR-текст.';
+
+  @override
+  String get processingRuns => 'Запуски обработки';
+
+  @override
+  String get processingQueued => 'В очереди';
+
+  @override
+  String get processingOcr => 'Чтение документа (OCR)';
+
+  @override
+  String get processingLlm => 'Извлечение полей (LLM)';
+
+  @override
+  String get processingReview => 'Черновик — проверьте и исправьте';
+
+  @override
+  String get processingConfirmed => 'Записи подтверждены';
+
+  @override
+  String get processingReviewHint =>
+      'Сверьте названия, значения, знаки сравнения, единицы, референсы и даты с оригиналом. Соответствия словаря остаются предложениями до вашего выбора. Исключённые строки не подтверждаются.';
+
+  @override
+  String get processingOcrText => 'Распознанный исходный текст';
+
+  @override
+  String get processingUnknown => 'Неизвестно — проверьте оригинал';
+
+  @override
+  String get processingUnbacked =>
+      'Поле AI не совпало с исходным текстом или смешивает столбцы. Проверьте OCR и заполните поле вручную.';
+
+  @override
+  String processingSourceValue(String value) {
+    return 'Исходное извлечение: $value';
+  }
+
+  @override
+  String get processingSaveDraft => 'Сохранить черновик';
+
+  @override
+  String get processingConfirm => 'Подтвердить выбранные результаты';
+
+  @override
+  String get processingOpen => 'Распознать и проверить';
+
+  @override
+  String get processingImported => 'Подтверждено из документа';
+
+  @override
+  String get processingManual => 'Заполнить по тексту вручную';
+
+  @override
+  String get processingAddRow => 'Добавить результат';
 }

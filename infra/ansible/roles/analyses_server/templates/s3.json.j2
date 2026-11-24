@@ -1,0 +1,1 @@
+{{ {'identities': [{'name': 'documents-service', 'credentials': [{'accessKey': analyses_secrets.s3_access_key, 'secretKey': analyses_secrets.s3_secret_key}], 'actions': ['Admin', 'Read', 'Write', 'List', 'Tagging']}]} | to_nice_json }}

@@ -1,0 +1,13 @@
+all:
+  children:
+    analyses:
+      hosts:
+        analyses-1:
+          ansible_host: 192.0.2.10
+          ansible_user: ubuntu
+      vars:
+        analyses_root: /opt/analyses-app
+        analyses_api_port: 18088
+        # Loopback for an existing HTTPS reverse proxy or SSH tunnel.
+        analyses_api_bind: 127.0.0.1
+        analyses_allowed_origins: ""

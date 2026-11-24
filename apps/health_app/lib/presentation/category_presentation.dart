@@ -2,7 +2,7 @@ import 'package:design_system/design_system.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:medical_domain/medical_domain.dart';
 
-import '../../../l10n/generated/app_localizations.dart';
+import '../l10n/generated/app_localizations.dart';
 
 /// UI-only mapping by stable category, independent of demo array positions.
 ({String title, IconData icon, Color color}) categoryPresentation(

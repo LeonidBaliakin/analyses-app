@@ -5,13 +5,17 @@ import 'package:medical_domain/medical_domain.dart';
 import 'package:document_domain/document_domain.dart';
 
 import 'record_codec.dart';
+import 'draft_store.dart';
 
 /// SQL schema and transactions stay here; only domain values cross the port.
 final class RecordsDatabase extends GeneratedDatabase
+    with DraftStorage
     implements HealthRecordsRepository, OriginalRepository {
   RecordsDatabase(super.executor, {DateTime Function()? clock})
     : _clock = clock ?? DateTime.now;
   final DateTime Function() _clock;
+  @override
+  DateTime get draftNow => _clock();
 
   static const recordsSql = '''CREATE TABLE records (
     id TEXT PRIMARY KEY NOT NULL, profile_id TEXT NOT NULL,
@@ -39,7 +43,7 @@ final class RecordsDatabase extends GeneratedDatabase
   )''';
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
   @override
   Iterable<TableInfo<Table, Object?>> get allTables => const [];
   @override
@@ -48,6 +52,7 @@ final class RecordsDatabase extends GeneratedDatabase
     OnCreateQuery(outboxSql),
     OnCreateQuery(historySql),
     OnCreateQuery(originalsSql),
+    for (final sql in DraftStorage.schema) OnCreateQuery(sql),
     OnCreateQuery(
       'CREATE INDEX records_profile ON records(profile_id, deleted)',
     ),
@@ -56,7 +61,7 @@ final class RecordsDatabase extends GeneratedDatabase
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) => m.createAll(),
     onUpgrade: (m, from, to) async {
-      if (from < 1 || from > 2 || to != 3) {
+      if (from < 1 || from > 3 || to != 4) {
         throw StateError('Unsupported database migration');
       }
       await transaction(() async {
@@ -70,7 +75,10 @@ final class RecordsDatabase extends GeneratedDatabase
             'CREATE INDEX records_profile ON records(profile_id, deleted)',
           );
         }
-        await customStatement(originalsSql);
+        if (from < 3) await customStatement(originalsSql);
+        for (final sql in DraftStorage.schema) {
+          await customStatement(sql);
+        }
       });
     },
     beforeOpen: (details) async {

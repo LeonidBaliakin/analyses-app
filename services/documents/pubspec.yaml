@@ -6,6 +6,7 @@ environment:
   sdk: ^3.14.0
 dependencies:
   crypto: ^3.0.7
+  http: ^1.6.0
   minio: 3.5.8
   postgres: 3.7.0
   shelf: ^1.4.2

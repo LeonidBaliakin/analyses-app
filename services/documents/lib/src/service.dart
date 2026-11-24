@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:shelf/shelf.dart';
 import 'package:postgres/postgres.dart';
+import 'package:http/http.dart' as http;
 
 import 'model.dart';
 import 'store.dart';
@@ -20,10 +21,39 @@ final class DocumentsService {
     this.store, {
     required this.identities,
     this.allowedOrigins = const {},
+    this.processingEndpoint,
   });
   final DocumentsStore store;
   final List<TokenIdentity> identities;
   final Set<String> allowedOrigins;
+  final Uri? processingEndpoint;
+  final http.Client _processingClient = http.Client();
+
+  Future<Response> _processing(Request req) async {
+    final request = http.Request(
+      req.method,
+      processingEndpoint!.resolve(req.url.path),
+    )..followRedirects = false;
+    request.headers.addAll({
+      'authorization': req.headers['authorization'] ?? '',
+      'content-type': 'application/json',
+    });
+    if (req.method == 'POST') {
+      request.bodyBytes = await readBounded(req.read(), 8192);
+    }
+    final response = await _processingClient
+        .send(request)
+        .timeout(const Duration(seconds: 45));
+    final bytes = await readBounded(response.stream, 4 * 1024 * 1024);
+    return Response(
+      response.statusCode,
+      body: bytes,
+      headers: {
+        'content-type': 'application/json',
+        'cache-control': 'no-store',
+      },
+    );
+  }
 
   Response json(int status, Map<String, Object?> data) => Response(
     status,
@@ -87,7 +117,21 @@ final class DocumentsService {
         }
         final profile = p[2];
         checkId(profile);
-        if (p.length == 4 && p[3] == 'uploads' && req.method == 'POST') {
+        if (p.length == 4 &&
+            p[3] == 'processing-access' &&
+            req.method == 'GET') {
+          response = json(200, await store.processingAccess(owner, profile));
+        } else if (p.length == 5 &&
+            p[3] == 'originals' &&
+            req.method == 'GET') {
+          checkId(p[4]);
+          response = json(200, await store.describe(owner, profile, p[4]));
+        } else if (p.length >= 4 &&
+            ['processing-jobs', 'processing-capabilities'].contains(p[3]) &&
+            processingEndpoint != null) {
+          await store.processingAccess(owner, profile);
+          response = await _processing(req);
+        } else if (p.length == 4 && p[3] == 'uploads' && req.method == 'POST') {
           final bytes = await readBounded(req.read(), 8192);
           final m = UploadMetadata(
             jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>,

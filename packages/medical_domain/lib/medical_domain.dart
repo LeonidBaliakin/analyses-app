@@ -4,3 +4,4 @@ library;
 export 'src/calendar_date.dart';
 export 'src/health_records.dart';
 export 'src/lab_result_coding.dart';
+export 'src/document_record_source.dart';

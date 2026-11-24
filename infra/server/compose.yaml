@@ -1,0 +1,113 @@
+name: ${COMPOSE_PROJECT_NAME:-analyses-server}
+x-service: &service
+  restart: unless-stopped
+  logging:
+    driver: local
+    options:
+      max-size: 10m
+      max-file: "3"
+services:
+  postgres:
+    <<: *service
+    image: postgres:18.1-alpine3.22
+    environment:
+      POSTGRES_USER: documents
+      POSTGRES_DB: documents
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Configure server secrets}
+    volumes:
+      - postgres:/var/lib/postgresql
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U documents -d documents"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+  processing-db:
+    image: postgres:18.1-alpine3.22
+    restart: "no"
+    environment:
+      PGHOST: postgres
+      PGUSER: documents
+      PGDATABASE: postgres
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Configure server secrets}
+    volumes:
+      - ./processing.sql:/bootstrap/processing.sql:ro
+    command: [psql, -v, ON_ERROR_STOP=1, -f, /bootstrap/processing.sql]
+    depends_on:
+      postgres:
+        condition: service_healthy
+  seaweed:
+    <<: *service
+    image: chrislusf/seaweedfs:4.55
+    command: [server, "-dir=/data", "-ip=seaweed", "-s3", "-s3.config=/run/secrets/s3.json", "-volume.max=8", "-master.volumeSizeLimitMB=128"]
+    volumes:
+      - seaweed:/data
+    secrets:
+      - source: s3_config
+        target: s3.json
+  inference:
+    <<: *service
+    image: ${INFERENCE_IMAGE:-ghcr.io/ggml-org/llama.cpp:server@sha256:6fab63852916c294cc8a2f1515079c4ca40248193eea8868ae742134335b989b}
+    user: "65532:65532"
+    command: ["--host", "0.0.0.0", "--port", "8080", "--model", /models/qwen2.5-1.5b-instruct-q4_k_m.gguf, "--alias", qwen2.5-1.5b-q4_k_m-6a1a2eb6d156, "--ctx-size", "8192", "--parallel", "1", "--threads", "4", "--log-disable"]
+    volumes:
+      - ./runtime/qwen2.5-1.5b-instruct-q4_k_m.gguf:/models/qwen2.5-1.5b-instruct-q4_k_m.gguf:ro
+    healthcheck:
+      test: [CMD, curl, -fsS, http://127.0.0.1:8080/health]
+      interval: 5s
+      timeout: 5s
+      start_period: 60s
+      retries: 30
+  documents:
+    <<: *service
+    build: ./source/services/documents
+    environment:
+      DOCUMENTS_BIND: 0.0.0.0
+      DOCUMENTS_DATABASE_URL: postgresql://documents:${POSTGRES_PASSWORD}@postgres:5432/documents?sslmode=disable
+      DOCUMENTS_S3_ENDPOINT: http://seaweed:8333
+      DOCUMENTS_S3_ACCESS_KEY: ${S3_ACCESS_KEY:?Configure server secrets}
+      DOCUMENTS_S3_SECRET_KEY: ${S3_SECRET_KEY:?Configure server secrets}
+      DOCUMENTS_S3_BUCKET: analyses-originals
+      DOCUMENTS_PROCESSING_ENDPOINT: http://processing:8081/
+      DOCUMENTS_IDENTITIES_FILE: /run/secrets/identities.json
+      DOCUMENTS_ALLOWED_ORIGINS: ${DOCUMENTS_ALLOWED_ORIGINS:-}
+    ports:
+      - "${API_BIND:-127.0.0.1}:${API_PORT:-18088}:8080"
+    secrets:
+      - source: identities
+        target: identities.json
+    depends_on:
+      postgres:
+        condition: service_healthy
+      seaweed:
+        condition: service_started
+  processing:
+    <<: *service
+    build:
+      context: ./source
+      dockerfile: services/processing/Dockerfile
+    environment:
+      PROCESSING_DATABASE_URL: postgresql://documents:${POSTGRES_PASSWORD}@postgres:5432/processing?sslmode=disable
+      PROCESSING_DOCUMENTS_ENDPOINT: http://documents:8080/
+      PROCESSING_BIND: 0.0.0.0
+      PROCESSING_WORKER: /worker/worker.py
+      PROCESSING_CONFIG: /tmp/processing-config.json
+      PROCESSING_LLM_URL: http://inference:8080
+      PROCESSING_TESSDATA: /runtime/tessdata
+    volumes:
+      - ./runtime/manifest.json:/runtime/manifest.json:ro
+      - ./runtime/tessdata:/runtime/tessdata:ro
+    depends_on:
+      processing-db:
+        condition: service_completed_successfully
+      inference:
+        condition: service_healthy
+      documents:
+        condition: service_started
+secrets:
+  s3_config:
+    file: .secrets/s3.json
+  identities:
+    file: .secrets/identities.json
+volumes:
+  postgres:
+  seaweed:

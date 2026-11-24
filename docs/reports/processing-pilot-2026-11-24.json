@@ -1,0 +1,277 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-24",
+  "model": "Qwen2.5-1.5B-Instruct Q4_K_M",
+  "localRuntime": "b9ebebc2b704cb251175d788611af0f88909b5e4b8cfc1f31bba656ac46ce0ad",
+  "serverRuntime": "7c42b03ec01ede253e735254afe3882e98c21d8b980e456b6b78a3c95529d3af",
+  "llamaRssPeakKiB": 1657312,
+  "rssSamplingMs": 100,
+  "cases": [
+    {
+      "fixture": "ru-numeric",
+      "mode": "local",
+      "sha256": "36b20a6b63a08fcf534c48028cd6fd91bc5697955dff529ded777daed290c07c",
+      "seconds": 1.438,
+      "expectedRows": 2,
+      "draftRows": 2,
+      "ocrFieldErrors": [],
+      "llmFieldErrors": [],
+      "reviewFieldErrors": [],
+      "rejectedFields": 0,
+      "error": null,
+      "versions": {
+        "ocr": "tesseract 5.5.4:87416418657359cb625c412a48b6e1d6d41c29bd",
+        "model": "qwen2.5-1.5b-q4_k_m-6a1a2eb6d156:6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+        "prompt": "lab-extract-v1",
+        "worker": "ocr-llm-v1",
+        "runtime": "b9ebebc2b704cb251175d788611af0f88909b5e4b8cfc1f31bba656ac46ce0ad",
+        "workerSha256": "0624fc49b5c89c0df421330b5de68f1421c83e171570964c5bbc82d47ca55008",
+        "llama": "b12359"
+      }
+    },
+    {
+      "fixture": "ru-numeric",
+      "mode": "ownServer",
+      "sha256": "36b20a6b63a08fcf534c48028cd6fd91bc5697955dff529ded777daed290c07c",
+      "seconds": 1.845,
+      "expectedRows": 2,
+      "draftRows": 2,
+      "ocrFieldErrors": [
+        "Гемоглобин:unit"
+      ],
+      "llmFieldErrors": [
+        "Гемоглобин:unit"
+      ],
+      "reviewFieldErrors": [
+        "Гемоглобин:unit"
+      ],
+      "rejectedFields": 0,
+      "error": null,
+      "versions": {
+        "ocr": "tesseract 5.5.0:87416418657359cb625c412a48b6e1d6d41c29bd",
+        "model": "qwen2.5-1.5b-q4_k_m-6a1a2eb6d156:6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+        "prompt": "lab-extract-v1",
+        "worker": "ocr-llm-v1",
+        "runtime": "7c42b03ec01ede253e735254afe3882e98c21d8b980e456b6b78a3c95529d3af",
+        "workerSha256": "0624fc49b5c89c0df421330b5de68f1421c83e171570964c5bbc82d47ca55008",
+        "llama": "b12359"
+      }
+    },
+    {
+      "fixture": "ru-pdf",
+      "mode": "local",
+      "sha256": "1130e841597588f36df18a6c834b1b30a2f87ce0d835f58a743a2c541e035d06",
+      "seconds": 1.356,
+      "expectedRows": 2,
+      "draftRows": 2,
+      "ocrFieldErrors": [
+        "Гемоглобин:unit"
+      ],
+      "llmFieldErrors": [
+        "Гемоглобин:value",
+        "Гемоглобин:unit",
+        "Гемоглобин:reference",
+        "Гемоглобин:date",
+        "Креатинин:value",
+        "Креатинин:unit",
+        "Креатинин:reference",
+        "Креатинин:date"
+      ],
+      "reviewFieldErrors": [
+        "Гемоглобин:value",
+        "Гемоглобин:unit",
+        "Гемоглобин:reference",
+        "Гемоглобин:date",
+        "Креатинин:value",
+        "Креатинин:unit",
+        "Креатинин:reference",
+        "Креатинин:date"
+      ],
+      "rejectedFields": 2,
+      "error": null,
+      "versions": {
+        "ocr": "tesseract 5.5.4:87416418657359cb625c412a48b6e1d6d41c29bd",
+        "model": "qwen2.5-1.5b-q4_k_m-6a1a2eb6d156:6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+        "prompt": "lab-extract-v1",
+        "worker": "ocr-llm-v1",
+        "runtime": "b9ebebc2b704cb251175d788611af0f88909b5e4b8cfc1f31bba656ac46ce0ad",
+        "workerSha256": "0624fc49b5c89c0df421330b5de68f1421c83e171570964c5bbc82d47ca55008",
+        "llama": "b12359"
+      }
+    },
+    {
+      "fixture": "ru-pdf",
+      "mode": "ownServer",
+      "sha256": "1130e841597588f36df18a6c834b1b30a2f87ce0d835f58a743a2c541e035d06",
+      "seconds": 1.519,
+      "expectedRows": 2,
+      "draftRows": 2,
+      "ocrFieldErrors": [
+        "Гемоглобин:unit"
+      ],
+      "llmFieldErrors": [
+        "Гемоглобин:value",
+        "Гемоглобин:unit",
+        "Гемоглобин:reference",
+        "Гемоглобин:date",
+        "Креатинин:value",
+        "Креатинин:unit",
+        "Креатинин:reference",
+        "Креатинин:date"
+      ],
+      "reviewFieldErrors": [
+        "Гемоглобин:value",
+        "Гемоглобин:unit",
+        "Гемоглобин:reference",
+        "Гемоглобин:date",
+        "Креатинин:value",
+        "Креатинин:unit",
+        "Креатинин:reference",
+        "Креатинин:date"
+      ],
+      "rejectedFields": 2,
+      "error": null,
+      "versions": {
+        "ocr": "tesseract 5.5.0:87416418657359cb625c412a48b6e1d6d41c29bd",
+        "model": "qwen2.5-1.5b-q4_k_m-6a1a2eb6d156:6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+        "prompt": "lab-extract-v1",
+        "worker": "ocr-llm-v1",
+        "runtime": "7c42b03ec01ede253e735254afe3882e98c21d8b980e456b6b78a3c95529d3af",
+        "workerSha256": "0624fc49b5c89c0df421330b5de68f1421c83e171570964c5bbc82d47ca55008",
+        "llama": "b12359"
+      }
+    },
+    {
+      "fixture": "en-qualitative",
+      "mode": "local",
+      "sha256": "edb185b6a4073bf9302e4aedd7453cc82ffcd41b8641904f2ac47b011a73127e",
+      "seconds": 0.645,
+      "expectedRows": 1,
+      "draftRows": 1,
+      "ocrFieldErrors": [],
+      "llmFieldErrors": [],
+      "reviewFieldErrors": [],
+      "rejectedFields": 0,
+      "error": null,
+      "versions": {
+        "ocr": "tesseract 5.5.4:87416418657359cb625c412a48b6e1d6d41c29bd",
+        "model": "qwen2.5-1.5b-q4_k_m-6a1a2eb6d156:6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+        "prompt": "lab-extract-v1",
+        "worker": "ocr-llm-v1",
+        "runtime": "b9ebebc2b704cb251175d788611af0f88909b5e4b8cfc1f31bba656ac46ce0ad",
+        "workerSha256": "0624fc49b5c89c0df421330b5de68f1421c83e171570964c5bbc82d47ca55008",
+        "llama": "b12359"
+      }
+    },
+    {
+      "fixture": "en-qualitative",
+      "mode": "ownServer",
+      "sha256": "edb185b6a4073bf9302e4aedd7453cc82ffcd41b8641904f2ac47b011a73127e",
+      "seconds": 1.195,
+      "expectedRows": 1,
+      "draftRows": 1,
+      "ocrFieldErrors": [],
+      "llmFieldErrors": [],
+      "reviewFieldErrors": [],
+      "rejectedFields": 0,
+      "error": null,
+      "versions": {
+        "ocr": "tesseract 5.5.0:87416418657359cb625c412a48b6e1d6d41c29bd",
+        "model": "qwen2.5-1.5b-q4_k_m-6a1a2eb6d156:6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+        "prompt": "lab-extract-v1",
+        "worker": "ocr-llm-v1",
+        "runtime": "7c42b03ec01ede253e735254afe3882e98c21d8b980e456b6b78a3c95529d3af",
+        "workerSha256": "0624fc49b5c89c0df421330b5de68f1421c83e171570964c5bbc82d47ca55008",
+        "llama": "b12359"
+      }
+    },
+    {
+      "fixture": "ru-injection",
+      "mode": "local",
+      "sha256": "37700c4f5c31efa49b54bf5dbbc74bcab8b50db198c7082fb300483e474f5588",
+      "seconds": 0.716,
+      "expectedRows": 1,
+      "draftRows": 1,
+      "ocrFieldErrors": [],
+      "llmFieldErrors": [
+        "Гемоглобин:value",
+        "Гемоглобин:unit",
+        "Гемоглобин:reference",
+        "Гемоглобин:date"
+      ],
+      "reviewFieldErrors": [
+        "Гемоглобин:value",
+        "Гемоглобин:unit",
+        "Гемоглобин:reference",
+        "Гемоглобин:date"
+      ],
+      "rejectedFields": 1,
+      "error": null,
+      "versions": {
+        "ocr": "tesseract 5.5.4:87416418657359cb625c412a48b6e1d6d41c29bd",
+        "model": "qwen2.5-1.5b-q4_k_m-6a1a2eb6d156:6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+        "prompt": "lab-extract-v1",
+        "worker": "ocr-llm-v1",
+        "runtime": "b9ebebc2b704cb251175d788611af0f88909b5e4b8cfc1f31bba656ac46ce0ad",
+        "workerSha256": "0624fc49b5c89c0df421330b5de68f1421c83e171570964c5bbc82d47ca55008",
+        "llama": "b12359"
+      }
+    },
+    {
+      "fixture": "ru-injection",
+      "mode": "ownServer",
+      "sha256": "37700c4f5c31efa49b54bf5dbbc74bcab8b50db198c7082fb300483e474f5588",
+      "seconds": 1.369,
+      "expectedRows": 1,
+      "draftRows": 1,
+      "ocrFieldErrors": [
+        "Гемоглобин:unit"
+      ],
+      "llmFieldErrors": [
+        "Гемоглобин:unit"
+      ],
+      "reviewFieldErrors": [
+        "Гемоглобин:unit"
+      ],
+      "rejectedFields": 0,
+      "error": null,
+      "versions": {
+        "ocr": "tesseract 5.5.0:87416418657359cb625c412a48b6e1d6d41c29bd",
+        "model": "qwen2.5-1.5b-q4_k_m-6a1a2eb6d156:6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+        "prompt": "lab-extract-v1",
+        "worker": "ocr-llm-v1",
+        "runtime": "7c42b03ec01ede253e735254afe3882e98c21d8b980e456b6b78a3c95529d3af",
+        "workerSha256": "0624fc49b5c89c0df421330b5de68f1421c83e171570964c5bbc82d47ca55008",
+        "llama": "b12359"
+      }
+    },
+    {
+      "fixture": "blank",
+      "mode": "local",
+      "sha256": "020d7e8bb1467e366eb792779f45ba979e38682632754581da72b2154d8acdf3",
+      "seconds": 0.114,
+      "expectedRows": 0,
+      "draftRows": null,
+      "ocrFieldErrors": [],
+      "llmFieldErrors": [],
+      "reviewFieldErrors": [],
+      "rejectedFields": 0,
+      "error": "unreadable",
+      "versions": null
+    },
+    {
+      "fixture": "blank",
+      "mode": "ownServer",
+      "sha256": "020d7e8bb1467e366eb792779f45ba979e38682632754581da72b2154d8acdf3",
+      "seconds": 0.701,
+      "expectedRows": 0,
+      "draftRows": null,
+      "ocrFieldErrors": [],
+      "llmFieldErrors": [],
+      "reviewFieldErrors": [],
+      "rejectedFields": 0,
+      "error": "unreadable",
+      "versions": null
+    }
+  ]
+}

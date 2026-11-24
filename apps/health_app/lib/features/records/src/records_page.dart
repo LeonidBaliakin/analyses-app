@@ -3,7 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:medical_domain/medical_domain.dart';
 
 import '../../../l10n/generated/app_localizations.dart';
-import 'category_presentation.dart';
+import '../../../presentation/category_presentation.dart';
 import 'record_editor.dart';
 import 'record_history.dart';
 import 'records_view_model.dart';
@@ -395,7 +395,11 @@ class _RecordsPageState extends State<RecordsPage> with WidgetsBindingObserver {
                       padding: const EdgeInsets.only(bottom: 12),
                       child: Text('$label: $value'),
                     ),
-                Text(l.localManual),
+                Text(
+                  record is LabResult && record.documentSource != null
+                      ? l.processingImported
+                      : l.localManual,
+                ),
                 if (record is LabResult) ...[
                   const SizedBox(height: 12),
                   Text(l.localNoInterpretation),

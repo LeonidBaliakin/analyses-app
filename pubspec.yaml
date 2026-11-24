@@ -7,6 +7,7 @@ workspace:
   - packages/medical_domain
   - packages/medical_terminology
   - packages/document_domain
+  - packages/document_processing
   - packages/design_system
   - packages/local_store
 dev_dependencies:

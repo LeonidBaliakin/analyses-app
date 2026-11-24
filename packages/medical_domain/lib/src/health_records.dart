@@ -1,5 +1,6 @@
 import 'calendar_date.dart';
 import 'lab_result_coding.dart';
+import 'document_record_source.dart';
 
 /// Stable user-selected display groups, not normalized medical concepts.
 enum AnalysisCategory {
@@ -104,12 +105,14 @@ final class LabResult extends HealthRecord {
     this.specimen = '',
     this.notes = '',
     this.coding,
+    this.documentSource,
   });
   final String name, unit, reference, laboratory, method, specimen, notes;
   final SourceValue value;
   final CalendarDate date;
   final AnalysisCategory category;
   final LabResultCoding? coding;
+  final DocumentRecordSource? documentSource;
   @override
   RecordKind get kind => RecordKind.result;
   @override
@@ -117,6 +120,18 @@ final class LabResult extends HealthRecord {
     super.validate();
     _required(name, 'name');
     value.validate();
+    if (documentSource case final s?) {
+      if ([
+            s.documentId,
+            s.originalId,
+            s.jobId,
+            s.rowId,
+          ].any((v) => v.isEmpty) ||
+          s.draftRevision < 1 ||
+          !RegExp(r'^[0-9a-f]{64}$').hasMatch(s.originalSha256)) {
+        throw const InvalidRecord('documentSource');
+      }
+    }
     if (coding != null &&
         !coding!.describes(
           name: name,

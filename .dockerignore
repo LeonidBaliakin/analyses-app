@@ -1,0 +1,14 @@
+**
+!services/
+!services/processing/
+!services/processing/pubspec.yaml
+!services/processing/pubspec.lock
+!services/processing/bin/
+!services/processing/bin/**
+!services/processing/lib/
+!services/processing/lib/**
+!services/processing/start.sh
+!workers/
+!workers/document_processing/
+!workers/document_processing/worker.py
+!workers/document_processing/make_config.py

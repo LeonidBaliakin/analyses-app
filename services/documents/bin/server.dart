@@ -74,6 +74,9 @@ Future<void> main() async {
   if (!initialized) throw StateError('Object storage unavailable');
   final service = DocumentsService(
     store,
+    processingEndpoint: env['DOCUMENTS_PROCESSING_ENDPOINT'] == null
+        ? null
+        : Uri.parse(env['DOCUMENTS_PROCESSING_ENDPOINT']!),
     identities: identities,
     allowedOrigins: (env['DOCUMENTS_ALLOWED_ORIGINS'] ?? '')
         .split(',')
