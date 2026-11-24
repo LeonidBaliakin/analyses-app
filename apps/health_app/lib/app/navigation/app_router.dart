@@ -21,6 +21,7 @@ GoRouter createAppRouter(
   SettingsViewModel settings,
   DemoCatalog catalog, {
   RecordsViewModel? records,
+  OriginalsViewModel? originals,
   ValueNotifier<bool>? showDemo,
   String? initialLocation,
 }) {
@@ -53,8 +54,15 @@ GoRouter createAppRouter(
       ? demo
       : ValueListenableBuilder<bool>(
           valueListenable: showDemo!,
-          builder: (context, example, _) =>
-              example ? demo : RecordsPage(model: records, section: section),
+          builder: (context, example, _) => example
+              ? demo
+              : RecordsPage(
+                  model: records,
+                  section: section,
+                  onOpenOriginals: originals == null
+                      ? null
+                      : () => router.goNamed(AppDestination.documents.name),
+                ),
         );
   router = GoRouter(
     initialLocation: initialLocation,
@@ -198,7 +206,14 @@ GoRouter createAppRouter(
       ),
       GoRoute(
         path: AppDestination.documents.path,
-        redirect: (context, state) => AppDestination.results.path,
+        name: AppDestination.documents.name,
+        redirect: originals == null
+            ? (context, state) => AppDestination.results.path
+            : null,
+        builder: (context, state) => OriginalsPage(
+          model: originals!,
+          onClose: () => router.goNamed(AppDestination.results.name),
+        ),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

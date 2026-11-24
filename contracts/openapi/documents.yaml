@@ -1,0 +1,181 @@
+openapi: 3.0.3
+info:
+  title: Documents original storage
+  version: 1.0.0
+  description: >-
+    Local pilot protocol. The bearer identity supplies the owner; the server
+    authorizes the path profile and checks cloud writes and quota.
+    Responses include X-Request-ID for correlation.
+    Owner plus originalId is the immutable idempotency key. No S3 keys or
+    upload URLs are returned. Uploads expire after 24 hours; retry transfers
+    the entire bounded file. A new original requires new document/original IDs.
+servers:
+  - url: http://127.0.0.1:18088
+security:
+  - bearerAuth: []
+paths:
+  /v1/profiles/{profileId}/uploads:
+    parameters:
+      - $ref: '#/components/parameters/Profile'
+    post:
+      operationId: reserveOriginalUpload
+      description: >-
+        Reserve bytes once or return the existing state. A changed request
+        under the same originalId returns 409. No source bytes are sent here.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Metadata'
+      responses:
+        '200':
+          $ref: '#/components/responses/Receipt'
+        default:
+          $ref: '#/components/responses/Error'
+  /v1/profiles/{profileId}/uploads/{originalId}/content:
+    parameters:
+      - $ref: '#/components/parameters/Profile'
+      - $ref: '#/components/parameters/Original'
+    put:
+      operationId: stageOriginalBytes
+      description: >-
+        Supply all original bytes, 1 to 20971520 bytes. Actual size, SHA-256
+        and MIME signature must match the reserved metadata. Replaying a ready
+        session never overwrites its published original.
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema: { type: string, format: binary, maxLength: 20971520 }
+          application/pdf:
+            schema: { type: string, format: binary, maxLength: 20971520 }
+          image/png:
+            schema: { type: string, format: binary, maxLength: 20971520 }
+          image/jpeg:
+            schema: { type: string, format: binary, maxLength: 20971520 }
+      responses:
+        '200':
+          description: Staging accepted, or the original was already ready.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [state]
+                properties:
+                  state: { type: string, enum: [staged] }
+        default:
+          $ref: '#/components/responses/Error'
+  /v1/profiles/{profileId}/uploads/{originalId}/finalize:
+    parameters:
+      - $ref: '#/components/parameters/Profile'
+      - $ref: '#/components/parameters/Original'
+    post:
+      operationId: finalizeOriginal
+      description: >-
+        Verify staging, publish its verified snapshot and read/verify the published
+        bytes before committing ready, quota and DocumentReady outbox together.
+        Retry reconciles an object written before metadata commit. A successful
+        replay returns the same receipt and does not charge quota again.
+      responses:
+        '200':
+          $ref: '#/components/responses/Receipt'
+        default:
+          $ref: '#/components/responses/Error'
+  /v1/profiles/{profileId}/originals/{originalId}/content:
+    parameters:
+      - $ref: '#/components/parameters/Profile'
+      - $ref: '#/components/parameters/Original'
+    get:
+      operationId: downloadOriginal
+      description: >-
+        Check profile access and integrity of the full published original before
+        returning bytes. One bytes range is supported; multipart ranges are not.
+      parameters:
+        - in: header
+          name: Range
+          schema: { type: string }
+      responses:
+        '200':
+          description: Full verified original. X-Content-SHA256 is the full SHA-256.
+          headers:
+            X-Content-SHA256:
+              schema: { type: string, pattern: '^[0-9a-f]{64}$' }
+            Accept-Ranges:
+              schema: { type: string, enum: [bytes] }
+          content:
+            application/octet-stream:
+              schema: { type: string, format: binary }
+        '206':
+          description: Single range, with Content-Range and the full original hash.
+        '416':
+          description: Invalid range; Content-Range contains the full length.
+        default:
+          $ref: '#/components/responses/Error'
+    head:
+      operationId: inspectOriginalContent
+      description: Same authorization/integrity check and headers as GET, no body.
+      responses:
+        '200': { description: Verified original headers. }
+        default:
+          $ref: '#/components/responses/Error'
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer }
+  parameters:
+    Profile:
+      name: profileId
+      in: path
+      required: true
+      schema: { type: string, pattern: '^[A-Za-z0-9_-]{1,100}$' }
+    Original:
+      name: originalId
+      in: path
+      required: true
+      schema: { type: string, pattern: '^[A-Za-z0-9_-]{1,100}$' }
+  schemas:
+    Metadata:
+      type: object
+      required: [documentId, originalId, fileName, mime, size, sha256, importSource, importedAt]
+      properties:
+        documentId: { type: string, pattern: '^[A-Za-z0-9_-]{1,100}$' }
+        originalId: { type: string, pattern: '^[A-Za-z0-9_-]{1,100}$' }
+        fileName: { type: string, minLength: 1, maxLength: 255, description: Display name only; never an object key or trusted path. }
+        mime: { type: string, enum: [application/pdf, image/png, image/jpeg] }
+        size: { type: integer, minimum: 1, maximum: 20971520 }
+        sha256: { type: string, pattern: '^[0-9a-f]{64}$' }
+        importSource: { type: string, enum: [files, camera, gallery] }
+        importedAt: { type: string, format: date-time, description: Client import instant; normalized to UTC. }
+    Receipt:
+      allOf:
+        - $ref: '#/components/schemas/Metadata'
+        - type: object
+          required: [schemaVersion, state]
+          properties:
+            schemaVersion: { type: integer, enum: [1] }
+            state: { type: string, enum: [reserved, staged, ready] }
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          description: >-
+            400 invalid request/metadata; 401 unauthorized; 403 cloud_disabled or
+            origin_denied; 404 inaccessible/missing resource; 409 operation_mismatch,
+            quota_exceeded or not_staged; 410 upload_expired; 413 too_large;
+            415 unsupported_type; 422 integrity_mismatch; 502 object_unavailable;
+            503 temporarily_unavailable. Errors never contain source bytes or secrets.
+  responses:
+    Receipt:
+      description: Existing or newly reserved/finalized immutable upload metadata.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Receipt'
+    Error:
+      description: Bounded technical error; local original remains available.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

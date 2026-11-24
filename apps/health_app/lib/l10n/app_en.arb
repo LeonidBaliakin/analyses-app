@@ -421,5 +421,32 @@
         "type": "String"
       }
     }
-  }
+  },
+  "originalsTitle": "Original documents",
+  "originalsConnect": "Connect storage",
+  "originalsDisconnect": "Disconnect storage",
+  "originalsConnectionHint": "Enter the Documents server address and access token. The token is kept only for this app session. Uploads start only when you choose them.",
+  "originalsEndpoint": "Server address",
+  "originalsToken": "Access token",
+  "originalsConnectionError": "Check the address and token. HTTPS is required except for a local development server.",
+  "originalsHint": "Keep the original PDF, PNG or JPEG on this device (up to 20 MiB). Importing does not create medical results or send files to AI. Cloud upload is a separate action.",
+  "originalsImport": "Import file",
+  "originalsTooLarge": "Choose a non-empty file up to 20 MiB.",
+  "originalsUnsupported": "Supported originals: PDF, PNG and JPEG. The file type is checked from its bytes.",
+  "originalsIntegrityError": "Integrity check failed. The original has not been accepted.",
+  "originalsQuota": "The cloud storage quota is full. The local original is kept.",
+  "originalsAccess": "Cloud access is unavailable for this profile.",
+  "originalsProfileRequired": "Create a local medical profile before importing.",
+  "originalsFailed": "The operation failed. Your saved local originals are kept; try again.",
+  "originalsLocalSaved": "Original saved on this device.",
+  "originalsCloudSaved": "Verified original saved in the cloud.",
+  "originalsVerified": "Downloaded bytes match the original SHA-256.",
+  "originalsEmpty": "No originals saved yet.",
+  "originalsLocal": "On this device only",
+  "originalsPending": "Cloud transfer pending — retry is safe",
+  "originalsIntegrity": "File integrity",
+  "originalsExport": "Save a local copy",
+  "originalsUpload": "Upload to cloud",
+  "originalsDownloadVerify": "Download and verify",
+  "originalsOtherConnection": "Saved through a different connection. Upload again to confirm this storage destination."
 }

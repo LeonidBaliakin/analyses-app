@@ -2183,6 +2183,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your selection will be saved with this result. Values and reference ranges are kept as entered.'**
   String get terminologySelected;
+
+  /// No description provided for @originalsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Original documents'**
+  String get originalsTitle;
+
+  /// No description provided for @originalsConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect storage'**
+  String get originalsConnect;
+
+  /// No description provided for @originalsDisconnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect storage'**
+  String get originalsDisconnect;
+
+  /// No description provided for @originalsConnectionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the Documents server address and access token. The token is kept only for this app session. Uploads start only when you choose them.'**
+  String get originalsConnectionHint;
+
+  /// No description provided for @originalsEndpoint.
+  ///
+  /// In en, this message translates to:
+  /// **'Server address'**
+  String get originalsEndpoint;
+
+  /// No description provided for @originalsToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Access token'**
+  String get originalsToken;
+
+  /// No description provided for @originalsConnectionError.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the address and token. HTTPS is required except for a local development server.'**
+  String get originalsConnectionError;
+
+  /// No description provided for @originalsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the original PDF, PNG or JPEG on this device (up to 20 MiB). Importing does not create medical results or send files to AI. Cloud upload is a separate action.'**
+  String get originalsHint;
+
+  /// No description provided for @originalsImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Import file'**
+  String get originalsImport;
+
+  /// No description provided for @originalsTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a non-empty file up to 20 MiB.'**
+  String get originalsTooLarge;
+
+  /// No description provided for @originalsUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Supported originals: PDF, PNG and JPEG. The file type is checked from its bytes.'**
+  String get originalsUnsupported;
+
+  /// No description provided for @originalsIntegrityError.
+  ///
+  /// In en, this message translates to:
+  /// **'Integrity check failed. The original has not been accepted.'**
+  String get originalsIntegrityError;
+
+  /// No description provided for @originalsQuota.
+  ///
+  /// In en, this message translates to:
+  /// **'The cloud storage quota is full. The local original is kept.'**
+  String get originalsQuota;
+
+  /// No description provided for @originalsAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud access is unavailable for this profile.'**
+  String get originalsAccess;
+
+  /// No description provided for @originalsProfileRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a local medical profile before importing.'**
+  String get originalsProfileRequired;
+
+  /// No description provided for @originalsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The operation failed. Your saved local originals are kept; try again.'**
+  String get originalsFailed;
+
+  /// No description provided for @originalsLocalSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Original saved on this device.'**
+  String get originalsLocalSaved;
+
+  /// No description provided for @originalsCloudSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified original saved in the cloud.'**
+  String get originalsCloudSaved;
+
+  /// No description provided for @originalsVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloaded bytes match the original SHA-256.'**
+  String get originalsVerified;
+
+  /// No description provided for @originalsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No originals saved yet.'**
+  String get originalsEmpty;
+
+  /// No description provided for @originalsLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'On this device only'**
+  String get originalsLocal;
+
+  /// No description provided for @originalsPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud transfer pending — retry is safe'**
+  String get originalsPending;
+
+  /// No description provided for @originalsIntegrity.
+  ///
+  /// In en, this message translates to:
+  /// **'File integrity'**
+  String get originalsIntegrity;
+
+  /// No description provided for @originalsExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Save a local copy'**
+  String get originalsExport;
+
+  /// No description provided for @originalsUpload.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload to cloud'**
+  String get originalsUpload;
+
+  /// No description provided for @originalsDownloadVerify.
+  ///
+  /// In en, this message translates to:
+  /// **'Download and verify'**
+  String get originalsDownloadVerify;
+
+  /// No description provided for @originalsOtherConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved through a different connection. Upload again to confirm this storage destination.'**
+  String get originalsOtherConnection;
 }
 
 class _AppLocalizationsDelegate

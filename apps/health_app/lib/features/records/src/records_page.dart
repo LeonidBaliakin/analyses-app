@@ -11,9 +11,15 @@ import 'records_view_model.dart';
 enum RecordsSection { summary, results, profile }
 
 class RecordsPage extends StatefulWidget {
-  const RecordsPage({required this.model, required this.section, super.key});
+  const RecordsPage({
+    required this.model,
+    required this.section,
+    this.onOpenOriginals,
+    super.key,
+  });
   final RecordsViewModel model;
   final RecordsSection section;
+  final VoidCallback? onOpenOriginals;
   @override
   State<RecordsPage> createState() => _RecordsPageState();
 }
@@ -83,6 +89,12 @@ class _RecordsPageState extends State<RecordsPage> with WidgetsBindingObserver {
                         ),
                         const SizedBox(height: 8),
                         Text(l.localOnly),
+                        if (widget.onOpenOriginals != null)
+                          TextButton.icon(
+                            onPressed: widget.onOpenOriginals,
+                            icon: const Icon(Icons.folder_open_outlined),
+                            label: Text(l.originalsTitle),
+                          ),
                         if (profile != null) ...[
                           const SizedBox(height: 12),
                           Text(

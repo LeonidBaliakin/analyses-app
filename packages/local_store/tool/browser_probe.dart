@@ -1,6 +1,10 @@
 // Synthetic real-browser probe. Compile outside the production web bundle.
 import 'dart:async';
 import 'dart:js_interop';
+import 'dart:typed_data';
+import 'dart:convert';
+
+import 'package:document_domain/document_domain.dart';
 
 import 'package:drift/wasm.dart';
 import 'package:local_store/local_store.dart';
@@ -47,6 +51,20 @@ Future<void> main() async {
               WasmStorageImplementation.unsafeIndexedDb,
     );
     final db = RecordsDatabase(result.resolvedExecutor);
+    final originalBytes = Uint8List.fromList(
+      utf8.encode('%PDF-1.7\nSynthetic persistent browser original\n%%EOF'),
+    );
+    final original = OriginalDocument(
+      documentId: 'browser-document',
+      originalId: 'browser-original',
+      profileId: 'profile',
+      fileName: '../../synthetic.pdf',
+      mime: 'application/pdf',
+      size: originalBytes.length,
+      sha256: originalSha256(originalBytes),
+      importedAt: DateTime.utc(2026, 11, 24),
+      importSource: 'files',
+    );
     final phase = parameters['phase'];
     if (phase == 'seed') {
       await db.commit(
@@ -62,8 +80,31 @@ Future<void> main() async {
       final mutation = command('result-op', sample('< 0,0100'), 0);
       check(await db.commit(mutation) == 1);
       check(await db.commit(mutation) == 1);
+      await db.importOriginal(original, originalBytes);
+      await db.setOriginalCloudState(
+        'profile',
+        'browser-original',
+        OriginalCloudState.pending,
+        destinationId: 'synthetic-browser',
+      );
       await db.close();
       report('PASS seed ${result.chosenImplementation.name}');
+    } else if (phase == 'originals-verify') {
+      final saved = (await db.listOriginals('profile')).single;
+      check(
+        saved.originalId == original.originalId &&
+            saved.cloudDestination == 'synthetic-browser' &&
+            saved.sha256 == original.sha256 &&
+            saved.cloudState == OriginalCloudState.pending,
+      );
+      original.verify(await db.readOriginal('profile', original.originalId));
+      await db.importOriginal(original, originalBytes);
+      check((await db.listOriginals('profile')).length == 1);
+      check((await db.listOriginals('foreign-profile')).isEmpty);
+      await db.close();
+      report(
+        'PASS original reopened SHA-256 verified pending preserved no duplicate ${result.chosenImplementation.name}',
+      );
     } else if (phase == 'hold') {
       final base = (await db.read('profile'))
           .singleWhere((e) => e.record.id == 'result');

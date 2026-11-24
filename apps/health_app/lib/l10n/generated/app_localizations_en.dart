@@ -1133,4 +1133,95 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get terminologySelected =>
       'Your selection will be saved with this result. Values and reference ranges are kept as entered.';
+
+  @override
+  String get originalsTitle => 'Original documents';
+
+  @override
+  String get originalsConnect => 'Connect storage';
+
+  @override
+  String get originalsDisconnect => 'Disconnect storage';
+
+  @override
+  String get originalsConnectionHint =>
+      'Enter the Documents server address and access token. The token is kept only for this app session. Uploads start only when you choose them.';
+
+  @override
+  String get originalsEndpoint => 'Server address';
+
+  @override
+  String get originalsToken => 'Access token';
+
+  @override
+  String get originalsConnectionError =>
+      'Check the address and token. HTTPS is required except for a local development server.';
+
+  @override
+  String get originalsHint =>
+      'Keep the original PDF, PNG or JPEG on this device (up to 20 MiB). Importing does not create medical results or send files to AI. Cloud upload is a separate action.';
+
+  @override
+  String get originalsImport => 'Import file';
+
+  @override
+  String get originalsTooLarge => 'Choose a non-empty file up to 20 MiB.';
+
+  @override
+  String get originalsUnsupported =>
+      'Supported originals: PDF, PNG and JPEG. The file type is checked from its bytes.';
+
+  @override
+  String get originalsIntegrityError =>
+      'Integrity check failed. The original has not been accepted.';
+
+  @override
+  String get originalsQuota =>
+      'The cloud storage quota is full. The local original is kept.';
+
+  @override
+  String get originalsAccess => 'Cloud access is unavailable for this profile.';
+
+  @override
+  String get originalsProfileRequired =>
+      'Create a local medical profile before importing.';
+
+  @override
+  String get originalsFailed =>
+      'The operation failed. Your saved local originals are kept; try again.';
+
+  @override
+  String get originalsLocalSaved => 'Original saved on this device.';
+
+  @override
+  String get originalsCloudSaved => 'Verified original saved in the cloud.';
+
+  @override
+  String get originalsVerified =>
+      'Downloaded bytes match the original SHA-256.';
+
+  @override
+  String get originalsEmpty => 'No originals saved yet.';
+
+  @override
+  String get originalsLocal => 'On this device only';
+
+  @override
+  String get originalsPending => 'Cloud transfer pending — retry is safe';
+
+  @override
+  String get originalsIntegrity => 'File integrity';
+
+  @override
+  String get originalsExport => 'Save a local copy';
+
+  @override
+  String get originalsUpload => 'Upload to cloud';
+
+  @override
+  String get originalsDownloadVerify => 'Download and verify';
+
+  @override
+  String get originalsOtherConnection =>
+      'Saved through a different connection. Upload again to confirm this storage destination.';
 }

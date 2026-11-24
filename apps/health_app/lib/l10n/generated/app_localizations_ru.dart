@@ -1136,4 +1136,96 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get terminologySelected =>
       'Выбор сохранится вместе с результатом. Значение и референсы останутся в исходном виде.';
+
+  @override
+  String get originalsTitle => 'Оригиналы документов';
+
+  @override
+  String get originalsConnect => 'Подключить хранилище';
+
+  @override
+  String get originalsDisconnect => 'Отключить хранилище';
+
+  @override
+  String get originalsConnectionHint =>
+      'Введите адрес сервера Documents и токен доступа. Токен хранится только на время работы приложения. Передача начнётся только по вашему действию.';
+
+  @override
+  String get originalsEndpoint => 'Адрес сервера';
+
+  @override
+  String get originalsToken => 'Токен доступа';
+
+  @override
+  String get originalsConnectionError =>
+      'Проверьте адрес и токен. Нужен HTTPS, кроме локального сервера разработки.';
+
+  @override
+  String get originalsHint =>
+      'Сохраните исходный PDF, PNG или JPEG на устройстве (до 20 МиБ). Импорт не создаёт результаты анализов и не отправляет файлы в AI. Загрузка в облако выполняется отдельно.';
+
+  @override
+  String get originalsImport => 'Импортировать файл';
+
+  @override
+  String get originalsTooLarge => 'Выберите непустой файл размером до 20 МиБ.';
+
+  @override
+  String get originalsUnsupported =>
+      'Поддерживаются PDF, PNG и JPEG. Тип проверяется по исходным байтам.';
+
+  @override
+  String get originalsIntegrityError =>
+      'Проверка целостности не пройдена. Оригинал не принят.';
+
+  @override
+  String get originalsQuota =>
+      'Облачная квота исчерпана. Локальный оригинал сохранён.';
+
+  @override
+  String get originalsAccess => 'Облачный доступ для этого профиля недоступен.';
+
+  @override
+  String get originalsProfileRequired =>
+      'Перед импортом создайте локальный медицинский профиль.';
+
+  @override
+  String get originalsFailed =>
+      'Операция не выполнена. Сохранённые локальные оригиналы не потеряны; повторите попытку.';
+
+  @override
+  String get originalsLocalSaved => 'Оригинал сохранён на устройстве.';
+
+  @override
+  String get originalsCloudSaved => 'Проверенный оригинал сохранён в облаке.';
+
+  @override
+  String get originalsVerified =>
+      'Скачанные байты совпадают с SHA-256 оригинала.';
+
+  @override
+  String get originalsEmpty => 'Сохранённых оригиналов пока нет.';
+
+  @override
+  String get originalsLocal => 'Только на устройстве';
+
+  @override
+  String get originalsPending =>
+      'Передача в облако ожидает повтора — повтор безопасен';
+
+  @override
+  String get originalsIntegrity => 'Целостность файла';
+
+  @override
+  String get originalsExport => 'Сохранить локальную копию';
+
+  @override
+  String get originalsUpload => 'Загрузить в облако';
+
+  @override
+  String get originalsDownloadVerify => 'Скачать и проверить';
+
+  @override
+  String get originalsOtherConnection =>
+      'Сохранён через другое подключение. Для текущего хранилища загрузите оригинал заново.';
 }

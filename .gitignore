@@ -4,3 +4,5 @@ build/
 .flutter-plugins-dependencies
 
 .playwright-cli/
+.env
+.secrets/

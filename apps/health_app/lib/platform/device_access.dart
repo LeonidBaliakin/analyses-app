@@ -24,10 +24,12 @@ final class SelectedAttachment {
     required this.name,
     required this.size,
     required this.readBytes,
+    this.openRead,
   });
   final String name;
   final int size;
   final Future<Uint8List> Function() readBytes;
+  final Stream<Uint8List> Function()? openRead;
 }
 
 final class DeviceCoordinates {

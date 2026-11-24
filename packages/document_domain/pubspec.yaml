@@ -1,0 +1,11 @@
+name: document_domain
+description: Immutable original document metadata and integrity rules.
+version: 0.1.0
+publish_to: none
+resolution: workspace
+environment:
+  sdk: ^3.14.0
+dependencies:
+  crypto: ^3.0.7
+dev_dependencies:
+  test: ^1.26.3

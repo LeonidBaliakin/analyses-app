@@ -2,12 +2,13 @@ import 'dart:convert';
 
 import 'package:drift/drift.dart';
 import 'package:medical_domain/medical_domain.dart';
+import 'package:document_domain/document_domain.dart';
 
 import 'record_codec.dart';
 
 /// SQL schema and transactions stay here; only domain values cross the port.
 final class RecordsDatabase extends GeneratedDatabase
-    implements HealthRecordsRepository {
+    implements HealthRecordsRepository, OriginalRepository {
   RecordsDatabase(super.executor, {DateTime Function()? clock})
     : _clock = clock ?? DateTime.now;
   final DateTime Function() _clock;
@@ -30,8 +31,15 @@ final class RecordsDatabase extends GeneratedDatabase
     PRIMARY KEY (record_id, revision)
   )''';
 
+  static const originalsSql = '''CREATE TABLE originals (
+    original_id TEXT PRIMARY KEY NOT NULL, document_id TEXT NOT NULL UNIQUE,
+    profile_id TEXT NOT NULL, file_name TEXT NOT NULL, mime TEXT NOT NULL,
+    byte_size INTEGER NOT NULL, sha256 TEXT NOT NULL, imported_at TEXT NOT NULL,
+    import_source TEXT NOT NULL, cloud_state TEXT NOT NULL, cloud_destination TEXT, bytes BLOB NOT NULL
+  )''';
+
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
   @override
   Iterable<TableInfo<Table, Object?>> get allTables => const [];
   @override
@@ -39,6 +47,7 @@ final class RecordsDatabase extends GeneratedDatabase
     OnCreateQuery(recordsSql),
     OnCreateQuery(outboxSql),
     OnCreateQuery(historySql),
+    OnCreateQuery(originalsSql),
     OnCreateQuery(
       'CREATE INDEX records_profile ON records(profile_id, deleted)',
     ),
@@ -47,18 +56,21 @@ final class RecordsDatabase extends GeneratedDatabase
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) => m.createAll(),
     onUpgrade: (m, from, to) async {
-      if (from != 1 || to != 2) {
+      if (from < 1 || from > 2 || to != 3) {
         throw StateError('Unsupported database migration');
       }
       await transaction(() async {
-        await customStatement(historySql);
-        await customStatement(
-          '''INSERT INTO record_history
+        if (from == 1) {
+          await customStatement(historySql);
+          await customStatement(
+            '''INSERT INTO record_history
           SELECT id, profile_id, revision, payload, deleted, updated_at FROM records''',
-        );
-        await customStatement(
-          'CREATE INDEX records_profile ON records(profile_id, deleted)',
-        );
+          );
+          await customStatement(
+            'CREATE INDEX records_profile ON records(profile_id, deleted)',
+          );
+        }
+        await customStatement(originalsSql);
       });
     },
     beforeOpen: (details) async {
@@ -68,6 +80,110 @@ final class RecordsDatabase extends GeneratedDatabase
       }
     },
   );
+
+  OriginalDocument _original(QueryRow row) => OriginalDocument(
+    cloudDestination: row.readNullable<String>('cloud_destination'),
+    documentId: row.read<String>('document_id'),
+    originalId: row.read<String>('original_id'),
+    profileId: row.read<String>('profile_id'),
+    fileName: row.read<String>('file_name'),
+    mime: row.read<String>('mime'),
+    size: row.read<int>('byte_size'),
+    sha256: row.read<String>('sha256'),
+    importedAt: DateTime.parse(row.read<String>('imported_at')),
+    importSource: row.read<String>('import_source'),
+    cloudState: OriginalCloudState.values.byName(
+      row.read<String>('cloud_state'),
+    ),
+  );
+
+  @override
+  Future<void> importOriginal(
+    OriginalDocument original,
+    Uint8List bytes,
+  ) async {
+    final copy = Uint8List.fromList(bytes);
+    original.verify(copy);
+    await transaction(() async {
+      final owner = await customSelect(
+        "SELECT id FROM records WHERE id = ? AND kind = 'profile' AND deleted = 0",
+        variables: [Variable(original.profileId)],
+      ).getSingleOrNull();
+      if (owner == null) throw const OriginalFailure('profile');
+      final existing = await customSelect(
+        'SELECT * FROM originals WHERE original_id = ?',
+        variables: [Variable(original.originalId)],
+      ).getSingleOrNull();
+      if (existing != null) {
+        final old = _original(existing);
+        if (old.profileId != original.profileId ||
+            old.documentId != original.documentId ||
+            old.sha256 != original.sha256 ||
+            old.size != original.size ||
+            old.mime != original.mime ||
+            old.fileName != original.fileName ||
+            old.importSource != original.importSource ||
+            old.importedAt != original.importedAt) {
+          throw const OriginalFailure('conflict');
+        }
+        old.verify(existing.read<Uint8List>('bytes'));
+        return;
+      }
+      await customStatement(
+        '''INSERT INTO originals VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+        [
+          original.originalId,
+          original.documentId,
+          original.profileId,
+          original.fileName,
+          original.mime,
+          original.size,
+          original.sha256,
+          original.importedAt.toIso8601String(),
+          original.importSource,
+          OriginalCloudState.local.name,
+          null,
+          copy,
+        ],
+      );
+    });
+  }
+
+  @override
+  Future<List<OriginalDocument>> listOriginals(String profileId) async =>
+      (await customSelect(
+        'SELECT * FROM originals WHERE profile_id = ? ORDER BY imported_at DESC, original_id',
+        variables: [Variable(profileId)],
+      ).get()).map(_original).toList(growable: false);
+
+  @override
+  Future<Uint8List> readOriginal(String profileId, String originalId) async {
+    final row = await customSelect(
+      'SELECT * FROM originals WHERE profile_id = ? AND original_id = ?',
+      variables: [Variable(profileId), Variable(originalId)],
+    ).getSingleOrNull();
+    if (row == null) throw const OriginalFailure('missing');
+    final bytes = row.read<Uint8List>('bytes');
+    _original(row).verify(bytes);
+    return Uint8List.fromList(bytes);
+  }
+
+  @override
+  Future<void> setOriginalCloudState(
+    String profileId,
+    String originalId,
+    OriginalCloudState state, {
+    String? destinationId,
+  }) async {
+    if (state != OriginalCloudState.local &&
+        (destinationId == null || destinationId.isEmpty)) {
+      throw const OriginalFailure('connection');
+    }
+    await customStatement(
+      'UPDATE originals SET cloud_state = ?, cloud_destination = ? WHERE profile_id = ? AND original_id = ?',
+      [state.name, destinationId, profileId, originalId],
+    );
+  }
 
   RecordEntry _entry(QueryRow row) => RecordEntry(
     decodeRecord(

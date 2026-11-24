@@ -8,6 +8,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../features/settings/settings.dart';
 import '../features/records/records.dart';
+import '../features/documents/documents.dart';
 import '../features/device_access/device_access.dart';
 import '../presentation/demo_catalog.dart';
 import '../l10n/generated/app_localizations.dart';
@@ -21,6 +22,7 @@ class HealthApp extends StatefulWidget {
     this.initialLocation,
     this.deviceAccess,
     this.records,
+    this.originals,
     super.key,
   });
 
@@ -29,6 +31,7 @@ class HealthApp extends StatefulWidget {
   final String? initialLocation;
   final DeviceAccessViewModel? deviceAccess;
   final RecordsViewModel? records;
+  final OriginalsViewModel? originals;
 
   @override
   State<HealthApp> createState() => _HealthAppState();
@@ -44,6 +47,7 @@ class _HealthAppState extends State<HealthApp> {
     widget.settings,
     widget.catalog,
     records: widget.records,
+    originals: widget.originals,
     showDemo: _showDemo,
     initialLocation: widget.initialLocation,
   );
@@ -101,6 +105,7 @@ class _HealthAppState extends State<HealthApp> {
     _router.dispose();
     _showDemo.dispose();
     widget.records?.dispose();
+    widget.originals?.dispose();
     widget.settings.dispose();
     _deviceAccess.dispose();
     super.dispose();

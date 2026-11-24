@@ -411,7 +411,7 @@ void main() {
         (await db.customSelect('PRAGMA user_version').getSingle()).read<int>(
           'user_version',
         ),
-        2,
+        3,
       );
     },
   );
@@ -419,13 +419,13 @@ void main() {
     await db.commit(command('p1', profile));
     await db.close();
     final newer = sqlite3.open(file.path);
-    newer.execute('PRAGMA user_version = 3');
+    newer.execute('PRAGMA user_version = 4');
     newer.close();
     db = RecordsDatabase(NativeDatabase(file));
     await expectLater(db.read('p'), throwsA(isA<StateError>()));
     final check = sqlite3.open(file.path);
     expect(check.select('SELECT * FROM records'), hasLength(1));
-    expect(check.userVersion, 3);
+    expect(check.userVersion, 4);
     check.close();
   });
 }

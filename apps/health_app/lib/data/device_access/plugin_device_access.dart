@@ -55,6 +55,7 @@ final class PluginDeviceAccess implements DeviceAccessGateway {
     name: file.name,
     size: await file.length(),
     readBytes: file.readAsBytes,
+    openRead: () => file.openRead(),
   );
 
   @override
