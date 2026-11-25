@@ -611,7 +611,11 @@ table.up .r,.hist .r{text-align:right}
 .pv{display:none}
 body.preview .app{display:none}
 body.preview .pv{display:block}
-.pv-bar{position:sticky;top:0;background:var(--paper);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pv-bar{background:var(--paper);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pv-rotate{display:none;max-width:1120px;margin:8px auto 0;padding:0 16px}
+@media screen and (orientation:portrait) and (pointer:coarse){
+  .pv-rotate:not([hidden]){display:block}
+}
 .pv-in{max-width:1120px;margin:0 auto;padding:16px}
 .pv h1{font-size:18px;margin-bottom:4px}
 .pv h2{font-size:15px;margin:18px 0 6px}
@@ -852,7 +856,7 @@ tr.off td{color:var(--ink3)}
 }
 .pv .mobnote{display:none;font-size:11px;color:var(--ink3);margin:-2px 0 6px}
 @media(max-width:620px){
-  .pv-in{overflow-x:hidden}
+  .pv-in{overflow-x:clip}
   .pv table{table-layout:fixed;width:100%}
   .pv td,.pv th{overflow-wrap:anywhere}
   .pv table.alld td:first-child,.pv table.alld th:first-child{width:34%}
@@ -1164,19 +1168,37 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 .dv-ch{color:var(--ink3)}
 @media(min-width:900px){.docview{max-width:calc(100% - 290px);margin-left:290px}}
 /* экран врача: поиск и мобильная раскладка */
-.svsearch{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:8px;margin:8px 0 12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px 12px;box-shadow:var(--sh)}
-.svsearch svg{color:var(--ink3);flex-shrink:0}
-.svsearch input{flex:1;min-width:0;border:0;background:transparent;padding:9px 0;font-size:14px;outline:none}
-#svqn{font-size:12px;color:var(--ink3);white-space:nowrap}
+.report-title-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 0}
+.report-title-row h1{margin:0}
+.svsearch{position:fixed;right:max(12px,env(safe-area-inset-right));bottom:calc(max(12px,env(safe-area-inset-bottom)) + var(--report-keyboard,0px));z-index:5}
+.svsearch .search-trigger{display:grid;place-items:center;width:36px;height:36px;padding:0;color:var(--accent)}
+.svsearch .search-trigger[aria-expanded="true"]{background:var(--accent-soft)}
+.report-search-stack{position:absolute;bottom:100%;right:0;width:min(275px,calc(100vw - 24px))}
+.report-search-panel{position:absolute;bottom:100%;right:0;width:100%;padding:7px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh);visibility:hidden;opacity:0;transform:translateY(3px) scale(.97);transform-origin:bottom right;pointer-events:none;transition:opacity 150ms var(--ease-out),transform 150ms var(--ease-out),visibility 0s linear 150ms}
+.search-trigger[aria-expanded="true"]+.report-search-stack .report-search-panel{visibility:visible;opacity:1;transform:none;pointer-events:auto;transition-delay:0s}
+.report-search-field{display:flex;align-items:center;gap:4px}
+.report-search-panel input{width:100%;min-width:0;padding:7px 9px;font-size:14px}
+.report-search-field .btn{display:grid;place-items:center;padding:0;flex:none;width:34px;height:34px;color:var(--ink2)}
+.report-options{position:relative;margin:4px 0 0;padding:0;list-style:none;max-height:clamp(30px,calc((var(--report-visible-height,100dvh) - 106px) * .64),168px);overflow:auto}
+.report-options li{cursor:pointer;padding:7px 8px;border-radius:7px;font-size:13px}
+.report-options li[aria-selected="true"],.report-options li:hover{background:var(--accent-soft);color:#56359c}
+.report-options small{display:block;color:var(--ink2);font-size:11px}
+.report-options mark{color:inherit;background:transparent;font-weight:800}
+#svqn:not(:empty){display:block;margin:4px 4px 0;font-size:12px;color:var(--ink2)}
+.report-selection:not([hidden]){display:flex;flex-wrap:wrap;align-content:start;gap:4px;padding:7px;max-height:clamp(30px,calc((var(--report-visible-height,100dvh) - 106px) * .36),100px);overflow:auto;background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh)}
+.report-selection .bchip{margin:0;max-width:100%;min-height:28px;background:var(--card);color:#56359c;white-space:normal;overflow-wrap:anywhere}
+.report-selection .bchip button{width:24px;height:24px;flex:none}
+@media screen{#pvBody:has(.report-selection:not([hidden])){padding-bottom:152px}}
+@media(pointer:coarse){.report-search-panel input{font-size:16px}}
+@media(prefers-reduced-motion:reduce){.report-search-panel{transition:none}}
 .pv tr.svhide{display:none!important}
-.svsearching .evrow,.svsearching .evlist{display:none}
 .svt th{white-space:nowrap}
 .pv th.nw,.pv td.sv-d{white-space:nowrap}
 .svl li{display:flex;flex-direction:column}
 .svsince{font-size:12px;color:var(--ink3);margin-top:1px}
 .evlist{display:none;margin:0 0 10px;padding:10px 12px;border-radius:10px;background:var(--med-soft);color:var(--med);font-size:12.5px}
 .evlist b{display:block;margin-bottom:4px}.evlist div{margin:3px 0}.evlist .num{font-weight:700;margin-right:4px}
-@media print{.svsearch{display:none}}
+@media print{.svsearch,.report-selection-empty{display:none!important}}
 @media(max-width:620px){
   .pv table.svt thead{display:none}
   .pv table.svt,.pv table.svt tbody{display:block;width:100%}
@@ -1375,6 +1397,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 .report-groups:not([hidden]){display:grid;gap:6px;margin:8px 0}
 .report-events{display:block;margin:12px 0}
 .report-scroll{max-width:100%;overflow:auto}
+.report-sticky{display:none}
 .report-table{width:max-content;min-width:100%}
 #pvBody .report-table th,#pvBody .report-table td{display:table-cell;min-width:88px}
 #pvBody .report-table th:first-child,#pvBody .report-table td:first-child{min-width:155px}
@@ -1420,6 +1443,13 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
    white-space:normal
  }
  .report-scroll{width:100%;max-width:100%;overflow-x:auto}
+ .report-sticky.is-ready{
+   display:block;position:sticky;top:0;z-index:4;pointer-events:none;
+   height:var(--report-head-height);margin-bottom:calc(-1 * var(--report-head-height))
+ }
+ .report-sticky-clip{overflow:hidden;background:var(--paper);box-shadow:0 1px 0 #cfc6e2}
+ #pvBody .report-sticky .report-table{table-layout:fixed;min-width:0}
+ #pvBody .report-sticky .report-table th{min-width:0;background:#eeebf7;color:var(--ink)}
 }
 #v-files #rsnFilter{margin-top:16px}
 #tut{padding:0;overflow:hidden;background:transparent;backdrop-filter:none;z-index:1500}
@@ -1635,6 +1665,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 <!-- предпросмотр печати -->
 <div class="pv" id="pv">
   <div class="pv-bar"><button class="btn" id="pvBack">← Назад</button><button class="btn pri" id="pvPrint">Печать / сохранить PDF</button><button class="btn" id="sendPDF">Передать PDF</button><span class="why" id="pvNote"></span></div>
+  <p class="why pv-rotate" id="pvRotate" hidden>Поверните телефон горизонтально, чтобы видеть больше дат.</p>
   <details id="reportRange"><summary>Фильтр по датам</summary><div class="field"><label for="reportPeriod">Период анализов</label><select id="reportPeriod"><option value="0">Вся история</option><option value="30">Последние 30 дней до последней сдачи</option><option value="180">Последние 180 дней до последней сдачи</option><option value="custom">Свой диапазон</option></select><div class="date-pair" hidden><label>С <input type="date" data-from></label><label>По <input type="date" data-to></label></div></div></details><div class="pv-in" id="pvBody"></div>
 </div>
 
@@ -2428,7 +2459,10 @@ function openPreview(groups,title){
   $('#pvNote').textContent='';
   document.body.classList.add('preview');window.scrollTo(0,0)}
 $('#pgo').onclick=()=>openPreview(G.filter(g=>sel.has(g.gi)),'Анализы: выбранные блоки');
-$('#pvBack').onclick=()=>document.body.classList.remove('preview');
+$('#pvBack').onclick=()=>{
+  document.body.classList.remove('preview');
+  leaveDoctorLandscape();
+};
 $('#pvPrint').onclick=()=>{try{window.print()}catch(e){toast('Печать недоступна в этом окне')}};
 
 /* поиск по системам */
@@ -2634,7 +2668,7 @@ function drawQR(){const c=$('#qr'),x=c.getContext('2d'),n=25,s=c.width/n;x.fillS
   $('#slink').textContent='orange-health.ru/s/'+Math.random().toString(36).slice(2,5).toUpperCase()+'-'+Math.random().toString(36).slice(2,5).toUpperCase()}
 $('#copy').onclick=()=>requireLogin(async()=>{try{await navigator.clipboard.writeText('https://'+$('#slink').textContent);toast('Ссылка скопирована')}catch(e){toast('Не удалось скопировать: выделите ссылку вручную')}});
 $('#spdf').onclick=()=>openSpecView(true);
-$('#specPrev').onclick=()=>openSpecView(false);
+$('#specPrev').onclick=openDoctorReport;
 let DOCS=[{n:'Петрова Е. В., эндокринолог',ty:'Постоянный',o:'14.03.26',st:'Открыт',v:'06.10.26, 18:42'},{n:'Ссылка для приёма',ty:'Разовая ссылка, 24 ч',o:'02.08.26',st:'Истекла',v:'02.08.26, 10:15'},{n:'Мама',ty:'Постоянный',o:'01.06.26',st:'Закрыт',v:'20.06.26, 21:03'}];
 const STC={'Открыт':'c-ok','Истекла':'c-warn','Закрыт':'c-high','Запрошен':'c-low'};
 const acRow=(off,name,meta,st,btn)=>`<div class="acr${off?' off':''}"><div class="acr-m"><b>${name}</b>${meta.filter(Boolean).map(x=>`<span>${x}</span>`).join('')}</div><div class="acr-a"><span class="chip ${STC[st]}">${st.toLowerCase()}</span>${btn||''}</div></div>`;
@@ -2655,7 +2689,10 @@ $('#viewBack').onclick=()=>{$('#viewing').hidden=true;document.body.classList.re
 
 /* как увидит специалист */
 const svRow=(m,cls)=>`<tr class="${cls||''}"><td class="sv-n">${esc(m.n)}</td><td class="num sv-v" style="${m.st!=='ok'?'font-weight:700;color:var(--'+(m.st==='high'?'hi':'lo')+')':''}">${esc(m.cur.raw)} ${esc(U(m.u))}${m.st==='high'?' ↑':m.st==='low'?' ↓':''}</td><td class="num sv-r">${esc(refText(m))}</td><td class="num sv-d">${m.cur.d}</td><td class="num sv-p">${m.prev?esc(m.prev.raw)+' <span class="why">· '+m.prev.d+'</span>':'—'}</td></tr>`;
-function openSpecView(print){
+let reportSelected=new Map();
+function openSpecView(print,keepSelection=false){
+  if(!keepSelection)reportSelected=new Map();
+  $('#pvRotate').hidden=print;
   const mode=$('#period10').value, period=mode==='custom' || Number(mode)>0;
   const bounds=$('#shareRange');
   const from=bounds.querySelector('[data-from]').value,to=bounds.querySelector('[data-to]').value;
@@ -2686,29 +2723,165 @@ function openSpecView(print){
   }):[];
   const dateHead=indices.map(i=>'<th scope="col">'+esc(DATES[i])+'<br><small>'+esc(LABS[i])+'</small></th>').join('');
   const tableRows=groups.map(g=>'<tr class="grp"><th scope="rowgroup" colspan="'+(indices.length+3)+'">'+ '<span>'+esc(g.title)+'</span></th></tr>'+
-    g.rows.map(m=>'<tr><td>'+esc(m.n)+'</td><td>'+esc(U(m.u))+'</td><td>'+esc(refText(m))+'</td>'+
+    g.rows.map(m=>'<tr data-report-indicator="'+m.gi+','+m.ri+'"><td>'+esc(m.n)+'</td><td>'+esc(U(m.u))+'</td><td>'+esc(refText(m))+'</td>'+
       indices.map(i=>cells(m,i)).join('')+'</tr>').join('')).join('');
   const results=groups.length?'<div class="report-pan" hidden><small>Листайте таблицу по датам. На ПК можно нажать кнопки или использовать Shift + колесо мыши.</small><button class="btn" type="button" data-report-pan="-1" aria-label="Прокрутить влево">← Влево</button><button class="btn" type="button" data-report-pan="1" aria-label="Прокрутить вправо">Вправо →</button></div><div class="report-scroll" tabindex="0" role="region" aria-label="Таблица результатов"><table class="report-table"><thead><tr><th scope="col">Показатель</th><th scope="col">Ед.</th><th scope="col">Референс</th>'+dateHead+'</tr></thead><tbody>'+tableRows+'</tbody></table></div>'
     : '<p>'+esc(empty)+'</p>';
-  const search=groups.length?'<div class="svsearch"><input id="svq" type="search" placeholder="Найти показатель" aria-label="Найти показатель"><span id="svqn" aria-live="polite"></span></div>':'';
+  const search=groups.length||reportSelected.size?`<div class="svsearch">
+    <button class="btn search-trigger" type="button" aria-label="Найти показатель" aria-expanded="false" aria-controls="reportSearchPanel">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+    </button>
+    <div class="report-search-stack">
+      <div class="report-search-panel" id="reportSearchPanel" inert>
+        <div class="report-search-field">
+          <input id="svq" type="search" role="combobox" aria-autocomplete="list" aria-controls="reportOptions" aria-expanded="false" placeholder="Найти показатель" aria-label="Поиск по показателям" autocomplete="off" enterkeyhint="done">
+          <button class="btn" type="button" data-close-report-search aria-label="Свернуть поиск" title="Свернуть поиск"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+        </div>
+        <ul class="report-options" id="reportOptions" role="listbox" aria-label="Совпадения" hidden></ul>
+        <span id="svqn" aria-live="polite"></span>
+      </div>
+      <div class="report-selection" role="group" aria-label="Выбранные показатели" hidden></div>
+    </div>
+  </div>`:'';
   const events=eventRows.length?'<details class="report-context" open><summary>События рядом с датами сдачи</summary><ul>'+eventRows.join('')+'</ul></details>':'';
   $('#reportRange summary').textContent='Фильтр по датам · '+caption;
   $('#pvBody').innerHTML='<div class="svbar">'+(print?'Предпросмотр PDF':'Предпросмотр для врача')+
-    ' · '+esc(scopeLabel)+' · '+esc(caption)+'</div><h1>Анализы: '+esc(P.name||'А. Иванов')+'</h1>'+
-    search+results+events+(includeEvents?diaryReport(inPeriod):'');
+    ' · '+esc(scopeLabel)+' · '+esc(caption)+'</div><div class="report-title-row"><h1>Анализы: '+esc(P.name||'А. Иванов')+'</h1>'+
+    search+'</div>'+results+(groups.length?'<p class="why report-selection-empty" hidden>В этом периоде нет результатов по выбранным показателям.</p>':'')+events+(includeEvents?diaryReport(inPeriod):'');
   $('#pvNote').textContent='';
   document.body.classList.add('preview');
+  bindReportSearch(groups);
   bindReportPan();
   window.scrollTo(0,0);
 }
 
 /* поиск на экране врача */
-document.addEventListener('input',e=>{if(e.target.id!=='svq')return;const q=e.target.value.trim().toLowerCase();const alt=Object.keys(SYN).filter(k=>q&&q.includes(k)).map(k=>SYN[k]);
-  const body=$('#pvBody');body.classList.toggle('svsearching',!!q);let n=0;
-  body.querySelectorAll('table tbody tr').forEach(tr=>{if(tr.classList.contains('grp')||tr.classList.contains('evrow'))return;const nm=(tr.querySelector('td')||{}).textContent||'';const l=nm.toLowerCase();
-    const hit=!q||l.includes(q)||alt.some(a=>l.includes(a));tr.classList.toggle('svhide',!hit);if(q&&hit)n++});
-  body.querySelectorAll('table.report-table tbody tr.grp').forEach(g=>{let x=g.nextElementSibling,any=false;while(x&&!x.classList.contains('grp')){if(!x.classList.contains('svhide')&&!x.classList.contains('evrow'))any=true;x=x.nextElementSibling}g.classList.toggle('svhide',!!q&&!any)});
-  $('#svqn').textContent=q?(n?'найдено строк: '+n:'ничего не найдено'):''});
+function placeReportSearch(){
+  const search=$('#pvBody .svsearch'), viewport=window.visualViewport;
+  if(!search||!viewport)return;
+  search.style.setProperty('--report-keyboard',Math.max(0,window.innerHeight-viewport.height-viewport.offsetTop)+'px');
+  search.style.setProperty('--report-visible-height',viewport.height+'px');
+}
+window.visualViewport?.addEventListener('resize',placeReportSearch);
+window.visualViewport?.addEventListener('scroll',placeReportSearch);
+function bindReportSearch(groups){
+  const search=$('#pvBody .svsearch');
+  if(!search)return;
+  const button=search.querySelector('.search-trigger'), panel=$('#reportSearchPanel'), input=$('#svq');
+  const list=$('#reportOptions'), chips=search.querySelector('.report-selection'), status=$('#svqn');
+  const rows=[...document.querySelectorAll('#pvBody [data-report-indicator]')];
+  const headings=document.querySelectorAll('#pvBody .report-scroll tr.grp');
+  const empty=$('#pvBody .report-selection-empty');
+  const indicators=groups.flatMap(group=>group.rows.map(m=>({id:m.gi+','+m.ri,name:m.n,group:group.title})));
+  let matches=[], active=0;
+
+  function renderSelection(){
+    let visibleCount=0;
+    for(const row of rows){
+      const visible=!reportSelected.size||reportSelected.has(row.dataset.reportIndicator);
+      row.classList.toggle('svhide',!visible);
+      if(visible)visibleCount++;
+    }
+    for(const heading of headings){
+      let visible=false;
+      for(let row=heading.nextElementSibling;row&&!row.classList.contains('grp');row=row.nextElementSibling){
+        if(!row.classList.contains('svhide')){visible=true;break}
+      }
+      heading.classList.toggle('svhide',!visible);
+    }
+    if(empty)empty.hidden=visibleCount>0||!reportSelected.size;
+    chips.innerHTML=[...reportSelected].map(([id,name])=>`<span class="bchip">${esc(name)}<button type="button" data-remove-indicator="${id}" aria-label="Убрать ${esc(name)}">×</button></span>`).join('');
+    chips.hidden=!reportSelected.size;
+  }
+
+  function highlight(index,scroll=false){
+    active=index;
+    const options=[...list.children];
+    options.forEach((option,i)=>option.setAttribute('aria-selected',String(i===active)));
+    const option=options[active];
+    if(option){
+      input.setAttribute('aria-activedescendant',option.id);
+      if(scroll)list.scrollTop=Math.min(option.offsetTop,Math.max(list.scrollTop,option.offsetTop+option.offsetHeight-list.clientHeight));
+    }else input.removeAttribute('aria-activedescendant');
+  }
+
+  function suggest(){
+    const query=input.value.trim().toLowerCase();
+    const aliases=query?Object.keys(SYN).filter(key=>key.includes(query)).map(key=>SYN[key]):[];
+    const score=name=>name===query?0:name.startsWith(query)?1:name.includes(query)?2:3;
+    matches=query?indicators.filter(({id,name})=>{
+      const label=name.toLowerCase();
+      return !reportSelected.has(id)&&(label.includes(query)||aliases.some(alias=>label.includes(alias)));
+    }).sort((a,b)=>score(a.name.toLowerCase())-score(b.name.toLowerCase())):[];
+    list.innerHTML=matches.map(({name,group},i)=>{
+      const start=name.toLowerCase().indexOf(query);
+      const label=start<0?esc(name):esc(name.slice(0,start))+'<mark>'+esc(name.slice(start,start+query.length))+'</mark>'+esc(name.slice(start+query.length));
+      return `<li id="reportOption${i}" role="option" data-option="${i}">${label}<small>${esc(group)}</small></li>`;
+    }).join('');
+    list.hidden=!matches.length;
+    input.setAttribute('aria-expanded',String(!!matches.length));
+    status.textContent=query&&!matches.length?'Совпадений нет':'';
+    highlight(0);
+    list.scrollTop=0;
+  }
+
+  function setOpen(open){
+    button.setAttribute('aria-expanded',String(open));
+    panel.inert=!open;
+  }
+  function choose(index){
+    const match=matches[index];
+    if(!match)return;
+    reportSelected.set(match.id,match.name);
+    renderSelection();
+    input.value='';
+    suggest();
+    input.focus({preventScroll:true});
+    chips.scrollTop=chips.scrollHeight;
+  }
+  function close(confirm){
+    if(confirm&&matches.length===1)choose(0);
+    input.value='';
+    suggest();
+    button.focus();
+    setOpen(false);
+  }
+  input.oninput=suggest;
+  list.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse')e.preventDefault()});
+  list.onclick=e=>{const option=e.target.closest('[data-option]');if(option)choose(Number(option.dataset.option))};
+  chips.onclick=e=>{
+    const remove=e.target.closest('[data-remove-indicator]');
+    if(!remove)return;
+    const index=[...chips.querySelectorAll('button')].indexOf(remove);
+    reportSelected.delete(remove.dataset.removeIndicator);
+    renderSelection();
+    suggest();
+    const buttons=chips.querySelectorAll('button');
+    (buttons[index]||buttons[buttons.length-1]||button).focus();
+  };
+  button.addEventListener('pointerenter',e=>{
+    if(e.pointerType==='mouse'&&matchMedia('(hover:hover)').matches)setOpen(true);
+  });
+  search.addEventListener('pointerleave',()=>{
+    if(document.activeElement!==input&&!input.value)setOpen(false);
+  });
+  search.addEventListener('focusout',e=>{
+    if(!search.contains(e.relatedTarget)&&!input.value)setOpen(false);
+  });
+  button.onclick=()=>{setOpen(true);input.focus({preventScroll:true})};
+  search.querySelector('[data-close-report-search]').onclick=()=>close(true);
+  search.addEventListener('keydown',e=>{
+    if(e.key==='Escape'&&!panel.inert){e.preventDefault();close(false);return}
+    if(e.target!==input||e.isComposing||!matches.length)return;
+    if(e.key==='Enter'){e.preventDefault();choose(active);return}
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+      e.preventDefault();
+      highlight((active+(e.key==='ArrowDown'?1:-1)+matches.length)%matches.length,true);
+    }
+  });
+  renderSelection();
+  placeReportSearch();
+}
 /* где сдать: каталог и специалисты */
 const CAT=[
  {n:'Общий анализ крови с лейкоцитарной формулой',s:'Кровь',p:[190,650],k:'1,0',sp:['терапевт']},
@@ -3014,7 +3187,41 @@ function openCtxAsk(){const act=EV.med.map((e,i)=>({e,i})).filter(x=>x.e.f&&medA
 
 /* старт */
 renderTabs('summary');updLogin();fillForm();renderSummary();renderCtx();renderBlocks();renderUploads();drawQR();renderDocs();renderShared();renderBook();
-$('#visitDoctor').onclick=()=>openSpecView(false);
+$('#visitDoctor').onclick=openDoctorReport;
+
+let doctorFullscreen=false;
+let doctorRotatePending=false;
+function leaveDoctorLandscape(){
+  if(!doctorFullscreen)return;
+  doctorFullscreen=false;
+  screen.orientation?.unlock?.();
+  if(document.fullscreenElement===document.documentElement)document.exitFullscreen().catch(()=>{});
+}
+document.addEventListener('fullscreenchange',()=>{
+  if(!document.fullscreenElement&&doctorFullscreen){
+    doctorFullscreen=false;
+    screen.orientation?.unlock?.();
+  }
+});
+function openDoctorReport(){
+  openSpecView(false);
+  if(window.matchMedia('(orientation:portrait) and (pointer:coarse)').matches)enterDoctorLandscape();
+}
+async function enterDoctorLandscape(){
+  const root=document.documentElement;
+  if(doctorRotatePending||document.fullscreenElement||!document.fullscreenEnabled||!root.requestFullscreen||!screen.orientation?.lock)return;
+  doctorRotatePending=true;
+  try{
+    await root.requestFullscreen();
+    doctorFullscreen=true;
+    if(!document.body.classList.contains('preview')){leaveDoctorLandscape();return}
+    await screen.orientation.lock('landscape');
+  }catch{
+    leaveDoctorLandscape();
+  }finally{
+    doctorRotatePending=false;
+  }
+}
 function openVisitDialog(title,html){
  openModal(title,'<div class="visit-full-content">'+html+'</div>');
 }
@@ -3264,12 +3471,38 @@ function bindReportPan(){
   reportPanObserver?.disconnect();
   const scroller=$('#pvBody .report-scroll'), controls=$('#pvBody .report-pan');
   if(!scroller)return;
+  const table=scroller.querySelector('table');
+  const group=document.createElement('div');
+  const header=document.createElement('div');
+  header.className='report-sticky';
+  header.setAttribute('aria-hidden','true');
+  const clip=document.createElement('div');
+  clip.className='report-sticky-clip';
+  const copy=document.createElement('table');
+  copy.className=table.className;
+  const columns=document.createElement('colgroup');
+  const cells=[...table.tHead.rows[0].cells];
+  const tracks=cells.map(()=>document.createElement('col'));
+  columns.append(...tracks);
+  copy.append(columns,table.tHead.cloneNode(true));
+  clip.append(copy);
+  header.append(clip);
+  scroller.before(group);
+  group.append(header,scroller);
   const [left,right]=controls.querySelectorAll('button');
   function update(){
     const max=scroller.scrollWidth-scroller.clientWidth;
     controls.hidden=max<2;
     left.disabled=scroller.scrollLeft<2;
     right.disabled=scroller.scrollLeft>=max-2;
+    clip.scrollLeft=scroller.scrollLeft;
+  }
+  function resize(){
+    copy.style.width=table.getBoundingClientRect().width+'px';
+    cells.forEach((cell,i)=>tracks[i].style.width=cell.getBoundingClientRect().width+'px');
+    header.style.setProperty('--report-head-height',table.tHead.getBoundingClientRect().height+'px');
+    header.classList.add('is-ready');
+    update();
   }
   controls.onclick=e=>{
     const button=e.target.closest('[data-report-pan]');
@@ -3281,10 +3514,11 @@ function bindReportPan(){
     scroller.scrollLeft+=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?scroller.clientWidth:1);
   },{passive:false});
   scroller.addEventListener('scroll',update,{passive:true});
-  reportPanObserver=new ResizeObserver(update);
+  reportPanObserver=new ResizeObserver(resize);
   reportPanObserver.observe(scroller);
-  reportPanObserver.observe(scroller.firstElementChild);
-  update();
+  reportPanObserver.observe(table);
+  for(const cell of cells)reportPanObserver.observe(cell);
+  resize();
 }
 function diaryReport(inPeriod){
  const rows=(P.diary||[]).filter(r=>inPeriod(evDate(r.day)));
@@ -3324,7 +3558,7 @@ for(const box of rangeBoxes){
    other.querySelector('select').value=mode;other.querySelector('.date-pair').hidden=mode!=='custom';
    other.querySelector('[data-from]').value=from.value;other.querySelector('[data-to]').value=to.value;
   }
-  if(document.body.classList.contains('preview'))openSpecView($('#pvBody .svbar')?.textContent.startsWith('Предпросмотр PDF'));
+  if(document.body.classList.contains('preview'))openSpecView($('#pvBody .svbar')?.textContent.startsWith('Предпросмотр PDF'),true);
  });
 }
 </script>
