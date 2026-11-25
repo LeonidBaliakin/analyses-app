@@ -14,7 +14,7 @@
 <style>
 :root{
   /* Стиль исходного прототипа Orange of Health: лавандовая бумага, фиолетовые шапки блоков, пастельные статусы, шкалы-«пилюли» */
-  --paper:#F4F2F9; --card:#FFFFFF; --line:#E7E3F0; --ink:#1C1930; --ink2:#4A4660; --ink3:#8A85A0;
+  --paper:#F4F2F9; --card:#FFFFFF; --line:#E7E3F0; --ink:#1C1930; --ink2:#4A4660; --ink3:#685F78;
   --accent:#7C5CE0; --accent-soft:#F0EDFB; --head:#926DDE; --prev:#E8590C; --prev-soft:#FFF1E8;
   --hi:#DC2626; --hi-soft:#FEE2E2; --lo:#2563EB; --lo-soft:#DBEAFE; --ok:#15803D; --okm:#20C05C; --ok-soft:#E7F8EE; --mute-soft:#F2F0F7;
   --band:rgba(32,192,92,.10);
@@ -44,7 +44,7 @@ h1,h2,h3{text-wrap:balance;line-height:1.25}
 .search{position:relative;min-width:160px;flex:1 1 200px;max-width:270px}
 .search input{width:100%;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 12px 8px 34px}
 .search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--ink3)}
-.sres{position:absolute;left:0;right:0;top:calc(100% + 4px);background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.12);overflow:hidden;display:none}
+.sres{position:absolute;left:0;right:0;top:calc(100% + 4px);background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.1);overflow:hidden;display:none}
 .sres.on{display:block}
 .sres button{display:flex;width:100%;text-align:left;border:0;background:transparent;padding:8px 12px;gap:8px;align-items:baseline}
 .sres button:hover,.sres button.act{background:var(--accent-soft)}
@@ -88,7 +88,7 @@ h1,h2,h3{text-wrap:balance;line-height:1.25}
 
 /* чипы статуса */
 .chip{display:inline-block;font-size:11.5px;font-weight:600;padding:1px 8px;border-radius:20px;white-space:nowrap}
-.c-ok{background:var(--ok-soft);color:var(--ok)}.c-high{background:var(--hi-soft);color:var(--hi)}
+.c-ok{background:var(--ok-soft);color:var(--ok)}.c-high{background:var(--hi-soft);color:#a91d35}
 .c-low{background:var(--lo-soft);color:var(--lo)}.c-none{background:var(--mute-soft);color:var(--ink3)}
 .c-old{background:var(--mute-soft);color:var(--ink2)}
 
@@ -190,8 +190,6 @@ h1,h2,h3{text-wrap:balance;line-height:1.25}
 table.up{width:100%;border-collapse:collapse;margin-top:16px;font-size:13px}
 table.up th{text-align:left;font-size:11.5px;color:var(--ink3);padding:6px 8px;border-bottom:1px solid var(--line)}
 table.up td{padding:8px;border-bottom:1px solid var(--line)}
-.share{display:grid;grid-template-columns:200px 1fr;gap:20px;align-items:start}
-@media(max-width:620px){.share{grid-template-columns:1fr}}
 .qr{width:200px;height:200px;border:1px solid var(--line);border-radius:12px;background:#fff;padding:10px}
 .opts{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}
 .opt{border:1px solid var(--line);background:var(--card);border-radius:20px;padding:5px 12px;font-size:12.5px;font-weight:600}
@@ -251,7 +249,7 @@ table.up td{padding:8px;border-bottom:1px solid var(--line)}
 /* туториал */
 .tut{position:fixed;inset:0;background:rgba(28,25,48,.55);z-index:70;display:none;align-items:center;justify-content:center;padding:16px;overflow:auto}
 .tut.on{display:flex}
-.tbox{background:var(--card);border-radius:16px;max-width:620px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden}
+.tbox{background:var(--card);border-radius:16px;max-width:620px;width:100%;overflow:hidden}
 .tbox-h{background-color:var(--head);background-image:linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.13));color:#fff;padding:18px 22px}
 .tbox-h small{opacity:.85;font-size:12px;font-weight:600}
 .tbox-h h3{font-size:20px;font-weight:800;margin-top:2px}
@@ -293,7 +291,7 @@ table.up td{padding:8px;border-bottom:1px solid var(--line)}
 @media(max-width:760px){.lab{grid-template-columns:1fr 1fr}}
 .addsearch{position:relative;max-width:420px}
 .addsearch input{width:100%;border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--paper)}
-.addres{position:absolute;left:0;right:0;top:calc(100% + 4px);background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:5;display:none}
+.addres{position:absolute;left:0;right:0;top:calc(100% + 4px);background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.1);z-index:5;display:none}
 .addres.on{display:block}
 .addres button{display:block;width:100%;text-align:left;border:0;background:transparent;padding:7px 12px}
 .addres button:hover{background:var(--accent-soft)}
@@ -329,7 +327,7 @@ body{background:radial-gradient(900px 500px at 85% -10%,#E3DAFB 0%,transparent 6
 .top{background:rgba(244,242,249,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 .wrap{padding-right:116px}
 .side{position:fixed;right:16px;top:50%;transform:translateY(-50%);z-index:30;display:flex;flex-direction:column;gap:4px;padding:8px;border-radius:22px;
-  background:rgba(255,255,255,.55);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border:1px solid rgba(255,255,255,.7);box-shadow:0 10px 30px rgba(60,40,120,.14)}
+  background:rgba(255,255,255,.55);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border:1px solid rgba(255,255,255,.7);box-shadow:0 4px 12px rgba(60,40,120,.09)}
 .side-ind{position:absolute;left:0;top:0;border-radius:16px;background:linear-gradient(160deg,#9B7BEA,#7C5CE0);box-shadow:0 6px 16px rgba(124,92,224,.35);transition:transform .38s var(--ease-out),width .38s,height .38s,opacity .2s;z-index:0}
 .sbtn{position:relative;z-index:1;width:76px;min-height:58px;border:0;background:transparent;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink2);font-size:10.5px;font-weight:700;transition:color .25s}
 .sbtn:hover{color:var(--accent)}
@@ -468,7 +466,6 @@ body{background:radial-gradient(900px 500px at 85% -10%,#E3DAFB 0%,transparent 6
 .fold.closed .fh .chev{animation:hint 3.2s ease-in-out infinite;background:rgba(255,255,255,.22);border-radius:50%;padding:2px;width:24px;height:24px}
 .fold.closed .fh{box-shadow:0 0 0 0 rgba(238,106,31,0)}
 .fold.closed .fh:hover .chev{animation:none;transform:rotate(0)}
-html,body{overflow-x:clip}
 .tblw{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
 table.up td,table.up th,.hist td,.hist th{white-space:nowrap}
 table.up .r,.hist .r{text-align:right}
@@ -524,11 +521,7 @@ table.up .r,.hist .r{text-align:right}
 .ht-t b{font-size:15px;color:var(--ink)}
 .ht-t span{font-size:12.5px;color:var(--ink3)}
 .ht-go{flex:none;display:flex;align-items:center;gap:4px;font-weight:800;font-size:13px;color:var(--accent)}
-.hm{position:fixed;inset:0;z-index:70;background:rgba(10,20,26,0);display:flex;align-items:center;justify-content:center;padding:24px;transition:background 300ms ease}
-.hm[hidden]{display:none}
-.hm.on{background:rgba(10,20,26,.5)}
-.hm-box{width:100%;max-width:1280px;height:100%;max-height:900px;background:var(--card);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.3);opacity:0;transform:scale(.985);transition:opacity 300ms ease,transform 300ms ease}
-.hm.on .hm-box{opacity:1;transform:none}
+.hm-box{width:100%;min-width:0;max-width:1280px;height:100%;max-height:900px;background:var(--card);border-radius:18px;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.3);opacity:0;transform:scale(.985);transition:opacity 300ms ease,transform 300ms ease}
 .hm-h{display:flex;align-items:center;gap:12px;padding:12px 16px;color:#fff;background-color:var(--head);background-image:linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.13))}
 .hm-h h3{font-size:16px;color:#fff}
 .hm-n{font-size:12.5px;opacity:.85;margin-right:auto}
@@ -565,7 +558,6 @@ table.up .r,.hist .r{text-align:right}
 @media(max-width:760px){
   .htease{padding:14px;gap:12px}.ht-go{font-size:0;gap:0}.ht-go svg{width:20px;height:20px}
   .ht-t b{font-size:14px}.ht-t span{font-size:11.5px}
-  .hm{padding:0}
   .hm-box{max-height:none;border-radius:0}
   .hm-h{padding:8px 12px}.hm-h h3{font-size:14px}
   .hm-f{padding:7px 10px;gap:6px}
@@ -579,7 +571,7 @@ table.up .r,.hist .r{text-align:right}
 @media(prefers-reduced-motion:reduce){.hm-box{transition:opacity 200ms ease;transform:none}}
 
 @media(max-height:500px){
-  .hm{padding:0}.hm-box{max-height:none;border-radius:0}
+  .hm-box{max-height:none;border-radius:0}
   .hm-h{padding:6px 12px}.hm-h h3{font-size:14px}
   .hm-f{padding:6px 10px;gap:6px}
   .hm-f select{font-size:12px;padding:5px 6px;max-width:160px}
@@ -593,7 +585,6 @@ table.up .r,.hist .r{text-align:right}
 .hm-r{border:0;border-radius:10px;padding:6px 12px;font-weight:800;font-size:12.5px;color:var(--or);background:#fff;box-shadow:0 3px 10px rgba(0,0,0,.15);white-space:nowrap}
 .hm-r[hidden]{display:none}
 @media(max-width:760px),(max-height:500px){.hm-r{padding:5px 10px;font-size:11.5px}.hm-n{font-size:11px}}
-@media(max-width:420px){.hm-h h3{font-size:0}.hm-h h3::after{content:'История';font-size:14px}}
 /* печать */
 .pv{display:none}
 body.preview .app{display:none}
@@ -608,16 +599,13 @@ body.preview .pv{display:block}
 .viewer-orientation{white-space:nowrap}
 .viewer-orientation:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .viewer-orientation svg{vertical-align:middle;margin-right:4px}
-.hleg-pdf{display:flex;align-items:center;gap:4px}
-.hleg-pdf .btn{padding:5px 8px}
-.hleg-pdf #pvNote:empty{display:none}
 @media screen{
  body.preview #pv.doctor-screen{display:flex;align-items:center;justify-content:center;position:fixed;inset:0;z-index:70;padding:24px;background:rgba(10,20,26,.5)}
  #pv.doctor-screen>.hm-box{opacity:1;transform:none}
  #pv.doctor-screen .preview-document-title{display:none}
- #pv.doctor-screen .htab,#hm .htab{width:max-content;min-width:100%}
- #pv.doctor-screen #pvBody{width:100%;max-width:none;margin:0;padding:0 0 44px;overflow:auto}
- #pv.doctor-screen:has(.report-selection:not([hidden])) #pvBody{padding-bottom:142px}
+ #pv.doctor-screen .htab{width:max-content;min-width:100%}
+ #pv.doctor-screen #pvBody{width:100%;max-width:none;margin:0;padding:0;overflow:auto}
+ #pv.doctor-screen:has(.report-selection:not([hidden])) #pvBody::after{content:"";display:block;height:110px}
  .doctor-screen .viewer-pdf-column{display:none}
  .table-viewer.viewer-rotated,body.preview #pv.doctor-screen.viewer-rotated{
    --viewer-width:100dvh;--viewer-height:100dvw;
@@ -637,13 +625,12 @@ body.preview .pv{display:block}
  #pv .hleg,#pv .viewer-screen-only,#doctorSearch{display:none!important}
  #pv .report-scroll{overflow:visible}
  #pvBody .report-table tr.svhide{display:table-row!important}
- #hm{display:none!important}
  #pvBody .hl-u{display:none}
  .event-timeline,.event-timeline-detail{display:none!important}
  .event-timeline-print:not([hidden]){display:block}
 }
 #reportFilters[hidden]{display:none}
-#reportFilters,#historyFilters{flex-wrap:wrap;overflow:visible}
+#reportFilters{flex-wrap:wrap;overflow:visible}
 .analysis-events{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:8px 0;color:var(--ink)}
 .analysis-events summary{cursor:pointer;font-weight:700;font-size:13px}
 .analysis-events-body{margin-top:6px}
@@ -678,10 +665,6 @@ body.preview .pv{display:block}
 #pv.doctor-screen .analysis-events,.viewer-empty{position:sticky;left:0;margin:8px 10px}
 .analysis-events ol{list-style:none;margin:0;padding:0}
 .event-timeline-print h3{font-size:13px;margin:8px 0 3px}
-#hEvents:not(:empty){position:sticky;left:0;padding:0 10px}
-#historySearch .svsearch,#doctorSearch .svsearch{z-index:4;bottom:calc(max(42px,env(safe-area-inset-bottom)) + var(--report-keyboard,0px))}
-#doctorSearch .svsearch{bottom:calc(max(68px,env(safe-area-inset-bottom)) + var(--report-keyboard,0px))}
-@media screen{#hm .hwrap{padding-bottom:44px}#hm:has(.report-selection:not([hidden])) .hwrap{padding-bottom:142px}}
 @media print{#reportFilters{display:none!important}.analysis-events-body{max-height:none;overflow:visible}}
 .pv-in{max-width:1120px;margin:0 auto;padding:16px}
 .pv h1{font-size:18px;margin-bottom:4px}
@@ -724,7 +707,8 @@ body.viewmode .sbtn[data-tab="files"],body.viewmode .sbtn[data-tab="profile"]{op
 .pfill{margin:4px 0 12px}
 .pfill-t{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
 .pbar{height:8px;border-radius:8px;background:var(--mute-soft);overflow:hidden}
-.pbar i{display:block;height:100%;width:0;border-radius:8px;background:var(--accent);transition:width .4s ease}
+.pbar i{display:block;height:100%;width:100%;background:var(--accent);transform-origin:left center;transform:scaleX(var(--profile-fill,0));transition:transform 240ms var(--ease-out)}
+@media(prefers-reduced-motion:reduce){.pbar i{transition:none}}
 .evblk{padding:12px 0;border-top:1px solid var(--line)}
 .evblk:first-of-type{border-top:0;padding-top:0}
 .evblk h3{font-size:14px;margin-bottom:2px}
@@ -827,7 +811,7 @@ tr.off td{color:var(--ink3)}
 .ctxcard .card-h h2{color:#fff}
 .ctxcard.fold:not(.closed) .fh:hover{background-image:var(--or-g)}
 .ctxcard .fb{padding-top:12px}
-.c-warn{background:var(--prev-soft);color:var(--prev)}
+.c-warn{background:var(--prev-soft);color:#963b0c}
 .gear{width:38px;height:38px;border-radius:11px;border:1px solid var(--line);background:var(--card);color:var(--ink2);display:grid;place-items:center;flex-shrink:0}
 .gear:hover{color:var(--accent);border-color:var(--accent)}
 .gear.on{background:var(--or-g);border-color:transparent;color:#fff}
@@ -933,6 +917,7 @@ tr.off td{color:var(--ink3)}
 @media(max-width:620px){.psadd .evr>[data-k="n"]{grid-column:1/-1!important}}
 /* версия 5 */
 .top-in .gear{margin-left:2px}
+@media(max-width:350px){.top-in{gap:5px;padding-inline:9px}.top-in .gear{margin-left:0}.top-in .brand{gap:8px}}
 .sbtn.fab{color:var(--or)}
 .sbtn.fab svg{width:30px;height:30px;padding:5px;border-radius:50%;background:var(--or-g);color:#fff;stroke-width:2.4;box-shadow:0 6px 14px rgba(232,89,12,.35)}
 .sbtn.fab:hover svg{transform:scale(1.06)}
@@ -950,7 +935,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 .ao-mail{background:var(--paper)}
 .setfoot{margin:22px 0 10px;display:grid;justify-items:center;gap:8px;text-align:center}
 .btn.danger{color:var(--hi);border-color:#F5C2C2;background:var(--card)}
-.btn.danger:hover{background:var(--hi-soft)}
+.btn.danger:hover{background:var(--hi-soft);color:#a91d35}
 
 /* версия 5.1: бланк и история показателя */
 .sheet .nw{white-space:nowrap}
@@ -1018,11 +1003,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 .ai-s p,.ai-s li{font-size:13px;color:var(--ink2);line-height:1.45}
 .ai-s ul{padding-left:18px}
 .ai-d{margin-top:8px;font-size:11.5px;color:var(--ink3)}
-.ai-wait{display:flex;align-items:center;gap:4px;color:var(--ink3);font-size:12.5px}
-.ai-wait i{width:6px;height:6px;border-radius:50%;background:var(--accent);opacity:.3;animation:aiDot 1s infinite}
-.ai-wait i:nth-child(2){animation-delay:.15s}.ai-wait i:nth-child(3){animation-delay:.3s;margin-right:6px}
-@keyframes aiDot{50%{opacity:1}}
-@media (prefers-reduced-motion: reduce){.ai-wait i{animation:none;opacity:.6}}
+.ai-wait{color:var(--ink2);font-size:12.5px}
 
 /* разрешения: статус и кнопка справа, неразрешённые подсвечены */
 .permr{grid-template-columns:24px minmax(0,1fr) auto!important;align-items:center}
@@ -1053,7 +1034,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 .vbadge{align-self:flex-start;margin:0 14px;display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;border-radius:8px;padding:3px 8px}
 .vnone{background:#EEF0F4;color:var(--ink2)}
 .vok{background:#E6F5EC;color:#1E7A45}
-.vexp{background:var(--prev-soft);color:var(--prev)}
+.vexp{background:var(--prev-soft);color:#963b0c}
 .vline{display:flex;gap:8px;align-items:flex-start;font-size:13px;border-radius:12px;padding:10px 12px;margin:0 0 12px}
 .vline svg{flex-shrink:0;margin-top:3px}
 @media(max-width:620px){
@@ -1215,8 +1196,6 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 .cta .act-t b{color:inherit}
 @media(max-width:900px){.act-t small{white-space:normal;overflow-wrap:anywhere}}
 /* v8 */
-.baseset{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;margin-top:10px;border:1px dashed #F8B98A;background:var(--prev-soft);border-radius:12px;padding:10px 12px;color:var(--prev)}
-.baseset b{font-size:13.5px}.baseset small{font-size:12px;color:var(--ink2)}
 .ctxr.cmp{background:#F3EEFF;border-radius:10px}
 .ctxr.cmp svg{color:var(--accent)}
 .svcmp{margin:10px 0 12px;border-left:4px solid var(--accent)}
@@ -1239,19 +1218,19 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 .svsearch{position:fixed;right:max(12px,env(safe-area-inset-right));bottom:calc(max(12px,env(safe-area-inset-bottom)) + var(--report-keyboard,0px));z-index:5}
 .svsearch .search-trigger{display:grid;place-items:center;width:36px;height:36px;padding:0;color:var(--accent)}
 .svsearch .search-trigger[aria-expanded="true"]{background:var(--accent-soft)}
-.report-search-stack{position:absolute;bottom:100%;right:0;width:min(275px,calc(var(--viewer-width,100vw) - 24px))}
+.report-search-stack{--search-space:calc(var(--report-visible-height,100dvh) - 132px);position:absolute;bottom:100%;right:0;width:min(275px,calc(var(--viewer-width,100vw) - 24px))}
 .report-search-panel{position:absolute;bottom:100%;right:0;width:100%;padding:7px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh);visibility:hidden;opacity:0;transform:translateY(3px) scale(.97);transform-origin:bottom right;pointer-events:none;transition:opacity 150ms var(--ease-out),transform 150ms var(--ease-out),visibility 0s linear 150ms}
 .search-trigger[aria-expanded="true"]+.report-search-stack .report-search-panel{visibility:visible;opacity:1;transform:none;pointer-events:auto;transition-delay:0s}
 .report-search-field{display:flex;align-items:center;gap:4px}
 .report-search-panel input{width:100%;min-width:0;padding:7px 9px;font-size:14px}
 .report-search-field .btn{display:grid;place-items:center;padding:0;flex:none;width:34px;height:34px;color:var(--ink2)}
-.report-options{position:relative;margin:4px 0 0;padding:0;list-style:none;max-height:clamp(30px,calc((var(--report-visible-height,100dvh) - 106px) * .64),168px);overflow:auto}
+.report-options{position:relative;margin:4px 0 0;padding:0;list-style:none;max-height:clamp(30px,calc(var(--search-space) * .64),168px);overflow:auto}
 .report-options li{cursor:pointer;padding:7px 8px;border-radius:7px;font-size:13px}
 .report-options li[aria-selected="true"],.report-options li:hover{background:var(--accent-soft);color:#56359c}
 .report-options small{display:block;color:var(--ink2);font-size:11px}
 .report-options mark{color:inherit;background:transparent;font-weight:800}
 .search-status:not(:empty){display:block;margin:4px 4px 0;font-size:12px;color:var(--ink2)}
-.report-selection:not([hidden]){display:flex;flex-wrap:wrap;align-content:start;gap:4px;padding:7px;max-height:clamp(30px,calc((var(--report-visible-height,100dvh) - 106px) * .36),100px);overflow:auto;background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh)}
+.report-selection:not([hidden]){display:flex;flex-wrap:wrap;align-content:start;gap:4px;padding:7px;max-height:clamp(30px,calc(var(--search-space) * .36),100px);overflow:auto;background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh)}
 .report-selection .bchip{margin:0;max-width:100%;min-height:28px;background:var(--card);color:#56359c;white-space:normal;overflow-wrap:anywhere}
 .report-selection .bchip button{width:24px;height:24px;flex:none}
 @media(pointer:coarse){.report-search-panel input{font-size:16px}}
@@ -1354,6 +1333,10 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 #diaryForm,#diaryFields,#diaryForm label{display:grid;gap:8px;min-width:0}
 #diaryForm label{gap:4px}
 #diaryForm :is(input,select){width:100%;min-width:0;box-sizing:border-box}
+#diaryForm .diary-datetime{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#diaryForm>button{min-height:44px;margin-top:4px}
+.diary-history{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
+.diary-history h4{margin:0 0 6px}.diary-history p{margin:0 0 7px;font-size:13px}
 .event-month .ctxr.warn{background-color:var(--warn-soft,#fff0e5)}
 .event-month .ctxr.cmp{background-color:var(--accent-soft,#f1ecff)}
 .rx-panel{padding:12px 14px;margin:12px 0;border:1px solid var(--border,#ded8ec);border-radius:12px;background:var(--card,#fff);overflow-wrap:anywhere}
@@ -1394,7 +1377,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 @media(prefers-reduced-motion:reduce){.swwrap .sw-rot,.swwrap .sw-num{transition:none}}
 </style><style>.date-pair:not([hidden]){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}.date-pair input{width:100%;min-width:0}</style><style>.smoking-fields{display:grid;align-content:start;gap:10px;min-width:0}</style><style>
 .visit-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start;margin:12px 0 16px}
-.visit17{min-width:0;padding:14px 16px;border-top:3px solid var(--visit-accent)}
+.visit17{min-width:0;padding:15px 16px 14px}
 .visit17{--visit-accent:#7956d9;--visit-tint:#f0e9ff}
 .visit-events{--visit-accent:#c65b17;--visit-tint:#fff0e5}
 .visit-head{display:flex;align-items:center;gap:10px;min-width:0}
@@ -1414,16 +1397,22 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 #ctx{display:flex;flex:1;flex-direction:column;min-height:0;gap:8px}
 .ctx-list{display:grid;align-content:start;gap:7px;min-height:0;flex:1}
 .ctx-list [hidden],.ctx-actions [hidden]{display:none}
-.ctx-actions{display:flex;flex-direction:column;align-items:flex-start;gap:4px;flex:none}
-.ctx-actions #visitMoreEvents{min-height:24px}
+.ctx-actions{display:flex;justify-content:space-between;align-items:center;gap:4px;flex:none;border-top:1px solid var(--line)}
+.ctx-actions .link{display:inline-flex;align-items:center;gap:4px;min-height:36px;margin:0;white-space:nowrap;font-size:12px;font-weight:700;color:#5d3ca6}
+.ctx-actions .visit-add-event{color:#913b0c;text-decoration:none}.ctx-actions .visit-add-event span{font-size:17px;line-height:1}
+.ctx-actions .visit-add-event:hover{text-decoration:underline}
+.visit-launch{margin:0 0 16px}
+.visit-launch .btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:6px 10px;font-size:13px;font-weight:750;background:#f0e9fb;color:#4f308c;border-color:#dcccfa}
+.visit-launch .btn:hover{background:#e9ddfa;border-color:#bda8e1}
+.visit-launch .visit-launch-arrow{width:14px;height:14px;margin-left:2px}
+.visit-launch svg,.viewer-graph svg{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:480px){.ctx-actions .link{font-size:11px}}
 .visit-events.compact:not(.expanded) .ctx-extra{display:none}
 .visit-events.compact:not(.expanded) .ctxr b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .visit-events.compact:not(.expanded) .ctx-list{gap:5px}
-#ctx .visit-doctor{margin:0}
 #ctx .ctxr{min-width:0;border-top:0;margin:0;padding:7px 6px}
 .visit-events.compact:not(.expanded) #ctx .ctxr{padding-block:4px}
 #ctx .ctxr:not(.cmp):not(.warn){border-radius:10px;background:var(--paper)}
-#ctx [data-capture]{white-space:normal}
 @media(max-width:480px){#ctx .ctxr{grid-template-columns:14px minmax(0,1fr);gap:4px;font-size:12px}#ctx .ctxr svg{width:14px;height:14px}#ctx .ctxr.warn{padding-inline:5px}}
 .visit-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin-top:8px}
 .visit-filters button{display:flex;justify-content:space-between;align-items:center;gap:4px;padding:5px 7px;text-align:left;min-height:36px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font-size:12px;line-height:1.2}
@@ -1434,9 +1423,6 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 @media(max-width:540px){.visit-filters{grid-template-columns:1fr}.visit-filters button{min-height:32px}}
 .visit-grid > .visit17:first-child{display:flex;flex-direction:column;align-items:flex-start;box-sizing:border-box}
 .visit-grid > .visit17:first-child .visit-compare,.visit-filters{width:100%}
-.visit-filters{margin-bottom:8px}
-.visit-doctor{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;height:36px;flex:none;color:var(--visit-accent)}
-#visitDoctor{margin-top:0}
 .visit-tools{display:flex;align-items:center;flex-wrap:wrap;gap:4px 12px;margin:8px 0}
 .visit-tools button{min-height:40px}
 @media(max-width:480px){
@@ -1445,7 +1431,6 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
   .visit-head{gap:5px}
   .visit-icon{width:25px;height:25px;border-radius:8px}
   .visit-icon svg,.visit-chevron{width:15px;height:15px}
-  .visit-doctor{padding-inline:7px}
 }
 #pgo[hidden]{display:none}
 @media(max-width:620px){
@@ -1457,7 +1442,6 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 .report-groups:not([hidden]){display:grid;gap:6px;margin:8px 0}
 .report-events{display:block;margin:12px 0}
 .pv:not(.doctor-screen) .report-scroll{max-width:100%;overflow:auto}
-@media screen{.report-table .report-empty-date{display:none}}
 .mbox:has(.capture-entry){max-width:465px}
 .capture-entry{display:grid;gap:8px}
 .capture-entry label{font-weight:750}
@@ -1479,10 +1463,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 #ctx .ctx-list{gap:3px}
 .visit-events.compact:not(.expanded) #ctx .ctxr{padding-block:2px}
 .record-actions{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
-.btn[data-capture],.btn[data-diary],#ctx .visit-doctor{background:#fff1e6;color:#893900;border-color:#eab387;margin:0}
-.doctor-entry,#visitDoctor{background:#6944be;color:white;border-color:#6944be;font-weight:700}
-.doctor-entry{margin:8px 0 12px}
-#v-files #rsnFilter{margin-top:16px}
+.btn[data-capture],.btn[data-diary]{background:#fff1e6;color:#893900;border-color:#eab387;margin:0}
 #tut{padding:0;overflow:hidden;background:transparent;backdrop-filter:none;z-index:1500}
 #tut::before{content:"";position:absolute;inset:0;background:rgb(16 13 29 / 70%);backdrop-filter:blur(3px);clip-path:var(--tour-mask)}
 .tour-target{position:absolute;border-radius:12px;background:transparent;border:2px solid #ffa45e;box-shadow:0 0 0 2px #fff8;cursor:pointer}
@@ -1494,6 +1475,192 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 #tP{display:flex;gap:4px;margin-top:7px}#tP i{height:3px;width:16px;border-radius:3px;background:#766d81}#tP i.active{background:#ffac65}
 #tut #tSkip,#tut #tPrev{color:#292237;background:#f9f7fc;border-color:#cfc6da}
 #tut button:focus-visible{outline:3px solid #ffd5aa;outline-offset:2px}
+</style><style>
+.hm-h{gap:8px;padding:6px 12px;background:var(--accent-soft);color:#56359c;border-bottom:1px solid var(--line);border-start-start-radius:inherit;border-start-end-radius:inherit}
+.hm-h h3{min-width:0;margin:0;color:var(--ink);font-size:clamp(14px,3.5vw,17px)}
+.hm-h .hm-n{opacity:1;white-space:nowrap}.hm-h .x,.mbox .x{width:44px;height:44px;flex:none}
+.hm-h .x{color:#56359c;background:var(--card)}.hm-h .hm-r{box-shadow:none;color:#56359c;min-height:32px;padding-inline:8px}
+.hm-f .viewer-periods{display:flex;gap:3px;background:var(--accent-soft);border-radius:11px;padding:4px}
+.viewer-periods button{min-height:42px;border:1px solid transparent;background:transparent;border-radius:8px;color:#56359c;font-size:12px;font-weight:700;line-height:1.2;padding:5px 10px}
+.viewer-periods button[aria-pressed="true"]{background:var(--card);border-color:#cdbce8;color:#39245f}
+.hm-f .viewer-date-tools{display:flex;align-items:center;flex-wrap:wrap;gap:6px;min-width:0;max-width:100%}
+.hm-f .viewer-date-tools .btn{min-height:36px;padding:5px 8px;font-size:11.5px;color:#56359c}
+.viewer-date-tools .btn[aria-expanded="true"],.viewer-date-tools .btn.is-selected{background:var(--accent-soft);border-color:#cdbce8}
+.viewer-date-toggle{display:inline-flex;align-items:center;gap:5px;line-height:1.25}
+.viewer-date-toggle svg{flex:none}
+.viewer-date-form:not([hidden]){display:flex;flex:1 0 100%;flex-wrap:wrap;align-items:flex-end;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+.viewer-date-form label{display:grid;gap:4px;flex:0 1 148px;min-width:0;font-size:12px;font-weight:650;color:var(--ink2)}
+.viewer-date-form input{width:100%;min-width:0;min-height:38px;padding:5px 7px;background:var(--card);font:inherit;color:var(--ink)}
+.viewer-date-form .btn{min-height:38px;color:#fff;background:#5d3ca6;border-color:#5d3ca6;font-weight:700}
+@media(max-width:540px){
+ .hm-f .viewer-periods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%}
+ .viewer-periods button{padding-inline:4px}
+ .viewer-date-form label{flex:1 1 110px}
+}
+.viewer-actionbar{display:flex;flex:none;justify-content:space-between;align-items:center;gap:6px;padding:6px 10px max(6px,env(safe-area-inset-bottom));background:var(--card);border-top:1px solid var(--line);position:relative;z-index:5;bottom:var(--viewer-keyboard,0px);border-end-start-radius:inherit;border-end-end-radius:inherit}
+.viewer-graph,.viewer-actionbar .svsearch .search-trigger{display:inline-flex;align-items:center;justify-content:center;gap:6px;width:auto;height:auto;min-height:44px;padding:6px 9px;font-size:12px;font-weight:700;line-height:1.25;color:#56359c}
+.viewer-actionbar .svsearch{position:relative;inset:auto}.viewer-actionbar .svsearch .search-trigger{background:#5d3ca6;border-color:#5d3ca6;color:#fff}
+.viewer-actionbar .svsearch .search-trigger[aria-expanded="true"]{background:#492b88}
+.viewer-actionbar .report-search-field .btn{width:44px;height:44px}
+.viewer-actionbar .report-search-panel input::placeholder,.syssearch input::placeholder{color:var(--ink2);opacity:1}
+.htab td.e{color:var(--ink3)}.htab th small,.hl-u{font-size:11px}.htab tr.hg td.hn{color:#56359c}.htab .hl-n{white-space:normal;line-height:1.35}.htab td.c-h{color:#a91d35}.htab td.c-l{color:#184ca0}
+.table-viewer :is(button,select,input,summary,[tabindex]):focus-visible,.visit-grid :is(button,summary):focus-visible,.visit-launch .btn:focus-visible{outline:2px solid #6944be;outline-offset:2px}
+.htab .hl:focus-visible{outline-offset:0;border-radius:3px}
+.analysis-events{border-color:#e0d3f6;background:#f9f5ff;padding:10px 12px}
+.analysis-events summary{min-height:24px;color:#39245f}.analysis-events summary small{font-weight:600;color:var(--ink2)}.event-highlights{display:block;margin:3px 0 0 13px;font-size:12px;line-height:1.4;font-weight:600;color:var(--ink2)}
+@media(max-width:480px){.hm-h .hm-n{font-size:10.5px}.hm-f .viewer-orientation{font-size:11px}.hleg-r{display:none}}
+@media screen and (max-height:460px){.viewer-actionbar{padding-block:3px}.viewer-date-form{max-height:27vh;overflow:auto}}
+</style>
+<style>
+.profile-intro{margin:3px 0 12px;color:var(--ink2);font-size:13px;line-height:1.45}
+.profile-overview .pfill{margin:0}
+.profile-overview .pfill-t{gap:4px 12px;font-size:12px;color:var(--ink2)}
+.profile-overview .pfill-t b{color:#56359c}
+.profile-overview .pbar{height:4px;border-radius:99px}
+.profile-help{margin-top:8px;color:var(--ink2);font-size:12px}
+.profile-help summary{cursor:pointer;width:fit-content;padding:6px 0;color:#56359c;font-weight:650}
+.profile-help p{margin:4px 0 0}
+.profile-records{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 0}
+.profile-diary{display:grid;grid-template-columns:34px minmax(0,1fr) 16px;gap:9px;align-items:center;flex:1 1 235px;min-height:58px;padding:8px 10px;background:#f0e9fb;color:#39245f;border:1px solid #dbcdf0;border-radius:11px;text-align:left}
+.profile-diary strong,.profile-diary small{display:block}.profile-diary small{color:var(--ink2);font-size:12px;margin-top:2px}
+.profile-symbol{display:grid;place-items:center;width:34px;height:34px;border-radius:8px;background:#fff;color:#56359c}
+.profile-symbol svg,.section-chevron{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.section-chevron{width:15px;height:15px}
+#ptiles .tile{background:var(--card);box-shadow:none}
+#ptiles .tile:hover{border-color:#cdbce8;transform:none}
+#ptiles .tile-b{gap:5px;padding-bottom:10px}
+#ptiles .tile-h{background:none;color:var(--ink);padding:10px 10px 4px;min-height:46px;gap:7px}
+#ptiles .tile-h .bic{display:grid;place-items:center;width:30px;height:30px;flex:none;background:var(--accent-soft);border-radius:8px;color:#56359c}
+#ptiles .tile-h .bic svg{width:17px;height:17px;stroke:currentColor}
+#ptiles .tile-t{font-size:13px;text-shadow:none;hyphens:none;overflow-wrap:normal}
+#ptiles .tile-s,#ptiles .tile-f{padding-inline:10px}
+#ptiles .tile-f{flex-wrap:wrap;gap:3px 6px}
+#ptiles .tile-f .why{margin-top:0;font-size:11.5px;overflow-wrap:anywhere}
+#ptiles .tile-b:focus-visible{outline-offset:-3px}
+@media(max-width:570px){
+ .profile-records{display:grid;grid-template-columns:minmax(0,1fr)}
+ #ptiles .tile-h{align-items:flex-start}
+ #ptiles .tile-t{align-self:center;font-size:12.5px;overflow-wrap:anywhere}
+}
+.quiet-fold{border-top:1px solid var(--line)}
+.quiet-fold summary,.browse-selection summary{display:flex;align-items:center;gap:7px;min-height:44px;padding:7px 0;list-style:none;cursor:pointer;color:var(--ink);font-size:13px;font-weight:700}
+.quiet-fold summary::-webkit-details-marker,.browse-selection summary::-webkit-details-marker,#pdfOptions summary::-webkit-details-marker{display:none}
+.quiet-fold summary::after,.browse-selection summary::after{content:"";width:7px;height:7px;flex:none;border-right:1.5px solid #56359c;border-bottom:1.5px solid #56359c;transform:rotate(45deg);margin:0 3px 4px auto}
+.quiet-fold[open]>summary::after,.browse-selection[open]>summary::after{transform:rotate(225deg);margin-bottom:-3px}
+.quiet-fold-body{display:grid;gap:10px;padding:2px 0 13px}
+.fold-count{display:inline-grid;place-items:center;font-size:11px;min-width:21px;min-height:21px;padding:0 4px;color:#56359c;background:var(--accent-soft);border-radius:8px}
+.share-panel,.settings-panel{padding:15px 18px}
+.share-fields{display:grid;gap:4px}
+.share-fields .field>span{color:var(--ink2);font-size:12px;font-weight:650}
+.share-fields .opts{margin:6px 0}
+.share-fields .opt{min-height:36px;color:#39245f}
+.share-link{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:8px 0 12px}
+.share-link .code{min-width:0;overflow-wrap:anywhere;color:#39245f;user-select:all}
+.share-link>.btn{min-height:42px}
+.share-demo{margin:3px 0 0}.share-settings{min-height:40px}
+.settings-panel h2{margin-bottom:10px}
+.settings-panel .quiet-fold-body .why,.settings-panel .seth{margin:0}
+.settings-panel #accNote .link{min-height:36px}
+.settings-panel .quiet-fold-body>.link{justify-self:start;min-height:36px}
+.settings-panel #supSend{justify-self:start;min-height:42px}
+.settings-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.settings-actions>.btn{min-height:42px}.settings-actions>.btn[hidden]{display:none}
+.browse-actions{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 12px}
+.browse-actions:has(details[open]){grid-template-columns:minmax(0,1fr)}
+#v-book .browse-actions,#v-docs .browse-selection{margin-top:12px}
+.browse-preset{justify-self:start;min-height:36px;background:#fff1e6;border-color:#eab387;color:#893900;padding-inline:8px}
+.browse-selection summary{width:100%;justify-content:start}
+.browse-selection summary::after{margin-left:2px}
+.browse-selection .picked{margin:4px 0 8px}
+#v-book .lab.best{box-shadow:none}
+#v-book .addsearch input::placeholder,#v-docs .addsearch input::placeholder{color:var(--ink2);opacity:1}
+.visit-events.compact:not(.expanded) .ctxr b{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;white-space:normal;line-height:1.2;overflow-wrap:anywhere}
+#ctx .ctx-list{gap:4px}
+.visit-events.compact:not(.expanded) #ctx .ctxr{padding-block:3px}
+.ctx-actions{padding-top:3px}
+#pv.doctor-screen .htab{font-size:12.5px}
+#pv.doctor-screen .htab th{font-size:12px}
+#pv.doctor-screen .htab th[data-latest-date]{background:#eee7fb;color:#39245f}
+#pv.doctor-screen .htab td[data-latest-date]:not(.c-h):not(.c-l){background:#faf7fe;font-weight:650}
+#pv.doctor-screen .htab .hl-n{font-size:12.5px;hyphens:auto}
+@media screen and (min-width:360px) and (max-width:760px){#pv.doctor-screen .htab .hn{width:166px;min-width:166px;max-width:166px}}
+#pv.doctor-screen .htab td:not(.hn){min-width:68px}
+.pv .hleg{gap:6px 9px;position:relative;z-index:6;padding:5px 10px}
+.history-legend{display:flex;flex:1 1 150px;flex-wrap:wrap;align-items:center;gap:4px 8px;color:var(--ink2);font-size:11px}
+.history-legend span{white-space:nowrap}
+#pdfOptions{position:relative;flex:none;margin-left:auto}
+#pdfOptions summary{display:flex;align-items:center;gap:6px;min-height:36px;color:#56359c;list-style:none;font-weight:750;cursor:pointer}
+#pdfOptions summary::after{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);margin-bottom:3px}
+#pdfOptions[open] summary::after{transform:rotate(225deg);margin-bottom:-3px}
+.pdf-actions{position:absolute;right:0;bottom:calc(100% + 6px);display:grid;gap:4px;min-width:166px;padding:5px;background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:var(--sh)}
+.pdf-actions .btn{min-height:42px;justify-content:start;text-align:left}
+#pvNote{flex-basis:100%;margin:0}
+#pvNote:empty{display:none}
+.pv .viewer-pan .btn{min-width:34px;min-height:36px}
+#v-profile :is(button,summary):focus-visible,#v-settings :is(button,summary,input,select,textarea):focus-visible,#v-share :is(button,summary,input,select):focus-visible,.browse-selection summary:focus-visible{outline:2px solid #6944be;outline-offset:2px}
+#ptiles .tile-b:focus-visible{outline-offset:-3px}
+#v-files thead th{font-size:11px}
+@media screen and (max-width:410px){#pv.doctor-screen .htab td:not(.hn){min-width:66px}}
+
+.files-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px}
+.files-heading h2{margin:0;font-size:clamp(17px,4vw,21px)}
+#filesAdd{display:inline-flex;align-items:center;gap:5px;min-height:44px;padding-inline:10px;font-size:13px}
+#filesAdd svg{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.files-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.files-action{display:flex;align-items:center;gap:8px;min-height:48px;padding:7px 9px;background:var(--card);border:1px solid #e2d6ee;border-radius:11px;color:var(--ink);text-align:left;font-size:12px;font-weight:700;line-height:1.25}
+.files-action:hover{border-color:#baa2e3;background:#fbf8ff}
+.files-action[data-capture]{margin:0}
+.files-action .profile-symbol{width:28px;height:28px;flex:none;background:var(--accent-soft)}
+.files-action[data-capture] .profile-symbol{background:#fff1e6;color:#893900}
+.files-action .profile-symbol svg{width:16px;height:16px}
+.files-list h3{font-size:16px;margin:0}
+#v-files #rsnFilter{margin-top:9px}
+#v-files table.up{margin-top:7px}
+.mbox:has(.upload-sheet){max-width:480px}
+.mbox:has(.upload-sheet) .mbox-h{background:var(--card);border-bottom:1px solid var(--line);padding:9px 16px}
+.mbox:has(.upload-sheet) .mbox-h h3{color:var(--ink);font-size:18px}
+.mbox:has(.upload-sheet) .x{background:var(--accent-soft);color:#56359c}
+.mbox:has(.upload-sheet) .mbox-b{padding:12px 16px max(14px,env(safe-area-inset-bottom))}
+.upload-sheet .ao{position:relative;gap:10px;min-height:61px;padding:8px 10px;border-radius:11px}
+.upload-sheet .ao::after{content:"";width:7px;height:7px;flex:none;margin-left:auto;margin-right:4px;border-top:1.5px solid #6847a6;border-right:1.5px solid #6847a6;transform:rotate(45deg)}
+.upload-sheet .ao-i{width:36px;height:36px;border-radius:9px;color:#56359c}
+.upload-sheet .ao-i svg{width:19px;height:19px}
+.upload-sheet .ao small{font-size:12px;color:var(--ink2)}
+.upload-sheet .upload-tip{margin:9px 0;color:var(--ink2);font-size:12px;line-height:1.45}
+.upload-sheet .upload-mail .why{margin:0}
+.upload-address{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 7px 5px 10px;border:1px solid var(--line);border-radius:9px;background:var(--paper)}
+.upload-address .code{min-width:0;overflow-wrap:anywhere;background:none;color:var(--ink)}
+.upload-address .btn{display:grid;place-items:center;flex:none;width:44px;height:44px;padding:0;color:#56359c;background:var(--card)}
+.upload-mail summary{color:#56359c}
+.upload-other{border-top:1px solid var(--line);padding-top:9px}
+.upload-other h4{font-size:12px;color:var(--ink2);margin:0 0 7px}
+.upload-other .files-actions{margin-bottom:0}
+.upload-other .files-action{font-size:11.5px}
+.upload-sheet :is(button,summary):focus-visible{outline:2px solid #6944be;outline-offset:2px}
+.upload-choice{min-width:0;margin:0;padding:0;border:0}
+.upload-choice .seg label:has(input:focus-visible){outline:2px solid #6944be;outline-offset:2px}
+#file[hidden]{display:none}
+.share-access{display:grid;grid-template-columns:clamp(108px,34vw,152px) minmax(0,1fr);align-items:center;gap:12px;margin:0 0 13px;padding:9px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+.share-access canvas{width:100%;height:auto;aspect-ratio:1;padding:6px;border-radius:8px}
+.share-access .share-link{display:grid;justify-items:start;gap:8px;margin:0}
+.share-access #copy{line-height:1.2;text-align:center}
+.share-fields .quiet-fold:last-child{border-bottom:1px solid var(--line);margin-bottom:6px}
+.browse-selection>summary{box-sizing:border-box;min-height:44px;padding:7px 8px;border:1px solid #e4d8f2;border-radius:9px;background:#f7f2fc;color:#39245f}
+.browse-selection>summary:hover{background:#f0e8fa}
+.browse-selection summary::after{margin-left:auto;margin-right:3px}
+.browse-selection .fold-count{position:relative;background:#e8ddf7;color:#4f308c}
+.browse-selection .fold-count::after{content:"";position:absolute;inset:0;pointer-events:none;border:1px solid #8e63ca;border-radius:inherit;opacity:0}
+@media(prefers-reduced-motion:no-preference){
+ .view.on .browse-selection:not([open]) .fold-count[data-attention]::after{animation:browse-count-hint 450ms var(--ease-out) 2}
+ @keyframes browse-count-hint{25%{opacity:.72}100%{opacity:0;transform:scale(1.45)}}
+}
+#tut .tour-target{pointer-events:none}
+#tut .tour-target.is-action{pointer-events:auto;cursor:pointer}
+#tut .tour-try{min-height:40px;margin:0 16px 5px;border-color:#7e6992;background:#392e4c;color:#fff;font-weight:700}
+#tut .tour-try[hidden]{display:none}
+#tut .tbox-f>.btn{min-height:40px}
+#v-files :is(button,summary):focus-visible,.upload-mail summary:focus-visible{outline:2px solid #6944be;outline-offset:2px}
+@media(max-width:370px){.files-action{gap:5px;padding-inline:7px}.files-action .profile-symbol{width:25px;height:25px}.share-access{gap:8px;padding:6px}}
 </style></head>
 <body>
 <div class="app" id="app">
@@ -1501,7 +1668,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
   <div class="top-in">
     <div class="brand"><div class="brand-ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.2"/><path d="M12 3.8v16.4M3.8 12h16.4M6.2 6.2l11.6 11.6M17.8 6.2L6.2 17.8"/></svg></div><div><div class="brand-n">Orange of Health</div><small id="whoami">Кабинет пациента</small></div></div>
     <div class="spacer"></div>
-    <button class="gear" data-go="share" aria-label="Показать врачу" title="Показать врачу"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><path d="M14 14h2v2h-2zM18 18h2v2h-2zM14 18h2M18 14h2"/></svg></button>
+    <button class="gear" data-go="share" aria-label="Доступ по ссылке и QR" title="Доступ по ссылке и QR"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><path d="M14 14h2v2h-2zM18 18h2v2h-2zM14 18h2M18 14h2"/></svg></button>
     <button class="gear" data-go="profile" aria-label="Профиль" title="Профиль"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></button>
     <button class="gear" data-go="settings" aria-label="Настройки" title="Настройки"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
   </div>
@@ -1524,7 +1691,6 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
           <button type="button" data-modal="old" aria-haspopup="dialog">Давно не сдавали <b id="visitOldCount"></b></button>
           <button type="button" data-modal="all" aria-haspopup="dialog">Все показатели <b id="visitAllCount"></b></button>
         </div>
-        <button type="button" class="btn visit-doctor" id="visitDoctor">Показать врачу</button>
       </section>
       <section class="visit17 visit-events card" id="visitEvents" aria-labelledby="visitEventsTitle">
         <div class="visit-head"><span class="visit-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="6" width="16" height="14" rx="3"/><path d="M8 4v4m8-4v4M4 11h16m-11 4h2m2 0h2"/></svg></span><span><strong class="visit-title" id="visitEventsTitle">События к сдаче</strong><span class="visit-meta" id="ctxSum"></span></span></div>
@@ -1532,10 +1698,14 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
           <div class="ctx-list" id="visitEventList"></div>
           <div class="ctx-actions">
             <button class="link" id="visitMoreEvents" type="button" aria-haspopup="dialog"></button>
-            <button class="btn visit-doctor" type="button" data-capture>Добавить событие</button>
+            <button class="link visit-add-event" type="button" data-capture aria-label="Добавить событие"><span aria-hidden="true">+</span> Добавить</button>
           </div>
         </div>
       </section>
+    </div>
+
+    <div class="visit-launch">
+      <button type="button" class="btn" id="visitHistory" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18m-12 0v11m6-11v11"/></svg><span>История анализов</span><svg class="visit-launch-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
     </div>
 
     <div class="sec">
@@ -1552,31 +1722,29 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
       <button class="btn" id="pmode" aria-pressed="false">Выбрать для печати</button>
       <button class="btn pri" id="pgo" disabled hidden>Печать выбранных</button>
     </div>
-    <button class="htease" id="hOpen" aria-haspopup="dialog">
-      <span class="ht-ic" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11M15 9v11"/></svg></span>
-      <span class="ht-t"><b>Полная история всех показателей</b><span id="hTeaseSub"></span></span>
-      <span class="ht-go">Открыть таблицу <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span>
-    </button>
 
     <p class="foot">Сервис показывает только то, что написано в загруженных бланках: значения, единицы и референсные интервалы лабораторий. Он не ставит диагнозов и не даёт рекомендаций. Выводы делает врач.</p>
   </section>
 
   <!-- МОИ АНАЛИЗЫ -->
-  <section class="view" id="v-files" aria-label="Мои анализы"><div class="record-actions"><button class="btn" type="button" data-capture>Добавить событие</button><button class="btn" type="button" data-diary>Дневник измерений</button></div>
-    <div class="panel">
-      <h2>Загрузка анализов</h2>
-      <p class="lead">Добавьте бланк из любой лаборатории. Сервис распознает показатели, а вы проверите их перед сохранением. Оригинал файла хранится вместе с результатами.</p>
-      <div class="drop">
-        <p>Фото бланка, скриншот из приложения лаборатории или PDF из почты.</p>
-        <div class="upbtns"><button class="btn pri" type="button" data-up="camera">Сфотографировать</button><button class="btn" type="button" data-up="gallery">Из галереи</button><button class="btn" type="button" data-up="files">Файл или PDF</button></div>
-        <input id="file" type="file" accept="image/*,application/pdf" style="display:none" multiple>
-        <p class="why" style="margin-top:8px">При первой загрузке приложение попросит доступ к камере, галерее или файлам.</p>
-      </div>
-      <div class="ways">
-        <div class="way"><b>Фото или скриншот</b>Сфотографируйте бланк целиком, чтобы были видны дата и нормы.</div>
-        <div class="way"><b>PDF</b>Файл из приложения или личного кабинета лаборатории.</div>
-        <div class="way"><b>Переслать письмо</b>Перешлите письмо лаборатории на адрес <span class="code">a.ivanov@in.orange-health.ru</span>.</div>
-      </div>
+  <section class="view" id="v-files" aria-label="Мои анализы">
+    <div class="files-heading">
+      <h2>Мои анализы</h2>
+      <button class="btn pri" type="button" id="filesAdd" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Добавить анализ</button>
+    </div>
+    <div class="files-actions">
+      <button type="button" class="files-action" data-capture aria-haspopup="dialog">
+        <span class="profile-symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="6" width="16" height="14" rx="3"/><path d="M8 4v4m8-4v4M4 11h16m-8 2v5m-2.5-2.5h5"/></svg></span>
+        <span>Добавить событие</span>
+      </button>
+      <button type="button" class="files-action" data-diary aria-haspopup="dialog">
+        <span class="profile-symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5zM8 15l3-4 3 2 3-4"/></svg></span>
+        <span>Дневник измерений</span>
+      </button>
+    </div>
+    <input id="file" type="file" accept="image/*,application/pdf" hidden multiple>
+    <div class="panel files-list">
+      <h3>История сдач</h3>
       <div class="tblw"><table class="up" id="upTable">
         <thead><tr><th>Дата</th><th>Лаборатория</th><th class="c-src">Как загружен</th><th class="r">Показ.</th><th>Статус</th><th><span class="desk">Файл</span></th></tr></thead>
         <tbody></tbody>
@@ -1585,12 +1753,21 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
   </section>
 
   <!-- ПРОФИЛЬ -->
-  <section class="view" id="v-profile" aria-label="Профиль"><div class="record-actions"><button class="btn" type="button" data-capture>Добавить событие</button><button class="btn" type="button" data-diary>Дневник измерений</button></div>
-    <div class="panel"><h2>Профиль</h2>
-      <p class="lead">Данные о вас, которые помогают врачу читать анализы. Препараты, вес и болезни показываются на графиках анализов по тем же датам. Сервис сам ничего по профилю не оценивает.</p>
-      <div class="pfill"><div class="pfill-t"><b>Профиль заполнен на <span id="pfPct" class="num">0</span>%</b><span class="why" id="pfHint"></span></div><div class="pbar"><i id="pfBar"></i></div></div>
+  <section class="view" id="v-profile" aria-label="Профиль">
+    <div class="panel profile-overview">
+      <h2>Профиль</h2>
+      <p class="profile-intro">Данные о вас для разговора с врачом.</p>
+      <div class="pfill"><div class="pfill-t"><span>Заполнено <b><span id="pfPct" class="num">0</span>%</b></span><span class="why" id="pfHint" hidden></span></div><div class="pbar" aria-hidden="true"><i id="pfBar"></i></div></div>
+      <details class="profile-help"><summary>Как это связано с анализами</summary><p>Препараты, вес и болезни видны на графиках рядом с датами сдач.</p></details>
     </div>
-    <div class="tiles" id="ptiles" style="margin-top:14px"></div>
+    <div class="profile-records">
+      <button class="profile-diary" type="button" data-diary aria-haspopup="dialog">
+        <span class="profile-symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5zM8 15l3-4 3 2 3-4"/></svg></span>
+        <span><strong>Дневник измерений</strong><small>Сахар, давление, сон</small></span>
+        <svg class="section-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+    </div>
+    <div class="tiles" id="ptiles"></div>
   </section>
 
   <!-- ГДЕ СДАТЬ -->
@@ -1598,11 +1775,11 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
     <div class="panel">
       <h2>Где сдать анализы</h2>
       <div class="locline"><span class="locic" aria-hidden="true"></span><span data-locshow></span><button class="link" type="button" data-locedit>Изменить</button></div>
-      <div class="addsearch wide"><input id="bq" type="search" placeholder="Найти анализ: ферритин, общий анализ крови…" autocomplete="off" aria-label="Найти анализ"><div class="addres" id="bres"></div></div>
-      <button type="button" class="baseset" data-baseset><b>+ Базовый набор</b><small>ОАК, биохимия, общий анализ мочи, глюкоза, витамин D: их смотрят почти все врачи</small></button>
-      <h3 class="seth" style="margin-top:16px">Мой список на сдачу</h3>
-      <div class="picked" id="bask"></div>
-      <span class="why" id="bwhere"></span>
+      <div class="addsearch wide"><input id="bq" type="search" placeholder="Найти анализ, например ферритин" autocomplete="off" aria-label="Найти анализ"><div class="addres" id="bres"></div></div>
+      <div class="browse-actions">
+        <details class="browse-selection"><summary>Список на сдачу <span class="fold-count" id="baskCount"></span></summary><div class="picked" id="bask"></div></details>
+        <button type="button" class="btn browse-preset" data-baseset>+ Базовый набор</button>
+      </div>
     </div>
     <div class="panel" id="labsPanel">
       <h2>Лаборатории рядом</h2>
@@ -1615,10 +1792,8 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
     <div class="panel">
       <h2>Врачи рядом</h2>
       <div class="locline"><span class="locic" aria-hidden="true"></span><span data-locshow></span><button class="link" type="button" data-locedit>Изменить</button></div>
-      <div class="addsearch wide"><input id="sqs" type="search" placeholder="Найти специалиста: терапевт, эндокринолог…" autocomplete="off" aria-label="Найти специалиста"><div class="addres" id="sres"></div></div>
-      <h3 class="seth" style="margin-top:16px">Выбранные специалисты</h3>
-      <div class="picked" id="spSel"></div>
-      <div id="sq"></div>
+      <div class="addsearch wide"><input id="sqs" type="search" placeholder="Специальность или фамилия" autocomplete="off" aria-label="Найти специалиста"><div class="addres" id="sres"></div></div>
+      <details class="browse-selection"><summary>Выбранные специальности <span class="fold-count" id="spSelCount"></span></summary><div class="picked" id="spSel"></div><div id="sq"></div></details>
     </div>
     <div class="panel">
       <h2 id="specsH">Специалисты рядом</h2>
@@ -1628,67 +1803,79 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
   </section>
 
   <!-- ДОСТУП ВРАЧУ -->
-  <section class="view" id="v-share" aria-label="Доступ специалисту">
-    <div class="panel">
-      <h2>Показать анализы специалисту</h2><button class="btn pri doctor-entry" id="specPrev">Открыть вид для врача <span aria-hidden="true">→</span></button>
-      <p class="lead">Разовый доступ: специалист сканирует QR-код или открывает ссылку. Регистрация ему не нужна. Если специалисту нужен постоянный доступ, он регистрируется, и вы открываете доступ его аккаунту. Закрыть доступ можно в любой момент.</p>
-      <div class="share">
-        <canvas class="qr" id="qr" width="180" height="180" aria-label="QR-код со ссылкой на анализы (демо)"></canvas>
-        <div>
-          <div class="field"><label>Срок доступа</label></div>
-          <div class="opts" id="dur"></div><div class="field" id="shareRange"><label for="period10">Период анализов</label><select id="period10"><option value="0">Вся история</option><option value="30">Последние 30 дней до последней сдачи</option><option value="180">Последние 180 дней до последней сдачи</option><option value="custom">Свой диапазон</option></select><div class="date-pair" hidden><label>С <input type="date" data-from></label><label>По <input type="date" data-to></label></div></div>
-          <div class="field"><label>Что показать</label></div>
-          <div class="opts" id="scope"></div>
-<div id="reportGroups" class="report-groups" hidden></div>
-<label class="report-events"><input type="checkbox" id="reportEvents"> Включить события рядом со сдачами и дневники за выбранный период</label>
-<p class="why">Ссылка и QR-код демонстрационные. Предпросмотр и PDF используют выбранный период и состав отчёта.</p>
-          <div class="linkbox"><span class="code" id="slink">orange-health.ru/s/7K2-QX9</span><button class="btn" id="copy">Скопировать ссылку</button><button class="btn" id="spdf">PDF для печати</button></div>
-        </div>
+  <section class="view" id="v-share" aria-label="Поделиться анализами">
+    <div class="panel share-panel">
+      <h2>Поделиться анализами</h2>
+      <p class="profile-intro">Отправьте ссылку или покажите QR-код специалисту.</p>
+      <div class="share-access">
+        <canvas class="qr" id="qr" width="180" height="180" role="img" aria-label="Демонстрационный QR-код"></canvas>
+        <div class="share-link"><span class="code" id="slink"></span><button class="btn pri" type="button" id="copy">Скопировать ссылку</button></div>
       </div>
-      <p class="why" style="margin-top:14px">Кому уже открыт доступ и чьи анализы доступны вам, смотрите в настройках. <button class="link" data-go="settings">Открыть настройки →</button></p>
+      <div class="share-fields">
+        <div class="field"><span id="shareDurationLabel">Срок доступа</span><div class="opts" id="dur" role="group" aria-labelledby="shareDurationLabel"></div></div>
+        <details class="quiet-fold">
+          <summary>Какие данные открыть</summary>
+          <div class="quiet-fold-body">
+            <div class="field" id="shareRange">
+              <label for="period10">Период анализов</label>
+              <select id="period10"><option value="0">Вся история</option><option value="30">Последние 30 дней</option><option value="180">Последние 180 дней</option><option value="custom">Свой диапазон</option></select>
+              <div class="date-pair" hidden><label>С <input type="date" data-from></label><label>По <input type="date" data-to></label></div>
+            </div>
+            <div class="field"><span id="shareScopeLabel">Показатели</span><div class="opts" id="scope" role="group" aria-labelledby="shareScopeLabel"></div></div>
+            <div id="reportGroups" class="report-groups" hidden></div>
+            <label class="report-events"><input type="checkbox" id="reportEvents"> Добавить события и дневники</label>
+          </div>
+        </details>
+      </div>
+      <p class="why share-demo">Демо · ссылка и QR-код для примера.</p>
     </div>
+    <button type="button" class="link share-settings" data-go="settings">Управление доступом в настройках</button>
   </section>
 
   <section class="view" id="v-settings" aria-label="Настройки">
-    <div class="panel">
+    <div class="panel settings-panel">
       <h2>Настройки</h2>
-      <h3 class="seth">Аккаунт</h3>
-      <div class="fgrid">
-        <div class="field"><label for="sName">Имя</label><input id="sName" data-acc="name" type="text"></div>
-        <div class="field"><label for="sPhone">Телефон</label><input id="sPhone" data-acc="phone" type="tel" autocomplete="tel" placeholder="+7 (___) ___-__-__"></div>
-        <div class="field"><label for="sEmail">Почта</label><input id="sEmail" data-acc="email" type="email"></div>
-      </div>
-      <p class="why" id="accNote" style="margin-top:8px"></p>
+      <details class="quiet-fold" open>
+        <summary>Аккаунт</summary>
+        <div class="quiet-fold-body">
+          <div class="fgrid">
+            <div class="field"><label for="sName">Имя</label><input id="sName" data-acc="name" type="text" autocomplete="name"></div>
+            <div class="field"><label for="sPhone">Телефон</label><input id="sPhone" data-acc="phone" type="tel" autocomplete="tel" placeholder="+7 (___) ___-__-__"></div>
+            <div class="field"><label for="sEmail">Почта</label><input id="sEmail" data-acc="email" type="email" autocomplete="email"></div>
+          </div>
+          <p class="why" id="accNote"></p>
+        </div>
+      </details>
+      <details class="quiet-fold">
+        <summary>Кому я открыл доступ <span class="fold-count" id="activeShares" title="Открытые доступы"></span></summary>
+        <div class="quiet-fold-body"><div class="acl" id="docs"></div><button class="link" type="button" data-go="share">Поделиться анализами</button></div>
+      </details>
+      <details class="quiet-fold">
+        <summary>Мне открыли доступ <span class="fold-count" id="incomingShares" title="Открытые доступы"></span></summary>
+        <div class="quiet-fold-body"><div id="sharedBody"></div></div>
+      </details>
+      <details class="quiet-fold">
+        <summary>Уведомления и разрешения</summary>
+        <div class="quiet-fold-body">
+          <div class="opts" id="notif"></div>
+          <p class="why">В демо уведомления не отправляются.</p>
+          <h3 class="seth">Разрешения приложения</h3>
+          <div class="perms" id="perms"></div>
+        </div>
+      </details>
+      <details class="quiet-fold">
+        <summary>Поддержка</summary>
+        <div class="quiet-fold-body support-fields">
+          <div class="field"><label for="supT">Тема</label><select id="supT"><option>Не распознался анализ</option><option>Ошибка в приложении</option><option>Вопрос по доступу врачу</option><option>Идея или пожелание</option><option>Другое</option></select></div>
+          <div class="field"><label for="supM">Сообщение</label><textarea id="supM" placeholder="Опишите, что произошло"></textarea></div>
+          <button class="btn pri" type="button" id="supSend">Отправить</button>
+        </div>
+      </details>
     </div>
-    <div class="panel">
-      <h3 class="seth">У кого есть доступ к моим анализам</h3>
-      <div class="acl" id="docs"></div>
-      <button class="link" data-go="share" style="margin-top:10px">Открыть доступ ещё кому-то →</button>
+    <div class="settings-actions">
+      <button class="btn" id="tutOpen" type="button">Повторить первые шаги</button>
+      <button class="btn danger" type="button" id="logoutBtn" hidden>Выйти из аккаунта</button>
     </div>
-    <div class="panel">
-      <h3 class="seth">Мне открыли доступ</h3>
-      <p class="why" style="margin-bottom:8px">Анализы людей, которые открыли вам постоянный доступ: пациентов, родственников. Если доступ закрыли, человек остаётся в списке, но данные скрыты.</p>
-      <div id="sharedBody"></div>
-    </div>
-    <div class="panel">
-      <h3 class="seth">Уведомления</h3>
-      <div class="opts" id="notif"></div>
-      <p class="why" style="margin-top:6px">Заглушка: подключение каналов появится в рабочей версии.</p>
-      <h3 class="seth" style="margin-top:18px">Разрешения приложения</h3>
-      <div class="perms" id="perms"></div>
-    </div>
-    <div class="panel">
-      <h3 class="seth">Поддержка</h3>
-      <p class="why" style="margin-bottom:10px">Что-то не работает или есть идея? Напишите нам, ответим на почту.</p>
-      <div class="field"><label for="supT">Тема</label><select id="supT"><option>Не распознался анализ</option><option>Ошибка в приложении</option><option>Вопрос по доступу врачу</option><option>Идея или пожелание</option><option>Другое</option></select></div>
-      <div class="field" style="margin-top:10px"><label for="supM">Сообщение</label><textarea id="supM" placeholder="Опишите, что произошло"></textarea></div>
-      <div class="row-end"><button class="btn pri" type="button" id="supSend">Отправить</button></div>
-    </div>
-    <div class="panel">
-      <h3 class="seth">Знакомство с приложением</h3>
-      <button class="btn" id="tutOpen" type="button">Пройти первые шаги заново</button>
-    </div>
-    <div class="setfoot"><button class="btn danger" type="button" id="logoutBtn">Выйти из аккаунта</button><p class="why">Orange of Health · прототип, версия 5</p></div>
   </section>
 </main>
 </div>
@@ -1696,29 +1883,32 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 <!-- предпросмотр печати -->
 <div class="pv table-viewer" id="pv">
   <div class="hm-box">
-    <div class="pv-bar hm-h"><h3 id="pvTitle">Показать врачу</h3><span class="hm-n" id="pvCount"></span><button class="hm-r viewer-screen-only" id="reportReset" type="button" hidden>Сбросить всё</button><button class="x" id="pvBack" type="button" aria-label="Закрыть отчёт">×</button></div>
+    <div class="pv-bar hm-h"><h3 id="pvTitle">История анализов</h3><span class="hm-n" id="pvCount"></span><button class="hm-r viewer-screen-only" id="reportReset" type="button" hidden>Сбросить поиск</button><button class="x" id="pvBack" type="button" aria-label="Закрыть историю анализов">×</button></div>
     <div class="hm-f" id="reportFilters" role="group" aria-label="Фильтры отчёта" hidden></div>
     <div class="pv-in hwrap" id="pvBody" tabindex="0" role="region" aria-label="Результаты анализов"></div>
-    <div class="hleg"><span class="viewer-screen-only"><i class="c-h"></i>выше нормы</span><span class="viewer-screen-only"><i class="c-l"></i>ниже нормы</span><span class="viewer-screen-only">— не сдавали</span>
-      <div class="hleg-pdf"><button class="btn" type="button" id="pvPrint">Сохранить PDF</button><button class="btn" type="button" id="sendPDF">Передать PDF</button><span class="why" id="pvNote" role="status"></span></div>
+    <div class="hleg"><div class="history-legend viewer-screen-only"><span><i class="c-h"></i>выше нормы</span><span><i class="c-l"></i>ниже нормы</span><span>— нет результата</span></div>
       <div class="viewer-pan viewer-screen-only" hidden></div>
+      <details class="hleg-pdf" id="pdfOptions">
+        <summary class="btn">PDF</summary>
+        <div class="pdf-actions"><button class="btn" type="button" id="pvPrint">Сохранить PDF</button><button class="btn" type="button" id="sendPDF">Передать PDF</button></div>
+      </details>
+      <p class="why" id="pvNote" role="status"></p>
+    </div>
+    <div class="viewer-actionbar viewer-screen-only" role="group" aria-label="Действия в отчёте">
+      <button class="btn viewer-graph" type="button" data-open-event-graph aria-controls="pvBody" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v16h16M7 15l4-5 4 3 4-6"/></svg><span>Открыть график</span></button>
+      <div id="doctorSearch"></div>
     </div>
   </div>
-  <div id="doctorSearch"></div>
 </div>
 
-<div class="tut" id="tut" role="dialog" aria-modal="true" aria-labelledby="tT">
-  <button type="button" class="tour-target" id="tourTarget"></button><div class="tbox"><div class="tbox-h"><small id="tS"></small><h3 id="tT"></h3><div class="tprog" id="tP"></div></div><div class="tbox-b" id="tB"></div>
-  <div class="tbox-f"><button class="btn" id="tSkip">Пропустить</button><span class="tsp"></span><button class="btn" id="tPrev">Назад</button><button class="btn pri" id="tNext">Дальше</button></div></div>
-</div>
-<div class="hm table-viewer" id="hm" role="dialog" aria-modal="true" aria-labelledby="hmT" hidden>
-  <div class="hm-box">
-    <div class="hm-h"><h3 id="hmT">Полная история показателей</h3><span class="hm-n" id="hSum"></span><button class="hm-r" id="hreset" type="button">Сбросить всё</button><button class="x" id="hmX" aria-label="Закрыть">×</button></div>
-    <div class="hm-f" id="historyFilters" role="group" aria-label="Фильтры истории"></div>
-    <div class="hwrap" tabindex="0" role="region" aria-label="Результаты анализов"><div id="hEvents"></div><table class="htab" id="htab"></table><p class="why" id="hNone" hidden style="padding:16px">По фильтру ничего не найдено. <button class="link" id="hreset2" type="button">Сбросить фильтры</button></p></div>
-    <div class="hleg"><span><i class="c-h"></i>выше нормы</span><span><i class="c-l"></i>ниже нормы</span><span>— не сдавали</span><span class="hleg-r">Нажмите на показатель — откроется график</span><div class="viewer-pan" hidden></div></div>
+<div class="tut" id="tut" role="dialog" aria-modal="true" aria-labelledby="tT" aria-describedby="tB">
+  <div class="tour-target" id="tourTarget" aria-hidden="true"></div>
+  <div class="tbox">
+    <div class="tbox-h"><small id="tS" role="status"></small><h3 id="tT"></h3><div class="tprog" id="tP" aria-hidden="true"></div></div>
+    <div class="tbox-b" id="tB"></div>
+    <button class="btn tour-try" type="button" id="tTry" hidden></button>
+    <div class="tbox-f"><button class="btn" type="button" id="tSkip">Закрыть</button><span class="tsp"></span><button class="btn" type="button" id="tPrev">Назад</button><button class="btn pri" type="button" id="tNext">Дальше</button></div>
   </div>
-  <div id="historySearch"></div>
 </div>
 <div class="modal table-viewer" id="modal" role="dialog" aria-modal="true" aria-labelledby="mT">
   <div class="mbox"><div class="mbox-h"><h3 id="mT"></h3><button class="x" id="mX" aria-label="Закрыть">×</button></div><div class="mbox-b" id="mB"></div></div>
@@ -1852,17 +2042,65 @@ const ALL=G.flatMap(g=>g.rows);
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),3200)}
-let lastFocus=null;
-function openModal(title,html){clearTimeout(mT);const modal=$('#modal');
-  const rotated=$('#hm:not([hidden]).viewer-rotated')||$('body.preview #pv.viewer-rotated');
+let lastFocus=null, mT=0;
+const modalParents=[];
+function openModal(title,html,{back=false}={}){
+  clearTimeout(mT);
+  const modal=$('#modal'), box=modal.querySelector('.mbox'), body=$('#mB'), heading=$('#mT');
+  const active=modal.classList.contains('on')&&!modal.classList.contains('closing');
+  if(active&&back){
+    const previous={title:heading.textContent,classes:box.className,focus:document.activeElement,scroll:body.scrollTop,content:document.createDocumentFragment()};
+    previous.content.append(...body.childNodes);
+    modalParents.push(previous);
+  }else if(!active){
+    modalParents.length=0;
+    if(!modal.contains(document.activeElement))lastFocus=document.activeElement;
+  }
+  const rotated=$('body.preview #pv.viewer-rotated');
   modal.classList.toggle('viewer-rotated',!!rotated);
   if(rotated)modal.style.setProperty('--viewer-turn',rotated.style.getPropertyValue('--viewer-turn'));
-  modal.classList.remove('closing');lastFocus=document.activeElement;$('#modal .mbox').classList.remove('wide','sysbox');$('#mT').textContent=title;$('#mB').innerHTML=html;$('#modal').classList.add('on');$('#mX').focus()}
-let mT=0;
-function closeModal(){const m=$('#modal');if(!m.classList.contains('on')||m.classList.contains('closing'))return;m.classList.add('closing');
-  mT=setTimeout(()=>{m.classList.remove('on','closing');$('#modal .mbox').classList.remove('wide','sysbox');document.querySelectorAll('.tile.sel').forEach(x=>x.classList.remove('sel'));if(lastFocus)lastFocus.focus()},(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)?0:280)}
-$('#mX').onclick=closeModal;$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#modal').classList.contains('on'))closeModal()});
+  modal.classList.remove('closing');
+  box.classList.remove('wide','sysbox');
+  heading.textContent=title;body.innerHTML=html;body.scrollTop=0;
+  modal.classList.add('on');$('#mX').focus();
+}
+function openChildModal(title,html){openModal(title,html,{back:true})}
+function closeModal({all=false}={}){
+  const modal=$('#modal');
+  if(!modal.classList.contains('on')||modal.classList.contains('closing'))return;
+  const previous=!all&&modalParents.pop();
+  if(previous){
+    const body=$('#mB');
+    $('#mT').textContent=previous.title;
+    modal.querySelector('.mbox').className=previous.classes;
+    body.replaceChildren(previous.content);
+    body.scrollTop=previous.scroll;
+    const focus=body.contains(previous.focus)?previous.focus:$('#mX');
+    focus.focus({preventScroll:true});
+    return;
+  }
+  modalParents.length=0;
+  modal.classList.add('closing');
+  mT=setTimeout(()=>{
+    modal.classList.remove('on','closing');
+    modal.querySelector('.mbox').classList.remove('wide','sysbox');
+    document.querySelectorAll('.tile.sel').forEach(x=>x.classList.remove('sel'));
+    if(lastFocus?.isConnected)lastFocus.focus({preventScroll:true});
+    lastFocus=null;
+  },RM?0:280);
+}
+function navigateFromModal(id){
+  closeModal({all:true});
+  if(document.body.classList.contains('preview'))$('#pvBack').click();
+  show(id);
+}
+$('#mX').onclick=()=>closeModal();
+$('#modal').addEventListener('click',e=>{
+  if(e.target.id==='modal'||e.target.closest('[data-mclose]'))closeModal();
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&!e.defaultPrevented&&$('#modal').classList.contains('on')){e.preventDefault();closeModal()}
+});
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 
 /* роли и вкладки */
@@ -1949,23 +2187,23 @@ const PIC={camera:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r
 const svgI=(p,s)=>`<svg width="${s||22}" height="${s||22}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
 let PERM=store.get('oh2-perm',{});let permCb=null;
 function askPerm(k,cb){if(PERM[k]==='yes'){cb&&cb();return}permCb=cb;
-  openModal('Разрешить доступ?',`<div class="permask"><div class="permic">${svgI(PIC[k],28)}</div><p><b>Orange of Health</b> запрашивает доступ: ${PERMS[k][0]}, ${PERMS[k][1]}.</p><p class="why">В приложении это системное окно Android или iOS. Разрешение можно отозвать в настройках телефона.</p><div class="row-end"><button class="btn" data-perm="no" data-k="${k}">Не сейчас</button><button class="btn pri" data-perm="yes" data-k="${k}">Разрешить</button></div></div>`)}
+  openChildModal('Разрешить доступ?',`<div class="permask"><div class="permic">${svgI(PIC[k],28)}</div><p><b>Orange of Health</b> запрашивает доступ: ${PERMS[k][0]}, ${PERMS[k][1]}.</p><p class="why">В приложении это системное окно Android или iOS. Разрешение можно отозвать в настройках телефона.</p><div class="row-end"><button class="btn" data-perm="no" data-k="${k}">Не сейчас</button><button class="btn pri" data-perm="yes" data-k="${k}">Разрешить</button></div></div>`)}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-perm]');if(!b)return;const k=b.dataset.k,ok=b.dataset.perm==='yes';PERM[k]=ok?'yes':'no';store.set('oh2-perm',PERM);closeModal();renderPerms();
   if(ok&&permCb){const cb=permCb;permCb=null;setTimeout(cb,40)}else if(!ok)toast('Без этого разрешения функция недоступна. Его можно дать позже в профиле.')});
 function renderPerms(){const h=$('#perms');if(!h)return;h.innerHTML=Object.keys(PERMS).map(k=>{const ok=PERM[k]==='yes';return `<div class="permr${ok?'':' need'}"><span class="permi">${svgI(PIC[k],18)}</span><span><b>${PERMS[k][0][0].toUpperCase()+PERMS[k][0].slice(1)}</b><small>${PERMS[k][1]}${PERM[k]==='no'?' · сейчас отклонено':''}</small></span>${ok?'<span class="chip c-ok">разрешено</span>':`<button class="btn permgo" type="button" data-askperm="${k}">Разрешить</button>`}</div>`}).join('')}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-askperm]');if(b){PERM[b.dataset.askperm]=undefined;askPerm(b.dataset.askperm,()=>toast('Разрешение получено'))}});
 let LOG=store.get('oh2-login',false);
-function updLogin(){const lb=$('#logoutBtn');if(lb){lb.textContent=LOG?'Выйти из аккаунта':'Войти или зарегистрироваться';lb.classList.toggle('danger',LOG);lb.classList.toggle('pri',!LOG)}$('#whoami').textContent=LOG?(P.name||'Вы')+' · '+(P.phone||P.email||''):'Гость · демо-данные';
+function updLogin(){$('#logoutBtn').hidden=!LOG;$('#whoami').textContent=LOG?(P.name||'Вы')+' · '+(P.phone||P.email||''):'Гость · демо-данные';
   $('#demoBar').className=LOG?'demo':'demo guest';$('#demoBar').innerHTML=LOG?'Демо: значения условные, в рабочей версии здесь будут ваши анализы.':'<span><b>Вы смотрите демо-данные.</b> Войдите, чтобы загрузить свои анализы и сохранять изменения.</span><button class="btn pri" type="button" id="demoLogin">Войти</button>';
   const d=$('#demoLogin');if(d)d.onclick=()=>openLogin();renderShared();renderSettings()}
-function openLogin(note){loginCb=null;openModal('Вход и регистрация',`${note?`<p class="lnote">${note}</p>`:''}<div class="opts"><button class="opt" type="button" aria-pressed="true" data-lg="phone">По телефону</button><button class="opt" type="button" aria-pressed="false" data-lg="email">По почте</button></div>
+function openLogin(note){loginCb=null;openChildModal('Вход и регистрация',`${note?`<p class="lnote">${note}</p>`:''}<div class="opts"><button class="opt" type="button" aria-pressed="true" data-lg="phone">По телефону</button><button class="opt" type="button" aria-pressed="false" data-lg="email">По почте</button></div>
   <div class="field" style="margin-top:12px"><label for="lgIn" id="lgL">Номер телефона</label><input id="lgIn" type="tel" placeholder="+7 900 000-00-00"></div>
   <div class="field" id="lgCodeF" hidden style="margin-top:10px"><label for="lgCode">Код из SMS</label><input id="lgCode" inputmode="numeric" placeholder="0000"></div>
   <div class="field" style="margin-top:12px"><label>Уведомления, можно настроить позже</label><div class="opts" id="lgN"></div></div>
   <p class="why" style="margin-top:8px">Демо: подойдёт любой код. В рабочей версии придёт SMS или письмо с кодом. Регистрация нужна, чтобы хранить анализы на всех устройствах и получать постоянный доступ к чужим анализам.</p>
   <div class="row-end"><button class="btn pri" type="button" id="lgGo">Получить код</button></div>`);notifOpts($('#lgN'))}
 document.addEventListener('click',e=>{const m=e.target.closest('[data-lg]');if(m){document.querySelectorAll('[data-lg]').forEach(x=>x.setAttribute('aria-pressed',x===m));const em=m.dataset.lg==='email';$('#lgL').textContent=em?'Почта':'Номер телефона';$('#lgIn').type=em?'email':'tel';$('#lgIn').placeholder=em?'name@mail.ru':'+7 900 000-00-00';$('#lgCode').previousElementSibling.textContent=em?'Код из письма':'Код из SMS'}
-  if(e.target.id==='lgGo'){if($('#lgCodeF').hidden){$('#lgCodeF').hidden=false;e.target.textContent='Войти';$('#lgCode').focus()}else{LOG=true;store.set('oh2-login',true);const v=$('#lgIn').value.trim();if(v){if(v.includes('@'))P.email=v;else P.phone=v;store.set('oh2-profile',P);fillForm()}const cb=loginCb;loginCb=null;closeModal();updLogin();toast('Вы вошли. Данные сохранятся на всех устройствах.');if(cb)setTimeout(cb,60)}}
+  if(e.target.id==='lgGo'){if($('#lgCodeF').hidden){$('#lgCodeF').hidden=false;e.target.textContent='Войти';$('#lgCode').focus()}else{LOG=true;store.set('oh2-login',true);const v=$('#lgIn').value.trim();if(v){if(v.includes('@'))P.email=v;else P.phone=v;store.set('oh2-profile',P);fillForm()}const cb=loginCb;loginCb=null;closeModal();updLogin();toast('Вы вошли. Данные сохранятся на всех устройствах.');startAfterLogin(cb)}}
   if(e.target.id==='logoutBtn'){if(LOG){LOG=false;store.set('oh2-login',false);updLogin();toast('Вы вышли из аккаунта')}else openLogin()}});
 
 /* вход нужен, чтобы сохранять */
@@ -1985,16 +2223,16 @@ const PIC2={
  health:'<path d="M12 20s-7-4.6-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.4-7 10-7 10z"/>',
  life:'<circle cx="12" cy="12" r="8"/><path d="M12 7.500V12l3 2"/>'};
 const PSEC=[
- {k:'cmp',t:'Жалобы',s:'Что беспокоит и с какого времени'},
+ {k:'cmp',t:'Жалобы',s:'Что беспокоит'},
  {k:'base',t:'Основное',s:'Пол, возраст, рост'},
- {k:'med',t:'Препараты и БАДы',s:'Курсы и постоянный приём'},
+ {k:'med',t:'Препараты и БАДы',s:'Что вы принимаете'},
  {k:'weight',t:'Вес',s:'Динамика веса'},
- {k:'ill',t:'Болезни',s:'За последний год: температура, антибиотики'},
- {k:'hosp',t:'Госпитализации',s:'Когда и где лежали в больнице'},
+ {k:'ill',t:'Болезни',s:'Чем и когда болели'},
+ {k:'hosp',t:'Госпитализации',s:'Стационар и даты'},
  {k:'all',t:'Аллергии',s:'На что и как проявляется'},
- {k:'health',t:'Анамнез',s:'Хронические болезни, операции, травмы, наследственность'},
- {k:'life',t:'Образ жизни',s:'Спорт, сон, питание, алкоголь'},
- {k:'docs',t:'Документы и исследования',s:'ЭКГ, УЗИ, флюорография, КТ, МРТ'}];
+ {k:'health',t:'Анамнез',s:'Диагнозы и операции'},
+ {k:'life',t:'Образ жизни',s:'Привычки, питание, сон'},
+ {k:'docs',t:'Документы',s:'Заключения и исследования'}];
 const PWHY={
  med:'Курсом: с какой по какую дату. Постоянно: с какого времени. Биотин и некоторые другие добавки искажают анализы.',
  weight:'Записывайте вес время от времени. При заметном снижении в сводке появится отметка.',
@@ -2021,7 +2259,9 @@ function renderProfile(){const h=$('#ptiles');if(!h)return;
   renderFill()}
 const PF=[['дата рождения',()=>P.dob],['рост',()=>P.h],['препараты',()=>EV.med.length],['вес',()=>EV.weight.length],['болезни',()=>EV.ill.length],['аллергии',()=>(P.alls||[]).length],['диагнозы',()=>P.dx],['болезни родственников',()=>P.fam],['сон',()=>P.sleep],['алкоголь',()=>P.alc==='Не пью'||P.alcv]];
 function renderFill(){const miss=PF.filter(([,f])=>!f()).map(([l])=>l);const pct=Math.round((PF.length-miss.length)/PF.length*100);
-  $('#pfPct').textContent=pct;$('#pfBar').style.width=pct+'%';$('#pfHint').textContent=miss.length?'Врачу пригодится: '+miss.slice(0,3).join(', '):'Всё заполнено. Обновляйте вес и препараты, когда что-то меняется.'}
+  $('#pfPct').textContent=pct;$('#pfBar').style.setProperty('--profile-fill',pct/100);
+  const hint=$('#pfHint');hint.hidden=!miss.length;hint.textContent=miss.length?'Можно дополнить: '+miss.slice(0,3).join(', '):'';
+}
 
 /* графики профиля: шкала времени */
 function tAxis(starts,ends){const t0=Math.min(DT[0],...starts),t1=Math.max(LAST.getTime(),...ends);const pad=(t1-t0)*.04;return [t0-pad,t1+pad]}
@@ -2205,7 +2445,7 @@ $('#sPhone').addEventListener('input',e=>{
   }
 });
 function renderSettings(){document.querySelectorAll('[data-acc]').forEach(i=>i.value=i.id==='sPhone'?formatAccountPhone(P.phone||''):(P[i.dataset.acc]||''));notifOpts($('#notif'));renderPerms();
-  $('#accNote').innerHTML=LOG?'Вы вошли. Данные сохраняются в аккаунте и доступны на всех устройствах.':'Вы не вошли: приложение работает на демо-данных. <button class="link" type="button" id="accLogin">Войти или зарегистрироваться</button>';const b=$('#accLogin');if(b)b.onclick=()=>openLogin()}
+  $('#accNote').innerHTML=LOG?'Вы вошли. Данные сохраняются в аккаунте и доступны на всех устройствах.':'<button class="link" type="button" id="accLogin">Войти или зарегистрироваться</button>';const b=$('#accLogin');if(b)b.onclick=()=>openLogin()}
 function fillForm(){renderProfile();renderSettings()}
 function afterEvChange(){renderCtx();renderProfile();document.querySelectorAll('[data-cw]').forEach(w=>{const[g,r]=w.dataset.cw.split(',').map(Number);w.innerHTML=chartBox(G[g].rows[r])})}
 
@@ -2220,12 +2460,12 @@ function ctxFor(dstr){return nearEvents(dstr,21).map(x=>x.k==='med'?(x.e.m==='П
 function short(n){const s=String(n).split(',')[0];return s.length>24?s.slice(0,23)+'…':s}
 function ctxHTML(byMonth=false){const dl=DATES[DATES.length-1];const items=[];const w=weightAlert();
   const add=(date,html)=>items.push({date:date||'',html});
-  (EV.cmp||[]).forEach(e=>add(e.f,`<div class="ctxr cmp">${ICC}<span><b>Жалоба: ${esc(e.n)}</b><span class="ctx-extra"> · беспокоит с ${dfmt(e.f)}</span></span></div>`));
-  if(w)add(w.td,`<div class="ctxr warn">${ICW}<span><b>Вес снизился на ${w.kg} кг (−${w.pct}%) за ${w.mo} мес.</b><span class="ctx-extra"> ${esc(w.from)} → ${esc(w.to)} кг, ${dfmt(w.fd)}–${dfmt(w.td)} <span class="why" title="Отметка ставится при снижении на 5% и больше за 6 месяцев (справочник MSD)">· порог: −5% за 6 мес.</span></span></span></div>`);
+  (EV.cmp||[]).forEach(e=>add(e.f,`<div class="ctxr cmp">${ICC}<span><b>${byMonth?'Жалоба: ':''}${esc(e.n)}</b><span class="ctx-extra"> · беспокоит с ${dfmt(e.f)}</span></span></div>`));
+  if(w)add(w.td,`<div class="ctxr warn">${ICW}<span><b>${byMonth?'Вес снизился на '+w.kg+' кг (−'+w.pct+'%)':'Вес −'+w.kg+' кг'} за ${w.mo} мес.</b><span class="ctx-extra"> ${esc(w.from)} → ${esc(w.to)} кг, ${dfmt(w.fd)}–${dfmt(w.td)} <span class="why" title="Отметка ставится при снижении на 5% и больше за 6 месяцев (справочник MSD)">· порог: −5% за 6 мес.</span></span></span></div>`);
   nearEvents(dl,45).forEach(x=>{const e=x.e;
     if(x.k==='ill')add(e.f,`<div class="ctxr">${ICI}<span><b>Болел: ${esc(e.n)}</b><span class="ctx-extra">${e.tmax?', до '+esc(e.tmax)+'°':''}${e.ab?', антибиотики: '+esc(e.ab):''}, ${dfmt(e.f)}–${dfmt(e.t)}${x.ago>0?' · за '+x.ago+' дн. до сдачи':' · во время сдачи'}</span></span></div>`);
     if(x.k==='hosp')add(e.f,`<div class="ctxr">${ICH}<span><b>Госпитализация: ${esc(e.n)}</b>, ${esc(e.w||'')} ${dfmt(e.f)}–${dfmt(e.t)}</span></div>`);
-    if(x.k==='med')add(e.f,`<div class="ctxr">${ICM}<span><b>${esc(e.n)}</b><span class="ctx-extra"> · ${e.m==='Постоянно'?'постоянно с '+dfmt(e.f):'курс '+dfmt(e.f)+'–'+dfmt(e.t)+(x.ago?' · закончен за '+x.ago+' дн. до сдачи':'')}</span></span></div>`)});
+    if(x.k==='med')add(e.f,`<div class="ctxr">${ICM}<span><b>${esc(byMonth?e.n:e.n.split(',')[0])}</b><span class="ctx-extra"> · ${e.m==='Постоянно'?'постоянно с '+dfmt(e.f):'курс '+dfmt(e.f)+'–'+dfmt(e.t)+(x.ago?' · закончен за '+x.ago+' дн. до сдачи':'')}</span></span></div>`)});
   items.sort((a,b)=>b.date.localeCompare(a.date));
   if(!items.length)return '<p class="why">Рядом с последней сдачей событий нет.</p>';
   if(!byMonth)return items.map(item=>item.html).join('');
@@ -2303,7 +2543,7 @@ function renderSummary(){
 }
 document.addEventListener('click',e=>{const d=e.target.closest('[data-day]');if(d){const i=+d.dataset.day;const rows=ALL.filter(m=>m.pts.some(p=>p.i===i));
   openModal(`Сдача ${DATES[i]} · ${LABS[i]}`,`<div class="row-end" style="margin:0 0 8px"><button class="btn" data-blank="${i}">Открыть бланк</button></div><div class="mlist">`+rows.map(m=>{const p=m.pts.find(q=>q.i===i);return `<button data-goto="${m.gi},${m.ri}"><span>${esc(m.n)} <span class="g">${esc(G[m.gi].title)}</span></span><span class="num" style="font-weight:700;color:${p.st==='ok'?'var(--ok)':p.st==='high'?'var(--hi)':'var(--lo)'}">${esc(p.raw)} ${esc(U(m.u))}</span><span class="chip ${SC[p.st]}">${SL[p.st]}</span></button>`}).join('')+'</div>')}});
-document.addEventListener('click',e=>{const t=e.target.closest('[data-goto]');if(t){const[g,r]=t.dataset.goto.split(',').map(Number);closeModal();goTo(g,r)}});
+document.addEventListener('click',e=>{const t=e.target.closest('[data-goto]');if(t){const[g,r]=t.dataset.goto.split(',').map(Number);openSystem(g,r,true)}});
 
 function listHTML(arr,showSt){return '<div class="mlist">'+arr.map(m=>{const col=m.st==='high'?'var(--hi)':m.st==='low'?'var(--lo)':'var(--ink)';return `<button data-goto="${m.gi},${m.ri}"><span class="ml-n"><b>${esc(m.n)}</b><span class="g">${esc(G[m.gi].title)}</span></span><span class="ml-v"><b class="num" style="color:${col}">${m.cur?esc(m.cur.raw)+' '+esc(U(m.u)):'—'}</b>${showSt&&m.st!=='none'?`<span class="chip ${SC[m.st]}">${SL[m.st]}</span>`:''}<span class="g">сдано ${m.cur?m.cur.d:'—'}</span></span><svg class="ml-c" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`}).join('')+'</div>'}
 const REFTEXT=`<p><b>Норма</b> — это диапазон, который лаборатория печатает в бланке рядом с результатом (врачи называют его «референсный интервал»). Мы сравниваем ваш результат только с этим диапазоном.</p>
@@ -2312,7 +2552,7 @@ const REFTEXT=`<p><b>Норма</b> — это диапазон, который 
 <p>У разных лабораторий нормы разные: они зависят от метода, а также от пола и возраста. Поэтому мы всегда берём норму той лаборатории, где сдан анализ.</p>
 <p>Результат не в норме — это факт о цифре, а не диагноз. Что он значит, объясняет врач.</p>`;
 const MODALS={
-  ref(){openModal('Что значит «норма»',REFTEXT)},
+  ref(){openChildModal('Что значит «норма»',REFTEXT)},
   ok(){const a=latestTests().filter(m=>m.st==='ok');openModal(`В норме: ${a.length}`,`<p>Последний результат внутри нормы, которую лаборатория указала в бланке.</p>${listHTML(a,true)}`)},
   out(){const a=latestTests().filter(m=>m.st==='high'||m.st==='low');openModal(`Не в норме: ${a.length}`,`<p>Последний результат выше или ниже нормы, которую лаборатория указала в бланке. Это не диагноз — что он значит, объясняет врач.</p>${listHTML(a,true)}`)},
   old(){const a=olderTests();openModal('Давно не сдавали: '+a.length,
@@ -2341,7 +2581,7 @@ function blockHTML(g){
 function sysBody(g){const n=g.rows.length;
   return (n?`<div class="mhead"><span>Показатель</span><span>Последнее</span><span class="hide-s">Норма лаборатории <button class="info" data-modal="ref" aria-label="Что значит норма">?</button></span><span class="hide-s">Предыдущее</span><span></span></div>`+g.rows.map(rowHTML).join('')
    :`<div class="nodata">В загруженных файлах таких анализов нет.</div>`)+`<div class="spline">Обычно расшифровкой этих исследований занимаются: <b>${specOf(g.gi,null).join(', ')}</b>. <button class="link" data-findspec="${g.gi}">Найти рядом →</button></div>`}
-function openSystem(gi,ri){const g=G[gi];document.querySelectorAll('.tile.sel').forEach(x=>x.classList.remove('sel'));$('#b'+gi).classList.add('sel');openModal(g.title,`<div class="sysm">${sysBody(g)}</div>`);const mb=$('#modal .mbox');mb.classList.add('wide','sysbox');
+function openSystem(gi,ri,back=false){const g=G[gi];document.querySelectorAll('.tile.sel').forEach(x=>x.classList.remove('sel'));$('#b'+gi).classList.add('sel');openModal(g.title,`<div class="sysm">${sysBody(g)}</div>`,{back});const mb=$('#modal .mbox');mb.classList.add('wide','sysbox');
   $('#mT').insertAdjacentHTML('afterbegin',`<span class="bic mic" aria-hidden="true">${ICONS[IKEYS[gi]]||''}</span>`);
   const r=ri!=null?document.getElementById('r'+gi+'_'+ri):g.rows.length?document.getElementById('r'+gi+'_0'):null;
   if(r){toggleRow(r,true);if(ri!=null){setTimeout(()=>{r.scrollIntoView({block:'start'});r.classList.add('flash');setTimeout(()=>r.classList.remove('flash'),1600)},60)}}}
@@ -2468,7 +2708,7 @@ document.addEventListener('change',e=>{
 
 function renderBlocks(){const host=$('#blocks');host.innerHTML=G.map(blockHTML).join('');host.classList.toggle('printmode',printMode);
   host.querySelectorAll('[data-sel]').forEach(c=>c.onchange=()=>{const i=+c.dataset.sel;c.checked?sel.add(i):sel.delete(i);updP()})}
-document.addEventListener('click',e=>{const tg=e.target.closest('[data-tab-go]');if(tg){closeModal();if(document.body.classList.contains('preview'))$('#pvBack').click();show(tg.dataset.tabGo);return}const s=e.target.closest('[data-sys]');if(s){const gi=+s.dataset.sys;const hit=s.querySelector('[data-match]').dataset.ri;openSystem(gi,hit!=null&&hit!==''?+hit:null)}
+document.addEventListener('click',e=>{const tg=e.target.closest('[data-tab-go]');if(tg){navigateFromModal(tg.dataset.tabGo);return}const s=e.target.closest('[data-sys]');if(s){const gi=+s.dataset.sys;const hit=s.querySelector('[data-match]').dataset.ri;openSystem(gi,hit!=null&&hit!==''?+hit:null)}
   const h=e.target.closest('.mrow-h');if(h)toggleRow(h.closest('.mrow'));
   const f=e.target.closest('.fh');if(f){const c=f.closest('.fold');const on=!c.classList.contains('closed');c.classList.toggle('closed',on);f.setAttribute('aria-expanded',!on)}});
 function toggleRow(el,force){const on=force??!el.classList.contains('open');const b=el.querySelector('.mrow-b');
@@ -2476,13 +2716,17 @@ function toggleRow(el,force){const on=force??!el.classList.contains('open');cons
   el.classList.toggle('open',on);el.querySelector('.mrow-h').setAttribute('aria-expanded',on)}
 $('#pmode').onclick=e=>{printMode=!printMode;e.target.setAttribute('aria-pressed',printMode);e.target.textContent=printMode?'Готово':'Выбрать для печати';$('#blocks').classList.toggle('printmode',printMode);updP();if(printMode)$('#blocks').scrollIntoView({block:'start'})};
 function updP(){const b=$('#pgo');b.disabled=!sel.size;b.hidden=!sel.size;b.textContent=sel.size?`Печать выбранных (${sel.size})`:'Печать выбранных'}
-function goTo(gi,ri){show('summary');setTimeout(()=>openSystem(gi,ri),RM?0:260)}
 
 /* печать */
 function openPreview(groups,title){
+  doctorOpener=document.activeElement;
+  doctorScroll=window.scrollY;
+  $('#pdfOptions').open=false;
+  const viewer=$('#pv');
+  for(const name of ['role','aria-modal','aria-labelledby'])viewer.removeAttribute(name);
   $('#reportFilters').hidden=true;
   $('#doctorSearch').replaceChildren();
-  $('#pv').classList.remove('doctor-screen','viewer-rotated');
+  viewer.classList.remove('doctor-screen','viewer-rotated');
   $('#pvTitle').textContent='Предпросмотр PDF';
   $('#pvCount').textContent='';
   $('#pvBody').innerHTML=`<h1>${esc(title)}</h1><p class="why">А. Иванов · ${P.sex==='f'?'жен.':'муж.'}, ${age(P.dob)} лет · сформировано по загруженным бланкам. Референсы указаны лабораторией.</p>`+
@@ -2494,8 +2738,14 @@ $('#pgo').onclick=()=>openPreview(G.filter(g=>sel.has(g.gi)),'Анализы: в
 $('#pvBack').onclick=()=>{
   document.body.classList.remove('preview');
   $('#pv').classList.remove('viewer-rotated');
+  window.scrollTo(0,doctorScroll);
+  doctorOpener?.focus({preventScroll:true});
 };
-$('#pvPrint').onclick=()=>{try{window.print()}catch(e){toast('Печать недоступна в этом окне')}};
+$('#pvPrint').onclick=()=>{
+  $('#pdfOptions').open=false;
+  $('#pdfOptions summary').focus({preventScroll:true});
+  try{window.print()}catch(e){toast('Печать недоступна в этом окне')}
+};
 
 /* поиск по системам */
 const q=$('#q');
@@ -2519,18 +2769,18 @@ function fileView(id){const f=files[id];if(!f)return '<p>Файл недосту
   if(f.type.startsWith('image/'))return `<img src="${f.url}" alt="Загруженный бланк ${esc(f.name)}">`;
   if(f.type==='application/pdf')return `<iframe src="${f.url}" title="${esc(f.name)}"></iframe><p class="why">Если PDF не отображается, откройте его на устройстве: ${esc(f.name)}</p>`;
   return `<p>${esc(f.name)}</p>`}
-document.addEventListener('click',e=>{const b=e.target.closest('[data-blank]');if(b){const i=+b.dataset.blank;openModal(`Бланк от ${DATES[i]} · ${LABS[i]}`,`<div class="filebox">${blankHTML(i)}</div>`);$('#modal .mbox').classList.add('wide')}
-  const fv=e.target.closest('[data-file]');if(fv){openModal(files[fv.dataset.file].name,`<div class="filebox">${fileView(fv.dataset.file)}</div>`);$('#modal .mbox').classList.add('wide')}});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-blank]');if(b){const i=+b.dataset.blank;openChildModal(`Бланк от ${DATES[i]} · ${LABS[i]}`,`<div class="filebox">${blankHTML(i)}</div>`);$('#modal .mbox').classList.add('wide')}
+  const fv=e.target.closest('[data-file]');if(fv){openChildModal(files[fv.dataset.file].name,`<div class="filebox">${fileView(fv.dataset.file)}</div>`);$('#modal .mbox').classList.add('wide')}});
 
 function renderUploads(){const tb=$('#upTable tbody');
   const base=DATES.map((d,i)=>({d,lab:LABS[i],src:SRC[i],n:ALL.filter(m=>m.pts.some(p=>p.i===i)).length,st:'Проверено',bi:i})).reverse();
   tb.innerHTML=pending.concat(base).map(u=>`<tr><td class="num">${u.d}</td><td>${u.lab?`<span class="labtag">${esc(u.lab)}</span>`:'<span class="why">определится при распознавании</span>'}</td><td class="c-src"><span class="fname" title="${esc(u.src)}">${esc(u.src)}</span></td><td class="num r">${u.n??'…'}</td><td>${u.btn?`<button class="btn pri" data-check="${u.id}">Проверить</button>`:`<span class="chip ${u.st==='Проверено'?'c-ok':'c-none'}">${u.st==='Проверено'?'<span class="mob">✓</span><span class="desk">Проверено</span>':u.st}</span>`}</td><td>${u.id?`<button class="link flink" data-file="${u.id}" aria-label="Открыть файл"><span class="desk">открыть</span><span class="mob"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg></span></button>`:`<button class="link flink" data-blank="${u.bi}" aria-label="Открыть бланк"><span class="desk">открыть</span><span class="mob"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg></span></button>`}</td></tr>`).join('')}
-$('#file').onchange=e=>{closeModal();show('files');[...e.target.files].forEach(f=>{const id='f'+Date.now()+Math.random().toString(36).slice(2,6);files[id]={name:f.name,type:f.type,url:URL.createObjectURL(f)};pending.unshift({id,d:'—',src:f.name,n:null,st:'Распознаётся…'})});renderUploads();setTimeout(openCtxAsk,350);
+$('#file').onchange=e=>{navigateFromModal('files');[...e.target.files].forEach(f=>{const id='f'+Date.now()+Math.random().toString(36).slice(2,6);files[id]={name:f.name,type:f.type,url:URL.createObjectURL(f)};pending.unshift({id,d:'—',src:f.name,n:null,st:'Распознаётся…'})});renderUploads();setTimeout(openCtxAsk,350);
   setTimeout(()=>{pending.forEach(p=>{if(p.st==='Распознаётся…'){p.st='Нужна проверка';p.n=3;p.d='10.11.26';p.lab='ИНВИТРО';p.btn=true}});renderUploads()},1400);e.target.value=''};
 document.addEventListener('click',e=>{const c=e.target.closest('[data-check]');if(c){const id=c.dataset.check;
   openModal('Проверьте распознанное',`<p>Сверьте значения с бланком слева и исправьте, если нужно. Демо: значения справа условные.</p><div class="split"><div class="filebox">${fileView(id)}</div><div><table class="hist" style="margin-top:0"><thead><tr><th>Показатель</th><th>Значение</th><th>Ед.</th><th>Норма</th></tr></thead><tbody>${[['Гемоглобин','15.9','г/дл','13.2 – 17.3'],['Лейкоциты','9.8','тыс/мкл','4.5 – 11'],['Глюкоза','6.1','ммоль/л','4.1 – 6.0']].map(r=>`<tr><td>${r[0]}</td><td><input value="${r[1]}" style="width:70px;border:1px solid var(--line);border-radius:6px;padding:3px 6px;background:var(--paper)" aria-label="${r[0]}"></td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('')}</tbody></table><div class="field" style="margin-top:12px"><label for="labsel">Клиника / лаборатория</label><input id="labsel" value="ИНВИТРО"></div><div class="row-end"><button class="btn pri" id="conf" data-id="${id}">Подтвердить</button></div></div></div>`);$('#modal .mbox').classList.add('wide')}
   if(e.target.id==='conf'){const p=pending.find(x=>x.id===e.target.dataset.id);if(p){p.st='Проверено';p.btn=false;p.lab=$('#labsel').value}renderUploads();closeModal();toast('Сохранено. В рабочей версии значения сразу появятся в сводке.')}
-  const tt=e.target.closest('[data-tab-to]');if(tt){closeModal();show(tt.dataset.tabTo)}});
+  const tt=e.target.closest('[data-tab-to]');if(tt){navigateFromModal(tt.dataset.tabTo)}});
 
 /* AI-справка: объясняет, но не рекомендует (демо: тексты заготовлены, в рабочей версии их пишет модель по тем же правилам) */
 const EXPL=[
@@ -2573,7 +2823,7 @@ function aiHTML(m){const e=EXPL.find(x=>x[0].test(m.n));const g=G[m.gi];
 const SPARK='<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/>';
 document.addEventListener('click',e=>{const b=e.target.closest('[data-ai]');if(!b)return;const box=b.nextElementSibling;
   if(!box.hidden){box.hidden=true;b.setAttribute('aria-expanded','false');return}
-  const[g,r]=b.dataset.ai.split(',').map(Number);box.hidden=false;b.setAttribute('aria-expanded','true');box.innerHTML='<div class="ai-wait"><i></i><i></i><i></i> Готовим справку…</div>';
+  const[g,r]=b.dataset.ai.split(',').map(Number);box.hidden=false;b.setAttribute('aria-expanded','true');box.innerHTML='<div class="ai-wait" role="status">Готовим справку…</div>';
   setTimeout(()=>{box.innerHTML=aiHTML(G[g].rows[r])},RM?0:700)});
 /* большие разделы, пустые блоки, сроки действия */
 (function(){
@@ -2678,10 +2928,10 @@ sysBody=function(g){const n=g.rows.length;const v=validInfo(g);const also=SPEC_A
    +(n?`<div class="mhead"><span>Показатель</span><span>Последнее</span><span class="hide-s">Норма лаборатории <button class="info" data-modal="ref" aria-label="Что значит норма">?</button></span><span class="hide-s">Предыдущее</span><span></span></div>`+g.rows.map(rowHTML).join('')
    :`<div class="nodata">В загруженных файлах таких анализов нет. <button class="link" data-addfrom>Добавить анализ</button></div>`)
    +`<div class="spline">Обычно расшифровкой этих исследований занимаются: <b>${specOf(g.gi,null).join(', ')}</b>.${also?` Также смотрят: ${esc(also)}.`:''} Терапевт поможет понять, в чём проблема, подскажет, к кому обратиться дальше, и поможет составить план обследования. <button class="link" data-findspec="${g.gi}">Найти рядом →</button></div>`};
-document.addEventListener('click',e=>{if(e.target.closest('[data-addfrom]')){closeModal();openAdd()}});
+document.addEventListener('click',e=>{if(e.target.closest('[data-addfrom]'))openAdd(true,true)});
 document.addEventListener('click',e=>{const r=e.target.closest('[data-renew]');if(!r)return;const g=G[+r.dataset.renew];
   if(g.rows.length){g.rows.forEach(m=>BASK.add(g.gi+','+m.ri));saveB();try{renderBook()}catch(_){}}
-  closeModal();show('book');if(g.rows.length)toast('Добавили в список «Где сдать»: '+g.title)});
+  navigateFromModal('book');if(g.rows.length)toast('Добавили в список «Где сдать»: '+g.title)});
 /* загрузка: камера, галерея, файлы */
 document.addEventListener('click',e=>{const u=e.target.closest('[data-up]');if(!u)return;const k=u.dataset.up;
   requireLogin(()=>askPerm(k,()=>{const f=$('#file');f.accept=k==='files'?'application/pdf,image/*':'image/*';if(k==='camera')f.setAttribute('capture','environment');else f.removeAttribute('capture');f.click()}))});
@@ -2689,7 +2939,7 @@ document.addEventListener('click',e=>{const u=e.target.closest('[data-up]');if(!
 /* доступ специалисту */
 function opts(host,list,cur,cb){host.innerHTML=list.map(([v,l])=>`<button class="opt" type="button" aria-pressed="${v===cur}" data-v="${v}">${l}</button>`).join('');
   host.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{host.querySelectorAll('.opt').forEach(x=>x.setAttribute('aria-pressed',x===b));cb&&cb(b.dataset.v)})}
-opts($('#dur'),[['24h','24 часа'],['7d','7 дней'],['30d','30 дней']],'24h',()=>{drawQR();toast('Новая ссылка создана, старая перестала работать')});
+opts($('#dur'),[['24h','24 часа'],['7d','7 дней'],['30d','30 дней']],'24h',()=>{drawQR();toast('Срок доступа обновлён в демо')});
 const reportGroups=$('#reportGroups');
 reportGroups.innerHTML=G.filter(g=>g.rows.length).map(g=>`<label><input type="checkbox" value="${g.gi}"> ${esc(g.title)}</label>`).join('');
 opts($('#scope'),[['all','Все анализы'],['out','Только вне референса'],['sel','Выбранные блоки']],'all',scope=>{reportGroups.hidden=scope!=='sel'});
@@ -2699,18 +2949,17 @@ function drawQR(){const c=$('#qr'),x=c.getContext('2d'),n=25,s=c.width/n;x.fillS
   [[0,0],[n-7,0],[0,n-7]].forEach(([a,b])=>{x.fillRect(a*s,b*s,7*s,7*s);x.fillStyle='#fff';x.fillRect((a+1)*s,(b+1)*s,5*s,5*s);x.fillStyle='#14202A';x.fillRect((a+2)*s,(b+2)*s,3*s,3*s)});
   $('#slink').textContent='orange-health.ru/s/'+Math.random().toString(36).slice(2,5).toUpperCase()+'-'+Math.random().toString(36).slice(2,5).toUpperCase()}
 $('#copy').onclick=()=>requireLogin(async()=>{try{await navigator.clipboard.writeText('https://'+$('#slink').textContent);toast('Ссылка скопирована')}catch(e){toast('Не удалось скопировать: выделите ссылку вручную')}});
-$('#spdf').onclick=()=>openSpecView(true);
-$('#specPrev').onclick=openDoctorReport;
 let DOCS=[{n:'Петрова Е. В., эндокринолог',ty:'Постоянный',o:'14.03.26',st:'Открыт',v:'06.10.26, 18:42'},{n:'Ссылка для приёма',ty:'Разовая ссылка, 24 ч',o:'02.08.26',st:'Истекла',v:'02.08.26, 10:15'},{n:'Мама',ty:'Постоянный',o:'01.06.26',st:'Закрыт',v:'20.06.26, 21:03'}];
 const STC={'Открыт':'c-ok','Истекла':'c-warn','Закрыт':'c-high','Запрошен':'c-low'};
 const acRow=(off,name,meta,st,btn)=>`<div class="acr${off?' off':''}"><div class="acr-m"><b>${name}</b>${meta.filter(Boolean).map(x=>`<span>${x}</span>`).join('')}</div><div class="acr-a"><span class="chip ${STC[st]}">${st.toLowerCase()}</span>${btn||''}</div></div>`;
-function renderDocs(){$('#docs').innerHTML=DOCS.map((d,i)=>acRow(d.st!=='Открыт',esc(d.n),[esc(d.ty),'Доступ открыт: '+esc(d.o),'Последний просмотр: '+esc(d.v)],d.st,d.st==='Открыт'?`<button class="btn" data-rev="${i}">Закрыть доступ</button>`:d.ty==='Постоянный'?`<button class="btn" data-reopen="${i}">Открыть снова</button>`:'')).join('')}
+function renderDocs(){$('#activeShares').textContent=DOCS.filter(d=>d.st==='Открыт').length;$('#docs').innerHTML=DOCS.map((d,i)=>acRow(d.st!=='Открыт',esc(d.n),[esc(d.ty),'Доступ открыт: '+esc(d.o),'Последний просмотр: '+esc(d.v)],d.st,d.st==='Открыт'?`<button class="btn" data-rev="${i}">Закрыть доступ</button>`:d.ty==='Постоянный'?`<button class="btn" data-reopen="${i}">Открыть снова</button>`:'')).join('')}
 document.addEventListener('click',e=>{const r=e.target.closest('[data-rev]');if(r){DOCS[+r.dataset.rev].st='Закрыт';renderDocs();toast('Доступ закрыт. Специалист больше не видит ваши анализы.')}
   const o=e.target.closest('[data-reopen]');if(o){DOCS[+o.dataset.reopen].st='Открыт';renderDocs();toast('Доступ открыт снова')}});
 
 /* доступно мне */
 let SH=[{n:'Иванов А.',rel:'пациент',o:'06.10.26',st:'Открыт',c:'',last:DATES[DATES.length-1],out:null},{n:'Белова К.',rel:'мама',o:'01.06.26',st:'Открыт',c:'',last:'21.10.26',out:2},{n:'Сергеева М.',rel:'пациент',o:'14.09.26',st:'Закрыт',c:'21.09.26',last:'',out:null},{n:'Орлов Д.',rel:'пациент',o:'02.07.26',st:'Закрыт',c:'02.08.26',last:'',out:null}];
 function renderShared(){const h=$('#sharedBody');if(!h)return;
+  $('#incomingShares').textContent=SH.filter(r=>r.st==='Открыт').length;
   if(!LOG){h.innerHTML=`<div class="empty"><p>Чтобы видеть анализы, к которым вам открыли постоянный доступ, войдите или зарегистрируйтесь. Подтверждать, что вы врач, не нужно: доступ дают сами люди.</p><button class="btn pri" type="button" id="shLogin">Войти по телефону или почте</button></div>`;$('#shLogin').onclick=openLogin;return}
   const outN=latestTests().filter(m=>m.st==='high'||m.st==='low').length;
   h.innerHTML=`<div class="acl">${SH.map((r,i)=>acRow(r.st!=='Открыт',esc(r.n)+' <span class="rel">'+esc(r.rel)+'</span>',['Доступ открыт: '+esc(r.o),r.c?'Доступ закрыт: '+esc(r.c):'',r.st==='Открыт'?'Последний анализ: '+esc(r.last)+(i===0?' · '+outN+' не в норме':r.out?' · '+r.out+' не в норме':''):'Данные скрыты'],r.st,r.st==='Открыт'?`<button class="btn pri" data-viewp="${i}">Открыть анализы</button>`:r.st==='Запрошен'?'<button class="btn" disabled>Ждём ответа</button>':`<button class="btn" data-reqp="${i}">Запросить доступ снова</button>`)).join('')}</div>
@@ -2722,44 +2971,52 @@ $('#viewBack').onclick=()=>{$('#viewing').hidden=true;document.body.classList.re
 /* как увидит специалист */
 const svRow=(m,cls)=>`<tr class="${cls||''}"><td class="sv-n">${esc(m.n)}</td><td class="num sv-v" style="${m.st!=='ok'?'font-weight:700;color:var(--'+(m.st==='high'?'hi':'lo')+')':''}">${esc(m.cur.raw)} ${esc(U(m.u))}${m.st==='high'?' ↑':m.st==='low'?' ↓':''}</td><td class="num sv-r">${esc(refText(m))}</td><td class="num sv-d">${m.cur.d}</td><td class="num sv-p">${m.prev?esc(m.prev.raw)+' <span class="why">· '+m.prev.d+'</span>':'—'}</td></tr>`;
 let reportSelected=new Map();
-let doctorFilters,doctorDefaults;
+let doctorFilters,doctorOpener,doctorScroll=0;
+const historyBounds={from:0,to:DATES.length-1};
+const analysisDates=DATES.map(date=>{
+  const [day,month,year]=date.split('.');
+  return '20'+year+'-'+month+'-'+day;
+});
 function analysisFiltersHTML(){
-  const dateOptions='<option value="-1" disabled>—</option>'+DATES.map((date,i)=>`<option value="${i}">${date}</option>`).join('');
-  const systems=G.filter(g=>g.rows.length).map(g=>`<option value="${g.gi}">${esc(g.title)}</option>`).join('');
-  return `<button class="btn viewer-orientation" type="button" data-viewer-orientation>
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="7" y="5" width="10" height="14" rx="2"/><path d="M3 11a9 9 0 0 1 5-7m-5 3v4h4M21 13a9 9 0 0 1-5 7m5-3v-4h-4"/></svg><span>Смотреть горизонтально</span></button>
-    <select data-analysis-filter="sys" aria-label="Система"><option value="">Все системы</option>${systems}</select>
-    <select data-analysis-filter="st" aria-label="Статус"><option value="all">Любой статус</option><option value="now">Сейчас не в норме</option><option value="ever">Были не в норме</option><option value="norm">Всегда в норме</option></select>
-    <label class="hm-d">с <select data-analysis-filter="from" aria-label="Дата с">${dateOptions}</select></label>
-    <label class="hm-d">по <select data-analysis-filter="to" aria-label="Дата по">${dateOptions}</select></label>
-    <label class="hchk"><input type="checkbox" data-analysis-filter="filled"> без пустых дат</label>
-    <label class="hchk"><input type="checkbox" data-analysis-filter="events"> Показать события</label>
-    `;
+  return `<div class="viewer-periods" role="group" aria-label="Период сдач">
+    <button type="button" data-viewer-period="latest" aria-pressed="false">Последняя сдача</button>
+    <button type="button" data-viewer-period="recent" aria-pressed="false">Две последние</button>
+    <button type="button" data-viewer-period="all" aria-pressed="false">Вся история</button>
+  </div>
+  <div class="viewer-date-tools">
+    <button class="btn viewer-date-toggle" type="button" aria-expanded="false" aria-controls="viewerDateForm">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="6" width="16" height="14" rx="3"/><path d="M8 4v4m8-4v4M4 11h16"/></svg><span>Выбрать даты</span>
+    </button>
+    <button class="btn viewer-orientation" type="button" data-viewer-orientation>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="7" y="5" width="10" height="14" rx="2"/><path d="M3 11a9 9 0 0 1 5-7m-5 3v4h4M21 13a9 9 0 0 1-5 7m5-3v-4h-4"/></svg><span>Смотреть горизонтально</span>
+    </button>
+  </div>
+  <form class="viewer-date-form" id="viewerDateForm" hidden>
+    <label>Начало<input name="start" type="date" required></label>
+    <label>Конец<input name="end" type="date" required></label>
+    <button class="btn" type="submit">Применить</button>
+  </form>`;
 }
 function syncAnalysisFilters(host,state){
-  for(const field of host.querySelectorAll('[data-analysis-filter]')){
-    const value=state[field.dataset.analysisFilter];
-    if(field.type==='checkbox')field.checked=value;else field.value=value;
+  for(const button of host.querySelectorAll('[data-viewer-period]')){
+    button.setAttribute('aria-pressed',String(button.dataset.viewerPeriod===state.period));
   }
+  const toggle=host.querySelector('.viewer-date-toggle');
+  const custom=state.period==='custom';
+  toggle.classList.toggle('is-selected',custom);
+  const from=state.rangeFrom||analysisDates[state.from], to=state.rangeTo||analysisDates[state.to];
+  const text=custom&&from&&to?dfmt(from)+' – '+dfmt(to):'Выбрать даты';
+  toggle.querySelector('span').textContent=text;
+  toggle.setAttribute('aria-label',custom&&from&&to?'Изменить даты. Выбран период '+text:text);
 }
-function updateAnalysisFilter(field,state){
-  const key=field.dataset.analysisFilter;
-  if(!key)return false;
-  state[key]=field.type==='checkbox'?field.checked:key==='from'||key==='to'?Number(field.value):field.value;
-  if((key==='from'||key==='to')&&(state.from<0||state.to<0||state.from>state.to)){
-    state[key==='from'?'to':'from']=state[key];
-  }
-  return true;
+function setViewerPeriod(state,period,{from,to}){
+  state.period=period;
+  state.from=period==='latest'?to:period==='recent'?Math.max(from,to-1):from;
+  state.to=to;
+  state.rangeFrom='';
+  state.rangeTo='';
 }
-function matchesAnalysisStatus(m,points,status){
-  if(!points.length)return false;
-  const out=p=>p.st==='high'||p.st==='low';
-  if(status==='now')return out(m);
-  if(status==='ever')return points.some(out);
-  if(status==='norm')return points.every(p=>p.st==='ok'||p.st==='none');
-  return true;
-}
-function analysisTimeline(from,to){
+function analysisTimeline(from,to,{open=true,comparison=false}={}){
   if(!DATES[from]||!DATES[to])return '';
   const start=pd(DATES[from]), end=pd(DATES[to]), items=[];
   const add=(type,name,date,detail='',until=evDate(date))=>{
@@ -2788,7 +3045,13 @@ function analysisTimeline(from,to){
   const printList=months.map(({label,items:entries})=>`<h3>${label}</h3><ul>
     ${entries.map(item=>`<li>${esc(dfmt(item.date))} · ${item.type} · ${esc(item.name)}${item.detail?' · '+esc(item.detail):''}</li>`).join('')}
   </ul>`).join('');
-  return `<details class="analysis-events" open><summary>События за период${items.length?' · '+items.length:''}</summary>
+  const label=comparison?'События между сдачами':'События за период';
+  const count=items.length?' · '+items.length:' · нет записей';
+  const highlights=comparison?items.filter(item=>
+    ['Болезнь','Госпитализация','Препарат'].includes(item.type)&&
+    (evDate(item.date)>=start||item.detail.startsWith('до ')&&item.until<=end)
+  ).slice(0,2).map(item=>item.name.split(',')[0]).join(' · '):'';
+  return `<details class="analysis-events"${open?' open':''}><summary>${label}<small>${count}</small>${highlights?'<span class="event-highlights">'+esc(highlights)+'</span>':''}</summary>
     <div class="analysis-events-body">${items.length?eventTimelineHTML(items,start,end)+'<div class="event-timeline-print">'+printList+'</div>':'<p class="why">За выбранный период событий нет.</p>'}</div>
   </details>`;
 }
@@ -2846,9 +3109,30 @@ function positionEventTimeline(host,previous){
   graph.scrollLeft=previous?.dataset.eventRange===graph.dataset.eventRange?previous.scrollLeft:graph.scrollWidth;
   graph.dataset.positioned='true';
 }
+function syncViewerGraph(viewer){
+  const graph=viewer.querySelector('.analysis-events');
+  const button=viewer.querySelector('[data-open-event-graph]');
+  button.disabled=!graph;
+  button.setAttribute('aria-expanded',String(Boolean(graph?.open)));
+  button.querySelector('span').textContent=graph?.open?'Свернуть график':'Открыть график';
+}
 document.addEventListener('toggle',e=>{
-  if(e.target.matches('.analysis-events[open]')&&!e.target.querySelector('[data-positioned]'))positionEventTimeline(e.target);
+  if(!e.target.matches('.analysis-events'))return;
+  const viewer=e.target.closest('.table-viewer');
+  if(!viewer?.classList.contains('doctor-screen'))return;
+  doctorFilters.events=e.target.open;
+  if(e.target.open&&!e.target.querySelector('[data-positioned]'))positionEventTimeline(e.target);
+  syncViewerGraph(viewer);
 },true);
+document.addEventListener('click',e=>{
+  const button=e.target.closest('[data-open-event-graph]');
+  if(!button)return;
+  const viewer=button.closest('.table-viewer'), graph=viewer.querySelector('.analysis-events');
+  if(!graph)return;
+  graph.open=!graph.open;
+  if(graph.open)viewer.querySelector('.hwrap').scrollTop=0;
+  syncViewerGraph(viewer);
+});
 document.addEventListener('click',e=>{
   const marker=e.target.closest('.event-marker');
   if(!marker)return;
@@ -2857,94 +3141,89 @@ document.addEventListener('click',e=>{
   marker.setAttribute('aria-pressed','true');
   graph.nextElementSibling.innerHTML='<small>'+esc(marker.dataset.eventType)+'</small><strong>'+esc(marker.dataset.eventName)+'</strong><small>'+esc(marker.dataset.eventDetail)+'</small>';
 });
-function viewerTableHTML(groups,indices,getPoint,report=false,print=false){
-  const pdfHead=report?'<th class="viewer-pdf-column" scope="col">Ед.</th><th class="viewer-pdf-column" scope="col">Референс</th>':'';
-  const pdfGroup=report?'<td class="viewer-pdf-column"></td><td class="viewer-pdf-column"></td>':'';
-  const head=indices.map(i=>`<th scope="col" data-result-date>${esc(DATES[i])}<small>${esc(LABS[i]||'')}</small></th>`).join('');
+function viewerTableHTML(groups,indices,getPoint){
+  const latest=indices.at(-1);
+  const pdfHead='<th class="viewer-pdf-column" scope="col">Ед.</th><th class="viewer-pdf-column" scope="col">Референс</th>';
+  const pdfGroup='<td class="viewer-pdf-column"></td><td class="viewer-pdf-column"></td>';
+  const head=indices.map(i=>`<th scope="col" data-result-date${i===latest?' data-latest-date':''}>${esc(DATES[i])}<small>${esc(LABS[i]||'')}</small></th>`).join('');
   const rows=groups.map(group=>`<tr class="hg"><td class="hn">${esc(group.title)}</td>${pdfGroup}${indices.map(()=>'<td></td>').join('')}</tr>`+
     group.rows.map(m=>{
       const key=m.gi+','+m.ri, unit=U(m.u), name=esc(m.n);
-      const button=print?name:`<button class="hl" type="button" ${report?'data-report-detail':'data-hgo'}="${key}" title="${name}${unit?', '+esc(unit):''}"><span class="hl-n">${name}</span>${unit?'<span class="hl-u">'+esc(unit)+'</span>':''}</button>`;
-      const pdfCells=report?'<td class="viewer-pdf-column">'+esc(unit)+'</td><td class="viewer-pdf-column">'+esc(refText(m))+'</td>':'';
+      const button=`<button class="hl" type="button" data-report-detail="${key}" title="${name}${unit?', '+esc(unit):''}"><span class="hl-n">${name}</span>${unit?'<span class="hl-u">'+esc(unit)+'</span>':''}</button>`;
+      const pdfCells='<td class="viewer-pdf-column">'+esc(unit)+'</td><td class="viewer-pdf-column">'+esc(refText(m))+'</td>';
       const values=indices.map(i=>{
         const p=getPoint(m,i);
-        if(!p)return '<td class="e">—</td>';
+        const highlight=i===latest?' data-latest-date':'';
+        if(!p)return '<td class="e"'+highlight+'>—</td>';
         const mark=p.st==='high'?'↑':p.st==='low'?'↓':'';
         const state=p.st==='high'?'c-h':p.st==='low'?'c-l':'';
-        return `<td class="${state}" data-has-result title="${name} · ${esc(DATES[i])} · ${esc(p.raw)} ${esc(unit)}">${esc(p.raw)}${mark?'<i>'+mark+'</i>':''}</td>`;
+        return `<td class="${state}" data-has-result${highlight} title="${name} · ${esc(DATES[i])} · ${esc(p.raw)} ${esc(unit)}">${esc(p.raw)}${mark?'<i>'+mark+'</i>':''}</td>`;
       }).join('');
-      return `<tr ${report?'data-report-indicator="'+key+'"':''}><td class="hn">${button}</td>${pdfCells}${values}</tr>`;
+      return `<tr data-report-indicator="${key}"><td class="hn">${button}</td>${pdfCells}${values}</tr>`;
     }).join('')
   ).join('');
   return '<thead><tr><th class="hn" scope="col">Показатель</th>'+pdfHead+head+'</tr></thead><tbody>'+rows+'</tbody>';
 }
-function openSpecView(print,keepSelection=false){
-  if(!keepSelection)reportSelected.clear();
-  const filterHost=$('#reportFilters');
-  const eventsWereOpen=$('#pvBody .analysis-events')?.open;
-  const previousTimeline=$('#pvBody .event-timeline');
-  const mode=$('#period10').value, period=mode==='custom' || Number(mode)>0;
-  const bounds=$('#shareRange');
-  const from=bounds.querySelector('[data-from]').value,to=bounds.querySelector('[data-to]').value;
-  const inPeriod=date=>mode==='custom'?(!from || date>=evDate(from)) && (!to || date<=evDate(to)):!period || (date<=LAST && (LAST-date)/864e5<Number(mode));
+function openHistory(keepSelection=false){
   if(!keepSelection){
-    const initial=DATES.filter(d=>inPeriod(pd(d)));
-    doctorDefaults={...HDEF,from:DATES.indexOf(initial[0]),to:DATES.indexOf(initial.at(-1)),events:$('#reportEvents').checked};
-    doctorFilters={...doctorDefaults};
+    doctorOpener=document.activeElement;
+    doctorScroll=window.scrollY;
+    reportSelected.clear();
+    doctorFilters={...historyBounds,period:'all',rangeFrom:'',rangeTo:'',events:false};
+    setViewerDateForm(false);
   }
-  filterHost.hidden=print;
+  const viewer=$('#pv'), area=$('#pvBody');
+  const previousTimeline=area.querySelector('.event-timeline');
+  const {from:first,to:last,rangeFrom,rangeTo,events:showEvents}=doctorFilters;
+  const indices=first<0||last<0?[]:DATES.slice(first,last+1).map((_,i)=>first+i);
+  const caption=rangeFrom&&rangeTo?dfmt(rangeFrom)+' – '+dfmt(rangeTo):indices.length>1?DATES[first]+' – '+DATES[last]:DATES[first]||'за выбранный период';
+  const point=(m,i)=>m.pts.find(p=>p.i===i);
+  const groups=G.map(g=>({title:g.title,rows:g.rows.filter(m=>indices.some(i=>point(m,i)))})).filter(g=>g.rows.length);
+  const results=groups.length?'<div class="report-scroll"><table class="report-table htab">'+viewerTableHTML(groups,indices,point)+'</table></div>'
+    : '<p class="why viewer-empty">За выбранный период сдач нет. Выберите другой диапазон.</p>';
+  const events=indices.length?analysisTimeline(first,last,{open:showEvents,comparison:doctorFilters.period==='recent'&&indices.length>1}):'';
+  const filterHost=$('#reportFilters');
+  filterHost.hidden=false;
   syncAnalysisFilters(filterHost,doctorFilters);
-  const {from:first,to:last,sys,st,filled,events:showEvents}=doctorFilters;
-  const selectedDates=first<0||last<0?[]:DATES.slice(first,last+1);
-  const caption=selectedDates.length?selectedDates[0]+' – '+selectedDates.at(-1):'за выбранный период';
-  const scope=$('#scope [aria-pressed="true"]')?.dataset.v||'all';
-  const scopeLabel=$('#scope [aria-pressed="true"]')?.textContent||'Все анализы';
-  const groupIds=new Set([...reportGroups.querySelectorAll('input:checked')].map(input=>Number(input.value)));
-  let indices=selectedDates.map(d=>DATES.indexOf(d));
-  const point=(m,i)=>m.pts.find(p=>p.i===i&&(scope!=='out'||p.st==='high'||p.st==='low'));
-  const groups=G.filter(g=>(scope!=='sel'||groupIds.has(g.gi))&&(!sys||String(g.gi)===sys))
-    .map(g=>({title:g.title,rows:g.rows.filter(m=>matchesAnalysisStatus(m,indices.map(i=>point(m,i)).filter(Boolean),st))}))
-    .filter(g=>g.rows.length);
-  if(filled)indices=indices.filter(i=>groups.some(g=>g.rows.some(m=>point(m,i))));
-  const empty=scope==='sel'&&!groupIds.size?'Выберите блоки в разделе «Показать врачу».'
-    : !selectedDates.length?'За выбранный период сдач нет.':'Нет результатов для выбранных условий.';
-  const results=groups.length?'<div class="report-scroll"><table class="report-table htab">'+viewerTableHTML(groups,indices,point,true,print)+'</table></div>'
-    : '<p class="why viewer-empty">'+esc(empty)+'</p>';
-  const events=showEvents&&selectedDates.length?analysisTimeline(first,last):'';
-  const viewer=$('#pv');
-  viewer.classList.toggle('doctor-screen',!print);
-  if(print)viewer.classList.remove('viewer-rotated');
-  $('#pvTitle').textContent=print?'Предпросмотр PDF':'Анализы · '+(P.name||'А. Иванов');
-  $('#doctorSearch').innerHTML=!print&&(groups.length||reportSelected.size)?indicatorSearchHTML('report'):'';
-  $('#pvBody').innerHTML='<div class="preview-document-title"><h1>Анализы: '+esc(P.name||'А. Иванов')+'</h1><p>'+esc(scopeLabel)+' · '+esc(caption)+'</p></div>'+
-    events+results+(groups.length?'<p class="why viewer-empty report-selection-empty" hidden>По выбранным показателям нет результатов с этими фильтрами.</p>':'');
-  if(events&&keepSelection&&eventsWereOpen===false)$('#pvBody .analysis-events').open=false;
+  viewer.classList.add('doctor-screen');
+  viewer.setAttribute('role','dialog');
+  viewer.setAttribute('aria-modal','true');
+  viewer.setAttribute('aria-labelledby','pvTitle');
+  $('#pvTitle').textContent='История анализов';
+  $('#doctorSearch').innerHTML=indicatorSearchHTML();
+  area.innerHTML='<div class="preview-document-title"><h1>Анализы</h1><p>'+esc(caption)+'</p></div>'+
+    events+results+(groups.length?'<p class="why viewer-empty report-selection-empty" hidden>У выбранных показателей нет результатов за этот период.</p>':'');
+  syncViewerGraph(viewer);
   $('#pvNote').textContent='';
+  $('#pdfOptions').open=false;
   document.body.classList.add('preview');
-  positionEventTimeline($('#pvBody'),keepSelection?previousTimeline:undefined);
+  positionEventTimeline(area,keepSelection?previousTimeline:undefined);
   bindReportSearch(groups);
   syncViewerOrientation(viewer);
   placeReportSearch();
   if(!keepSelection){
     window.scrollTo(0,0);
-    const area=$('#pvBody');area.scrollTop=0;area.scrollLeft=area.scrollWidth;
+    area.scrollTop=0;
+    area.scrollLeft=area.scrollWidth;
+    $('#pvBack').focus({preventScroll:true});
   }
   updateDoctorPan();
 }
 
 /* поиск показателей */
-function indicatorSearchHTML(prefix){return `<div class="svsearch">
-    <button class="btn search-trigger" type="button" aria-label="Найти показатель" aria-expanded="false" aria-controls="${prefix}SearchPanel">
+function indicatorSearchHTML(){return `<div class="svsearch">
+    <button class="btn search-trigger" type="button" aria-label="Найти показатель" aria-expanded="false" aria-controls="reportSearchPanel">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <span>Найти показатель</span>
     </button>
     <div class="report-search-stack">
-      <div class="report-search-panel" id="${prefix}SearchPanel" inert>
+      <div class="report-search-panel" id="reportSearchPanel" inert>
         <div class="report-search-field">
-          <input id="${prefix==='report'?'svq':'historyQuery'}" type="search" role="combobox" aria-autocomplete="list" aria-controls="${prefix}Options" aria-expanded="false" placeholder="Найти показатель" aria-label="Поиск по показателям" autocomplete="off" enterkeyhint="done">
+          <input id="svq" type="search" role="combobox" aria-autocomplete="list" aria-controls="reportOptions" aria-expanded="false" placeholder="Найти показатель" aria-label="Поиск по показателям" autocomplete="off" enterkeyhint="done">
           <button class="btn" type="button" data-close-report-search aria-label="Свернуть поиск" title="Свернуть поиск"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
         </div>
-        <ul class="report-options" id="${prefix}Options" role="listbox" aria-label="Совпадения" hidden></ul>
-        <span class="search-status" id="${prefix==='report'?'svqn':'historySearchStatus'}" aria-live="polite"></span>
+        <ul class="report-options" id="reportOptions" role="listbox" aria-label="Совпадения" hidden></ul>
+        <span class="search-status" id="svqn" aria-live="polite"></span>
       </div>
       <div class="report-selection" role="group" aria-label="Выбранные показатели" hidden></div>
     </div>
@@ -2953,10 +3232,10 @@ function indicatorSearchHTML(prefix){return `<div class="svsearch">
 function placeReportSearch(){
   const viewport=window.visualViewport;
   if(!viewport)return;
-  for(const search of document.querySelectorAll('#doctorSearch .svsearch,#historySearch .svsearch')){
+  for(const search of document.querySelectorAll('#doctorSearch .svsearch')){
     const rotated=search.closest('.table-viewer')?.classList.contains('viewer-rotated');
     const keyboard=rotated?0:Math.max(0,window.innerHeight-viewport.height-viewport.offsetTop);
-    search.style.setProperty('--report-keyboard',keyboard+'px');
+    search.closest('.viewer-actionbar').style.setProperty('--viewer-keyboard',keyboard+'px');
     search.style.setProperty('--report-visible-height',(rotated?viewport.width:viewport.height)+'px');
   }
 }
@@ -2964,6 +3243,9 @@ window.visualViewport?.addEventListener('resize',placeReportSearch);
 window.visualViewport?.addEventListener('scroll',placeReportSearch);
 function analysisIndicators(groups){
   return groups.flatMap(group=>group.rows.map(m=>({id:m.gi+','+m.ri,name:m.n,group:group.title})));
+}
+function syncDoctorReset(){
+  $('#reportReset').hidden=!reportSelected.size;
 }
 function bindReportSearch(groups){
   const search=$('#doctorSearch .svsearch');
@@ -2985,18 +3267,11 @@ function bindReportSearch(groups){
       }
       heading.classList.toggle('svhide',!visible);
     }
-    if(doctorFilters.filled){
-      dateHeaders.forEach(heading=>{
-        const column=heading.cellIndex;
-        const emptyDate=!rows.some(row=>!row.classList.contains('svhide')&&row.cells[column].hasAttribute('data-has-result'));
-        heading.classList.toggle('report-empty-date',emptyDate);
-        for(const row of rows)row.cells[column].classList.toggle('report-empty-date',emptyDate);
-      });
-    }
     if(empty)empty.hidden=visibleCount>0||!reportSelected.size;
-    const count=dateHeaders.filter(heading=>!heading.classList.contains('report-empty-date')).length;
-    $('#pvCount').textContent=visibleCount+' из '+ALL.length+' · '+count+' дат';
-    $('#reportReset').hidden=!reportSelected.size&&JSON.stringify(doctorFilters)===JSON.stringify(doctorDefaults);
+    const count=dateHeaders.length;
+    const dateWord=count%100>=11&&count%100<=14?'сдач':({1:'сдача',2:'сдачи',3:'сдачи',4:'сдачи'}[count%10]||'сдач');
+    $('#pvCount').textContent=visibleCount+' из '+ALL.length+' · '+count+' '+dateWord;
+    syncDoctorReset();
     updateDoctorPan();
   }
   if(search)bindIndicatorSearch(search,reportSelected,()=>groups,renderSelection);
@@ -3180,10 +3455,17 @@ function bSearch(){const q=($('#bq').value||'').trim().toLowerCase(),r=$('#bres'
   const hit=CAT.filter(c=>c.n.toLowerCase().includes(q)||c.s.toLowerCase().includes(q)).slice(0,8);
   r.innerHTML=hit.length?hit.map(c=>`<button type="button" data-catadd="${c.key}"><span class="rn">${esc(c.n)}<small>${esc(c.s)} · ${c.p[0]}–${c.p[1]} ₽</small></span><span class="ra">${BASK.has(c.key)?'✓ в списке':'+ добавить'}</span></button>`).join(''):'<div class="why" style="padding:8px 12px">Не нашли такой анализ</div>';r.classList.add('on')}
 document.addEventListener('click',e=>{if(!e.target.closest('[data-baseset]'))return;let n=0;BASESET.forEach(b=>{const c=CAT.find(x=>x.n.startsWith(b));if(c&&!BASK.has(c.key)){BASK.add(c.key);n++}});saveB();renderBook();toast(n?'Базовый набор добавлен: '+n+' анализов':'Базовый набор уже в списке')});
+function updateBrowseCount(badge,count){
+  if(badge.textContent!==String(count))badge.toggleAttribute('data-attention',count>0);
+  badge.textContent=count;
+}
+document.addEventListener('animationend',e=>{
+  if(e.animationName==='browse-count-hint')e.target.removeAttribute('data-attention');
+});
 function renderBook(){
   const items=[...BASK];
   $('#bask').innerHTML=items.length?items.map(k=>{const c=catBy(k);return `<div class="pk"><span class="pk-n">${esc(keyName(k))}${c?`<small>${c.p[0]}–${c.p[1]} ₽ · расшифровка: ${c.sp.join(', ')}</small>`:''}</span><button class="pk-x" type="button" aria-label="Убрать" data-rmb="${k}">×</button></div>`}).join(''):'<p class="why">Список пуст. Найдите анализ поиском выше или нажмите «Добавить к сдаче» в карточке показателя.</p>';
-  $('#bwhere').textContent='';
+  updateBrowseCount($('#baskCount'),items.length);
   $('#labsPanel').hidden=!items.length;
   if(items.length){
   const uniq=[...new Set(items.map(k=>/^1,/.test(k)?'1,0':k))];const base=uniq.reduce((s,k)=>s+keyPrice(k),0);
@@ -3203,6 +3485,7 @@ function sSearch(){const q=($('#sqs').value||'').trim().toLowerCase(),r=$('#sres
   const sp=ALLSP.filter(x=>x.includes(q)),dn=SPECS.filter(d=>d.n.toLowerCase().includes(q));
   r.innerHTML=(sp.map(x=>`<button type="button" data-spadd="${x}">${spIc(x)}<span class="rn">${x}<small>${SPECS.filter(d=>d.sp===x).length} рядом</small></span><span class="ra">${(SPF||[]).includes(x)?'✓ выбран':'+ выбрать'}</span></button>`).join('')+dn.map(d=>`<button type="button" data-spadd="${d.sp}">${spIc(d.sp)}<span class="rn">${esc(d.n)}<small>${d.sp} · ${esc(d.cl)}</small></span><span class="ra">+ выбрать</span></button>`).join(''))||'<div class="why" style="padding:8px 12px">Не нашли такого специалиста</div>';r.classList.add('on')}
 function renderSpec(){if(!$('#specs'))return;const mine=sqSpecs();if(SPF===null)SPF=mine.slice(0,2);
+  updateBrowseCount($('#spSelCount'),SPF.length);
   $('#spSel').innerHTML=SPF.length?SPF.map(x=>`<div class="pk">${spIc(x)}<span class="pk-n">${x}<small>${SPECS.filter(d=>d.sp===x).length} рядом</small></span><button class="pk-x" type="button" aria-label="Убрать" data-rms2="${x}">×</button></div>`).join(''):'<p class="why">Никто не выбран: ниже показаны все специалисты рядом.</p>';
   const sug=mine.filter(x=>!SPF.includes(x));
   $('#sq').innerHTML=SQ.size?`<div class="sqbox"><div class="why">Мои вопросы к специалисту: ${[...SQ].map(k=>`<span class="bchip">${esc(keyName(k))}<button aria-label="Убрать" data-rms="${k}">×</button></span>`).join(' ')}</div>${sug.length?`<div class="why" style="margin-top:8px">Обычно расшифровкой таких исследований занимаются: ${sug.map(x=>`<button class="sugg" type="button" data-spadd="${x}">+ ${x}</button>`).join(' ')}</div>`:''}</div>`:'';
@@ -3219,7 +3502,7 @@ function openLoc(){openModal('Где вы находитесь?',`<p class="why"
   <div class="row-end"><button class="btn pri" type="button" id="locOk">Готово</button></div>`);
   $('#locOk').onclick=()=>{const v=$('#locM').value.trim();if(v)setLoc(v);else store.set('oh3-locset',1);closeModal()}}
 document.addEventListener('click',e=>{if(e.target.closest('[data-locedit]'))openLoc()});
-const _show=show;show=function(id){_show(id);if(!$('#tut').classList.contains('on')&&(id==='book'||id==='docs')&&!store.get('oh3-locset',0))setTimeout(openLoc,300)};
+const _show=show;show=function(id){_show(id);if(!$('#tut').classList.contains('on')&&(id==='book'||id==='docs')&&!store.get('oh3-locset',0))setTimeout(()=>{if(cur===id&&!$('#tut').classList.contains('on'))openLoc()},300)};
 $('#bq').oninput=bSearch;$('#bq').onfocus=bSearch;$('#sqs').oninput=sSearch;$('#sqs').onfocus=sSearch;
 document.addEventListener('click',e=>{
   if(!e.target.closest('.addsearch'))document.querySelectorAll('.addres').forEach(r=>r.classList.remove('on'));
@@ -3230,62 +3513,12 @@ document.addEventListener('click',e=>{
   const rs=e.target.closest('[data-rms]');if(rs){SQ.delete(rs.dataset.rms);saveB();renderSpec()}
   const sa=e.target.closest('[data-spadd]');if(sa){const v=sa.dataset.spadd;SPF=SPF||[];if(!SPF.includes(v))SPF.push(v);saveSpf();$('#sqs').value='';$('#sres').classList.remove('on');renderSpec();return}
   const r2=e.target.closest('[data-rms2]');if(r2){SPF=SPF.filter(x=>x!==r2.dataset.rms2);saveSpf();renderSpec()}
-  const fs=e.target.closest('[data-findspec]');if(fs){SPF=specOf(+fs.dataset.findspec,null).slice();saveSpf();closeModal();show('docs');renderSpec()}
-  const st=e.target.closest('[data-site]');if(st){openModal('Переход на сайт клиники',`<div class="permask"><div class="permic">${svgI('<path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',26)}</div><p>Запись проходит на сайте <b>${esc(st.dataset.site)}</b>. Сейчас откроем его в новой вкладке.</p><p class="why">Мы показываем цены и расписание справочно; итоговую стоимость и время уточняйте на сайте клиники.</p><div class="row-end"><button class="btn" type="button" data-mclose>Отмена</button><button class="btn pri" type="button" id="goSite">Перейти на сайт</button></div></div>`)}
-  if(e.target.closest('[data-mclose]'))closeModal();
+  const fs=e.target.closest('[data-findspec]');if(fs){SPF=specOf(+fs.dataset.findspec,null).slice();saveSpf();navigateFromModal('docs');renderSpec()}
+  const st=e.target.closest('[data-site]');if(st){openChildModal('Переход на сайт клиники',`<div class="permask"><div class="permic">${svgI('<path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',26)}</div><p>Запись проходит на сайте <b>${esc(st.dataset.site)}</b>. Сейчас откроем его в новой вкладке.</p><p class="why">Мы показываем цены и расписание справочно; итоговую стоимость и время уточняйте на сайте клиники.</p><div class="row-end"><button class="btn" type="button" data-mclose>Отмена</button><button class="btn pri" type="button" id="goSite">Перейти на сайт</button></div></div>`)}
   if(e.target.id==='goSite'){closeModal();toast('Демо: в рабочей версии откроется сайт клиники')}
   if(e.target.closest('[data-geo]'))askPerm('geo',()=>{setLoc('Санкт-Петербург, по геолокации');if($('#locM'))$('#locM').value=LOC;toast('Демо: расстояния считаются от вашего местоположения')})});
 
 
-/* полная история — отдельное окно */
-const HDEF={sys:'',st:'all',from:0,to:DATES.length-1,filled:false,events:false};
-let HF=Object.assign({},HDEF,store.get('oh-hist',{}));
-delete HF.q;
-const historySelection=new Map();
-let historyCandidates=[];
-const historyFilters=$('#historyFilters');
-historyFilters.innerHTML=analysisFiltersHTML();
-$('#historySearch').innerHTML=indicatorSearchHTML('history');
-const refreshHistorySearch=bindIndicatorSearch($('#historySearch .svsearch'),historySelection,()=>historyCandidates,renderHist);
-$('#hTeaseSub').textContent=`${ALL.length} показателей · ${DATES.length} сдач · 20${DATES[0].slice(-2)}–20${DATES[DATES.length-1].slice(-2)} · фильтры по датам и системам`;
-function hSync(){
-  syncAnalysisFilters(historyFilters,HF);
-  $('#hreset').hidden=!historySelection.size&&JSON.stringify(HF)===JSON.stringify(HDEF);
-}
-function renderHist(opening=false){
-  let di=DATES.map((d,i)=>i).filter(i=>i>=HF.from&&i<=HF.to);
-  const inR=p=>p.i>=HF.from&&p.i<=HF.to;
-  historyCandidates=G.filter(g=>g.rows.length&&(!HF.sys||String(g.gi)===HF.sys))
-    .map(g=>({g,title:g.title,rows:g.rows.filter(m=>matchesAnalysisStatus(m,m.pts.filter(inR),HF.st))}))
-    .filter(group=>group.rows.length);
-  const gs=historyCandidates.map(group=>({...group,rows:group.rows.filter(m=>!historySelection.size||historySelection.has(m.gi+','+m.ri))})).filter(group=>group.rows.length);
-  if(HF.filled){const used=new Set();gs.forEach(x=>x.rows.forEach(m=>m.pts.forEach(p=>used.add(p.i))));di=di.filter(i=>used.has(i))}
-  const n=gs.reduce((sum,group)=>sum+group.rows.length,0);
-  hSync();
-  $('#hSum').textContent=`${n} из ${ALL.length} · ${di.length} дат`;$('#hNone').hidden=n>0;
-  const eventHost=$('#hEvents'), eventsOpen=eventHost.querySelector('details')?.open;
-  const previousTimeline=eventHost.querySelector('.event-timeline');
-  eventHost.innerHTML=HF.events?analysisTimeline(HF.from,HF.to):'';
-  if(eventsOpen===false&&eventHost.firstElementChild)eventHost.firstElementChild.open=false;
-  positionEventTimeline(eventHost,previousTimeline);
-  $('#htab').innerHTML=n?viewerTableHTML(gs,di,(m,i)=>m.pts.find(p=>p.i===i)):'';
-  updateHistoryPan();
-  if(opening){
-    const hw=$('#hm .hwrap');
-    requestAnimationFrame(()=>{hw.scrollLeft=hw.scrollWidth});
-  }
-}
-historyFilters.onchange=e=>{
-  if(!updateAnalysisFilter(e.target,HF))return;
-  store.set('oh-hist',HF);
-  renderHist();
-  refreshHistorySearch();
-};
-const hReset=()=>{
-  historySelection.clear();HF={...HDEF};
-  store.set('oh-hist',HF);renderHist();refreshHistorySearch();
-};
-$('#hreset').onclick=hReset;$('#hreset2').onclick=hReset;
 const physicalLandscape=matchMedia('(orientation: landscape)');
 function syncViewerOrientation(viewer){
   const rotated=viewer.classList.contains('viewer-rotated');
@@ -3310,59 +3543,57 @@ physicalLandscape.addEventListener('change',()=>{
   }
   placeReportSearch();
 });
-function openHist(){
-  lastFocus=document.activeElement;
-  const h=$('#hm');h.hidden=false;h.classList.add('on');
-  syncViewerOrientation(h);
-  renderHist(true);refreshHistorySearch();
-  document.body.style.overflow='hidden';
-  $('#hmX').focus();
-}
-function closeHist(){
-  const h=$('#hm');h.classList.remove('on','viewer-rotated');h.hidden=true;
-  document.body.style.overflow='';
-  if(lastFocus)lastFocus.focus();
-}
-$('#hOpen').onclick=openHist;$('#hmX').onclick=closeHist;
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'&&!e.defaultPrevented&&!$('#hm').hidden&&!$('#modal').classList.contains('on'))closeHist();
-});
-document.addEventListener('click',e=>{
-  const button=e.target.closest('[data-hgo]');
-  if(button)openSystem(...button.dataset.hgo.split(',').map(Number));
+  if(e.defaultPrevented)return;
+  const modal=$('#modal.on:not(.closing)'), report=$('body.preview #pv.doctor-screen');
+  const viewer=modal||report;
+  if(!viewer)return;
+  if(e.key==='Escape'&&!modal){
+    $('#pvBack').click();
+    return;
+  }
+  if(e.key!=='Tab')return;
+  const stops=[...viewer.querySelectorAll('button,input,select,textarea,summary,a[href],[tabindex]')].filter(el=>
+    el.tabIndex>=0&&!el.matches(':disabled')&&!el.closest('[inert]')&&el.getClientRects().length&&getComputedStyle(el).visibility==='visible');
+  if(!stops.length)return;
+  const active=document.activeElement, first=stops[0], last=stops.at(-1);
+  if(!stops.includes(active)||active===(e.shiftKey?first:last)){
+    e.preventDefault();
+    (e.shiftKey?last:first).focus();
+  }
 });
 /* первые шаги */
 let ts=0;
 const tourSteps=[
- ['profile','[data-psec="base"]','Заполните профиль','Начните с возраста, пола и роста. Жалобы и препараты можно добавить позже.','Открыть основные данные'],
- ['files','#tabs .fab','Добавьте первый анализ','Нажмите плюс и выберите фото или PDF. Перед сохранением можно сверить значения с бланком.','Открыть способы загрузки'],
- ['summary','#visitDoctor','Посмотрите результаты','Сводка показывает последнюю сдачу и изменения. Нажмите «Показать врачу», чтобы открыть отчёт.','Посмотреть отчёт'],
- ['book','#labs .lab','Сравните лаборатории','Для вашего списка анализов здесь видны итоговая цена и расстояние. Выберите подходящую лабораторию.','Посмотреть лабораторию'],
- ['docs','#specs .spec','Найдите специалиста','В карточке врача можно посмотреть, какие анализы взять. Для записи нажмите «Записаться на сайте».','Открыть карточку врача'],
- ['docs','#specs .spec [data-site]','Запишитесь на приём','Выбрав врача, перейдите к записи в клинике. В демо можно посмотреть этот шаг.','Посмотреть переход к записи']
+ ['profile','[data-psec="base"]','Начните с профиля','Укажите дату рождения и рост. Остальные данные можно внести позже.','Открыть основные данные'],
+ ['files','#filesAdd','Добавьте анализ','Загрузите фото, скриншот или PDF. Перед сохранением сверьте показатели с бланком.','Открыть способы загрузки'],
+ ['summary','#visitHistory','Сравните результаты','На сводке видна последняя сдача. В истории можно сравнить анализы по датам.','Открыть историю'],
+ ['book','#labs .lab','Выберите лабораторию','Соберите список анализов и сравните лаборатории по цене и расстоянию.',''],
+ ['docs','#specs .spec [data-sptk]','Найдите специалиста','Посмотрите, какие анализы взять на приём. Из карточки можно перейти к записи на сайте клиники.','Посмотреть список анализов'],
+ ['share','.share-access','Поделитесь анализами','На приёме покажите QR-код или отправьте ссылку. Срок доступа настраивается здесь же.','']
 ];
-let tourTrigger,tourOrigin,tourFrame=0,tourResume;
+let tourTrigger,tourOrigin,tourFrame=0,tourResume,tourAfterNavigation=false;
 const guide=$('#tut'),spot=$('#tourTarget'),guideCard=guide.querySelector('.tbox');
 function guideTarget(){
- const step=tourSteps[ts];
- return document.querySelector(step[1])||document.querySelector(step[0]==='docs'?'#sqs':'#bq');
+ const [section,selector]=tourSteps[ts];
+ const fallback=section==='docs'?'#sqs':section==='book'?'#bq':null;
+ return document.querySelector(selector)||(fallback?document.querySelector(fallback):null);
 }
 function placeGuide(){
  if(!guide.classList.contains('on'))return;
  const target=guideTarget();
  if(!target||!target.getClientRects().length)return;
- const bounds=[target.getBoundingClientRect()];
- if(target.matches('.fab'))for(const part of target.querySelectorAll('svg,span'))bounds.push(part.getBoundingClientRect());
+ const bounds=target.getBoundingClientRect();
  const w=document.documentElement.clientWidth,h=innerHeight;
- const x=Math.max(2,Math.min(...bounds.map(r=>r.left))-4),y=Math.max(2,Math.min(...bounds.map(r=>r.top))-4);
- const right=Math.min(w-2,Math.max(...bounds.map(r=>r.right))+4),bottom=Math.min(h-2,Math.max(...bounds.map(r=>r.bottom))+4);
+ const x=Math.max(2,bounds.left-4),y=Math.max(2,bounds.top-4);
+ const right=Math.min(w-2,bounds.right+4),bottom=Math.min(h-2,bounds.bottom+4);
  if(right<=x||bottom<=y)return;
  const radius=Math.min(12,(right-x)/2,(bottom-y)/2);
  const hole=`M ${x+radius} ${y} H ${right-radius} Q ${right} ${y} ${right} ${y+radius} V ${bottom-radius} Q ${right} ${bottom} ${right-radius} ${bottom} H ${x+radius} Q ${x} ${bottom} ${x} ${bottom-radius} V ${y+radius} Q ${x} ${y} ${x+radius} ${y} Z`;
  guide.style.setProperty('--tour-mask',`path(evenodd, "M0 0H${w}V${h}H0Z ${hole}")`);
  Object.assign(spot.style,{left:x+'px',top:y+'px',width:Math.max(0,right-x)+'px',height:Math.max(0,bottom-y)+'px'});
- const top=bottom+12+guideCard.offsetHeight<h-8?bottom+12:Math.max(8,y-guideCard.offsetHeight-12);
- guideCard.style.top=top+'px';
+ const top=bottom+12+guideCard.offsetHeight<h-8?bottom+12:y-guideCard.offsetHeight-12;
+ guideCard.style.top=Math.max(8,Math.min(h-guideCard.offsetHeight-8,top))+'px';
  guideCard.style.left=Math.max(8,Math.min(w-guideCard.offsetWidth-8,x))+'px';
 }
 function drawTut(){
@@ -3372,8 +3603,11 @@ function drawTut(){
  $('#tS').textContent='Шаг '+(ts+1)+' из '+tourSteps.length;
  $('#tT').textContent=title;$('#tB').textContent=body;
  $('#tP').innerHTML=tourSteps.map((_,i)=>'<i class="'+(i===ts?'active':'')+'"></i>').join('');
- $('#tPrev').hidden=ts===0;$('#tNext').textContent=ts===tourSteps.length-1?'Готово':'Дальше';
- $('#tSkip').textContent='Закрыть';spot.setAttribute('aria-label',action);
+ $('#tPrev').hidden=ts===0;$('#tNext').textContent=ts===tourSteps.length-1?'Добавить анализ':'Дальше';
+ const canOpen=Boolean(action&&guideTarget()?.matches('button'));
+ const tryButton=$('#tTry');
+ tryButton.hidden=!canOpen;tryButton.textContent=action;
+ spot.classList.toggle('is-action',canOpen);
  let scrolled=false,until=performance.now()+1000;
  function align(){
   const target=guideTarget();
@@ -3392,30 +3626,77 @@ function openTut(){
 function dismissGuide(){
  cancelAnimationFrame(tourFrame);guide.classList.remove('on');$('#app').inert=false;
 }
+function endGuide(){
+ tourResume?.disconnect();tourResume=null;dismissGuide();
+ tourAfterNavigation=false;
+ store.set('oh10-tour',1);
+}
 function closeTut(){
- tourResume?.disconnect();tourResume=null;dismissGuide();store.set('oh10-tour',1);
+ endGuide();
  show(tourOrigin||'summary');setTimeout(()=>tourTrigger?.focus({preventScroll:true}),RM?0:200);
 }
-function advanceGuide(){if(ts===tourSteps.length-1)closeTut();else{ts++;drawTut()}}
+function finishGuide(){
+ endGuide();
+ const filesView=$('#v-files'), add=$('#filesAdd');
+ show('files');
+ function beginUpload(){
+  add.focus({preventScroll:true});
+  openAdd(false);
+ }
+ if(filesView.classList.contains('on'))beginUpload();
+ else{
+  const ready=new MutationObserver(()=>{
+   if(!filesView.classList.contains('on'))return;
+   ready.disconnect();
+   if(cur==='files')beginUpload();
+  });
+  ready.observe(filesView,{attributes:true,attributeFilter:['class']});
+ }
+}
+function advanceGuide(){if(ts===tourSteps.length-1)finishGuide();else{ts++;drawTut()}}
+function queueFirstTour(){
+ if(!LOG||store.get('oh10-tour',0)||tourResume||guide.classList.contains('on'))return;
+ const modal=$('#modal');
+ if(!modal.classList.contains('on')){openTut();return}
+ const ready=new MutationObserver(()=>{
+  if(modal.classList.contains('on'))return;
+  ready.disconnect();
+  queueFirstTour();
+ });
+ ready.observe(modal,{attributes:true,attributeFilter:['class']});
+}
+function startAfterLogin(action){
+ if(!action){queueFirstTour();return}
+ // If sign-in was required for an ongoing action, let that action finish first.
+ tourAfterNavigation=!store.get('oh10-tour',0);
+ setTimeout(action,60);
+}
+document.addEventListener('click',e=>{
+ if(!tourAfterNavigation||!e.target.closest('.gear[data-go],.sbtn[data-tab]:not([data-tab="add"])'))return;
+ tourAfterNavigation=false;
+ queueFirstTour();
+});
 $('#tNext').onclick=advanceGuide;
 $('#tPrev').onclick=()=>{if(ts){ts--;drawTut()}};
-spot.onclick=()=>{
- const target=guideTarget();if(!target)return;
- const button=target.matches('button')?target:target.querySelector('[data-sptk],button');
+function openGuideTarget(){
+ const button=guideTarget();
+ if(!spot.classList.contains('is-action')||!button?.matches('button'))return;
  dismissGuide();
- button?.click();
+ button.focus({preventScroll:true});
+ button.click();
  const modal=$('#modal');
  function resume(){
   if(modal.classList.contains('on')||document.body.classList.contains('preview'))return;
   tourResume?.disconnect();tourResume=null;
-  if(ts===tourSteps.length-1){closeTut();return}
   guide.classList.add('on');$('#app').inert=true;advanceGuide();$('#tNext').focus();
  }
  tourResume=new MutationObserver(resume);
  tourResume.observe(modal,{attributes:true,attributeFilter:['class']});
  tourResume.observe(document.body,{attributes:true,attributeFilter:['class']});
  resume();
-};
+}
+spot.onclick=openGuideTarget;
+$('#tTry').onclick=openGuideTarget;
 window.addEventListener('resize',placeGuide);
 window.addEventListener('scroll',placeGuide,{passive:true});
 $('#tSkip').onclick=closeTut;$('#tutOpen').onclick=openTut;
@@ -3428,29 +3709,76 @@ $('#tut').addEventListener('keydown',e=>{
   if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
 });
 /* кнопка «Добавить анализ» */
-function openAdd(){openModal('Добавить анализ',`<div class="record-actions"><button class="btn" type="button" data-capture>Добавить событие</button><button class="btn" type="button" data-diary>Дневник измерений</button></div><div class="addopts">
-  <button type="button" class="ao" data-up="camera"><span class="ao-i">${svgI(PIC.camera,24)}</span><span><b>Сфотографировать бланк</b><small>Снимите бланк целиком, чтобы были видны дата и нормы</small></span></button>
-  <button type="button" class="ao" data-up="gallery"><span class="ao-i">${svgI(PIC.gallery,24)}</span><span><b>Фото или скриншот из галереи</b><small>Например, скриншот из приложения лаборатории</small></span></button>
-  <button type="button" class="ao" data-up="files"><span class="ao-i">${svgI(PIC.files,24)}</span><span><b>Файл или PDF</b><small>Из почты или личного кабинета лаборатории</small></span></button>
-  <div class="ao ao-mail"><span class="ao-i">${svgI('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',24)}</span><span><b>Переслать письмо лаборатории</b><small>На адрес <span class="code">a.ivanov@in.orange-health.ru</span>, результаты появятся сами</small></span></div>
- </div><p class="why" style="margin-top:12px">Мы распознаем показатели, а вы проверите их перед сохранением. Оригинал файла хранится вместе с результатами.</p>`)}
+const LAB_UPLOAD_EMAIL='a.ivanov@in.orange-health.ru';
+function openAdd(showRecords=true,back=false){
+ const records=showRecords?`<div class="upload-other">
+  <h4>Другие записи</h4>
+  <div class="files-actions">
+   <button class="files-action" type="button" data-capture><span class="profile-symbol">${svgI('<rect x="4" y="6" width="16" height="14" rx="3"/><path d="M8 4v4m8-4v4M4 11h16m-8 2v5m-2.5-2.5h5"/>',18)}</span><span>Добавить событие</span></button>
+   <button class="files-action" type="button" data-diary><span class="profile-symbol">${svgI('<path d="M5 4h14v16H5zM8 15l3-4 3 2 3-4"/>',18)}</span><span>Дневник измерений</span></button>
+  </div>
+ </div>`:'';
+ openModal('Добавить анализ',`
+ <div class="upload-sheet">
+  <div class="addopts">
+   <button type="button" class="ao" data-up="camera"><span class="ao-i">${svgI(PIC.camera,24)}</span><span><b>Камера</b><small>Сфотографируйте бланк целиком</small></span></button>
+   <button type="button" class="ao" data-up="gallery"><span class="ao-i">${svgI(PIC.gallery,24)}</span><span><b>Галерея</b><small>Выберите фото или скриншот</small></span></button>
+   <button type="button" class="ao" data-up="files"><span class="ao-i">${svgI(PIC.files,24)}</span><span><b>Файл или PDF</b><small>Из почты или кабинета лаборатории</small></span></button>
+  </div>
+  <p class="why upload-tip">Перед сохранением можно сверить значения с бланком.</p>
+  <details class="quiet-fold upload-mail">
+   <summary>Переслать письмо лаборатории</summary>
+   <div class="quiet-fold-body">
+    <div class="upload-address"><span class="code">${LAB_UPLOAD_EMAIL}</span><button class="btn" type="button" data-copy-lab-email aria-label="Скопировать адрес лаборатории" title="Скопировать адрес">${svgI('<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4 15V6a2 2 0 0 1 2-2h9"/>',18)}</button></div>
+    <p class="why">В демо адрес показан для примера.</p>
+   </div>
+  </details>
+  ${records}
+ </div>`,{back});
+}
+$('#filesAdd').onclick=()=>openAdd(false);
+async function copyLabEmail(){
+ try{
+  await navigator.clipboard.writeText(LAB_UPLOAD_EMAIL);
+ }catch{
+  const field=document.createElement('textarea'), focus=document.activeElement;
+  field.value=LAB_UPLOAD_EMAIL;field.readOnly=true;
+  field.style.cssText='position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+  $('#mB').append(field);
+  try{
+   field.select();
+   if(!document.execCommand('copy'))throw new Error('Clipboard unavailable');
+  }catch{
+   toast('Не удалось скопировать адрес');return;
+  }finally{
+   field.remove();
+   focus?.focus({preventScroll:true});
+  }
+ }
+ toast('Адрес скопирован');
+}
+$('#modal').addEventListener('click',e=>{if(e.target.closest('[data-copy-lab-email]'))copyLabEmail()});
 $('#supSend').onclick=()=>{const m=$('#supM').value.trim();if(!m){toast('Опишите, что произошло');return}$('#supM').value='';toast('Демо: в рабочей версии сообщение уйдёт в поддержку на почту')};
 
 /* контекст к новой сдаче: спрашиваем сразу после загрузки */
 const todayISO=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+function uploadChoice(name,question,choices,selected){
+  const options=choices.map(([value,label])=>`<label><input type="radio" name="t-${name}" value="${value}"${value===selected?' checked':''}><span>${label}</span></label>`).join('');
+  return `<fieldset class="upload-choice"><legend class="cq-t">${question}</legend><div class="seg">${options}</div></fieldset>`;
+}
 function openCtxAsk(){const act=EV.med.map((e,i)=>({e,i})).filter(x=>x.e.f&&medActive(x.e));const w=lastWeight();
   openModal('Что было перед этой сдачей?',`<p class="why" style="margin-bottom:12px">Пока распознаём бланк, ответьте на пару вопросов. Врач увидит это рядом с результатами, например поймёт, почему повышены лейкоциты. Можно пропустить.</p>
-  <div class="cq"><div class="cq-t">Болели за 3 недели до сдачи?</div>${segT('cqill',[['no','Нет'],['yes','Да']],'no')}
+  <div class="cq">${uploadChoice('cqill','Болели за 3 недели до сдачи?',[['no','Нет'],['yes','Да']],'no')}
     <div class="cq-more" id="cqIll" hidden><div class="evl">${evRow('ill',{})}</div></div></div>
   <div class="cq"><div class="cq-t">Препараты и БАДы сейчас</div>${act.length?act.map(x=>`<label class="chk cqm"><input type="checkbox" data-cqmed="${x.i}" checked> ${esc(x.e.n)} <span class="why">${x.e.m==='Постоянно'?'постоянно':'курс до '+dfmt(x.e.t)}</span></label>`).join('')+'<p class="why">Снимите галочку, если уже не принимаете.</p>':'<p class="why">Пока ничего не записано.</p>'}
     <button class="link" type="button" id="cqAddMed">+ Начал новый препарат</button><div class="evl" id="cqNewMed" hidden>${evRow('med',{f:todayISO()})}</div></div>
   <div class="cq"><div class="cq-t">Вес сейчас, кг</div><input class="cqin" id="cqW" type="number" step="0.1" min="20" max="300" placeholder="${w?'последний: '+w.kg+' кг':''}"></div>
-  <div class="cq"><div class="cq-t">Сдавали натощак?</div>${segT('cqfast',[['yes','Да'],['no','Нет'],['nk','Не помню']],'yes')}</div>
+  <div class="cq">${uploadChoice('cqfast','Сдавали натощак?',[['yes','Да'],['no','Нет'],['nk','Не помню']],'yes')}</div>
   <div class="cq"><div class="cq-t">Было что-то необычное накануне?</div><input class="cqin" id="cqNote" type="text" placeholder="Нагрузки, алкоголь, стресс, недосып"></div>
   <div class="row-end"><button class="btn" type="button" id="cqSkip">Пропустить</button><button class="btn pri" type="button" id="cqSave">Сохранить</button></div>`);
   document.querySelectorAll('input[name="t-cqill"]').forEach(r=>r.onchange=()=>{$('#cqIll').hidden=!(r.value==='yes'&&r.checked)});
   $('#cqAddMed').onclick=()=>{$('#cqNewMed').hidden=false;$('#cqAddMed').hidden=true};
-  $('#cqSkip').onclick=()=>{closeModal();toast('Бланк распознаётся. Контекст можно добавить позже в профиле.')};
+  $('#cqSkip').onclick=()=>{closeModal();toast('Бланк распознаётся. События можно добавить позже на сводке.')};
   $('#cqSave').onclick=()=>{const t=todayISO();let n=0;
     if(document.querySelector('input[name="t-cqill"]:checked').value==='yes'){const v=readEv($('#cqIll'))[0];if(v&&v.n){EV.ill.push(v);n++}}
     document.querySelectorAll('[data-cqmed]').forEach(c=>{if(!c.checked){const e=EV.med[+c.dataset.cqmed];e.m='Курс';e.t=t;n++}});
@@ -3461,18 +3789,61 @@ function openCtxAsk(){const act=EV.med.map((e,i)=>({e,i})).filter(x=>x.e.f&&medA
 
 /* старт */
 renderTabs('summary');updLogin();fillForm();renderSummary();renderCtx();renderBlocks();renderUploads();drawQR();renderDocs();renderShared();renderBook();
-$('#visitDoctor').onclick=openDoctorReport;
-
-function openDoctorReport(){openSpecView(false)}
+$('#visitHistory').onclick=()=>openHistory();
 const doctorFilterHost=$('#reportFilters');
 doctorFilterHost.innerHTML=analysisFiltersHTML();
-doctorFilterHost.onchange=e=>{
-  if(updateAnalysisFilter(e.target,doctorFilters))openSpecView(false,true);
+const viewerDateToggle=doctorFilterHost.querySelector('.viewer-date-toggle');
+const viewerDateForm=$('#viewerDateForm');
+const rangeStart=viewerDateForm.elements.start, rangeEnd=viewerDateForm.elements.end;
+function setViewerDateForm(open){
+  viewerDateToggle.setAttribute('aria-expanded',String(open));
+  viewerDateForm.hidden=!open;
+  if(!open)return;
+  rangeStart.value=doctorFilters.rangeFrom||analysisDates[doctorFilters.from]||'';
+  rangeEnd.value=doctorFilters.rangeTo||analysisDates[doctorFilters.to]||'';
+  rangeEnd.setCustomValidity('');
+  rangeStart.focus({preventScroll:true});
+}
+function renderViewerPeriod(){
+  setViewerDateForm(false);
+  openHistory(true);
+  const area=$('#pvBody');
+  area.scrollTop=0;
+  area.scrollLeft=area.scrollWidth;
+}
+viewerDateToggle.onclick=()=>setViewerDateForm(viewerDateForm.hidden);
+viewerDateForm.oninput=()=>rangeEnd.setCustomValidity('');
+viewerDateForm.onsubmit=e=>{
+  e.preventDefault();
+  const start=rangeStart.value, end=rangeEnd.value;
+  if(start>end){
+    rangeEnd.setCustomValidity('Дата окончания должна быть не раньше даты начала.');
+    rangeEnd.reportValidity();
+    return;
+  }
+  const matching=analysisDates.map((date,i)=>date>=start&&date<=end?i:-1).filter(i=>i>=0);
+  Object.assign(doctorFilters,{
+    period:'custom', from:matching[0]??-1, to:matching.at(-1)??-1, rangeFrom:start, rangeTo:end
+  });
+  renderViewerPeriod();
+  viewerDateToggle.focus({preventScroll:true});
+};
+viewerDateForm.onkeydown=e=>{
+  if(e.key!=='Escape')return;
+  e.preventDefault();
+  setViewerDateForm(false);
+  viewerDateToggle.focus({preventScroll:true});
+};
+doctorFilterHost.onclick=e=>{
+  const button=e.target.closest('[data-viewer-period]');
+  if(!button)return;
+  setViewerPeriod(doctorFilters,button.dataset.viewerPeriod,historyBounds);
+  renderViewerPeriod();
 };
 $('#reportReset').onclick=()=>{
-  doctorFilters={...doctorDefaults};
   reportSelected.clear();
-  openSpecView(false,true);
+  openHistory(true);
+  $('#doctorSearch .search-trigger').focus({preventScroll:true});
 };
 $('#pvBody').addEventListener('click',e=>{
   const details=e.target.closest('[data-report-detail]');
@@ -3529,7 +3900,7 @@ function spItems(sp){const b=SPB[sp];if(!b)return [];
     return {lab,st:old?'old':'ok',d:fmtD(last),out,ref:rows[0].gi+','+rows[0].ri}})}
 function openSpTake(sp){const it=spItems(sp);const b=SPB[sp]||{};
   const nOk=it.filter(x=>x.st==='ok').length,nMiss=it.filter(x=>x.st!=='ok').length;
-  openModal('Что обычно смотрит '+sp,`<div class="sptk">
+  openChildModal('Что обычно смотрит '+sp,`<div class="sptk">
    <p class="why">Справочно: какие исследования обычно расшифровывает этот специалист. Это не назначение, точный список скажет врач.${b.note?' '+esc(b.note):''}</p>
    <div class="sptk-sum"><span class="chip c-ok">есть свежие: ${nOk}</span><span class="chip c-none">нет или устарели: ${nMiss}</span></div>
    <ul class="sptk-l">${it.map(x=>`<li class="st-${x.st}"><span class="sptk-dot" aria-hidden="true"></span><span class="sptk-n">${esc(x.lab)}${x.out?' <i>есть отклонения</i>':''}</span><span class="sptk-s">${x.st==='ok'?'есть · '+x.d:x.st==='old'?'устарел · '+x.d:'нет данных'}</span></li>`).join('')}</ul>
@@ -3537,10 +3908,10 @@ function openSpTake(sp){const it=spItems(sp);const b=SPB[sp]||{};
   $('#modal .mbox').classList.add('wide')}
 document.addEventListener('click',e=>{
   const t=e.target.closest('[data-sptk]');if(t){openSpTake(t.dataset.sptk);return}
-  if(e.target.closest('[data-spshare]')){closeModal();show('share');return}
+  if(e.target.closest('[data-spshare]')){navigateFromModal('share');return}
   const g=e.target.closest('[data-sptake]');if(g){const sp=g.dataset.sptake;const miss=spItems(sp).filter(x=>x.st!=='ok');let n=0;
     miss.forEach(x=>{const c=CAT.find(c=>c.n.toLowerCase().includes(x.lab.toLowerCase().split(/[,:(]/)[0].trim().slice(0,8)));if(c){BASK.add(c.key);n++}else if(x.ref){BASK.add(x.ref);n++}});
-    saveB();try{renderBook()}catch(_){}closeModal();show('book');toast(n?'Добавили в «Где сдать»: '+n:'Найдите нужные анализы в поиске')}});
+    saveB();try{renderBook()}catch(_){}navigateFromModal('book');toast(n?'Добавили в «Где сдать»: '+n:'Найдите нужные анализы в поиске')}});
 /* кнопка «Что взять» у выбранных специалистов и в карточках врачей */
 {const _rs=renderSpec;renderSpec=function(){_rs.apply(this,arguments);
   document.querySelectorAll('#spSel .pk').forEach(pk=>{const sp=pk.querySelector('[data-rms2]').dataset.rms2;if(!SPB[sp]||pk.querySelector('[data-sptk]'))return;
@@ -3586,18 +3957,14 @@ document.addEventListener('click',e=>{
     openModal('Повод сдачи',`<p class="why" style="margin-bottom:10px">Отметьте, по какому поводу сдавали: так проще найти анализы из санатория, с диспансеризации или из больницы, и врач увидит это рядом с датой.</p><div id="rsnBox">${rsnPicker(RSN[k])}</div><div class="row-end"><button class="btn" type="button" data-rsnclear="${k}">Убрать повод</button><button class="btn pri" type="button" data-mclose>Готово</button></div>`);
     rsnBindPicker($('#rsnBox'),v=>{RSN[k]=v;saveRsn();renderUploads()});return}
   const cl=e.target.closest('[data-rsnclear]');if(cl){delete RSN[cl.dataset.rsnclear];saveRsn();renderUploads();closeModal()}
-  if(e.target.closest('[data-mclose]'))closeModal()});
-/* повод в виде для врача: под датой сдачи */
-{const _s=openSpecView;openSpecView=function(){_s.apply(this,arguments);
-  const ths=[...document.querySelectorAll('#pvBody table.alld thead th.num')];ths.forEach((th,i)=>{const r=RSN['d'+DATES.indexOf(th.firstChild.textContent)];if(r)th.insertAdjacentHTML('beforeend',`<span class="rsnh">${esc(r)}</span>`)});
-  document.querySelectorAll('#pvBody .evlist div').forEach(dv=>{const d=(dv.querySelector('.num')||{}).textContent;const i=DATES.indexOf(d);const r=RSN['d'+i];if(r)dv.querySelector('.num').insertAdjacentHTML('afterend',` <b class="rsnl">${esc(r)}.</b>`)})}}
+});
 try{renderUploads()}catch(_){}
 
 
 const captureTypes={ill:'Болезнь',med:'Препарат',hosp:'Госпитализация',cmp:'Жалоба',weight:'Вес',all:'Аллергия',travel:'Поездка'};
 const sampleStory='С 10.11.2026 болел ОРВИ, с 11.11.2026 принимал витамин D. Был в санатории в Кисловодске.';
 function captureStart(){
- openModal('Добавить событие',`<div class="capture-entry">
+ openChildModal('Добавить событие',`<div class="capture-entry">
   <label for="story10">Что произошло?</label>
   <textarea id="story10" rows="4" placeholder="Напишите, что произошло…"></textarea>
   <div class="capture-actions">
@@ -3652,7 +4019,7 @@ function localCaptureDate(date){
 }
 function captureReview(story){
  const chunks=story.split(/[.!?](?=\s|$)|[;\n]|(?:,\s*|\s+и\s+|\s+затем\s+|\s+потом\s+)(?=(?:с \d|приним|пропис|назнач|антибиотик|болел|заболел|лежал|госпитал|был[аи]?(?=\s|$)))/i).map(t=>t.trim()).filter(Boolean);
- openModal('Проверьте записи','<details><summary>Исходный рассказ</summary><p>'+esc(story)+'</p></details><form id="check10"><div id="drafts10"></div><p class="why">Можно дополнить рассказ другими записями.</p><div class="add-draft"><select aria-label="Добавить раздел" id="extra10"></select> <button class="btn" type="button" id="add10">Добавить</button></div><div class="row-end"><button class="btn" type="button" data-mclose>Отмена</button><button class="btn pri">Подтвердить и сохранить</button></div></form>');
+ openChildModal('Проверьте записи','<details><summary>Исходный рассказ</summary><p>'+esc(story)+'</p></details><form id="check10"><div id="drafts10"></div><p class="why">Можно дополнить рассказ другими записями.</p><div class="add-draft"><select aria-label="Добавить раздел" id="extra10"></select> <button class="btn" type="button" id="add10">Добавить</button></div><div class="row-end"><button class="btn" type="button" data-mclose>Отмена</button><button class="btn pri">Подтвердить и сохранить</button></div></form>');
  const choices=Object.entries(captureTypes).map(([k,t])=>'<option value="'+k+'">'+t+'</option>').join('');
  $('#extra10').innerHTML=choices;
  function add(k,n='',date='',temperature=''){
@@ -3708,7 +4075,7 @@ function captureReview(story){
  $('#check10').onsubmit=e=>{e.preventDefault();const records=[...$('#drafts10').children].map(box=>[box.querySelector('.kind').value,Object.fromEntries([...box.querySelectorAll('[data-k]')].map(i=>[i.dataset.k,i.value.trim()]))]);
  if(!records.length){toast('Добавьте запись');return}
  if(records.some(([,v])=>(!v.n&&!v.kg)||(v.f&&v.t&&v.f>v.t))){toast('Проверьте название и даты записи');return}
- requireLogin(()=>{for(const [k,v] of records){if(k==='travel')P.travel=[P.travel,v.n].filter(Boolean).join('; ');else evArr(k).push(v)}saveAll();closeModal();show('profile');toast('Добавлено записей: '+records.length)})};
+ requireLogin(()=>{for(const [k,v] of records){if(k==='travel')P.travel=[P.travel,v.n].filter(Boolean).join('; ');else evArr(k).push(v)}saveAll();closeModal({all:true});toast('Добавлено записей: '+records.length)})};
 }
 document.addEventListener('click',e=>{if(e.target.closest('[data-capture]'))captureStart()});
 
@@ -3747,14 +4114,13 @@ function attachViewerPan(viewer,area){
   new ResizeObserver(update).observe(area);
   return update;
 }
-const updateHistoryPan=attachViewerPan($('#hm'),$('#hm .hwrap'));
 const updateDoctorPan=attachViewerPan($('#pv'),$('#pvBody'));
 function diaryList(rows){
  return rows.slice().sort((a,b)=>(b.day+b.time).localeCompare(a.day+a.time)).map(r=>'<p>'+dfmt(r.day)+' '+esc(r.time)+' · '+esc(diaryKinds[r.kind].fields.map((label,i)=>label+' — '+r.values[i]).join(', '))+'</p>').join('');
 }
-document.addEventListener('click',e=>{if(e.target.closest('[data-diary]'))openDiary()});
-function openDiary(){
- openModal('Дневники измерений','<form id="diaryForm" class="field"><label>Дневник <select id="diaryKind">'+Object.entries(diaryKinds).map(([k,v])=>'<option value="'+k+'">'+v.name+'</option>').join('')+'</select></label><label>Дата <input type="date" required id="diaryDay"></label><label>Время <input type="time" id="diaryTime"></label><div id="diaryFields"></div><button class="btn pri">Сохранить измерение</button></form><div id="diaryHistory"></div>');
+document.addEventListener('click',e=>{if(e.target.closest('[data-diary]'))openDiary(true)});
+function openDiary(back=false){
+ openModal('Дневник измерений','<form id="diaryForm" class="field"><label>Что измерили <select id="diaryKind">'+Object.entries(diaryKinds).map(([k,v])=>'<option value="'+k+'">'+v.name+'</option>').join('')+'</select></label><div class="diary-datetime"><label>Дата <input type="date" required id="diaryDay"></label><label>Время <input type="time" id="diaryTime"></label></div><div id="diaryFields"></div><button class="btn pri" type="submit">Сохранить измерение</button></form><section class="diary-history" aria-labelledby="diaryHistoryTitle"><h4 id="diaryHistoryTitle">Записи</h4><div id="diaryHistory"></div></section>',{back});
  $('#diaryDay').value=todayISO();
  function draw(){const kind=$('#diaryKind').value;
  $('#diaryFields').innerHTML=diaryKinds[kind].fields.map(l=>'<label>'+l+' <input type="number" min="0" step="any" required '+(kind==='sleep'?'max="24"':'')+'></label>').join('');
@@ -3763,9 +4129,17 @@ function openDiary(){
  $('#diaryForm').onsubmit=e=>{e.preventDefault();const item={kind:$('#diaryKind').value,day:$('#diaryDay').value,time:$('#diaryTime').value,values:[...document.querySelectorAll('#diaryFields input')].map(i=>i.value)};
  requireLogin(()=>{(P.diary||=[]).push(item);saveAll();openDiary();$('#diaryKind').value=item.kind;draw();toast('Измерение сохранено')})}
 };
+document.addEventListener('click',e=>{
+ if(!e.target.closest('#pdfOptions'))$('#pdfOptions').open=false;
+});
+$('#pdfOptions').onkeydown=e=>{
+ if(e.key==='Escape'&&$('#pdfOptions').open){e.preventDefault();$('#pdfOptions').open=false;$('#pdfOptions summary').focus()}
+};
 $('#sendPDF').onclick=()=>{
+ $('#pdfOptions').open=false;
+ $('#pdfOptions summary').focus({preventScroll:true});
  const note=$('#pvNote');
- note.textContent='Выберите «Печать / сохранить PDF», сохраните файл и приложите его к письму врачу.';
+ note.textContent='Сохраните файл через «PDF → Сохранить PDF» и приложите его к сообщению.';
  if(!navigator.canShare)return;
  const input=document.createElement('input');input.type='file';input.accept='application/pdf,.pdf';
  input.onchange=async()=>{const file=input.files[0];if(file && navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'Анализы'})}catch(e){if(e.name!=='AbortError')note.textContent='Приложите сохранённый PDF к письму.'}}};
@@ -3779,6 +4153,7 @@ shareRange.onchange=e=>{
   }
   shareRange.querySelector('.date-pair').hidden=mode!=='custom';
 };
+queueFirstTour();
 </script>
 </body>
 </html>
