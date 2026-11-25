@@ -536,9 +536,6 @@ table.up .r,.hist .r{text-align:right}
 .hm-f{display:flex;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);overflow-x:auto;flex:none;scrollbar-width:none}
 .hm-f::-webkit-scrollbar{display:none}
 .hm-f>*{flex:none}
-.hm-s{position:relative}
-.hm-s svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink3)}
-.hm-s input{width:170px;border:1px solid var(--line);border-radius:10px;padding:7px 10px 7px 30px;font:inherit;font-size:13px;background:#fff}
 .hm-f select{border:1px solid var(--line);border-radius:10px;padding:7px 8px;background:#fff;font:inherit;font-size:13px;max-width:190px}
 .hm-d{display:flex;align-items:center;gap:5px;font-size:12.5px;color:var(--ink3)}
 .hchk{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2);white-space:nowrap}
@@ -580,7 +577,6 @@ table.up .r,.hist .r{text-align:right}
   .hm-box{max-height:none;border-radius:0}
   .hm-h{padding:8px 12px}.hm-h h3{font-size:14px}
   .hm-f{padding:7px 10px;gap:6px}
-  .hm-s input{width:130px;padding:6px 8px 6px 28px;font-size:12px}
   .hm-f select{font-size:12px;padding:6px;max-width:150px}
   .hm-f .btn{padding:6px 10px;font-size:12px}
   .htab{font-size:11.5px}.htab th{font-size:10.5px;padding:6px 8px}.htab td{padding:5px 8px;min-width:54px}
@@ -594,7 +590,6 @@ table.up .r,.hist .r{text-align:right}
   .hm{padding:0}.hm-box{max-height:none;border-radius:0}
   .hm-h{padding:6px 12px}.hm-h h3{font-size:14px}
   .hm-f{padding:6px 10px;gap:6px}
-  .hm-s input{width:140px;padding:5px 8px 5px 28px;font-size:12px}
   .hm-f select{font-size:12px;padding:5px 6px;max-width:160px}
   .hm-f .btn{padding:5px 10px;font-size:12px}
   .htab{font-size:11.5px}.htab th{font-size:10.5px;padding:5px 8px}.htab td{padding:4px 8px;min-width:56px}
@@ -612,10 +607,24 @@ table.up .r,.hist .r{text-align:right}
 body.preview .app{display:none}
 body.preview .pv{display:block}
 .pv-bar{background:var(--paper);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.pv-rotate{display:none;max-width:1120px;margin:8px auto 0;padding:0 16px}
-@media screen and (orientation:portrait) and (pointer:coarse){
-  .pv-rotate:not([hidden]){display:block}
-}
+#reportRotateHint{position:fixed;z-index:80}
+#reportRotateHint .rot-ph{animation-iteration-count:2}
+#reportFilters[hidden]{display:none}
+#reportFilters:not([hidden]){max-width:1120px;margin:0 auto;flex-wrap:wrap;overflow:visible}
+#historyFilters{flex-wrap:wrap;overflow:visible}
+.analysis-events{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:8px 0;color:var(--ink)}
+.analysis-events summary{cursor:pointer;font-weight:700;font-size:13px}
+.analysis-events-body{margin-top:6px;max-height:min(176px,38dvh);overflow:auto}
+.analysis-events ol{list-style:none;margin:0;padding:0}
+.analysis-events li{display:grid;grid-template-columns:minmax(64px,auto) minmax(0,1fr);gap:9px;padding:6px 0;font-size:12px;overflow-wrap:anywhere}
+.analysis-events li+li{border-top:1px solid var(--line)}
+.analysis-events time,.analysis-events small{color:var(--ink2)}
+.analysis-events small{display:block}
+#hEvents:not(:empty){position:sticky;left:0;padding:0 10px}
+#historySearch .svsearch{z-index:4;bottom:calc(max(42px,env(safe-area-inset-bottom)) + var(--report-keyboard,0px))}
+.report-table .report-detail{padding:0;text-align:left;color:inherit;font-size:inherit;font-weight:600;white-space:normal}
+@media screen{#hm .hwrap{padding-bottom:44px}#hm:has(.report-selection:not([hidden])) .hwrap{padding-bottom:142px}}
+@media print{#reportFilters,#reportRotateHint{display:none!important}.analysis-events-body{max-height:none;overflow:visible}.report-detail{color:#000}}
 .pv-in{max-width:1120px;margin:0 auto;padding:16px}
 .pv h1{font-size:18px;margin-bottom:4px}
 .pv h2{font-size:15px;margin:18px 0 6px}
@@ -1184,7 +1193,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 .report-options li[aria-selected="true"],.report-options li:hover{background:var(--accent-soft);color:#56359c}
 .report-options small{display:block;color:var(--ink2);font-size:11px}
 .report-options mark{color:inherit;background:transparent;font-weight:800}
-#svqn:not(:empty){display:block;margin:4px 4px 0;font-size:12px;color:var(--ink2)}
+.search-status:not(:empty){display:block;margin:4px 4px 0;font-size:12px;color:var(--ink2)}
 .report-selection:not([hidden]){display:flex;flex-wrap:wrap;align-content:start;gap:4px;padding:7px;max-height:clamp(30px,calc((var(--report-visible-height,100dvh) - 106px) * .36),100px);overflow:auto;background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh)}
 .report-selection .bchip{margin:0;max-width:100%;min-height:28px;background:var(--card);color:#56359c;white-space:normal;overflow-wrap:anywhere}
 .report-selection .bchip button{width:24px;height:24px;flex:none}
@@ -1332,7 +1341,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 .swwrap .sw-has .sw-pet:not(.on){opacity:.72}
 .swwrap .dragging .sw-rot,.swwrap .dragging .sw-num{transition:none}
 @media(prefers-reduced-motion:reduce){.swwrap .sw-rot,.swwrap .sw-num{transition:none}}
-</style><style>#reportRange{max-width:1040px;margin:12px auto;padding:8px 16px}#reportRange summary{cursor:pointer;font-weight:600}#reportRange .field{max-width:420px;margin-top:10px}.date-pair:not([hidden]){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}.date-pair input{width:100%;min-width:0}@media print{#reportRange{display:none!important}}</style><style>.smoking-fields{display:grid;align-content:start;gap:10px;min-width:0}</style><style>
+</style><style>.date-pair:not([hidden]){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}.date-pair input{width:100%;min-width:0}</style><style>.smoking-fields{display:grid;align-content:start;gap:10px;min-width:0}</style><style>
 .visit-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start;margin:12px 0 16px}
 .visit17{min-width:0;padding:14px 16px;border-top:3px solid var(--visit-accent)}
 .visit17{--visit-accent:#7956d9;--visit-tint:#f0e9ff}
@@ -1432,6 +1441,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 @media screen{
  #pvBody .report-table{table-layout:auto;width:max-content;min-width:100%;max-width:none;border-collapse:collapse}
  #pvBody .report-table th,#pvBody .report-table td{width:auto;white-space:nowrap;word-break:normal;overflow-wrap:normal;padding:8px}
+ #pvBody .report-table .report-empty-date{display:none}
  #pvBody .report-table tr:not(.grp)>:first-child{
    position:sticky;left:0;z-index:1;background:var(--paper);
    box-shadow:1px 0 var(--line);min-width:clamp(128px,40vw,200px);
@@ -1665,8 +1675,7 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 <!-- предпросмотр печати -->
 <div class="pv" id="pv">
   <div class="pv-bar"><button class="btn" id="pvBack">← Назад</button><button class="btn pri" id="pvPrint">Печать / сохранить PDF</button><button class="btn" id="sendPDF">Передать PDF</button><span class="why" id="pvNote"></span></div>
-  <p class="why pv-rotate" id="pvRotate" hidden>Поверните телефон горизонтально, чтобы видеть больше дат.</p>
-  <details id="reportRange"><summary>Фильтр по датам</summary><div class="field"><label for="reportPeriod">Период анализов</label><select id="reportPeriod"><option value="0">Вся история</option><option value="30">Последние 30 дней до последней сдачи</option><option value="180">Последние 180 дней до последней сдачи</option><option value="custom">Свой диапазон</option></select><div class="date-pair" hidden><label>С <input type="date" data-from></label><label>По <input type="date" data-to></label></div></div></details><div class="pv-in" id="pvBody"></div>
+  <div class="hm-f" id="reportFilters" role="group" aria-label="Фильтры отчёта" hidden></div><div class="pv-in" id="pvBody"></div>
 </div>
 
 <div class="tut" id="tut" role="dialog" aria-modal="true" aria-labelledby="tT">
@@ -1676,17 +1685,11 @@ button.ao:hover{border-color:var(--accent);background:var(--accent-soft)}
 <div class="hm" id="hm" role="dialog" aria-modal="true" aria-labelledby="hmT" hidden>
   <div class="hm-box">
     <div class="hm-h"><h3 id="hmT">Полная история показателей</h3><span class="hm-n" id="hSum"></span><button class="hm-r" id="hreset" type="button">Сбросить всё</button><button class="x" id="hmX" aria-label="Закрыть">×</button></div>
-    <div class="hm-f">
-      <div class="hm-s"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="hq" type="search" placeholder="Показатель" aria-label="Найти показатель"></div>
-      <select id="hsys" aria-label="Система"><option value="">Все системы</option></select>
-      <select id="hst" aria-label="Статус"><option value="all">Любой статус</option><option value="now">Сейчас не в норме</option><option value="ever">Были не в норме</option><option value="norm">Всегда в норме</option></select>
-      <label class="hm-d">с <select id="hfrom" aria-label="Дата с"></select></label>
-      <label class="hm-d">по <select id="hto" aria-label="Дата по"></select></label>
-      <label class="hchk"><input type="checkbox" id="hfilled"> без пустых дат</label>
-    </div>
-    <div class="hwrap"><table class="htab" id="htab"></table><p class="why" id="hNone" hidden style="padding:16px">По фильтру ничего не найдено. <button class="link" id="hreset2" type="button">Сбросить фильтры</button></p></div>
+    <div class="hm-f" id="historyFilters" role="group" aria-label="Фильтры истории"></div>
+    <div class="hwrap"><div id="hEvents"></div><table class="htab" id="htab"></table><p class="why" id="hNone" hidden style="padding:16px">По фильтру ничего не найдено. <button class="link" id="hreset2" type="button">Сбросить фильтры</button></p></div>
     <div class="hleg"><span><i class="c-h"></i>выше нормы</span><span><i class="c-l"></i>ниже нормы</span><span>— не сдавали</span><span class="hleg-r">Нажмите на показатель — откроется график</span></div>
   </div>
+  <div id="historySearch"></div>
   <div class="rot" id="rot">
     <div class="rot-ph" aria-hidden="true"><svg width="74" height="74" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></svg></div>
     <svg class="rot-ar" width="60" height="30" viewBox="0 0 60 30" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 24C14 9 38 4 52 14"/><path d="M45 8l7 6-8 4"/></svg>
@@ -2388,11 +2391,6 @@ function chartSVG(m){
 function activeMedicines(day){
   return EV.med.filter(e=>e.f && evDate(e.f)<=day && (!e.t || evDate(e.t)>=day));
 }
-function medicationAt(date){
-  const day=pd(date);
-  const active=activeMedicines(day);
-  return active.map(e=>e.n+' · с '+dfmt(e.f)+' ('+(1+Math.round((day-evDate(e.f))/864e5))+' дн.)'+(e.course?' · '+e.course:'')+(e.who?' · '+e.who:'')+(e.why?' · '+e.why:'')).join(', ') || 'Препараты на эту дату не указаны';
-}
 function priorCourses(m){
   if(!m.pts.length)return '';
   const first=pd(m.pts[0].d);
@@ -2441,7 +2439,7 @@ document.addEventListener('change',e=>{
 
 function renderBlocks(){const host=$('#blocks');host.innerHTML=G.map(blockHTML).join('');host.classList.toggle('printmode',printMode);
   host.querySelectorAll('[data-sel]').forEach(c=>c.onchange=()=>{const i=+c.dataset.sel;c.checked?sel.add(i):sel.delete(i);updP()})}
-document.addEventListener('click',e=>{const tg=e.target.closest('[data-tab-go]');if(tg){closeModal();show(tg.dataset.tabGo);return}const s=e.target.closest('[data-sys]');if(s){const gi=+s.dataset.sys;const hit=s.querySelector('[data-match]').dataset.ri;openSystem(gi,hit!=null&&hit!==''?+hit:null)}
+document.addEventListener('click',e=>{const tg=e.target.closest('[data-tab-go]');if(tg){closeModal();if(document.body.classList.contains('preview'))$('#pvBack').click();show(tg.dataset.tabGo);return}const s=e.target.closest('[data-sys]');if(s){const gi=+s.dataset.sys;const hit=s.querySelector('[data-match]').dataset.ri;openSystem(gi,hit!=null&&hit!==''?+hit:null)}
   const h=e.target.closest('.mrow-h');if(h)toggleRow(h.closest('.mrow'));
   const f=e.target.closest('.fh');if(f){const c=f.closest('.fold');const on=!c.classList.contains('closed');c.classList.toggle('closed',on);f.setAttribute('aria-expanded',!on)}});
 function toggleRow(el,force){const on=force??!el.classList.contains('open');const b=el.querySelector('.mrow-b');
@@ -2453,6 +2451,7 @@ function goTo(gi,ri){show('summary');setTimeout(()=>openSystem(gi,ri),RM?0:260)}
 
 /* печать */
 function openPreview(groups,title){
+  $('#reportFilters').hidden=true;
   $('#pvBody').innerHTML=`<h1>${esc(title)}</h1><p class="why">А. Иванов · ${P.sex==='f'?'жен.':'муж.'}, ${age(P.dob)} лет · сформировано по загруженным бланкам. Референсы указаны лабораторией.</p>`+
    groups.map(g=>`<h2>${esc(g.title)}</h2><table><thead><tr><th>Показатель</th><th>Ед.</th><th>Норма</th>${DATES.map((d,i)=>`<th class="num">${d}<br><span style="font-weight:500;color:var(--ink3);font-size:10px">${LABS[i]}</span></th>`).join('')}</tr></thead><tbody>`+
    g.rows.map(m=>`<tr><td>${esc(m.n)}</td><td>${esc(U(m.u))}</td><td class="num">${esc(refText(m))}</td>${DATES.map((d,i)=>{const p=m.pts.find(q=>q.i===i);return `<td class="num" style="${p&&p.st!=='ok'?'font-weight:700;color:var(--'+(p.st==='high'?'hi':'lo')+')':''}">${p?esc(p.raw):'—'}</td>`}).join('')}</tr>`).join('')+'</tbody></table>').join('');
@@ -2461,7 +2460,7 @@ function openPreview(groups,title){
 $('#pgo').onclick=()=>openPreview(G.filter(g=>sel.has(g.gi)),'Анализы: выбранные блоки');
 $('#pvBack').onclick=()=>{
   document.body.classList.remove('preview');
-  leaveDoctorLandscape();
+  showDoctorRotation(false);
 };
 $('#pvPrint').onclick=()=>{try{window.print()}catch(e){toast('Печать недоступна в этом окне')}};
 
@@ -2690,91 +2689,161 @@ $('#viewBack').onclick=()=>{$('#viewing').hidden=true;document.body.classList.re
 /* как увидит специалист */
 const svRow=(m,cls)=>`<tr class="${cls||''}"><td class="sv-n">${esc(m.n)}</td><td class="num sv-v" style="${m.st!=='ok'?'font-weight:700;color:var(--'+(m.st==='high'?'hi':'lo')+')':''}">${esc(m.cur.raw)} ${esc(U(m.u))}${m.st==='high'?' ↑':m.st==='low'?' ↓':''}</td><td class="num sv-r">${esc(refText(m))}</td><td class="num sv-d">${m.cur.d}</td><td class="num sv-p">${m.prev?esc(m.prev.raw)+' <span class="why">· '+m.prev.d+'</span>':'—'}</td></tr>`;
 let reportSelected=new Map();
+let doctorFilters,doctorDefaults;
+function analysisFiltersHTML(reset=false){
+  const dateOptions='<option value="-1" disabled>—</option>'+DATES.map((date,i)=>`<option value="${i}">${date}</option>`).join('');
+  const systems=G.filter(g=>g.rows.length).map(g=>`<option value="${g.gi}">${esc(g.title)}</option>`).join('');
+  return `<select data-analysis-filter="sys" aria-label="Система"><option value="">Все системы</option>${systems}</select>
+    <select data-analysis-filter="st" aria-label="Статус"><option value="all">Любой статус</option><option value="now">Сейчас не в норме</option><option value="ever">Были не в норме</option><option value="norm">Всегда в норме</option></select>
+    <label class="hm-d">с <select data-analysis-filter="from" aria-label="Дата с">${dateOptions}</select></label>
+    <label class="hm-d">по <select data-analysis-filter="to" aria-label="Дата по">${dateOptions}</select></label>
+    <label class="hchk"><input type="checkbox" data-analysis-filter="filled"> без пустых дат</label>
+    <label class="hchk"><input type="checkbox" data-analysis-filter="events"> Показать события</label>
+    ${reset?'<button class="btn" type="button" data-analysis-reset>Сбросить</button>':''}`;
+}
+function syncAnalysisFilters(host,state){
+  for(const field of host.querySelectorAll('[data-analysis-filter]')){
+    const value=state[field.dataset.analysisFilter];
+    if(field.type==='checkbox')field.checked=value;else field.value=value;
+  }
+}
+function updateAnalysisFilter(field,state){
+  const key=field.dataset.analysisFilter;
+  if(!key)return false;
+  state[key]=field.type==='checkbox'?field.checked:key==='from'||key==='to'?Number(field.value):field.value;
+  if((key==='from'||key==='to')&&(state.from<0||state.to<0||state.from>state.to)){
+    state[key==='from'?'to':'from']=state[key];
+  }
+  return true;
+}
+function matchesAnalysisStatus(m,points,status){
+  if(!points.length)return false;
+  const out=p=>p.st==='high'||p.st==='low';
+  if(status==='now')return out(m);
+  if(status==='ever')return points.some(out);
+  if(status==='norm')return points.every(p=>p.st==='ok'||p.st==='none');
+  return true;
+}
+function analysisTimeline(from,to){
+  if(!DATES[from]||!DATES[to])return '';
+  const start=pd(DATES[from]), end=pd(DATES[to]), items=[];
+  const add=(type,name,date,detail='',until=evDate(date))=>{
+    if(!name||!date||evDate(date)>end||until<start)return;
+    items.push({type,name,date,detail});
+  };
+  for(const [key,type] of [['ill','Болезнь'],['cmp','Жалоба'],['hosp','Госпитализация'],['med','Препарат']]){
+    for(const event of EV[key]){
+      const ongoing=key==='med'&&(event.m==='Постоянно'||!event.t);
+      const detail=[
+        event.t&&!ongoing?'до '+dfmt(event.t):'',
+        ongoing&&event.m==='Постоянно'?'постоянный приём':'',
+        event.tmax?'макс. '+event.tmax+' °C':'',
+        key==='hosp'?event.w:''
+      ].filter(Boolean).join(' · ');
+      add(type,event.n,event.f,detail,ongoing?end:evDate(event.t||event.f));
+    }
+  }
+  for(const weight of EV.weight)if(weight.kg)add('Вес',weight.kg+' кг',weight.d);
+  for(const record of P.diary||[]){
+    const kind=diaryKinds[record.kind];
+    if(kind)add('Дневник',kind.name,record.day,[record.time,...kind.fields.map((label,i)=>label+' — '+record.values[i])].filter(Boolean).join(' · '));
+  }
+  items.sort((a,b)=>b.date.localeCompare(a.date));
+  return `<details class="analysis-events" open><summary>События за период${items.length?' · '+items.length:''}</summary>
+    <div class="analysis-events-body">${items.length?'<ol>'+items.map(item=>`<li><time datetime="${esc(item.date)}">${esc(dfmt(item.date))}</time><div><small>${item.type}</small><strong>${esc(item.name)}</strong>${item.detail?'<small>'+esc(item.detail)+'</small>':''}</div></li>`).join('')+'</ol>':'<p class="why">За выбранный период событий нет.</p>'}</div>
+  </details>`;
+}
 function openSpecView(print,keepSelection=false){
-  if(!keepSelection)reportSelected=new Map();
-  $('#pvRotate').hidden=print;
+  if(!keepSelection)reportSelected.clear();
+  const filterHost=$('#reportFilters');
+  const eventsWereOpen=$('#pvBody .analysis-events')?.open;
   const mode=$('#period10').value, period=mode==='custom' || Number(mode)>0;
   const bounds=$('#shareRange');
   const from=bounds.querySelector('[data-from]').value,to=bounds.querySelector('[data-to]').value;
   const inPeriod=date=>mode==='custom'?(!from || date>=evDate(from)) && (!to || date<=evDate(to)):!period || (date<=LAST && (LAST-date)/864e5<Number(mode));
-  const selectedDates=DATES.filter(d=>inPeriod(pd(d)));
-  const caption=mode==='custom'
-    ? [from?'с '+dfmt(from):'',to?'по '+dfmt(to):''].filter(Boolean).join(' ')||'за все даты'
-    : selectedDates.length ? selectedDates[0]+' – '+selectedDates.at(-1) : 'за выбранный период';
+  if(!keepSelection){
+    const initial=DATES.filter(d=>inPeriod(pd(d)));
+    doctorDefaults={...HDEF,from:DATES.indexOf(initial[0]),to:DATES.indexOf(initial.at(-1)),events:$('#reportEvents').checked};
+    doctorFilters={...doctorDefaults};
+  }
+  filterHost.hidden=print;
+  syncAnalysisFilters(filterHost,doctorFilters);
+  const {from:first,to:last,sys,st,filled,events:showEvents}=doctorFilters;
+  const selectedDates=first<0||last<0?[]:DATES.slice(first,last+1);
+  const caption=selectedDates.length?selectedDates[0]+' – '+selectedDates.at(-1):'за выбранный период';
   const scope=$('#scope [aria-pressed="true"]')?.dataset.v||'all';
   const scopeLabel=$('#scope [aria-pressed="true"]')?.textContent||'Все анализы';
   const groupIds=new Set([...reportGroups.querySelectorAll('input:checked')].map(input=>Number(input.value)));
-  const includeEvents=$('#reportEvents').checked;
-  const indices=selectedDates.map(d=>DATES.indexOf(d)).reverse();
+  let indices=selectedDates.map(d=>DATES.indexOf(d)).reverse();
   const point=(m,i)=>m.pts.find(p=>p.i===i&&(scope!=='out'||p.st==='high'||p.st==='low'));
-  const groups=G.filter(g=>scope!=='sel'||groupIds.has(g.gi))
-    .map(g=>({title:g.title,rows:g.rows.filter(m=>indices.some(i=>point(m,i)))}))
+  const groups=G.filter(g=>(scope!=='sel'||groupIds.has(g.gi))&&(!sys||String(g.gi)===sys))
+    .map(g=>({title:g.title,rows:g.rows.filter(m=>matchesAnalysisStatus(m,indices.map(i=>point(m,i)).filter(Boolean),st))}))
     .filter(g=>g.rows.length);
+  if(filled)indices=indices.filter(i=>groups.some(g=>g.rows.some(m=>point(m,i))));
   const empty=scope==='sel'&&!groupIds.size?'Выберите блоки в разделе «Показать врачу».'
     : !selectedDates.length?'За выбранный период сдач нет.':'Нет результатов для выбранных условий.';
   const cells=(m,i)=>{
     const p=point(m,i), direction=p?.st==='high'?' ↑':p?.st==='low'?' ↓':'';
-    return '<td class="num '+(direction?(p.st==='high'?'report-high':'report-low'):'')+'">'+
+    return '<td'+(p?' data-has-result':'')+' class="num '+(direction?(p.st==='high'?'report-high':'report-low'):'')+'">'+
       (p?esc(p.raw)+direction:'—')+'</td>';
   };
-  const eventRows=includeEvents?selectedDates.slice().reverse().flatMap(d=>{
-    const detail=[ctxFor(d),medicationAt(d)].filter(Boolean).join(' · ');
-    return detail?['<li><strong>'+esc(d)+'</strong> · '+esc(detail)+'</li>']:[];
-  }):[];
   const dateHead=indices.map(i=>'<th scope="col">'+esc(DATES[i])+'<br><small>'+esc(LABS[i])+'</small></th>').join('');
   const tableRows=groups.map(g=>'<tr class="grp"><th scope="rowgroup" colspan="'+(indices.length+3)+'">'+ '<span>'+esc(g.title)+'</span></th></tr>'+
-    g.rows.map(m=>'<tr data-report-indicator="'+m.gi+','+m.ri+'"><td>'+esc(m.n)+'</td><td>'+esc(U(m.u))+'</td><td>'+esc(refText(m))+'</td>'+
+    g.rows.map(m=>'<tr data-report-indicator="'+m.gi+','+m.ri+'"><td>'+(print?esc(m.n):'<button class="link report-detail" type="button" data-report-detail="'+m.gi+','+m.ri+'" title="Открыть детали">'+esc(m.n)+'</button>')+'</td><td>'+esc(U(m.u))+'</td><td>'+esc(refText(m))+'</td>'+
       indices.map(i=>cells(m,i)).join('')+'</tr>').join('')).join('');
   const results=groups.length?'<div class="report-pan" hidden><small>Листайте таблицу по датам. На ПК можно нажать кнопки или использовать Shift + колесо мыши.</small><button class="btn" type="button" data-report-pan="-1" aria-label="Прокрутить влево">← Влево</button><button class="btn" type="button" data-report-pan="1" aria-label="Прокрутить вправо">Вправо →</button></div><div class="report-scroll" tabindex="0" role="region" aria-label="Таблица результатов"><table class="report-table"><thead><tr><th scope="col">Показатель</th><th scope="col">Ед.</th><th scope="col">Референс</th>'+dateHead+'</tr></thead><tbody>'+tableRows+'</tbody></table></div>'
     : '<p>'+esc(empty)+'</p>';
-  const search=groups.length||reportSelected.size?`<div class="svsearch">
-    <button class="btn search-trigger" type="button" aria-label="Найти показатель" aria-expanded="false" aria-controls="reportSearchPanel">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-    </button>
-    <div class="report-search-stack">
-      <div class="report-search-panel" id="reportSearchPanel" inert>
-        <div class="report-search-field">
-          <input id="svq" type="search" role="combobox" aria-autocomplete="list" aria-controls="reportOptions" aria-expanded="false" placeholder="Найти показатель" aria-label="Поиск по показателям" autocomplete="off" enterkeyhint="done">
-          <button class="btn" type="button" data-close-report-search aria-label="Свернуть поиск" title="Свернуть поиск"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
-        </div>
-        <ul class="report-options" id="reportOptions" role="listbox" aria-label="Совпадения" hidden></ul>
-        <span id="svqn" aria-live="polite"></span>
-      </div>
-      <div class="report-selection" role="group" aria-label="Выбранные показатели" hidden></div>
-    </div>
-  </div>`:'';
-  const events=eventRows.length?'<details class="report-context" open><summary>События рядом с датами сдачи</summary><ul>'+eventRows.join('')+'</ul></details>':'';
-  $('#reportRange summary').textContent='Фильтр по датам · '+caption;
+  const search=groups.length||reportSelected.size?indicatorSearchHTML('report'):'';
+  const events=showEvents&&selectedDates.length?analysisTimeline(first,last):'';
   $('#pvBody').innerHTML='<div class="svbar">'+(print?'Предпросмотр PDF':'Предпросмотр для врача')+
     ' · '+esc(scopeLabel)+' · '+esc(caption)+'</div><div class="report-title-row"><h1>Анализы: '+esc(P.name||'А. Иванов')+'</h1>'+
-    search+'</div>'+results+(groups.length?'<p class="why report-selection-empty" hidden>В этом периоде нет результатов по выбранным показателям.</p>':'')+events+(includeEvents?diaryReport(inPeriod):'');
+    search+'</div>'+events+results+(groups.length?'<p class="why report-selection-empty" hidden>По выбранным показателям нет результатов с этими фильтрами.</p>':'');
+  if(events&&keepSelection&&eventsWereOpen===false)$('#pvBody .analysis-events').open=false;
   $('#pvNote').textContent='';
   document.body.classList.add('preview');
   bindReportSearch(groups);
   bindReportPan();
-  window.scrollTo(0,0);
+  if(!keepSelection)window.scrollTo(0,0);
 }
 
-/* поиск на экране врача */
+/* поиск показателей */
+function indicatorSearchHTML(prefix){return `<div class="svsearch">
+    <button class="btn search-trigger" type="button" aria-label="Найти показатель" aria-expanded="false" aria-controls="${prefix}SearchPanel">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+    </button>
+    <div class="report-search-stack">
+      <div class="report-search-panel" id="${prefix}SearchPanel" inert>
+        <div class="report-search-field">
+          <input id="${prefix==='report'?'svq':'historyQuery'}" type="search" role="combobox" aria-autocomplete="list" aria-controls="${prefix}Options" aria-expanded="false" placeholder="Найти показатель" aria-label="Поиск по показателям" autocomplete="off" enterkeyhint="done">
+          <button class="btn" type="button" data-close-report-search aria-label="Свернуть поиск" title="Свернуть поиск"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+        </div>
+        <ul class="report-options" id="${prefix}Options" role="listbox" aria-label="Совпадения" hidden></ul>
+        <span class="search-status" id="${prefix==='report'?'svqn':'historySearchStatus'}" aria-live="polite"></span>
+      </div>
+      <div class="report-selection" role="group" aria-label="Выбранные показатели" hidden></div>
+    </div>
+  </div>`}
+
 function placeReportSearch(){
-  const search=$('#pvBody .svsearch'), viewport=window.visualViewport;
-  if(!search||!viewport)return;
-  search.style.setProperty('--report-keyboard',Math.max(0,window.innerHeight-viewport.height-viewport.offsetTop)+'px');
-  search.style.setProperty('--report-visible-height',viewport.height+'px');
+  const viewport=window.visualViewport;
+  if(!viewport)return;
+  for(const search of document.querySelectorAll('#pvBody .svsearch,#historySearch .svsearch')){
+    search.style.setProperty('--report-keyboard',Math.max(0,window.innerHeight-viewport.height-viewport.offsetTop)+'px');
+    search.style.setProperty('--report-visible-height',viewport.height+'px');
+  }
 }
 window.visualViewport?.addEventListener('resize',placeReportSearch);
 window.visualViewport?.addEventListener('scroll',placeReportSearch);
+function analysisIndicators(groups){
+  return groups.flatMap(group=>group.rows.map(m=>({id:m.gi+','+m.ri,name:m.n,group:group.title})));
+}
 function bindReportSearch(groups){
   const search=$('#pvBody .svsearch');
   if(!search)return;
-  const button=search.querySelector('.search-trigger'), panel=$('#reportSearchPanel'), input=$('#svq');
-  const list=$('#reportOptions'), chips=search.querySelector('.report-selection'), status=$('#svqn');
   const rows=[...document.querySelectorAll('#pvBody [data-report-indicator]')];
   const headings=document.querySelectorAll('#pvBody .report-scroll tr.grp');
+  const dateHeaders=[...document.querySelectorAll('#pvBody .report-scroll thead th')].slice(3);
   const empty=$('#pvBody .report-selection-empty');
-  const indicators=groups.flatMap(group=>group.rows.map(m=>({id:m.gi+','+m.ri,name:m.n,group:group.title})));
-  let matches=[], active=0;
-
   function renderSelection(){
     let visibleCount=0;
     for(const row of rows){
@@ -2789,9 +2858,26 @@ function bindReportSearch(groups){
       }
       heading.classList.toggle('svhide',!visible);
     }
+    if(doctorFilters.filled){
+      dateHeaders.forEach((heading,i)=>{
+        const column=i+3;
+        const emptyDate=!rows.some(row=>!row.classList.contains('svhide')&&row.cells[column].hasAttribute('data-has-result'));
+        heading.classList.toggle('report-empty-date',emptyDate);
+        for(const row of rows)row.cells[column].classList.toggle('report-empty-date',emptyDate);
+      });
+    }
     if(empty)empty.hidden=visibleCount>0||!reportSelected.size;
-    chips.innerHTML=[...reportSelected].map(([id,name])=>`<span class="bchip">${esc(name)}<button type="button" data-remove-indicator="${id}" aria-label="Убрать ${esc(name)}">×</button></span>`).join('');
-    chips.hidden=!reportSelected.size;
+  }
+  bindIndicatorSearch(search,reportSelected,()=>groups,renderSelection);
+  renderSelection();
+}
+function bindIndicatorSearch(search,selected,groups,onSelection){
+  const button=search.querySelector('.search-trigger'), panel=search.querySelector('.report-search-panel'), input=panel.querySelector('input');
+  const list=panel.querySelector('.report-options'), chips=search.querySelector('.report-selection'), status=panel.querySelector('.search-status');
+  let matches=[], active=0;
+  function renderChips(){
+    chips.innerHTML=[...selected].map(([id,name])=>`<span class="bchip">${esc(name)}<button type="button" data-remove-indicator="${id}" aria-label="Убрать ${esc(name)}">×</button></span>`).join('');
+    chips.hidden=!selected.size;
   }
 
   function highlight(index,scroll=false){
@@ -2809,14 +2895,14 @@ function bindReportSearch(groups){
     const query=input.value.trim().toLowerCase();
     const aliases=query?Object.keys(SYN).filter(key=>key.includes(query)).map(key=>SYN[key]):[];
     const score=name=>name===query?0:name.startsWith(query)?1:name.includes(query)?2:3;
-    matches=query?indicators.filter(({id,name})=>{
+    matches=query?analysisIndicators(groups()).filter(({id,name})=>{
       const label=name.toLowerCase();
-      return !reportSelected.has(id)&&(label.includes(query)||aliases.some(alias=>label.includes(alias)));
+      return !selected.has(id)&&(label.includes(query)||aliases.some(alias=>label.includes(alias)));
     }).sort((a,b)=>score(a.name.toLowerCase())-score(b.name.toLowerCase())):[];
     list.innerHTML=matches.map(({name,group},i)=>{
       const start=name.toLowerCase().indexOf(query);
       const label=start<0?esc(name):esc(name.slice(0,start))+'<mark>'+esc(name.slice(start,start+query.length))+'</mark>'+esc(name.slice(start+query.length));
-      return `<li id="reportOption${i}" role="option" data-option="${i}">${label}<small>${esc(group)}</small></li>`;
+      return `<li id="${list.id}-${i}" role="option" data-option="${i}">${label}<small>${esc(group)}</small></li>`;
     }).join('');
     list.hidden=!matches.length;
     input.setAttribute('aria-expanded',String(!!matches.length));
@@ -2832,8 +2918,9 @@ function bindReportSearch(groups){
   function choose(index){
     const match=matches[index];
     if(!match)return;
-    reportSelected.set(match.id,match.name);
-    renderSelection();
+    selected.set(match.id,match.name);
+    onSelection();
+    renderChips();
     input.value='';
     suggest();
     input.focus({preventScroll:true});
@@ -2853,8 +2940,9 @@ function bindReportSearch(groups){
     const remove=e.target.closest('[data-remove-indicator]');
     if(!remove)return;
     const index=[...chips.querySelectorAll('button')].indexOf(remove);
-    reportSelected.delete(remove.dataset.removeIndicator);
-    renderSelection();
+    selected.delete(remove.dataset.removeIndicator);
+    onSelection();
+    renderChips();
     suggest();
     const buttons=chips.querySelectorAll('button');
     (buttons[index]||buttons[buttons.length-1]||button).focus();
@@ -2879,8 +2967,9 @@ function bindReportSearch(groups){
       highlight((active+(e.key==='ArrowDown'?1:-1)+matches.length)%matches.length,true);
     }
   });
-  renderSelection();
+  renderChips();
   placeReportSearch();
+  return ()=>{renderChips();suggest()};
 }
 /* где сдать: каталог и специалисты */
 const CAT=[
@@ -3018,44 +3107,64 @@ document.addEventListener('click',e=>{
 
 
 /* полная история — отдельное окно */
-const HDEF={q:'',sys:'',st:'all',from:0,to:DATES.length-1,filled:false};
+const HDEF={sys:'',st:'all',from:0,to:DATES.length-1,filled:false,events:false};
 let HF=Object.assign({},HDEF,store.get('oh-hist',{}));
-const hEl={q:$('#hq'),sys:$('#hsys'),st:$('#hst'),from:$('#hfrom'),to:$('#hto'),filled:$('#hfilled')};
-$('#hsys').insertAdjacentHTML('beforeend',G.filter(g=>g.rows.length).map(g=>`<option value="${g.gi}">${esc(g.title)}</option>`).join(''));
-[$('#hfrom'),$('#hto')].forEach(s=>s.innerHTML=DATES.map((d,i)=>`<option value="${i}">${d}</option>`).join(''));
+delete HF.q;
+const historySelection=new Map();
+let historyCandidates=[];
+const historyFilters=$('#historyFilters');
+historyFilters.innerHTML=analysisFiltersHTML();
+$('#historySearch').innerHTML=indicatorSearchHTML('history');
+const refreshHistorySearch=bindIndicatorSearch($('#historySearch .svsearch'),historySelection,()=>historyCandidates,renderHist);
 $('#hTeaseSub').textContent=`${ALL.length} показателей · ${DATES.length} сдач · 20${DATES[0].slice(-2)}–20${DATES[DATES.length-1].slice(-2)} · фильтры по датам и системам`;
-function hSync(){hEl.q.value=HF.q;hEl.sys.value=HF.sys;hEl.st.value=HF.st;hEl.from.value=HF.from;hEl.to.value=HF.to;hEl.filled.checked=HF.filled;
-  const dirty=JSON.stringify(HF)!==JSON.stringify(HDEF);$('#hreset').hidden=!dirty}
-function hRead(){HF={q:hEl.q.value,sys:hEl.sys.value,st:hEl.st.value,from:+hEl.from.value,to:+hEl.to.value,filled:hEl.filled.checked};
-  if(HF.from>HF.to){const x=HF.from;HF.from=HF.to;HF.to=x}store.set('oh-hist',HF);hSync();renderHist()}
-function renderHist(){
-  const q=HF.q.trim().toLowerCase();const alt=Object.keys(SYN).filter(k=>q&&q.includes(k)).map(k=>SYN[k]);
+function hSync(){
+  syncAnalysisFilters(historyFilters,HF);
+  $('#hreset').hidden=!historySelection.size&&JSON.stringify(HF)===JSON.stringify(HDEF);
+}
+function renderHist(opening=false){
   let di=DATES.map((d,i)=>i).filter(i=>i>=HF.from&&i<=HF.to);
   const inR=p=>p.i>=HF.from&&p.i<=HF.to;
-  const ok=m=>{const n=m.n.toLowerCase();if(q&&!(n.includes(q)||alt.some(a=>n.includes(a))))return false;
-    const ps=m.pts.filter(inR);if(!ps.length)return false;
-    if(HF.st==='now')return m.st==='high'||m.st==='low';if(HF.st==='ever')return ps.some(p=>p.st==='high'||p.st==='low');if(HF.st==='norm')return ps.every(p=>p.st==='ok'||p.st==='none');return true};
-  const gs=G.filter(g=>g.rows.length&&(!HF.sys||String(g.gi)===HF.sys)).map(g=>({g,rows:g.rows.filter(ok)})).filter(x=>x.rows.length);
+  historyCandidates=G.filter(g=>g.rows.length&&(!HF.sys||String(g.gi)===HF.sys))
+    .map(g=>({g,title:g.title,rows:g.rows.filter(m=>matchesAnalysisStatus(m,m.pts.filter(inR),HF.st))}))
+    .filter(group=>group.rows.length);
+  const gs=historyCandidates.map(group=>({...group,rows:group.rows.filter(m=>!historySelection.size||historySelection.has(m.gi+','+m.ri))})).filter(group=>group.rows.length);
   if(HF.filled){const used=new Set();gs.forEach(x=>x.rows.forEach(m=>m.pts.forEach(p=>used.add(p.i))));di=di.filter(i=>used.has(i))}
-  const n=gs.reduce((s,x)=>s+x.rows.length,0);$('#hSum').textContent=`${n} из ${ALL.length} · ${di.length} дат`;$('#hNone').hidden=n>0;
+  const n=gs.reduce((sum,group)=>sum+group.rows.length,0);
+  hSync();
+  $('#hSum').textContent=`${n} из ${ALL.length} · ${di.length} дат`;$('#hNone').hidden=n>0;
+  const eventHost=$('#hEvents'), eventsOpen=eventHost.querySelector('details')?.open;
+  eventHost.innerHTML=HF.events?analysisTimeline(HF.from,HF.to):'';
+  if(eventsOpen===false&&eventHost.firstElementChild)eventHost.firstElementChild.open=false;
   $('#htab').innerHTML=n?`<thead><tr><th class="hn">Показатель</th>${di.map(i=>`<th>${DATES[i]}<small>${esc(LABS[i]||'')}</small></th>`).join('')}</tr></thead><tbody>`+
     gs.map(x=>`<tr class="hg"><td class="hn">${esc(x.g.title)}</td>${di.map(()=>'<td></td>').join('')}</tr>`+x.rows.map(m=>`<tr><td class="hn"><button class="hl" data-hgo="${m.gi},${m.ri}" title="${esc(m.n)}${U(m.u)?', '+esc(U(m.u)):''}"><span class="hl-n">${esc(m.n)}</span>${U(m.u)?`<span class="hl-u">${esc(U(m.u))}</span>`:''}</button></td>${di.map(i=>{const p=m.pts.find(p=>p.i===i);return p?`<td class="${p.st==='high'?'c-h':p.st==='low'?'c-l':''}" title="${esc(m.n)} · ${DATES[i]} · ${esc(p.raw)} ${esc(U(m.u))}${p.st==='high'?' · выше нормы':p.st==='low'?' · ниже нормы':''}">${esc(p.raw)}${p.st==='high'?'<i>↑</i>':p.st==='low'?'<i>↓</i>':''}</td>`:'<td class="e">—</td>'}).join('')}</tr>`).join('')).join('')+'</tbody>':'';
-  const hw=$('#hm .hwrap');requestAnimationFrame(()=>{hw.scrollLeft=hw.scrollWidth})}
-Object.values(hEl).forEach(e=>{e.addEventListener(e.type==='search'?'input':'change',hRead)});
-const hReset=()=>{HF=Object.assign({},HDEF);store.set('oh-hist',HF);hSync();renderHist()};
+  if(opening){
+    const hw=$('#hm .hwrap');
+    requestAnimationFrame(()=>{hw.scrollLeft=hw.scrollWidth});
+  }
+}
+historyFilters.onchange=e=>{
+  if(!updateAnalysisFilter(e.target,HF))return;
+  store.set('oh-hist',HF);
+  renderHist();
+  refreshHistorySearch();
+};
+const hReset=()=>{
+  historySelection.clear();HF={...HDEF};
+  store.set('oh-hist',HF);renderHist();refreshHistorySearch();
+};
 $('#hreset').onclick=hReset;$('#hreset2').onclick=hReset;
 const portrait=()=>window.matchMedia('(orientation: portrait) and (max-width: 760px)').matches;
 let rotSkipped=false;
 function rotUI(){$('#rot').classList.toggle('on',portrait()&&!rotSkipped)}
 window.addEventListener('resize',()=>{if(!$('#hm').hidden)rotUI()});
-function openHist(){lastFocus=document.activeElement;hSync();renderHist();const h=$('#hm');h.hidden=false;requestAnimationFrame(()=>h.classList.add('on'));rotUI();document.body.style.overflow='hidden';
+function openHist(){lastFocus=document.activeElement;renderHist(true);refreshHistorySearch();const h=$('#hm');h.hidden=false;requestAnimationFrame(()=>h.classList.add('on'));rotUI();document.body.style.overflow='hidden';
   try{if(portrait()&&screen.orientation&&screen.orientation.lock&&document.documentElement.requestFullscreen){document.documentElement.requestFullscreen().then(()=>screen.orientation.lock('landscape')).catch(()=>{})}}catch(e){}
   $('#hmX').focus()}
 function closeHist(){const h=$('#hm');h.classList.remove('on');document.body.style.overflow='';setTimeout(()=>{h.hidden=true},250);
   try{if(document.fullscreenElement){screen.orientation&&screen.orientation.unlock&&screen.orientation.unlock();document.exitFullscreen().catch(()=>{})}}catch(e){}
   if(lastFocus)lastFocus.focus()}
 $('#hOpen').onclick=openHist;$('#hmX').onclick=closeHist;$('#rotSkip').onclick=()=>{rotSkipped=true;rotUI()};
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#hm').hidden)closeHist()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!e.defaultPrevented&&!$('#hm').hidden)closeHist()});
 document.addEventListener('click',e=>{const g=e.target.closest('[data-hgo]');if(g){const [gi,ri]=g.dataset.hgo.split(',').map(Number);closeHist();setTimeout(()=>openSystem(gi,ri),260)}});
 /* первые шаги */
 let ts=0;
@@ -3189,39 +3298,55 @@ function openCtxAsk(){const act=EV.med.map((e,i)=>({e,i})).filter(x=>x.e.f&&medA
 renderTabs('summary');updLogin();fillForm();renderSummary();renderCtx();renderBlocks();renderUploads();drawQR();renderDocs();renderShared();renderBook();
 $('#visitDoctor').onclick=openDoctorReport;
 
-let doctorFullscreen=false;
-let doctorRotatePending=false;
-function leaveDoctorLandscape(){
-  if(!doctorFullscreen)return;
-  doctorFullscreen=false;
-  screen.orientation?.unlock?.();
-  if(document.fullscreenElement===document.documentElement)document.exitFullscreen().catch(()=>{});
-}
-document.addEventListener('fullscreenchange',()=>{
-  if(!document.fullscreenElement&&doctorFullscreen){
-    doctorFullscreen=false;
-    screen.orientation?.unlock?.();
+const doctorRotateHint=$('#rot').cloneNode(true);
+doctorRotateHint.id='reportRotateHint';
+doctorRotateHint.setAttribute('role','dialog');
+doctorRotateHint.setAttribute('aria-modal','true');
+doctorRotateHint.setAttribute('aria-label','Поверните телефон');
+const doctorRotateButton=doctorRotateHint.querySelector('button');
+doctorRotateButton.removeAttribute('id');
+$('#pv').append(doctorRotateHint);
+let doctorRotationDismissed=false;
+function showDoctorRotation(show){
+  const wasFocused=doctorRotateHint.contains(document.activeElement);
+  doctorRotateHint.classList.toggle('on',show);
+  for(const element of $('#pv').children){
+    if(element!==doctorRotateHint)element.inert=show;
   }
+  if(show)doctorRotateButton.focus({preventScroll:true});
+  else if(wasFocused&&document.body.classList.contains('preview'))$('#pvBack').focus({preventScroll:true});
+}
+function hideDoctorRotation(){
+  doctorRotationDismissed=true;
+  showDoctorRotation(false);
+}
+doctorRotateButton.onclick=hideDoctorRotation;
+doctorRotateHint.onkeydown=e=>{
+  if(e.key==='Tab')e.preventDefault();
+  if(e.key==='Escape'){e.preventDefault();hideDoctorRotation()}
+};
+window.addEventListener('resize',()=>{
+  if(doctorRotateHint.classList.contains('on')&&!portrait())hideDoctorRotation();
 });
 function openDoctorReport(){
   openSpecView(false);
-  if(window.matchMedia('(orientation:portrait) and (pointer:coarse)').matches)enterDoctorLandscape();
+  showDoctorRotation(portrait()&&!doctorRotationDismissed);
 }
-async function enterDoctorLandscape(){
-  const root=document.documentElement;
-  if(doctorRotatePending||document.fullscreenElement||!document.fullscreenEnabled||!root.requestFullscreen||!screen.orientation?.lock)return;
-  doctorRotatePending=true;
-  try{
-    await root.requestFullscreen();
-    doctorFullscreen=true;
-    if(!document.body.classList.contains('preview')){leaveDoctorLandscape();return}
-    await screen.orientation.lock('landscape');
-  }catch{
-    leaveDoctorLandscape();
-  }finally{
-    doctorRotatePending=false;
-  }
-}
+const doctorFilterHost=$('#reportFilters');
+doctorFilterHost.innerHTML=analysisFiltersHTML(true);
+doctorFilterHost.onchange=e=>{
+  if(updateAnalysisFilter(e.target,doctorFilters))openSpecView(false,true);
+};
+doctorFilterHost.onclick=e=>{
+  if(!e.target.closest('[data-analysis-reset]'))return;
+  doctorFilters={...doctorDefaults};
+  reportSelected.clear();
+  openSpecView(false,true);
+};
+$('#pvBody').addEventListener('click',e=>{
+  const details=e.target.closest('[data-report-detail]');
+  if(details)openSystem(...details.dataset.reportDetail.split(',').map(Number));
+});
 function openVisitDialog(title,html){
  openModal(title,'<div class="visit-full-content">'+html+'</div>');
 }
@@ -3482,8 +3607,6 @@ function bindReportPan(){
   copy.className=table.className;
   const columns=document.createElement('colgroup');
   const cells=[...table.tHead.rows[0].cells];
-  const tracks=cells.map(()=>document.createElement('col'));
-  columns.append(...tracks);
   copy.append(columns,table.tHead.cloneNode(true));
   clip.append(copy);
   header.append(clip);
@@ -3499,7 +3622,12 @@ function bindReportPan(){
   }
   function resize(){
     copy.style.width=table.getBoundingClientRect().width+'px';
-    cells.forEach((cell,i)=>tracks[i].style.width=cell.getBoundingClientRect().width+'px');
+    columns.replaceChildren(...cells.filter(cell=>!cell.classList.contains('report-empty-date')).map(cell=>{
+      const column=document.createElement('col');
+      column.style.width=cell.getBoundingClientRect().width+'px';
+      return column;
+    }));
+    cells.forEach((cell,i)=>copy.tHead.rows[0].cells[i].classList.toggle('report-empty-date',cell.classList.contains('report-empty-date')));
     header.style.setProperty('--report-head-height',table.tHead.getBoundingClientRect().height+'px');
     header.classList.add('is-ready');
     update();
@@ -3519,11 +3647,6 @@ function bindReportPan(){
   reportPanObserver.observe(table);
   for(const cell of cells)reportPanObserver.observe(cell);
   resize();
-}
-function diaryReport(inPeriod){
- const rows=(P.diary||[]).filter(r=>inPeriod(evDate(r.day)));
- if(!rows.length)return '';
- return '<section class="svc"><h3>Домашние измерения со слов пациента</h3>'+diaryList(rows)+'</section>';
 }
 function diaryList(rows){
  return rows.slice().sort((a,b)=>(b.day+b.time).localeCompare(a.day+a.time)).map(r=>'<p>'+dfmt(r.day)+' '+esc(r.time)+' · '+esc(diaryKinds[r.kind].fields.map((label,i)=>label+' — '+r.values[i]).join(', '))+'</p>').join('');
@@ -3547,20 +3670,14 @@ $('#sendPDF').onclick=()=>{
  input.onchange=async()=>{const file=input.files[0];if(file && navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'Анализы'})}catch(e){if(e.name!=='AbortError')note.textContent='Приложите сохранённый PDF к письму.'}}};
  input.click()
 };
-const rangeBoxes=[$('#shareRange'),$('#reportRange')];
-for(const box of rangeBoxes){
- box.addEventListener('change',e=>{
-  const mode=box.querySelector('select').value,from=box.querySelector('[data-from]'),to=box.querySelector('[data-to]');
-  if(mode==='custom' && from.value && to.value && from.value>to.value){
-   if(e.target===from)to.value=from.value;else from.value=to.value;
+const shareRange=$('#shareRange');
+shareRange.onchange=e=>{
+  const mode=$('#period10').value, from=shareRange.querySelector('[data-from]'), to=shareRange.querySelector('[data-to]');
+  if(mode==='custom'&&from.value&&to.value&&from.value>to.value){
+    if(e.target===from)to.value=from.value;else from.value=to.value;
   }
-  for(const other of rangeBoxes){
-   other.querySelector('select').value=mode;other.querySelector('.date-pair').hidden=mode!=='custom';
-   other.querySelector('[data-from]').value=from.value;other.querySelector('[data-to]').value=to.value;
-  }
-  if(document.body.classList.contains('preview'))openSpecView($('#pvBody .svbar')?.textContent.startsWith('Предпросмотр PDF'),true);
- });
-}
+  shareRange.querySelector('.date-pair').hidden=mode!=='custom';
+};
 </script>
 </body>
 </html>
