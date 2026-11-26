@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:processing_service/processing_service.dart';
 import 'package:postgres/postgres.dart';
+import 'package:cloud_access/cloud_access.dart';
 import 'package:shelf/shelf_io.dart' as shelf;
 
 Future<void> main() async {
@@ -30,6 +31,12 @@ Future<void> main() async {
   final service = ProcessingService(
     db: pool,
     documents: Uri.parse(required('PROCESSING_DOCUMENTS_ENDPOINT')),
+    cloudPolicies: (env['ENTITLEMENTS_ENDPOINT'] ?? '').isEmpty
+        ? null
+        : HttpCloudPolicyGateway(
+            Uri.parse(required('ENTITLEMENTS_ENDPOINT')),
+            required('CLOUD_SERVICE_KEY'),
+          ),
     worker: PythonJobWorker(
       python: env['PROCESSING_PYTHON'] ?? 'python3',
       script: required('PROCESSING_WORKER'),

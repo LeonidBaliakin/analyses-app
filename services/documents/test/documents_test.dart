@@ -1,4 +1,7 @@
 import 'dart:convert';
+
+import 'package:cloud_access/cloud_access.dart';
+
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -26,6 +29,25 @@ class MemoryObjects implements ObjectStorage {
   @override
   Future<void> delete(String key) async {
     data.remove(key);
+  }
+}
+
+class TestPolicies implements CloudPolicyGateway {
+  bool sync = true, storage = true, processing = true, unavailable = false;
+  int records = 2, bytes = 1000, jobs = 1;
+  @override
+  Future<CloudPolicy> policy(String owner) async {
+    if (unavailable) throw const CloudAccessFailure();
+    return CloudPolicy(
+      ownerId: owner,
+      revision: 1,
+      syncEnabled: sync,
+      storageEnabled: storage,
+      processingEnabled: processing,
+      recordLimit: records,
+      storageLimitBytes: bytes,
+      processingMonthlyLimit: jobs,
+    );
   }
 }
 
@@ -315,4 +337,46 @@ void main() {
       expect((await call('GET', 'p/originals/o/content')).statusCode, 404);
     },
   );
+  test('independent storage policy, concurrent byte reservation, downgrade and read retention', () async {
+    final policy = TestPolicies()..bytes = bytes.length;
+    store = DocumentsStore(db, objects, cloudPolicies: policy);
+    final results = await Future.wait([
+      store.reserve('a', 'p', metadata()),
+      store.reserve('a', 'p', metadata()),
+    ]);
+    expect(results, hasLength(2));
+    expect(
+      (await db.execute(
+        "SELECT reserved_bytes FROM accounts WHERE owner_id='a'",
+      )).single[0],
+      bytes.length,
+    );
+    await expectLater(
+      store.reserve('a', 'p', metadata(id: 'over')),
+      throwsA(isA<ApiError>().having((e) => e.code, 'code', 'quota_exceeded')),
+    );
+    await store.stage('a', 'p', 'o', bytes);
+    await store.finalize('a', 'p', 'o');
+    policy.storage = false;
+    await expectLater(
+      store.reserve('a', 'p', metadata()),
+      throwsA(isA<ApiError>().having((e) => e.code, 'code', 'storage_denied')),
+    );
+    expect((await store.download('a', 'p', 'o')).$2, bytes);
+    policy.storage = true;
+    policy.bytes = 0;
+    expect((await store.download('a', 'p', 'o')).$2, bytes);
+    policy.unavailable = true;
+    await expectLater(
+      store.reserve('a', 'p', metadata(id: 'down')),
+      throwsA(
+        isA<ApiError>().having(
+          (e) => e.code,
+          'code',
+          'cloud_access_unavailable',
+        ),
+      ),
+    );
+    expect((await store.download('a', 'p', 'o')).$2, bytes);
+  });
 }

@@ -1,4 +1,7 @@
 import 'dart:convert';
+
+import 'package:cloud_access/cloud_access.dart';
+
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
@@ -8,6 +11,25 @@ import 'package:record_sync/record_sync.dart';
 import 'package:records_service/records_service.dart';
 import 'package:shelf/shelf.dart';
 import 'package:test/test.dart';
+
+class TestPolicies implements CloudPolicyGateway {
+  bool sync = true, storage = true, processing = true, unavailable = false;
+  int records = 2, bytes = 1000, jobs = 1;
+  @override
+  Future<CloudPolicy> policy(String owner) async {
+    if (unavailable) throw const CloudAccessFailure();
+    return CloudPolicy(
+      ownerId: owner,
+      revision: 1,
+      syncEnabled: sync,
+      storageEnabled: storage,
+      processingEnabled: processing,
+      recordLimit: records,
+      storageLimitBytes: bytes,
+      processingMonthlyLimit: jobs,
+    );
+  }
+}
 
 void main() {
   final file = File('../../infra/documents/.env');
@@ -254,5 +276,88 @@ void main() {
       200,
     );
     expect(await count('record_outbox'), 1);
+  });
+  test('record quota serializes writers, replays/edits/deletes, revocation and unavailable policy', () async {
+    final policy = TestPolicies();
+    api = RecordsService(db, [
+      TokenIdentity('owner-a', sha256.convert(utf8.encode('a')).toString()),
+    ], cloudPolicies: policy);
+    expect(
+      (await call('POST', 'sync-operations', body: cmd(profile))).statusCode,
+      200,
+    );
+    final first = cmd(lab('1'), op: 'one');
+    final replies = await Future.wait([
+      call('POST', 'sync-operations', body: first),
+      call(
+        'POST',
+        'sync-operations',
+        body: cmd(lab('2', id: 'second'), op: 'two'),
+      ),
+    ]);
+    expect(replies.map((r) => r.statusCode).toList()..sort(), [200, 409]);
+    final row = (await db.execute(
+      "SELECT record_id,version FROM records WHERE kind='result'",
+    )).single;
+    final id = row[0] as String;
+    expect(
+      (await call(
+        'POST',
+        'sync-operations',
+        body: cmd(lab('3', id: id), op: 'edit', base: 1),
+      )).statusCode,
+      200,
+    );
+    expect(
+      (await call(
+        'POST',
+        'sync-operations',
+        body: cmd(lab('3', id: id), op: 'edit', base: 1),
+      )).statusCode,
+      200,
+    );
+    expect(await count('records'), 2);
+    policy.sync = false;
+    expect(
+      (await call(
+        'POST',
+        'sync-operations',
+        body: cmd(lab('3', id: id), op: 'edit', base: 1),
+      )).statusCode,
+      403,
+    );
+    expect(
+      (await call('GET', 'sync-changes?cursor=0&epoch=$epoch')).statusCode,
+      200,
+    );
+    policy.sync = true;
+    expect(
+      (await call(
+        'POST',
+        'sync-operations',
+        body: cmd(lab('3', id: id), op: 'delete', base: 2, deleted: true),
+      )).statusCode,
+      200,
+    );
+    expect(
+      (await call(
+        'POST',
+        'sync-operations',
+        body: cmd(lab('4', id: 'new'), op: 'new'),
+      )).statusCode,
+      200,
+    );
+    policy.unavailable = true;
+    final scope = await json(await call('GET', 'sync-access'));
+    expect(scope['canWrite'], false);
+    expect(
+      (await call(
+        'POST',
+        'sync-operations',
+        body: cmd(lab('4', id: 'new'), op: 'new'),
+      )).statusCode,
+      503,
+    );
+    expect(await count('records'), 3);
   });
 }

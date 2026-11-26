@@ -22,3 +22,19 @@ analyses_runtime_artifacts:
   - name: tessdata/eng.traineddata
     url: "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/{{ analyses_tessdata_revision }}/eng.traineddata"
     sha256: 7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2
+
+# Default mail is a local test sink; configure real SMTP before public use.
+analyses_smtp_host: mailpit
+analyses_smtp_port: 1025
+analyses_smtp_from: accounts@analyses.test
+analyses_smtp_username: ""
+analyses_smtp_password: ""
+analyses_smtp_ssl: false
+analyses_smtp_allow_insecure: "{{ analyses_smtp_host == 'mailpit' }}"
+analyses_identity_secure_cookie: true
+
+# Simulation-only messenger scaffolding. Live adapters are not implemented.
+analyses_messengers_enabled: false
+analyses_telegram_delivery_mode: disabled
+analyses_vk_delivery_mode: disabled
+analyses_max_delivery_mode: disabled

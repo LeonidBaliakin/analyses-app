@@ -127,6 +127,10 @@ class _SyncPageState extends State<SyncPage> {
                             switch (error) {
                               'unauthorized' => l.syncUnauthorized,
                               'access' => l.syncAccess,
+                              'sync_denied' ||
+                              'cloud_disabled' => l.cloudSyncDenied,
+                              'sync_quota_exceeded' => l.cloudSyncQuota,
+                              'cloud_access_unavailable' => l.cloudUnavailable,
                               'account' => l.syncAccount,
                               'server_changed' ||
                               'cursor' => l.syncServerChanged,

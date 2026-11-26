@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,6 +18,12 @@ import 'features/processing/processing.dart';
 import 'features/reports/reports.dart';
 import 'features/sync/sync.dart';
 import 'data/sync/http_sync_gateway.dart';
+import 'features/account/account.dart';
+import 'data/account/http_account_gateway.dart';
+import 'data/account/session_storage.dart';
+
+import 'package:flutter/foundation.dart';
+
 import 'data/reports/export_report.dart';
 import 'data/device_access/plugin_device_access.dart';
 import 'features/device_access/device_access.dart';
@@ -65,6 +73,7 @@ Future<void> main() async {
             endpoint: gateway.endpoint,
             token: gateway.token,
             profileId: RecordsViewModel.profileId,
+            accountOwnerId: gateway.accountOwnerId,
           )
         : null,
   );
@@ -104,6 +113,37 @@ Future<void> main() async {
     onChanged: records.load,
   );
   await sync.refresh();
+  const configuredApi = String.fromEnvironment('CLOUD_API_URL');
+  final endpoint = Uri.parse(
+    configuredApi.isNotEmpty
+        ? configuredApi
+        : !kIsWeb && defaultTargetPlatform == TargetPlatform.android
+        ? 'http://10.0.2.2:18088/'
+        : kIsWeb
+        ? '${Uri.base.scheme}://${Uri.base.host}:18088/'
+        : 'http://127.0.0.1:18088/',
+  );
+  final account = AccountViewModel(
+    endpoint: endpoint,
+    gatewayFactory: (uri, token) => HttpAccountGateway(uri, token: token),
+    storage: const DeviceSessionStorage(),
+    onDisconnect: () {
+      sync.disconnect();
+      originals.disconnect();
+    },
+    onConnect: (session) async {
+      final connected = await sync.connect(endpoint.toString(), session.token);
+      if (!connected) return false;
+      originals.connect(
+        DocumentsHttpGateway(
+          endpoint: endpoint,
+          token: session.token,
+          accountOwnerId: session.ownerId,
+        ),
+      );
+      return true;
+    },
+  );
   runApp(
     HealthApp(
       settings: settings,
@@ -114,6 +154,9 @@ Future<void> main() async {
       processing: processing,
       reports: reports,
       sync: sync,
+      account: account,
     ),
   );
+  // Restoring a session must not delay or block opening local medical records.
+  unawaited(account.restore());
 }

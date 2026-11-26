@@ -94,3 +94,35 @@ python3 infra/server/smoke.py /absolute/path/to/deployment
 OCR/LLM по внутреннему адресу inference. Используется только сгенерированный пример.
 
 [Синхронизация записей и двухклиентский probe](../../docs/reports-and-sync.md).
+
+## Аккаунты
+
+Identity запускается с отдельной PostgreSQL БД и persistent ключами сессий/почтового
+outbox. Обновление bootstrap добавляет недостающие ключи без смены существующих.
+По умолчанию `analyses_smtp_host: mailpit` включает локальный тестовый приёмник
+без опубликованного SMTP-порта. Для настоящих писем задайте `analyses_smtp_host`,
+`analyses_smtp_port`, `analyses_smtp_from`, защищённые `analyses_smtp_username` и
+`analyses_smtp_password`; `analyses_smtp_allow_insecure` оставьте false.
+`analyses_identity_secure_cookie` по умолчанию true: публичному API нужен HTTPS.
+[Сценарий и ограничения](../../docs/accounts-and-sessions.md).
+
+## Облачные квоты
+
+Entitlements и его БД включены в основной стек. Обновление добавляет отдельные
+CLOUD_SERVICE_KEY/CLOUD_ADMIN_KEY без ротации прежних секретов. Общий cloud_access
+копируется только как серверный Dart-контракт; Flutter не входит в AOT-образы.
+[Политика, единицы расхода и административный grant](../../docs/cloud-access.md).
+
+## Каркас мессенджеров
+
+Профиль `messengers` опционален: `analyses_messengers_enabled: true` включает
+Notifications, bootstrap его БД и три независимых delivery workers. Режимы
+`analyses_telegram_delivery_mode`, `analyses_vk_delivery_mode`,
+`analyses_max_delivery_mode` по умолчанию disabled, допустим также dry_run.
+Другие значения отклоняются. Внутренние ключи сохраняются в bootstrap.json;
+provider tokens не используются и внешняя доставка отсутствует. Workers имеют
+только internal network без выхода в интернет. Readiness входит в deployment.
+
+Отключение профиля не останавливает прежние контейнеры: используйте явный
+`docker compose --profile messengers stop delivery-telegram delivery-vk delivery-max notifications`.
+[Пошаговая инструкция и подготовка оператором](../../docs/operations/messengers.md).

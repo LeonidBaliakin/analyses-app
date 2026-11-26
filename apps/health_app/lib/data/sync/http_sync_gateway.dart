@@ -4,19 +4,21 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:record_sync/record_sync.dart';
 
+import '../network/cloud_client.dart';
+
 class HttpSyncGateway implements SyncGateway {
   HttpSyncGateway({
     required this.endpoint,
     required this.token,
     required this.profileId,
     http.Client? client,
-  }) : _client = client ?? http.Client() {
+  }) : _client = client ?? createCloudClient() {
     if (endpoint.userInfo.isNotEmpty ||
         endpoint.hasQuery ||
         endpoint.hasFragment ||
         !['', '/'].contains(endpoint.path) ||
         endpoint.host.isEmpty ||
-        token.trim().isEmpty ||
+        (!usesCloudCookies && token.trim().isEmpty) ||
         (endpoint.scheme != 'https' &&
             !(endpoint.scheme == 'http' &&
                 [
@@ -31,6 +33,7 @@ class HttpSyncGateway implements SyncGateway {
   final Uri endpoint;
   final String token, profileId;
   final http.Client _client;
+  String? _owner;
   Future<Map<String, dynamic>> _request(
     String method,
     String action, {
@@ -43,7 +46,9 @@ class HttpSyncGateway implements SyncGateway {
           .replace(queryParameters: query);
       final request = http.Request(method, uri)..followRedirects = false;
       request.headers.addAll({
-        'authorization': 'Bearer $token',
+        if (token.isNotEmpty) 'authorization': 'Bearer $token',
+        'x-app-request': '1',
+        'x-account-owner': ?_owner,
         'content-type': 'application/json',
       });
       if (body != null) request.body = jsonEncode(body);
@@ -67,7 +72,7 @@ class HttpSyncGateway implements SyncGateway {
         throw SyncFailure(
           response.statusCode == 401
               ? 'unauthorized'
-              : response.statusCode == 403 || response.statusCode == 404
+              : response.statusCode == 404
               ? 'access'
               : code,
           retryable: response.statusCode >= 500 || response.statusCode == 429,
@@ -96,6 +101,7 @@ class HttpSyncGateway implements SyncGateway {
         j['canWrite'] is! bool) {
       throw const SyncFailure('schema');
     }
+    _owner = j['ownerId'] as String;
     return SyncIdentity(
       j['ownerId'] as String,
       profileId,

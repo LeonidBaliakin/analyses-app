@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:records_service/records_service.dart';
 import 'package:postgres/postgres.dart';
+import 'package:cloud_access/cloud_access.dart';
 import 'package:shelf/shelf_io.dart' as shelf;
 
 Future<void> main() async {
@@ -14,10 +15,26 @@ Future<void> main() async {
   final config = jsonDecode(
     await File(required('RECORDS_IDENTITIES_FILE')).readAsString(),
   ) as List;
-  final service = RecordsService(db, [
-    for (final entry in config)
-      TokenIdentity(entry['ownerId'] as String, entry['tokenSha256'] as String),
-  ]);
+  final service = RecordsService(
+    db,
+    [
+      for (final entry in config)
+        TokenIdentity(
+          entry['ownerId'] as String,
+          entry['tokenSha256'] as String,
+        ),
+    ],
+    identityEndpoint: (env['IDENTITY_ENDPOINT'] ?? '').isEmpty
+        ? null
+        : Uri.parse(env['IDENTITY_ENDPOINT']!),
+    identityServiceKey: env['IDENTITY_SERVICE_KEY'],
+    cloudPolicies: (env['ENTITLEMENTS_ENDPOINT'] ?? '').isEmpty
+        ? null
+        : HttpCloudPolicyGateway(
+            Uri.parse(required('ENTITLEMENTS_ENDPOINT')),
+            required('CLOUD_SERVICE_KEY'),
+          ),
+  );
   await service.migrate();
   for (final entry in config) {
     await service.grant(

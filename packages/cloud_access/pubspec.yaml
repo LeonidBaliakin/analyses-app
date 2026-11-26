@@ -1,0 +1,11 @@
+name: cloud_access
+description: Versioned cloud capability and quota policy contract.
+version: 0.1.0
+publish_to: none
+resolution: workspace
+environment:
+  sdk: ^3.14.0
+dependencies:
+  http: ^1.6.0
+dev_dependencies:
+  test: ^1.26.3

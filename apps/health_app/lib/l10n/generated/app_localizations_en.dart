@@ -1468,4 +1468,199 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reportCopyError => 'Could not copy the report.';
+
+  @override
+  String get accountDescription =>
+      'Sign in or create an account to connect to the cloud. Local records are available without signing in.';
+
+  @override
+  String get accountManage => 'Sign-in and devices';
+
+  @override
+  String get accountAction => 'Action';
+
+  @override
+  String get accountLogin => 'Sign in';
+
+  @override
+  String get accountRegister => 'Create account';
+
+  @override
+  String get accountRecover => 'Recover access';
+
+  @override
+  String get accountSendCode => 'Send email code';
+
+  @override
+  String get accountCode => 'Email code';
+
+  @override
+  String get accountCodeSent =>
+      'If this request applies to this address, an email has been sent. The 8-digit code expires in 15 minutes. Check your spam folder.';
+
+  @override
+  String get accountPassword => 'Password';
+
+  @override
+  String get accountNewPassword => 'New password';
+
+  @override
+  String get accountPasswordHint => '15–128 characters. Spaces are allowed.';
+
+  @override
+  String get accountShowPassword => 'Show password';
+
+  @override
+  String get accountHidePassword => 'Hide password';
+
+  @override
+  String get accountDeviceName => 'Device name';
+
+  @override
+  String get accountThisDevice => 'This device';
+
+  @override
+  String get accountResetPassword => 'Reset password';
+
+  @override
+  String get accountChangeEmail => 'Change address or request a new code';
+
+  @override
+  String get accountRecovered =>
+      'Password reset. Previous sessions have ended. Sign in with your new password.';
+
+  @override
+  String get accountSecondDeviceHint =>
+      'On your second device, sign in with the same email and password, then connect synchronization.';
+
+  @override
+  String get accountConnectHint =>
+      'Connecting sends confirmed local records to this account and downloads cloud records. Conflicts require your choice.';
+
+  @override
+  String get accountConnect => 'Connect records on this device';
+
+  @override
+  String get accountReconnect => 'Reconnect synchronization';
+
+  @override
+  String get accountDevices => 'Devices and sessions';
+
+  @override
+  String get accountRefreshDevices => 'Refresh list';
+
+  @override
+  String get accountThisSession => 'current session';
+
+  @override
+  String get accountRevoke => 'End session';
+
+  @override
+  String get accountLogout => 'Sign out on this device';
+
+  @override
+  String get accountLogoutAll => 'End all sessions';
+
+  @override
+  String get accountEmailError => 'Enter a valid email address.';
+
+  @override
+  String get accountCodeError =>
+      'The code is invalid, expired or already used. Check all 8 digits or request a new code.';
+
+  @override
+  String get accountCredentialsError => 'Incorrect email or password.';
+
+  @override
+  String get accountExists =>
+      'This account already exists. Sign in or recover access.';
+
+  @override
+  String get accountRateLimited =>
+      'Too many attempts. Try again in 15 minutes.';
+
+  @override
+  String get accountBindingError =>
+      'Could not connect synchronization. Check its status. If local records are already bound to another account or server, connection is blocked to prevent mixing data.';
+
+  @override
+  String get accountStorageError =>
+      'Signed in, but the session could not be saved to secure storage. You may need to sign in after restarting.';
+
+  @override
+  String get accountSessionExpired =>
+      'Your session ended or expired. Sign in again. Local records are preserved.';
+
+  @override
+  String get accountNetworkError =>
+      'Request failed. Check your connection and retry. If the operation already completed, try signing in.';
+
+  @override
+  String get cloudTitle => 'Cloud access and quotas';
+
+  @override
+  String get cloudRefresh => 'Refresh access and usage';
+
+  @override
+  String get cloudEnabled => 'enabled';
+
+  @override
+  String get cloudDisabled => 'disabled';
+
+  @override
+  String get cloudSync => 'Synchronization';
+
+  @override
+  String get cloudStorage => 'Cloud originals';
+
+  @override
+  String get cloudProcessing => 'Server recognition';
+
+  @override
+  String get cloudUnavailable =>
+      'Could not check cloud access and quotas. Try again later. Local data remains available.';
+
+  @override
+  String get cloudLastKnown =>
+      'The last received values below may be out of date.';
+
+  @override
+  String get cloudLocalKept =>
+      'Disabled cloud access or a full quota preserves local records, originals and pending uploads.';
+
+  @override
+  String get cloudSyncDenied =>
+      'Cloud record writes are disabled. Pending changes are kept; existing cloud records can still be downloaded.';
+
+  @override
+  String get cloudSyncQuota =>
+      'Cloud record limit reached. The local record and pending change are kept.';
+
+  @override
+  String get cloudProcessingDenied =>
+      'Server recognition is disabled for this account. Available local processing and manual entry remain accessible.';
+
+  @override
+  String get cloudProcessingQuota =>
+      'The monthly recognition quota is full. Wait for pending jobs or the next month. The original is kept.';
+
+  @override
+  String cloudRecordUsage(int used, int limit) {
+    return 'Records: $used of $limit';
+  }
+
+  @override
+  String cloudByteUsage(String used, String reserved, String limit) {
+    return 'Bytes: $used; reserved: $reserved; limit: $limit';
+  }
+
+  @override
+  String cloudJobUsage(int used, int reserved, int limit, String period) {
+    return 'For $period: $used of $limit; queued or running: $reserved';
+  }
+
+  @override
+  String cloudUntil(String date) {
+    return 'Access valid until $date';
+  }
 }

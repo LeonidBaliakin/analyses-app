@@ -28,6 +28,16 @@ paths:
                 properties:
                   schemaVersion: { type: integer, enum: [1] }
                   ready: { type: boolean }
+                  ownerId: { type: string }
+                  profileId: { type: string }
+                  processingAllowed: { type: boolean }
+                  quota:
+                    type: object
+                    properties:
+                      period: { type: string }
+                      usedJobs: { type: integer, minimum: 0 }
+                      reservedJobs: { type: integer, minimum: 0 }
+                      limitJobs: { type: integer, nullable: true }
                   runtimeId: { type: string, nullable: true }
         default:
           $ref: '#/components/responses/Error'
@@ -40,7 +50,10 @@ paths:
         Owner plus jobId is idempotent. Profile/original/runtime/terminology binding
         is immutable; changed replay returns 409. Up to three active jobs per owner;
         excess returns 429. Documents size and SHA-256 are verified before queueing.
-        The pilot uses cloud_enabled as its processing entitlement; denial returns 403.
+        Current Entitlements policy and the legacy profile guard are checked independently.
+        Denial returns 403; monthly used+reserved exhaustion returns 409 processing_quota_exceeded.
+        Job and monthly reservation commit together; failure/cancellation release the slot.
+        Replay never reserves again. Existing jobs remain readable without admission rights.
       requestBody:
         required: true
         content:

@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+
+import 'package:cloud_access/cloud_access.dart';
+
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -37,6 +40,25 @@ class TestWorker implements JobWorker {
     if (barrier != null) await barrier!.future;
     if (failure != null) throw ProcessingApiError(422, failure!);
     return {'schemaVersion': 1, 'runtimeId': runtime, 'rows': []};
+  }
+}
+
+class TestPolicies implements CloudPolicyGateway {
+  bool sync = true, storage = true, processing = true, unavailable = false;
+  int records = 2, bytes = 1000, jobs = 1;
+  @override
+  Future<CloudPolicy> policy(String owner) async {
+    if (unavailable) throw const CloudAccessFailure();
+    return CloudPolicy(
+      ownerId: owner,
+      revision: 1,
+      syncEnabled: sync,
+      storageEnabled: storage,
+      processingEnabled: processing,
+      recordLimit: records,
+      storageLimitBytes: bytes,
+      processingMonthlyLimit: jobs,
+    );
   }
 }
 
@@ -88,7 +110,7 @@ void main() {
   });
   tearDownAll(() => db.close());
   setUp(() async {
-    await db.execute('TRUNCATE jobs,processing_outbox');
+    await db.execute('TRUNCATE jobs,processing_outbox,processing_quota');
     worker = TestWorker();
     corrupt = false;
     denied = false;
@@ -287,4 +309,125 @@ void main() {
       );
     },
   );
+  test('monthly slots: concurrent replay, cancellation/failure release, completion and rollover', () async {
+    final policy = TestPolicies();
+    api = ProcessingService(
+      db: db,
+      documents: api.documents,
+      worker: worker,
+      client: api.client,
+      cloudPolicies: policy,
+    );
+    final pair = await Future.wait([
+      call('POST', 'processing-jobs', body: request('j')),
+      call('POST', 'processing-jobs', body: request('j')),
+    ]);
+    expect(pair.every((r) => r.statusCode == 200), true);
+    expect(await count('processing_quota'), 1);
+    expect(
+      (await call('POST', 'processing-jobs', body: request('over'))).statusCode,
+      409,
+    );
+    await call('POST', 'processing-jobs/j/cancel');
+    expect((await api.usage('owner-a'))['reservedJobs'], 0);
+    worker.failure = 'synthetic_failure';
+    expect(
+      (await call('POST', 'processing-jobs', body: request('fail'))).statusCode,
+      200,
+    );
+    await api.tick();
+    expect((await api.usage('owner-a'))['reservedJobs'], 0);
+    worker.failure = null;
+    await call('POST', 'processing-jobs', body: request('success'));
+    await api.tick();
+    expect((await api.usage('owner-a'))['usedJobs'], 1);
+    expect(
+      (await call(
+        'POST',
+        'processing-jobs',
+        body: request('success'),
+      )).statusCode,
+      200,
+    );
+    expect((await api.usage('owner-a'))['usedJobs'], 1);
+    await db.execute("UPDATE processing_quota SET period='2000-01'");
+    expect(
+      (await call(
+        'POST',
+        'processing-jobs',
+        body: request('new-month'),
+      )).statusCode,
+      200,
+    );
+    policy.processing = false;
+    await api.tick();
+    expect((await api.usage('owner-a'))['reservedJobs'], 0);
+    expect((await call('GET', 'processing-jobs/success')).statusCode, 200);
+    expect(
+      (await call(
+        'POST',
+        'processing-jobs',
+        body: request('denied'),
+      )).statusCode,
+      403,
+    );
+    policy.unavailable = true;
+    expect((await call('GET', 'processing-jobs/success')).statusCode, 200);
+  });
+  test('migration preserves jobs and reserves queued jobs only once', () async {
+    await call('POST', 'processing-jobs', body: request('legacy'));
+    await db.execute('DELETE FROM processing_quota');
+    await db.execute('UPDATE processing_schema SET version=1');
+    await api.migrate();
+    await api.migrate();
+    expect(await count('jobs'), 1);
+    expect(await count('processing_quota'), 1);
+    await api.tick();
+    expect((await api.usage('owner-a'))['usedJobs'], 1);
+  });
+
+  test('quota ledger insert and completion outbox failures cannot leave a charged or orphan job', () async {
+    final policy = TestPolicies();
+    api = ProcessingService(
+      db: db,
+      documents: api.documents,
+      worker: worker,
+      client: api.client,
+      cloudPolicies: policy,
+    );
+    await db.execute(
+      "CREATE OR REPLACE FUNCTION fail_quota() RETURNS trigger LANGUAGE plpgsql AS 'BEGIN RAISE EXCEPTION ''synthetic quota failure''; END'",
+    );
+    await db.execute(
+      'CREATE TRIGGER fail_quota BEFORE INSERT ON processing_quota FOR EACH ROW EXECUTE FUNCTION fail_quota()',
+    );
+    try {
+      expect(
+        (await call(
+          'POST',
+          'processing-jobs',
+          body: request('atomic'),
+        )).statusCode,
+        503,
+      );
+      expect(await count('jobs'), 0);
+      expect(await count('processing_quota'), 0);
+    } finally {
+      await db.execute('DROP TRIGGER fail_quota ON processing_quota');
+    }
+    await call('POST', 'processing-jobs', body: request('atomic'));
+    await db.execute(
+      'CREATE TRIGGER fail_quota BEFORE INSERT ON processing_outbox FOR EACH ROW EXECUTE FUNCTION fail_quota()',
+    );
+    try {
+      await api.tick();
+      final usage = await api.usage('owner-a');
+      expect(usage['usedJobs'], 0);
+      expect(usage['reservedJobs'], 0);
+      expect(await count('processing_outbox'), 0);
+    } finally {
+      await db.execute('DROP TRIGGER fail_quota ON processing_outbox');
+      await db.execute('DROP FUNCTION fail_quota()');
+    }
+  });
 }

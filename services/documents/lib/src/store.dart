@@ -2,16 +2,66 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:postgres/postgres.dart';
+import 'package:cloud_access/cloud_access.dart';
 
 import 'model.dart';
 
 /// PostgreSQL owns reservations, finalized metadata and the outgoing event.
 final class DocumentsStore {
-  DocumentsStore(this.db, this.objects, {DateTime Function()? clock})
-    : clock = clock ?? DateTime.now;
+  DocumentsStore(
+    this.db,
+    this.objects, {
+    DateTime Function()? clock,
+    this.cloudPolicies,
+  }) : clock = clock ?? DateTime.now;
   final Pool db;
   final ObjectStorage objects;
   final DateTime Function() clock;
+  final CloudPolicyGateway? cloudPolicies;
+  Future<CloudPolicy?> _writePolicy(String owner) async {
+    if (cloudPolicies == null) return null;
+    try {
+      final policy = await cloudPolicies!.policy(owner);
+      if (!policy.canStore) throw const ApiError(403, 'storage_denied');
+      return policy;
+    } on ApiError {
+      rethrow;
+    } catch (_) {
+      throw const ApiError(503, 'cloud_access_unavailable');
+    }
+  }
+
+  Future<Map<String, Object?>> cloudAccess(String owner, String profile) async {
+    await db.run((tx) => _access(tx, owner, profile, upload: false));
+    CloudPolicy? policy;
+    if (cloudPolicies != null) {
+      try {
+        policy = await cloudPolicies!.policy(owner);
+      } catch (_) {
+        throw const ApiError(503, 'cloud_access_unavailable');
+      }
+    }
+    final row = (await db.execute(
+      Sql.named(
+        'SELECT a.*,p.cloud_enabled FROM accounts a JOIN profile_access p USING(owner_id) WHERE a.owner_id=@o AND p.profile_id=@p',
+      ),
+      parameters: {'o': owner, 'p': profile},
+    )).single.toColumnMap();
+    return {
+      'schemaVersion': 1,
+      'ownerId': owner,
+      'profileId': profile,
+      'policy': policy?.toJson(),
+      'storageAllowed':
+          row['cloud_enabled'] == true && (policy?.canStore ?? true),
+      'storage': {
+        'usedBytes': row['used_bytes'],
+        'reservedBytes': row['reserved_bytes'],
+        'limitBytes': policy?.storageLimitBytes ?? row['quota_bytes'],
+      },
+    };
+  }
+
   Future<Map<String, Object>> processingAccess(String owner, String profile) =>
       db.run((tx) async {
         await _access(tx, owner, profile, upload: false);
@@ -127,6 +177,7 @@ final class DocumentsStore {
     String original,
   ) async {
     await _access(tx, owner, profile);
+    await _writePolicy(owner);
     await tx.execute(
       Sql.named('SELECT owner_id FROM accounts WHERE owner_id=@o FOR UPDATE'),
       parameters: {'o': owner},
@@ -160,6 +211,7 @@ final class DocumentsStore {
     UploadMetadata m,
   ) => db.runTx((tx) async {
     await _access(tx, owner, profile);
+    final policy = await _writePolicy(owner);
     final account = (await tx.execute(
       Sql.named('SELECT * FROM accounts WHERE owner_id=@o FOR UPDATE'),
       parameters: {'o': owner},
@@ -179,7 +231,7 @@ final class DocumentsStore {
     if ((account['used_bytes'] as int) +
             (account['reserved_bytes'] as int) +
             m.size >
-        (account['quota_bytes'] as int)) {
+        (policy?.storageLimitBytes ?? account['quota_bytes'] as int)) {
       throw const ApiError(409, 'quota_exceeded');
     }
     await tx.execute(

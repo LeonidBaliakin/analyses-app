@@ -10,6 +10,9 @@
       - analyses_api_port | int > 1024
       - analyses_api_port | int < 65536
       - analyses_quota_bytes | int > 0
+      - analyses_telegram_delivery_mode in ['disabled', 'dry_run']
+      - analyses_vk_delivery_mode in ['disabled', 'dry_run']
+      - analyses_max_delivery_mode in ['disabled', 'dry_run']
       - analyses_llama_image is match('^ghcr[.]io/ggml-org/llama[.]cpp:[A-Za-z0-9_-]+@sha256:[a-f0-9]{64}$')
       - "'\n' not in analyses_allowed_origins"
 - name: Create deployment directories
@@ -18,6 +21,11 @@
     state: directory
     mode: '0755'
   loop:
+    - source/services/notifications
+    - source/workers/messenger_delivery
+    - source/services/entitlements
+    - source/packages/cloud_access
+    - source/services/identity
     - source/services/documents
     - source/services/records
     - source/packages/medical_domain
@@ -37,16 +45,39 @@
     mode: '0644'
     directory_mode: '0755'
   loop:
+    - services/notifications/Dockerfile
+    - services/notifications/pubspec.yaml
+    - services/notifications/pubspec.lock
+    - services/notifications/lib/
+    - services/notifications/bin/
+    - workers/messenger_delivery/Dockerfile
+    - workers/messenger_delivery/pubspec.yaml
+    - workers/messenger_delivery/pubspec.lock
+    - workers/messenger_delivery/lib/
+    - workers/messenger_delivery/bin/
     - packages/medical_domain/pubspec.yaml
     - packages/medical_domain/lib/
     - packages/record_sync/pubspec.yaml
     - packages/record_sync/lib/
+    - packages/cloud_access/pubspec.yaml
+    - packages/cloud_access/lib/
+    - services/entitlements/Dockerfile
+    - services/entitlements/pubspec.yaml
+    - services/entitlements/pubspec.lock
+    - services/entitlements/lib/
+    - services/entitlements/bin/
     - services/records/Dockerfile
     - services/records/pubspec.yaml
     - services/records/pubspec.lock
     - services/records/lib/
     - services/records/bin/
     - .dockerignore
+    - services/identity/Dockerfile
+    - services/identity/.dockerignore
+    - services/identity/pubspec.yaml
+    - services/identity/pubspec.lock
+    - services/identity/lib/
+    - services/identity/bin/
     - services/documents/Dockerfile
     - services/documents/pubspec.yaml
     - services/documents/pubspec.lock
@@ -66,11 +97,12 @@
     src: "{{ analyses_source_root }}/infra/server/{{ item }}"
     dest: "{{ analyses_root }}/{{ item }}"
     mode: '0644'
-  loop: [compose.yaml, processing.sql, records.sql, bootstrap_secrets.py]
-- name: Generate persistent server credentials once
+  loop: [compose.yaml, processing.sql, records.sql, identity.sql, entitlements.sql, notifications.sql, bootstrap_secrets.py]
+- name: Ensure persistent server credentials without rotating existing keys
   ansible.builtin.command:
     argv: ["{{ ansible_facts.python.executable }}", "{{ analyses_root }}/bootstrap_secrets.py", "{{ analyses_root }}/.secrets/bootstrap.json"]
-    creates: "{{ analyses_root }}/.secrets/bootstrap.json"
+  register: credential_update
+  changed_when: credential_update.stdout == "updated"
   no_log: true
 - name: Read protected bootstrap credentials
   ansible.builtin.slurp:
@@ -113,6 +145,7 @@
     project_name: "{{ analyses_project_name }}"
     state: present
     build: "{{ 'always' if server_source.changed else 'policy' }}"
+    profiles: "{{ (['test-mail'] if analyses_smtp_host == 'mailpit' else []) + (['messengers'] if analyses_messengers_enabled | bool else []) }}"
     wait: true
     wait_timeout: "{{ analyses_wait_timeout }}"
     remove_orphans: false
@@ -148,4 +181,33 @@
   until: records_health.status == 200 and records_health.json.schemaVersion | default(0) == 1
   retries: 30
   delay: 2
+  no_log: true
+
+- name: Verify accounts API readiness
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ analyses_api_port }}/v1/auth/session"
+    status_code: 401
+  register: identity_health
+  until: identity_health.status == 401
+  retries: 30
+  delay: 2
+
+- name: Verify cloud rights and quota capability
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ analyses_api_port }}/v1/profiles/{{ analyses_profile_id }}/cloud-access"
+    headers:
+      Authorization: "Bearer {{ analyses_secrets.client_token }}"
+    return_content: true
+  register: cloud_health
+  until: cloud_health.status == 200 and cloud_health.json.policy.schemaVersion | default(0) == 1
+  retries: 30
+  delay: 2
+  no_log: true
+
+- name: Verify internal notification queue readiness
+  ansible.builtin.command:
+    argv: [docker, compose, --profile, messengers, exec, -T, notifications, /app/notifications, --health]
+    chdir: "{{ analyses_root }}"
+  changed_when: false
+  when: analyses_messengers_enabled | bool
   no_log: true

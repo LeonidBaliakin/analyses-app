@@ -1,0 +1,190 @@
+openapi: 3.1.0
+info:
+  title: Cloud rights and quotas
+  version: 1.0.0
+  description: Independent rights; usage is committed atomically by the owning resource.
+    No payment integration. Internal policy/grant API is not exposed by Documents.
+paths:
+  /v1/profiles/{profileId}/cloud-access:
+    get:
+      operationId: readOwnCloudAccess
+      security:
+      - bearer: []
+      - cookie: []
+      parameters:
+      - name: profileId
+        in: path
+        required: true
+        schema: &id001
+          type: string
+      responses:
+        '200':
+          description: 'Success; Cache-Control: no-store'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Overview'
+        default: &id002
+          description: 400 schema; 401 authentication; 403 denied; 409 stale revision,
+            mismatched operation or quota; 503 unavailable
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - error
+                properties:
+                  error: *id001
+  /internal/policies/{ownerId}:
+    parameters:
+    - name: ownerId
+      in: path
+      required: true
+      schema: *id001
+    get:
+      operationId: readPolicyInternal
+      security:
+      - serviceKey: []
+      responses:
+        '200':
+          description: 'Success; Cache-Control: no-store'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+        default: *id002
+    put:
+      operationId: grantPolicyInternal
+      security:
+      - adminKey: []
+      description: Idempotent operationId and CAS baseRevision. Replayed receipt is
+        historical; GET is the current effective policy. Admin key is never sent to
+        clients.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - operationId
+              - baseRevision
+              - policy
+              properties:
+                operationId: *id001
+                baseRevision:
+                  type: integer
+                  minimum: 1
+                policy:
+                  $ref: '#/components/schemas/GrantPolicy'
+      responses:
+        '200':
+          description: 'Success; Cache-Control: no-store'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+        default: *id002
+components:
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+    cookie:
+      type: apiKey
+      in: cookie
+      name: __Host-analyses_session
+    serviceKey:
+      type: apiKey
+      in: header
+      name: X-Cloud-Service-Key
+    adminKey:
+      type: apiKey
+      in: header
+      name: X-Cloud-Admin-Key
+  schemas:
+    Policy:
+      type: object
+      required:
+      - schemaVersion
+      - ownerId
+      - revision
+      - active
+      - syncEnabled
+      - storageEnabled
+      - processingEnabled
+      - recordLimit
+      - storageLimitBytes
+      - processingMonthlyLimit
+      - validUntil
+      properties:
+        schemaVersion:
+          type: integer
+          enum:
+          - 1
+        ownerId: *id001
+        revision:
+          type: integer
+          minimum: 1
+        active: &id003
+          type: boolean
+        syncEnabled: *id003
+        storageEnabled: *id003
+        processingEnabled: *id003
+        recordLimit: &id004
+          type: integer
+          minimum: 0
+        storageLimitBytes: *id004
+        processingMonthlyLimit: *id004
+        validUntil: &id005
+          type:
+          - string
+          - 'null'
+          format: date-time
+    GrantPolicy:
+      type: object
+      required:
+      - syncEnabled
+      - storageEnabled
+      - processingEnabled
+      - recordLimit
+      - storageLimitBytes
+      - processingMonthlyLimit
+      - validUntil
+      properties:
+        syncEnabled: *id003
+        storageEnabled: *id003
+        processingEnabled: *id003
+        recordLimit: *id004
+        storageLimitBytes: *id004
+        processingMonthlyLimit: *id004
+        validUntil: *id005
+    Overview:
+      type: object
+      required:
+      - schemaVersion
+      - ownerId
+      - profileId
+      - policy
+      - storageAllowed
+      - storage
+      properties:
+        schemaVersion:
+          type: integer
+          enum:
+          - 1
+        ownerId: *id001
+        profileId: *id001
+        policy:
+          $ref: '#/components/schemas/Policy'
+        storageAllowed: *id003
+        storage:
+          type: object
+          required:
+          - usedBytes
+          - reservedBytes
+          - limitBytes
+          properties:
+            usedBytes: *id004
+            reservedBytes: *id004
+            limitBytes: *id004

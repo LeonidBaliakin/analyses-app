@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:documents_service/documents_service.dart';
 import 'package:minio/minio.dart';
+import 'package:cloud_access/cloud_access.dart';
 import 'package:postgres/postgres.dart';
 import 'package:shelf/shelf_io.dart' as io;
 
@@ -31,7 +32,13 @@ Future<void> main() async {
     ),
     required('DOCUMENTS_S3_BUCKET'),
   );
-  final store = DocumentsStore(db, s3);
+  final policies = (env['ENTITLEMENTS_ENDPOINT'] ?? '').isEmpty
+      ? null
+      : HttpCloudPolicyGateway(
+          Uri.parse(required('ENTITLEMENTS_ENDPOINT')),
+          required('CLOUD_SERVICE_KEY'),
+        );
+  final store = DocumentsStore(db, s3, cloudPolicies: policies);
   var databaseReady = false;
   for (var attempt = 0; attempt < 30; attempt++) {
     try {
@@ -74,6 +81,11 @@ Future<void> main() async {
   if (!initialized) throw StateError('Object storage unavailable');
   final service = DocumentsService(
     store,
+    identityEndpoint: (env['IDENTITY_ENDPOINT'] ?? '').isEmpty
+        ? null
+        : Uri.parse(env['IDENTITY_ENDPOINT']!),
+    identityServiceKey: env['IDENTITY_SERVICE_KEY'],
+    secureCookie: env['IDENTITY_SECURE_COOKIE'] != 'false',
     recordsEndpoint: env['DOCUMENTS_RECORDS_ENDPOINT'] == null
         ? null
         : Uri.parse(env['DOCUMENTS_RECORDS_ENDPOINT']!),

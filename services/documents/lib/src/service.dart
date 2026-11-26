@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'dart:io' show HttpConnectionInfo;
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
@@ -23,12 +24,20 @@ final class DocumentsService {
     this.allowedOrigins = const {},
     this.processingEndpoint,
     this.recordsEndpoint,
+    this.identityEndpoint,
+    this.identityServiceKey,
+    this.secureCookie = true,
+    this.accountQuotaBytes = 1073741824,
   });
   final DocumentsStore store;
   final List<TokenIdentity> identities;
   final Set<String> allowedOrigins;
   final Uri? processingEndpoint;
   final Uri? recordsEndpoint;
+  final Uri? identityEndpoint;
+  final String? identityServiceKey;
+  final bool secureCookie;
+  final int accountQuotaBytes;
   final http.Client _processingClient = http.Client();
 
   Future<Response> _processing(Request req, {Uri? endpoint}) async {
@@ -60,12 +69,66 @@ final class DocumentsService {
     );
   }
 
+  String? _credential(Request req) {
+    final auth = req.headers['authorization'];
+    if (auth != null) return auth;
+    final name = secureCookie ? '__Host-analyses_session' : 'analyses_session';
+    for (final part in (req.headers['cookie'] ?? '').split(';')) {
+      if (part.trim().startsWith('$name=')) {
+        return 'Bearer ${part.trim().substring(name.length + 1)}';
+      }
+    }
+    return null;
+  }
+
+  Future<Response> _auth(Request req) async {
+    final request = http.Request(
+      req.method,
+      identityEndpoint!.resolveUri(req.url),
+    )..followRedirects = false;
+    for (final key in [
+      'authorization',
+      'cookie',
+      'content-type',
+      'x-app-request',
+      'x-account-owner',
+    ]) {
+      if (req.headers[key] != null) request.headers[key] = req.headers[key]!;
+    }
+    // Never trust caller-supplied IP or forwarding headers for rate limiting.
+    request.headers['x-identity-service-key'] = identityServiceKey!;
+    final info = req.context['shelf.io.connection_info'];
+    request.headers['x-auth-client'] = sha256
+        .convert(
+          utf8.encode(
+            info is HttpConnectionInfo ? info.remoteAddress.address : 'unknown',
+          ),
+        )
+        .toString();
+    if (req.method != 'GET') {
+      request.bodyBytes = await readBounded(req.read(), 8192);
+    }
+    final result = await _processingClient
+        .send(request)
+        .timeout(const Duration(seconds: 45));
+    return Response(
+      result.statusCode,
+      body: await readBounded(result.stream, 262144),
+      headers: {
+        'content-type': 'application/json',
+        'cache-control': 'no-store',
+        if (result.headers['set-cookie'] != null)
+          'set-cookie': result.headers['set-cookie']!,
+      },
+    );
+  }
+
   Response json(int status, Map<String, Object?> data) => Response(
     status,
     body: jsonEncode(data),
     headers: {'content-type': 'application/json', 'cache-control': 'no-store'},
   );
-  String _owner(Request req) {
+  Future<String> _owner(Request req) async {
     final authorization = req.headers['authorization'] ?? '';
     if (!authorization.startsWith('Bearer ') || authorization.length > 2048) {
       throw const ApiError(401, 'unauthorized');
@@ -78,7 +141,47 @@ final class DocumentsService {
       for (var i = 0; i < hash.length && i < identity.tokenSha256.length; i++) {
         diff |= hash.codeUnitAt(i) ^ identity.tokenSha256.codeUnitAt(i);
       }
-      if (diff == 0) return identity.ownerId;
+      if (diff == 0) {
+        if (req.headers['x-account-owner'] != null &&
+            req.headers['x-account-owner'] != identity.ownerId) {
+          throw const ApiError(401, 'account_changed');
+        }
+        return identity.ownerId;
+      }
+    }
+    if (identityEndpoint != null) {
+      final request =
+          http.Request('GET', identityEndpoint!.resolve('internal/session'))
+            ..followRedirects = false
+            ..headers.addAll({
+              'authorization': authorization,
+              'x-identity-service-key': identityServiceKey!,
+            });
+      final result = await _processingClient
+          .send(request)
+          .timeout(const Duration(seconds: 10));
+      final bytes = await readBounded(result.stream, 8192);
+      if (result.statusCode == 200) {
+        final identity = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
+        final p = req.url.pathSegments;
+        if (p.length < 3 || p[2] != identity['profileId']) {
+          throw const ApiError(404, 'not_found');
+        }
+        final owner = identity['ownerId'] as String;
+        if (req.headers['x-account-owner'] != null &&
+            req.headers['x-account-owner'] != owner) {
+          throw const ApiError(401, 'account_changed');
+        }
+        await store.grant(
+          owner,
+          identity['profileId'] as String,
+          accountQuotaBytes,
+        );
+        return owner;
+      }
+      if (result.statusCode != 401) {
+        throw const ApiError(503, 'identity_unavailable');
+      }
     }
     throw const ApiError(401, 'unauthorized');
   }
@@ -107,22 +210,36 @@ final class DocumentsService {
           204,
           headers: {
             'access-control-allow-methods': 'POST,PUT,GET,HEAD,OPTIONS',
-            'access-control-allow-headers':
-                'Authorization,Content-Type,Range,X-Request-ID',
+            'access-control-allow-headers': 'Authorization,Content-Type,Range,X-Request-ID,X-App-Request,X-Account-Owner',
             'access-control-max-age': '300',
           },
         );
       } else if (req.url.path == 'health' && req.method == 'GET') {
         response = json(200, {'status': 'ok'});
+      } else if (req.url.path.startsWith('v1/auth/') &&
+          identityEndpoint != null) {
+        response = await _auth(req);
       } else {
-        final owner = _owner(req);
+        // Cookie-authenticated mutations require a non-simple request and the same
+        // exact-origin allowlist as the account endpoints.
+        final credential = _credential(req);
+        if (req.headers['authorization'] == null &&
+            req.method != 'GET' &&
+            req.method != 'HEAD' &&
+            req.headers['x-app-request'] != '1') {
+          throw const ApiError(403, 'csrf');
+        }
+        req = req.change(headers: {'authorization': ?credential});
+        final owner = await _owner(req);
         final p = req.url.pathSegments;
         if (p.length < 4 || p[0] != 'v1' || p[1] != 'profiles') {
           throw const ApiError(404, 'not_found');
         }
         final profile = p[2];
         checkId(profile);
-        if (p.length == 4 &&
+        if (p.length == 4 && p[3] == 'cloud-access' && req.method == 'GET') {
+          response = json(200, await store.cloudAccess(owner, profile));
+        } else if (p.length == 4 &&
             ['sync-access', 'sync-changes', 'sync-operations'].contains(p[3]) &&
             recordsEndpoint != null) {
           final access = await store.processingAccess(owner, profile);
@@ -209,6 +326,7 @@ final class DocumentsService {
         'x-content-type-options': 'nosniff',
         'x-request-id': requestId,
         'access-control-allow-origin': ?origin,
+        if (origin != null) 'access-control-allow-credentials': 'true',
         if (origin != null) 'vary': 'Origin',
         'access-control-expose-headers':
             'Content-Range,Content-Length,X-Content-SHA256,X-Request-ID',

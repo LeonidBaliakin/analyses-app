@@ -5,15 +5,19 @@ import 'dart:typed_data';
 import 'package:document_processing/document_processing.dart';
 import 'package:http/http.dart' as http;
 
+import '../network/cloud_client.dart';
+
 final class RemoteProcessingEngine implements ProcessingEngine {
   RemoteProcessingEngine({
     required this.endpoint,
     required this.token,
     required this.profileId,
+    this.accountOwnerId,
     http.Client? client,
-  }) : _client = client ?? http.Client();
+  }) : _client = client ?? createCloudClient();
   final Uri endpoint;
   final String token, profileId;
+  final String? accountOwnerId;
   final http.Client _client;
   Future<Map<String, dynamic>> _request(
     String method,
@@ -23,7 +27,9 @@ final class RemoteProcessingEngine implements ProcessingEngine {
     final r = http.Request(method, endpoint.resolve(path))
       ..followRedirects = false;
     r.headers.addAll({
-      'authorization': 'Bearer $token',
+      if (token.isNotEmpty) 'authorization': 'Bearer $token',
+      'x-app-request': '1',
+      'x-account-owner': ?accountOwnerId,
       'content-type': 'application/json',
     });
     if (body != null) r.body = jsonEncode(body);
@@ -50,7 +56,9 @@ final class RemoteProcessingEngine implements ProcessingEngine {
       'GET',
       'v1/profiles/$profileId/processing-capabilities',
     );
-    return j['ready'] == true ? j['runtimeId'] as String : null;
+    // Capability identifies the engine; admission rights/quota are enforced by
+    // POST. Existing jobs must still be readable when new admissions are denied.
+    return j['runtimeId'] as String?;
   }
 
   @override
@@ -61,16 +69,25 @@ final class RemoteProcessingEngine implements ProcessingEngine {
     Future<void> Function(ProcessingStatus, Map<String, dynamic>?) progress,
   ) async {
     // The server reads the already authorized Documents original, not these local bytes.
-    var j = await _request(
-      'POST',
-      'v1/profiles/$profileId/processing-jobs',
-      body: {
-        'jobId': job.id,
-        'originalId': job.original.originalId,
-        'runtimeId': job.runtimeId,
-        'terminologyReleaseId': job.terminologyReleaseId,
-      },
-    );
+    Map<String, dynamic> j;
+    try {
+      j = await _request(
+        'GET',
+        'v1/profiles/$profileId/processing-jobs/${job.id}',
+      );
+    } on ProcessingFailure catch (e) {
+      if (e.code != 'not_found') rethrow;
+      j = await _request(
+        'POST',
+        'v1/profiles/$profileId/processing-jobs',
+        body: {
+          'jobId': job.id,
+          'originalId': job.original.originalId,
+          'runtimeId': job.runtimeId,
+          'terminologyReleaseId': job.terminologyReleaseId,
+        },
+      );
+    }
     final deadline = DateTime.now().add(const Duration(minutes: 5));
     while (true) {
       cancellation.check();

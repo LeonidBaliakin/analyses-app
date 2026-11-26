@@ -35,6 +35,80 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+  entitlements-db:
+    image: postgres:18.1-alpine3.22
+    restart: "no"
+    environment:
+      PGHOST: postgres
+      PGUSER: documents
+      PGDATABASE: postgres
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Configure server secrets}
+    volumes:
+      - ./entitlements.sql:/bootstrap/entitlements.sql:ro
+    command: [psql, -v, ON_ERROR_STOP=1, -f, /bootstrap/entitlements.sql]
+    depends_on:
+      postgres:
+        condition: service_healthy
+  entitlements:
+    <<: *service
+    build:
+      context: ./source
+      dockerfile: services/entitlements/Dockerfile
+    environment:
+      ENTITLEMENTS_DATABASE_URL: postgresql://documents:${POSTGRES_PASSWORD}@postgres:5432/entitlements?sslmode=disable
+      ENTITLEMENTS_BIND: 0.0.0.0
+      CLOUD_SERVICE_KEY: ${CLOUD_SERVICE_KEY:?Configure cloud secrets}
+      CLOUD_ADMIN_KEY: ${CLOUD_ADMIN_KEY:?Configure cloud secrets}
+    healthcheck:
+      test: [CMD, /app/entitlements, --health]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    depends_on:
+      entitlements-db:
+        condition: service_completed_successfully
+  identity-db:
+    image: postgres:18.1-alpine3.22
+    restart: "no"
+    environment:
+      PGHOST: postgres
+      PGUSER: documents
+      PGDATABASE: postgres
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Configure server secrets}
+    volumes:
+      - ./identity.sql:/bootstrap/identity.sql:ro
+    command: [psql, -v, ON_ERROR_STOP=1, -f, /bootstrap/identity.sql]
+    depends_on:
+      postgres:
+        condition: service_healthy
+  identity:
+    <<: *service
+    build: ./source/services/identity
+    environment:
+      IDENTITY_DATABASE_URL: postgresql://documents:${POSTGRES_PASSWORD}@postgres:5432/identity?sslmode=disable
+      IDENTITY_BIND: 0.0.0.0
+      IDENTITY_SERVICE_KEY: ${IDENTITY_SERVICE_KEY:?Configure identity secrets}
+      IDENTITY_MAIL_KEY: ${IDENTITY_MAIL_KEY:?Configure identity secrets}
+      IDENTITY_SECURE_COOKIE: ${IDENTITY_SECURE_COOKIE:-true}
+      SMTP_HOST: ${SMTP_HOST:-mailpit}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      SMTP_FROM: ${SMTP_FROM:-accounts@analyses.test}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_SSL: ${SMTP_SSL:-false}
+      SMTP_ALLOW_INSECURE: ${SMTP_ALLOW_INSECURE:-false}
+    healthcheck:
+      test: [CMD, /app/identity, --health]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    depends_on:
+      identity-db:
+        condition: service_completed_successfully
+  mailpit:
+    <<: *service
+    profiles: [test-mail]
+    image: axllent/mailpit:v1.27.10
   records-db:
     image: postgres:18.1-alpine3.22
     restart: "no"
@@ -58,6 +132,10 @@ services:
       RECORDS_DATABASE_URL: postgresql://documents:${POSTGRES_PASSWORD}@postgres:5432/records?sslmode=disable
       RECORDS_IDENTITIES_FILE: /run/secrets/identities.json
       RECORDS_BIND: 0.0.0.0
+      ENTITLEMENTS_ENDPOINT: http://entitlements:8084/
+      CLOUD_SERVICE_KEY: ${CLOUD_SERVICE_KEY}
+      IDENTITY_ENDPOINT: http://identity:8083/
+      IDENTITY_SERVICE_KEY: ${IDENTITY_SERVICE_KEY}
     secrets:
       - source: identities
         target: identities.json
@@ -88,9 +166,16 @@ services:
       retries: 30
   documents:
     <<: *service
-    build: ./source/services/documents
+    build:
+      context: ./source
+      dockerfile: services/documents/Dockerfile
     environment:
       DOCUMENTS_BIND: 0.0.0.0
+      ENTITLEMENTS_ENDPOINT: http://entitlements:8084/
+      CLOUD_SERVICE_KEY: ${CLOUD_SERVICE_KEY}
+      IDENTITY_ENDPOINT: http://identity:8083/
+      IDENTITY_SERVICE_KEY: ${IDENTITY_SERVICE_KEY}
+      IDENTITY_SECURE_COOKIE: ${IDENTITY_SECURE_COOKIE:-true}
       DOCUMENTS_DATABASE_URL: postgresql://documents:${POSTGRES_PASSWORD}@postgres:5432/documents?sslmode=disable
       DOCUMENTS_S3_ENDPOINT: http://seaweed:8333
       DOCUMENTS_S3_ACCESS_KEY: ${S3_ACCESS_KEY:?Configure server secrets}
@@ -106,6 +191,10 @@ services:
       - source: identities
         target: identities.json
     depends_on:
+      entitlements:
+        condition: service_healthy
+      identity:
+        condition: service_healthy
       postgres:
         condition: service_healthy
       seaweed:
@@ -119,6 +208,8 @@ services:
       PROCESSING_DATABASE_URL: postgresql://documents:${POSTGRES_PASSWORD}@postgres:5432/processing?sslmode=disable
       PROCESSING_DOCUMENTS_ENDPOINT: http://documents:8080/
       PROCESSING_BIND: 0.0.0.0
+      ENTITLEMENTS_ENDPOINT: http://entitlements:8084/
+      CLOUD_SERVICE_KEY: ${CLOUD_SERVICE_KEY}
       PROCESSING_WORKER: /worker/worker.py
       PROCESSING_CONFIG: /tmp/processing-config.json
       PROCESSING_LLM_URL: http://inference:8080
@@ -133,6 +224,80 @@ services:
         condition: service_healthy
       documents:
         condition: service_started
+  notifications-db:
+    profiles: [messengers]
+    image: postgres:18.1-alpine3.22
+    restart: "no"
+    environment:
+      PGHOST: postgres
+      PGUSER: documents
+      PGDATABASE: postgres
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./notifications.sql:/bootstrap/notifications.sql:ro
+    command: [psql, -v, ON_ERROR_STOP=1, -f, /bootstrap/notifications.sql]
+    depends_on:
+      postgres:
+        condition: service_healthy
+  notifications:
+    <<: *service
+    profiles: [messengers]
+    build:
+      context: ./source
+      dockerfile: services/notifications/Dockerfile
+    environment:
+      NOTIFICATIONS_BIND: 0.0.0.0
+      NOTIFICATIONS_DATABASE_URL: postgresql://documents:${POSTGRES_PASSWORD}@postgres:5432/notifications?sslmode=disable
+      NOTIFICATIONS_PUBLISHER_KEY: ${NOTIFICATIONS_PUBLISHER_KEY:-}
+      NOTIFICATIONS_ADMIN_KEY: ${NOTIFICATIONS_ADMIN_KEY:-}
+      NOTIFICATIONS_TELEGRAM_KEY: ${NOTIFICATIONS_TELEGRAM_KEY:-}
+      NOTIFICATIONS_VK_KEY: ${NOTIFICATIONS_VK_KEY:-}
+      NOTIFICATIONS_MAX_KEY: ${NOTIFICATIONS_MAX_KEY:-}
+    networks: [default, messengers]
+    healthcheck:
+      test: [CMD, /app/notifications, --health]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    depends_on:
+      notifications-db:
+        condition: service_completed_successfully
+  delivery-telegram: &delivery
+    <<: *service
+    profiles: [messengers]
+    build:
+      context: ./source
+      dockerfile: workers/messenger_delivery/Dockerfile
+    environment:
+      DELIVERY_CHANNEL: telegram
+      DELIVERY_MODE: ${TELEGRAM_DELIVERY_MODE:-disabled}
+      NOTIFICATIONS_ENDPOINT: http://notifications:8085/
+      NOTIFICATIONS_WORKER_KEY: ${NOTIFICATIONS_TELEGRAM_KEY:-}
+    # Simulation workers have no Internet route and no provider credentials.
+    networks: [messengers]
+    read_only: true
+    healthcheck:
+      test: [CMD, /app/delivery, --health]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+    depends_on:
+      notifications:
+        condition: service_healthy
+  delivery-vk:
+    <<: *delivery
+    environment:
+      DELIVERY_CHANNEL: vk
+      DELIVERY_MODE: ${VK_DELIVERY_MODE:-disabled}
+      NOTIFICATIONS_ENDPOINT: http://notifications:8085/
+      NOTIFICATIONS_WORKER_KEY: ${NOTIFICATIONS_VK_KEY:-}
+  delivery-max:
+    <<: *delivery
+    environment:
+      DELIVERY_CHANNEL: max
+      DELIVERY_MODE: ${MAX_DELIVERY_MODE:-disabled}
+      NOTIFICATIONS_ENDPOINT: http://notifications:8085/
+      NOTIFICATIONS_WORKER_KEY: ${NOTIFICATIONS_MAX_KEY:-}
 secrets:
   s3_config:
     file: .secrets/s3.json
@@ -141,3 +306,7 @@ secrets:
 volumes:
   postgres:
   seaweed:
+
+networks:
+  messengers:
+    internal: true

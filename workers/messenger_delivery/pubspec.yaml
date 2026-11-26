@@ -1,0 +1,10 @@
+name: messenger_delivery
+description: Simulation-only Telegram, VK and MAX channel worker scaffold.
+publish_to: none
+environment:
+  sdk: ^3.14.0
+dependencies:
+  http: ^1.6.0
+dev_dependencies:
+  lints: ^6.1.0
+  test: ^1.26.3

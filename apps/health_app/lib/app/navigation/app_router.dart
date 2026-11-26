@@ -9,6 +9,7 @@ import '../../features/documents/documents.dart';
 import '../../features/processing/processing.dart';
 import '../../features/reports/reports.dart';
 import '../../features/sync/sync.dart';
+import '../../features/account/account.dart';
 import '../../features/introduction/introduction.dart';
 import '../../features/profile/profile.dart';
 import '../../features/records/records.dart';
@@ -28,6 +29,7 @@ GoRouter createAppRouter(
   ProcessingViewModel? processing,
   ReportsViewModel? reports,
   SyncViewModel? sync,
+  AccountViewModel? account,
   ValueNotifier<bool>? showDemo,
   String? initialLocation,
 }) {
@@ -79,6 +81,15 @@ GoRouter createAppRouter(
     initialLocation: initialLocation,
     restorationScopeId: 'app-router',
     routes: [
+      if (account != null)
+        GoRoute(
+          path: '/account',
+          builder: (context, state) => AccountPage(
+            model: account,
+            onClose: () => router.goNamed(AppDestination.settings.name),
+            onOpenSync: () => router.go('/sync'),
+          ),
+        ),
       if (sync != null)
         GoRoute(
           path: '/sync',
@@ -223,6 +234,9 @@ GoRouter createAppRouter(
                 builder: (context, state) => SettingsPage(
                   viewModel: settings,
                   onStartIntroduction: () => startIntroduction(context),
+                  onOpenAccount: account == null
+                      ? null
+                      : () => router.go('/account'),
                   onClose: () => context.goNamed(AppDestination.summary.name),
                 ),
               ),

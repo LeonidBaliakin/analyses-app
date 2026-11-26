@@ -124,6 +124,11 @@ class _ProcessingPageState extends State<ProcessingPage> {
                               switch (m.error) {
                                 'date' => l.processingDateRequired,
                                 'unavailable' => l.processingUnavailable,
+                                'processing_denied' => l.cloudProcessingDenied,
+                                'processing_quota_exceeded' =>
+                                  l.cloudProcessingQuota,
+                                'cloud_access_unavailable' =>
+                                  l.cloudUnavailable,
                                 'upload_first' => l.processingUploadFirst,
                                 'already_confirmed' =>
                                   l.processingAlreadyConfirmed,

@@ -4,6 +4,8 @@ publish_to: none
 environment:
   sdk: ^3.14.0
 dependencies:
+  cloud_access:
+    path: ../../packages/cloud_access
   record_sync:
     path: ../../packages/record_sync
   medical_domain:

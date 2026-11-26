@@ -5,6 +5,8 @@ publish_to: none
 environment:
   sdk: ^3.14.0
 dependencies:
+  cloud_access:
+    path: ../../packages/cloud_access
   crypto: ^3.0.7
   http: ^1.6.0
   minio: 3.5.8

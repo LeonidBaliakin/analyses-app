@@ -553,5 +553,107 @@
   "reportSaveUnavailable": "Saving a file is unavailable on this device. You can copy the report.",
   "reportCopy": "Copy report",
   "reportCopied": "Report copied",
-  "reportCopyError": "Could not copy the report."
+  "reportCopyError": "Could not copy the report.",
+  "accountDescription": "Sign in or create an account to connect to the cloud. Local records are available without signing in.",
+  "accountManage": "Sign-in and devices",
+  "accountAction": "Action",
+  "accountLogin": "Sign in",
+  "accountRegister": "Create account",
+  "accountRecover": "Recover access",
+  "accountSendCode": "Send email code",
+  "accountCode": "Email code",
+  "accountCodeSent": "If this request applies to this address, an email has been sent. The 8-digit code expires in 15 minutes. Check your spam folder.",
+  "accountPassword": "Password",
+  "accountNewPassword": "New password",
+  "accountPasswordHint": "15–128 characters. Spaces are allowed.",
+  "accountShowPassword": "Show password",
+  "accountHidePassword": "Hide password",
+  "accountDeviceName": "Device name",
+  "accountThisDevice": "This device",
+  "accountResetPassword": "Reset password",
+  "accountChangeEmail": "Change address or request a new code",
+  "accountRecovered": "Password reset. Previous sessions have ended. Sign in with your new password.",
+  "accountSecondDeviceHint": "On your second device, sign in with the same email and password, then connect synchronization.",
+  "accountConnectHint": "Connecting sends confirmed local records to this account and downloads cloud records. Conflicts require your choice.",
+  "accountConnect": "Connect records on this device",
+  "accountReconnect": "Reconnect synchronization",
+  "accountDevices": "Devices and sessions",
+  "accountRefreshDevices": "Refresh list",
+  "accountThisSession": "current session",
+  "accountRevoke": "End session",
+  "accountLogout": "Sign out on this device",
+  "accountLogoutAll": "End all sessions",
+  "accountEmailError": "Enter a valid email address.",
+  "accountCodeError": "The code is invalid, expired or already used. Check all 8 digits or request a new code.",
+  "accountCredentialsError": "Incorrect email or password.",
+  "accountExists": "This account already exists. Sign in or recover access.",
+  "accountRateLimited": "Too many attempts. Try again in 15 minutes.",
+  "accountBindingError": "Could not connect synchronization. Check its status. If local records are already bound to another account or server, connection is blocked to prevent mixing data.",
+  "accountStorageError": "Signed in, but the session could not be saved to secure storage. You may need to sign in after restarting.",
+  "accountSessionExpired": "Your session ended or expired. Sign in again. Local records are preserved.",
+  "accountNetworkError": "Request failed. Check your connection and retry. If the operation already completed, try signing in.",
+  "cloudTitle": "Cloud access and quotas",
+  "cloudRefresh": "Refresh access and usage",
+  "cloudEnabled": "enabled",
+  "cloudDisabled": "disabled",
+  "cloudSync": "Synchronization",
+  "cloudStorage": "Cloud originals",
+  "cloudProcessing": "Server recognition",
+  "cloudUnavailable": "Could not check cloud access and quotas. Try again later. Local data remains available.",
+  "cloudLastKnown": "The last received values below may be out of date.",
+  "cloudLocalKept": "Disabled cloud access or a full quota preserves local records, originals and pending uploads.",
+  "cloudSyncDenied": "Cloud record writes are disabled. Pending changes are kept; existing cloud records can still be downloaded.",
+  "cloudSyncQuota": "Cloud record limit reached. The local record and pending change are kept.",
+  "cloudProcessingDenied": "Server recognition is disabled for this account. Available local processing and manual entry remain accessible.",
+  "cloudProcessingQuota": "The monthly recognition quota is full. Wait for pending jobs or the next month. The original is kept.",
+  "cloudRecordUsage": "Records: {used} of {limit}",
+  "cloudByteUsage": "Bytes: {used}; reserved: {reserved}; limit: {limit}",
+  "cloudJobUsage": "For {period}: {used} of {limit}; queued or running: {reserved}",
+  "cloudUntil": "Access valid until {date}",
+  "@cloudRecordUsage": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "@cloudByteUsage": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "reserved": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "@cloudJobUsage": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "reserved": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      },
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "@cloudUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  }
 }

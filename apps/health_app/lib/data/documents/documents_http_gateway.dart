@@ -5,12 +5,15 @@ import 'dart:typed_data';
 import 'package:document_domain/document_domain.dart';
 import 'package:http/http.dart' as http;
 
+import '../network/cloud_client.dart';
+
 final class DocumentsHttpGateway implements DocumentsGateway {
   DocumentsHttpGateway({
     required this.endpoint,
     required this.token,
+    this.accountOwnerId,
     http.Client? client,
-  }) : _client = client ?? http.Client() {
+  }) : _client = client ?? createCloudClient() {
     if (endpoint.userInfo.isNotEmpty ||
         endpoint.hasQuery ||
         endpoint.hasFragment ||
@@ -24,18 +27,20 @@ final class DocumentsHttpGateway implements DocumentsGateway {
                   '10.0.2.2',
                   '::1',
                 ].contains(endpoint.host))) ||
-        token.trim().isEmpty) {
+        (!usesCloudCookies && token.trim().isEmpty)) {
       throw const OriginalFailure('connection');
     }
   }
   final Uri endpoint;
   final String token;
+  final String? accountOwnerId;
   final http.Client _client;
   // Conservative scope: a different endpoint or credential needs reconfirmation.
   // Persist only this opaque hash, never the token itself.
   @override
-  String get destinationId =>
-      originalSha256(utf8.encode('${endpoint.toString()}\n$token'));
+  String get destinationId => originalSha256(
+    utf8.encode('${endpoint.toString()}\n${accountOwnerId ?? token}'),
+  );
 
   Future<Uint8List> _request(
     String method,
@@ -47,7 +52,9 @@ final class DocumentsHttpGateway implements DocumentsGateway {
     final request = http.Request(method, endpoint.resolve(path))
       ..followRedirects = false;
     request.headers.addAll({
-      'authorization': 'Bearer $token',
+      if (token.isNotEmpty) 'authorization': 'Bearer $token',
+      'x-app-request': '1',
+      'x-account-owner': ?accountOwnerId,
       'content-type': type,
     });
     if (body != null) request.bodyBytes = body;
@@ -76,6 +83,8 @@ final class DocumentsHttpGateway implements DocumentsGateway {
         'unauthorized' => 'unauthorized',
         'not_found' => 'access',
         'cloud_disabled' => 'access',
+        'storage_denied' => 'access',
+        'cloud_access_unavailable' => 'cloud_access_unavailable',
         'integrity_mismatch' => 'integrity',
         _ => 'cloud',
       });

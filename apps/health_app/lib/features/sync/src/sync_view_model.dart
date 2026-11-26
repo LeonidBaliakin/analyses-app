@@ -54,6 +54,7 @@ class SyncViewModel extends ChangeNotifier {
 
   Future<bool> connect(String endpoint, String token) async {
     if (busy) return false;
+    final generation = ++_generation;
     busy = true;
     error = null;
     _notify();
@@ -62,7 +63,9 @@ class SyncViewModel extends ChangeNotifier {
       final uri = Uri.parse(endpoint.trim()).replace(path: '/');
       incoming = gatewayFactory(uri, token.trim());
       final identity = await incoming.identity();
-      if (_disposed) throw const SyncFailure('cancelled');
+      if (_disposed || generation != _generation) {
+        throw const SyncFailure('cancelled');
+      }
       await store.bindSync(
         profileId,
         originalSha256(
@@ -71,6 +74,9 @@ class SyncViewModel extends ChangeNotifier {
         newId(),
         identity,
       );
+      if (_disposed || generation != _generation) {
+        throw const SyncFailure('cancelled');
+      }
       _gateway?.close();
       _gateway = incoming;
       incoming = null;

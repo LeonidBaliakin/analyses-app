@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:crypto/crypto.dart';
+import 'package:cloud_access/cloud_access.dart';
+import 'package:http/http.dart' as http;
 import 'package:medical_domain/medical_domain.dart';
 import 'package:record_sync/record_sync.dart';
 import 'package:postgres/postgres.dart';
@@ -24,9 +26,27 @@ String _nonce() => List.generate(
 ).join();
 
 class RecordsService {
-  RecordsService(this.db, this.identities);
+  RecordsService(
+    this.db,
+    this.identities, {
+    this.identityEndpoint,
+    this.identityServiceKey,
+    this.cloudPolicies,
+  });
   final Pool db;
   final List<TokenIdentity> identities;
+  final Uri? identityEndpoint;
+  final String? identityServiceKey;
+  final CloudPolicyGateway? cloudPolicies;
+  Future<CloudPolicy?> _policy(String owner) async {
+    if (cloudPolicies == null) return null;
+    try {
+      return await cloudPolicies!.policy(owner);
+    } catch (_) {
+      throw const ApiError(503, 'cloud_access_unavailable');
+    }
+  }
+
   Future<void> migrate() => db.runTx((tx) async {
     await tx.execute('SELECT pg_advisory_xact_lock(5786207)');
     await tx.execute(
@@ -55,7 +75,7 @@ class RecordsService {
     ),
     parameters: {'o': owner, 'p': profile, 'e': _nonce()},
   );
-  String _owner(Request req) {
+  Future<String> _owner(Request req) async {
     final token = req.headers['authorization'] ?? '';
     if (!token.startsWith('Bearer ') || token.length > 2048) {
       throw const ApiError(401, 'unauthorized');
@@ -67,6 +87,45 @@ class RecordsService {
         diff |= digest.codeUnitAt(n) ^ i.hash.codeUnitAt(n);
       }
       if (diff == 0) return i.ownerId;
+    }
+    if (identityEndpoint != null) {
+      final client = http.Client();
+      try {
+        final request =
+            http.Request('GET', identityEndpoint!.resolve('internal/session'))
+              ..followRedirects = false
+              ..headers.addAll({
+                'authorization': token,
+                'x-identity-service-key': identityServiceKey!,
+              });
+        final response = await client
+            .send(request)
+            .timeout(const Duration(seconds: 10));
+        final bytes = <int>[];
+        await for (final chunk in response.stream.timeout(
+          const Duration(seconds: 10),
+        )) {
+          if (bytes.length + chunk.length > 8192) {
+            throw const ApiError(503, 'identity_unavailable');
+          }
+          bytes.addAll(chunk);
+        }
+        if (response.statusCode == 200) {
+          final actor = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
+          final p = req.url.pathSegments;
+          if (p.length < 3 || p[2] != actor['profileId']) {
+            throw const ApiError(404, 'not_found');
+          }
+          final owner = actor['ownerId'] as String;
+          await grant(owner, actor['profileId'] as String);
+          return owner;
+        }
+        if (response.statusCode != 401) {
+          throw const ApiError(503, 'identity_unavailable');
+        }
+      } finally {
+        client.close();
+      }
     }
     throw const ApiError(401, 'unauthorized');
   }
@@ -124,7 +183,7 @@ class RecordsService {
       if (req.method == 'GET' && req.url.path == 'health') {
         return _json(200, {'status': 'ok'});
       }
-      final owner = _owner(req), p = req.url.pathSegments;
+      final owner = await _owner(req), p = req.url.pathSegments;
       if (p.length != 4 ||
           p[0] != 'v1' ||
           p[1] != 'profiles' ||
@@ -134,12 +193,30 @@ class RecordsService {
       final profile = p[2];
       if (p[3] == 'sync-access' && req.method == 'GET') {
         final scope = await db.run((tx) => _scope(tx, owner, profile));
+        CloudPolicy? policy;
+        try {
+          policy = await _policy(owner);
+        } on ApiError {
+          /* Identity/pull remain available; writes fail closed. */
+        }
+        final used =
+            (await db.execute(
+                  Sql.named(
+                    'SELECT count(*) FROM records WHERE owner_id=@o AND NOT deleted',
+                  ),
+                  parameters: {'o': owner},
+                )).single[0]
+                as int;
         return _json(200, {
           'schemaVersion': 1,
           'ownerId': owner,
           'profileId': profile,
           'epoch': scope['epoch'],
-          'canWrite': scope['can_write'],
+          'canWrite':
+              scope['can_write'] == true &&
+              (policy?.canSync ?? cloudPolicies == null),
+          'recordUsage': used,
+          'recordLimit': policy?.recordLimit,
         });
       }
       if (p[3] == 'sync-changes' && req.method == 'GET') {
@@ -194,11 +271,19 @@ class RecordsService {
           'command': command.toJson(),
         });
         final response = await db.runTx((tx) async {
+          await tx.execute(
+            Sql.named('SELECT pg_advisory_xact_lock(hashtext(@o))'),
+            parameters: {'o': 'records-quota:$owner'},
+          );
           final scope = await _scope(tx, owner, profile, lock: true);
           if (scope['epoch'] != body['epoch']) {
             throw const ApiError(409, 'server_changed');
           }
           if (scope['can_write'] != true) throw const ApiError(403, 'access');
+          final policy = await _policy(owner);
+          if (policy != null && !policy.canSync) {
+            throw const ApiError(403, 'sync_denied');
+          }
           // Profile lock serializes sequence assignment and commit order, including replays.
           final previous = await tx.execute(
             Sql.named(
@@ -238,6 +323,23 @@ class RecordsService {
             }
             if (old == null && command.deleted) {
               throw const ApiError(400, 'schema');
+            }
+            // Only creating/restoring a live record grows usage. Edits/deletes and
+            // exact replays remain possible when a lowered quota is already full.
+            if (policy != null &&
+                !command.deleted &&
+                (old == null || old['deleted'] == true)) {
+              final used =
+                  (await tx.execute(
+                        Sql.named(
+                          'SELECT count(*) FROM records WHERE owner_id=@o AND NOT deleted',
+                        ),
+                        parameters: {'o': owner},
+                      )).single[0]
+                      as int;
+              if (used >= policy.recordLimit) {
+                throw const ApiError(409, 'sync_quota_exceeded');
+              }
             }
             if (record is! MedicalProfile) {
               final parent = await tx.execute(

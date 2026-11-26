@@ -169,6 +169,7 @@ class _OriginalsPageState extends State<OriginalsPage> {
                             'unsupported' => l.originalsUnsupported,
                             'integrity' => l.originalsIntegrityError,
                             'quota' => l.originalsQuota,
+                            'cloud_access_unavailable' => l.cloudUnavailable,
                             'access' || 'unauthorized' => l.originalsAccess,
                             'connection' => l.originalsConnectionError,
                             'profile' => l.originalsProfileRequired,

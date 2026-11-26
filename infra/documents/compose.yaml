@@ -24,9 +24,16 @@ services:
       - source: s3_config
         target: s3.json
   documents:
-    build: ../../services/documents
+    build:
+      context: ../..
+      dockerfile: services/documents/Dockerfile
     environment:
       DOCUMENTS_BIND: 0.0.0.0
+      ENTITLEMENTS_ENDPOINT: http://entitlements:8084/
+      CLOUD_SERVICE_KEY: ${CLOUD_SERVICE_KEY:-}
+      IDENTITY_ENDPOINT: ${IDENTITY_ENDPOINT:-}
+      IDENTITY_SERVICE_KEY: ${IDENTITY_SERVICE_KEY:-}
+      IDENTITY_SECURE_COOKIE: "false"
       DOCUMENTS_DATABASE_URL: postgresql://documents:${POSTGRES_PASSWORD}@postgres:5432/documents?sslmode=disable
       DOCUMENTS_S3_ENDPOINT: http://seaweed:8333
       DOCUMENTS_S3_ACCESS_KEY: ${S3_ACCESS_KEY:?Run init_dev.py}
@@ -35,17 +42,90 @@ services:
       DOCUMENTS_PROCESSING_ENDPOINT: http://processing:8081/
       DOCUMENTS_RECORDS_ENDPOINT: http://records:8082/
       DOCUMENTS_IDENTITIES_FILE: /run/secrets/identities.json
-      DOCUMENTS_ALLOWED_ORIGINS: http://localhost:7357,http://127.0.0.1:7357
+      DOCUMENTS_ALLOWED_ORIGINS: ${DOCUMENTS_ALLOWED_ORIGINS:-http://localhost:7357,http://127.0.0.1:7357}
     ports:
       - "127.0.0.1:18088:8080"
     secrets:
       - source: identities
         target: identities.json
     depends_on:
+      entitlements:
+        condition: service_healthy
       postgres:
         condition: service_healthy
       seaweed:
         condition: service_started
+  entitlements-db:
+    image: postgres:18.1-alpine3.22
+    restart: "no"
+    environment:
+      PGHOST: postgres
+      PGUSER: documents
+      PGDATABASE: postgres
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Configure server secrets}
+    volumes:
+      - ../server/entitlements.sql:/bootstrap/entitlements.sql:ro
+    command: [psql, -v, ON_ERROR_STOP=1, -f, /bootstrap/entitlements.sql]
+    depends_on:
+      postgres:
+        condition: service_healthy
+  entitlements:
+    build:
+      context: ../..
+      dockerfile: services/entitlements/Dockerfile
+    environment:
+      ENTITLEMENTS_DATABASE_URL: postgresql://documents:${POSTGRES_PASSWORD}@postgres:5432/entitlements?sslmode=disable
+      ENTITLEMENTS_BIND: 0.0.0.0
+      CLOUD_SERVICE_KEY: ${CLOUD_SERVICE_KEY:?Configure cloud secrets}
+      CLOUD_ADMIN_KEY: ${CLOUD_ADMIN_KEY:?Configure cloud secrets}
+    healthcheck:
+      test: [CMD, /app/entitlements, --health]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    depends_on:
+      entitlements-db:
+        condition: service_completed_successfully
+  identity-db:
+    profiles: [accounts]
+    image: postgres:18.1-alpine3.22
+    environment:
+      PGHOST: postgres
+      PGUSER: documents
+      PGDATABASE: postgres
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Run init_dev.py}
+    volumes:
+      - ../server/identity.sql:/bootstrap/identity.sql:ro
+    command: [psql, -v, ON_ERROR_STOP=1, -f, /bootstrap/identity.sql]
+    depends_on:
+      postgres:
+        condition: service_healthy
+  identity:
+    profiles: [accounts]
+    build: ../../services/identity
+    environment:
+      IDENTITY_DATABASE_URL: postgresql://documents:${POSTGRES_PASSWORD}@postgres:5432/identity?sslmode=disable
+      IDENTITY_SERVICE_KEY: ${IDENTITY_SERVICE_KEY:-}
+      IDENTITY_MAIL_KEY: ${IDENTITY_MAIL_KEY:-}
+      IDENTITY_BIND: 0.0.0.0
+      IDENTITY_SECURE_COOKIE: "false"
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+      SMTP_FROM: accounts@analyses.test
+      SMTP_ALLOW_INSECURE: "true"
+    healthcheck:
+      test: [CMD, /app/identity, --health]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    depends_on:
+      identity-db:
+        condition: service_completed_successfully
+  mailpit:
+    profiles: [accounts]
+    image: axllent/mailpit:v1.27.10
+    ports:
+      - "127.0.0.1:18025:8025"
   records-db:
     profiles: [sync]
     image: postgres:18.1-alpine3.22
@@ -69,6 +149,10 @@ services:
       RECORDS_DATABASE_URL: postgresql://documents:${POSTGRES_PASSWORD}@postgres:5432/records?sslmode=disable
       RECORDS_IDENTITIES_FILE: /run/secrets/identities.json
       RECORDS_BIND: 0.0.0.0
+      ENTITLEMENTS_ENDPOINT: http://entitlements:8084/
+      CLOUD_SERVICE_KEY: ${CLOUD_SERVICE_KEY:-}
+      IDENTITY_ENDPOINT: ${IDENTITY_ENDPOINT:-}
+      IDENTITY_SERVICE_KEY: ${IDENTITY_SERVICE_KEY:-}
     secrets:
       - source: identities
         target: identities.json
@@ -84,6 +168,8 @@ services:
       PROCESSING_DATABASE_URL: postgresql://documents:${POSTGRES_PASSWORD}@postgres:5432/processing?sslmode=disable
       PROCESSING_DOCUMENTS_ENDPOINT: http://documents:8080/
       PROCESSING_BIND: 0.0.0.0
+      ENTITLEMENTS_ENDPOINT: http://entitlements:8084/
+      CLOUD_SERVICE_KEY: ${CLOUD_SERVICE_KEY:-}
       PROCESSING_WORKER: /worker/worker.py
       PROCESSING_CONFIG: /tmp/processing-config.json
       PROCESSING_LLM_URL: http://host.docker.internal:18089

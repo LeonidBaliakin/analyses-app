@@ -72,3 +72,8 @@ Bootstrap, фиксированная квота и один локальный 
 
 Подтверждённые записи синхронизируются через отдельный [Records API](../../docs/reports-and-sync.md),
 проксируемый Documents. Development Compose использует профиль `sync`.
+
+Облачные права и байтовый лимит теперь задаёт [Entitlements](../../docs/cloud-access.md).
+Для существующего dev-стенда перед обновлением выполните `python3 infra/documents/init_accounts.py`
+из корня: он добавит новые cloud read/admin ключи, сохранив прежние. Новая `init_dev.py`
+создаёт их сразу. Резерв/used и проверка SHA-256 остаются ответственностью Documents.

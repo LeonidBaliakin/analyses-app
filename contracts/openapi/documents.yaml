@@ -21,7 +21,7 @@ paths:
       - $ref: '#/components/parameters/Profile'
     get:
       operationId: processingAccess
-      description: Authorize owner/profile and expose pilot processing entitlement to Processing.
+      description: Authorize owner/profile and expose the legacy emergency write guard to Processing. Actual admission rights and monthly quota are checked by Processing against Entitlements.
       responses:
         '200':
           description: Authorized scope; read access does not imply processing entitlement.

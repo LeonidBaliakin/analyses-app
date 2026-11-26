@@ -2765,6 +2765,342 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not copy the report.'**
   String get reportCopyError;
+
+  /// No description provided for @accountDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in or create an account to connect to the cloud. Local records are available without signing in.'**
+  String get accountDescription;
+
+  /// No description provided for @accountManage.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-in and devices'**
+  String get accountManage;
+
+  /// No description provided for @accountAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Action'**
+  String get accountAction;
+
+  /// No description provided for @accountLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get accountLogin;
+
+  /// No description provided for @accountRegister.
+  ///
+  /// In en, this message translates to:
+  /// **'Create account'**
+  String get accountRegister;
+
+  /// No description provided for @accountRecover.
+  ///
+  /// In en, this message translates to:
+  /// **'Recover access'**
+  String get accountRecover;
+
+  /// No description provided for @accountSendCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Send email code'**
+  String get accountSendCode;
+
+  /// No description provided for @accountCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Email code'**
+  String get accountCode;
+
+  /// No description provided for @accountCodeSent.
+  ///
+  /// In en, this message translates to:
+  /// **'If this request applies to this address, an email has been sent. The 8-digit code expires in 15 minutes. Check your spam folder.'**
+  String get accountCodeSent;
+
+  /// No description provided for @accountPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get accountPassword;
+
+  /// No description provided for @accountNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get accountNewPassword;
+
+  /// No description provided for @accountPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'15–128 characters. Spaces are allowed.'**
+  String get accountPasswordHint;
+
+  /// No description provided for @accountShowPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Show password'**
+  String get accountShowPassword;
+
+  /// No description provided for @accountHidePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide password'**
+  String get accountHidePassword;
+
+  /// No description provided for @accountDeviceName.
+  ///
+  /// In en, this message translates to:
+  /// **'Device name'**
+  String get accountDeviceName;
+
+  /// No description provided for @accountThisDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'This device'**
+  String get accountThisDevice;
+
+  /// No description provided for @accountResetPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset password'**
+  String get accountResetPassword;
+
+  /// No description provided for @accountChangeEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Change address or request a new code'**
+  String get accountChangeEmail;
+
+  /// No description provided for @accountRecovered.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset. Previous sessions have ended. Sign in with your new password.'**
+  String get accountRecovered;
+
+  /// No description provided for @accountSecondDeviceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'On your second device, sign in with the same email and password, then connect synchronization.'**
+  String get accountSecondDeviceHint;
+
+  /// No description provided for @accountConnectHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting sends confirmed local records to this account and downloads cloud records. Conflicts require your choice.'**
+  String get accountConnectHint;
+
+  /// No description provided for @accountConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect records on this device'**
+  String get accountConnect;
+
+  /// No description provided for @accountReconnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect synchronization'**
+  String get accountReconnect;
+
+  /// No description provided for @accountDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'Devices and sessions'**
+  String get accountDevices;
+
+  /// No description provided for @accountRefreshDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh list'**
+  String get accountRefreshDevices;
+
+  /// No description provided for @accountThisSession.
+  ///
+  /// In en, this message translates to:
+  /// **'current session'**
+  String get accountThisSession;
+
+  /// No description provided for @accountRevoke.
+  ///
+  /// In en, this message translates to:
+  /// **'End session'**
+  String get accountRevoke;
+
+  /// No description provided for @accountLogout.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out on this device'**
+  String get accountLogout;
+
+  /// No description provided for @accountLogoutAll.
+  ///
+  /// In en, this message translates to:
+  /// **'End all sessions'**
+  String get accountLogoutAll;
+
+  /// No description provided for @accountEmailError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email address.'**
+  String get accountEmailError;
+
+  /// No description provided for @accountCodeError.
+  ///
+  /// In en, this message translates to:
+  /// **'The code is invalid, expired or already used. Check all 8 digits or request a new code.'**
+  String get accountCodeError;
+
+  /// No description provided for @accountCredentialsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect email or password.'**
+  String get accountCredentialsError;
+
+  /// No description provided for @accountExists.
+  ///
+  /// In en, this message translates to:
+  /// **'This account already exists. Sign in or recover access.'**
+  String get accountExists;
+
+  /// No description provided for @accountRateLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Try again in 15 minutes.'**
+  String get accountRateLimited;
+
+  /// No description provided for @accountBindingError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not connect synchronization. Check its status. If local records are already bound to another account or server, connection is blocked to prevent mixing data.'**
+  String get accountBindingError;
+
+  /// No description provided for @accountStorageError.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in, but the session could not be saved to secure storage. You may need to sign in after restarting.'**
+  String get accountStorageError;
+
+  /// No description provided for @accountSessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session ended or expired. Sign in again. Local records are preserved.'**
+  String get accountSessionExpired;
+
+  /// No description provided for @accountNetworkError.
+  ///
+  /// In en, this message translates to:
+  /// **'Request failed. Check your connection and retry. If the operation already completed, try signing in.'**
+  String get accountNetworkError;
+
+  /// No description provided for @cloudTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud access and quotas'**
+  String get cloudTitle;
+
+  /// No description provided for @cloudRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh access and usage'**
+  String get cloudRefresh;
+
+  /// No description provided for @cloudEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'enabled'**
+  String get cloudEnabled;
+
+  /// No description provided for @cloudDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'disabled'**
+  String get cloudDisabled;
+
+  /// No description provided for @cloudSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Synchronization'**
+  String get cloudSync;
+
+  /// No description provided for @cloudStorage.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud originals'**
+  String get cloudStorage;
+
+  /// No description provided for @cloudProcessing.
+  ///
+  /// In en, this message translates to:
+  /// **'Server recognition'**
+  String get cloudProcessing;
+
+  /// No description provided for @cloudUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not check cloud access and quotas. Try again later. Local data remains available.'**
+  String get cloudUnavailable;
+
+  /// No description provided for @cloudLastKnown.
+  ///
+  /// In en, this message translates to:
+  /// **'The last received values below may be out of date.'**
+  String get cloudLastKnown;
+
+  /// No description provided for @cloudLocalKept.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled cloud access or a full quota preserves local records, originals and pending uploads.'**
+  String get cloudLocalKept;
+
+  /// No description provided for @cloudSyncDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud record writes are disabled. Pending changes are kept; existing cloud records can still be downloaded.'**
+  String get cloudSyncDenied;
+
+  /// No description provided for @cloudSyncQuota.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud record limit reached. The local record and pending change are kept.'**
+  String get cloudSyncQuota;
+
+  /// No description provided for @cloudProcessingDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Server recognition is disabled for this account. Available local processing and manual entry remain accessible.'**
+  String get cloudProcessingDenied;
+
+  /// No description provided for @cloudProcessingQuota.
+  ///
+  /// In en, this message translates to:
+  /// **'The monthly recognition quota is full. Wait for pending jobs or the next month. The original is kept.'**
+  String get cloudProcessingQuota;
+
+  /// No description provided for @cloudRecordUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'Records: {used} of {limit}'**
+  String cloudRecordUsage(int used, int limit);
+
+  /// No description provided for @cloudByteUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'Bytes: {used}; reserved: {reserved}; limit: {limit}'**
+  String cloudByteUsage(String used, String reserved, String limit);
+
+  /// No description provided for @cloudJobUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'For {period}: {used} of {limit}; queued or running: {reserved}'**
+  String cloudJobUsage(int used, int reserved, int limit, String period);
+
+  /// No description provided for @cloudUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Access valid until {date}'**
+  String cloudUntil(String date);
 }
 
 class _AppLocalizationsDelegate

@@ -1,0 +1,432 @@
+openapi: 3.1.0
+info:
+  title: Accounts and device sessions
+  version: 1.0.0
+  description: Public API via Documents. All responses are no-store. Cookie transport
+    sets HttpOnly/SameSite=Lax/Secure, returns no token in JSON. Internal service-key
+    introspection is not publicly proxied.
+servers:
+- url: https://api.example.test
+security:
+- bearerSession: []
+- cookieSession: []
+paths:
+  /v1/auth/challenges:
+    post:
+      summary: Queue a code with neutral response for unknown accounts
+      operationId: post_challenges
+      responses:
+        '202':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Challenge'
+        '400': &id001
+          description: Invalid input or expired/consumed code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401': &id002
+          description: Invalid credentials or expired/revoked session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403': &id003
+          description: Origin or CSRF denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409': &id004
+          description: Account already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429': &id005
+          description: Rate limit; retry after 15 minutes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503': &id006
+          description: Service temporarily unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security: []
+      parameters:
+      - name: X-App-Request
+        in: header
+        required: true
+        schema:
+          type: string
+          enum:
+          - '1'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChallengeRequest'
+  /v1/auth/register:
+    post:
+      summary: Verify email and atomically create account and device session
+      operationId: post_register
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+        '400': *id001
+        '401': *id002
+        '403': *id003
+        '409': *id004
+        '429': *id005
+        '503': *id006
+      security: []
+      parameters:
+      - name: X-App-Request
+        in: header
+        required: true
+        schema:
+          type: string
+          enum:
+          - '1'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Registration'
+  /v1/auth/login:
+    post:
+      summary: Create an independent device session
+      operationId: post_login
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+        '400': *id001
+        '401': *id002
+        '403': *id003
+        '409': *id004
+        '429': *id005
+        '503': *id006
+      security: []
+      parameters:
+      - name: X-App-Request
+        in: header
+        required: true
+        schema:
+          type: string
+          enum:
+          - '1'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+  /v1/auth/recover:
+    post:
+      summary: Consume code, change password, revoke all sessions
+      operationId: post_recover
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        '400': *id001
+        '401': *id002
+        '403': *id003
+        '409': *id004
+        '429': *id005
+        '503': *id006
+      security: []
+      parameters:
+      - name: X-App-Request
+        in: header
+        required: true
+        schema:
+          type: string
+          enum:
+          - '1'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Recovery'
+  /v1/auth/session:
+    get:
+      summary: Validate and restore current session
+      operationId: get_session
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+        '400': *id001
+        '401': *id002
+        '403': *id003
+        '409': *id004
+        '429': *id005
+        '503': *id006
+  /v1/auth/sessions:
+    get:
+      summary: List active sessions of current owner
+      operationId: get_sessions
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Devices'
+        '400': *id001
+        '401': *id002
+        '403': *id003
+        '409': *id004
+        '429': *id005
+        '503': *id006
+  /v1/auth/sessions/{sessionId}/revoke:
+    post:
+      summary: Idempotently revoke one owner session
+      operationId: post_sessions_sessionId_revoke
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        '400': *id001
+        '401': *id002
+        '403': *id003
+        '409': *id004
+        '429': *id005
+        '503': *id006
+      parameters:
+      - name: X-App-Request
+        in: header
+        required: true
+        schema:
+          type: string
+          enum:
+          - '1'
+      - name: sessionId
+        in: path
+        required: true
+        schema: &id007
+          type: string
+  /v1/auth/logout:
+    post:
+      summary: Revoke current session
+      operationId: post_logout
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        '400': *id001
+        '401': *id002
+        '403': *id003
+        '409': *id004
+        '429': *id005
+        '503': *id006
+      parameters:
+      - name: X-App-Request
+        in: header
+        required: true
+        schema:
+          type: string
+          enum:
+          - '1'
+  /v1/auth/logout-all:
+    post:
+      summary: Revoke all owner sessions
+      operationId: post_logout-all
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        '400': *id001
+        '401': *id002
+        '403': *id003
+        '409': *id004
+        '429': *id005
+        '503': *id006
+      parameters:
+      - name: X-App-Request
+        in: header
+        required: true
+        schema:
+          type: string
+          enum:
+          - '1'
+components:
+  securitySchemes:
+    bearerSession:
+      type: http
+      scheme: bearer
+    cookieSession:
+      type: apiKey
+      in: cookie
+      name: __Host-analyses_session
+  schemas:
+    Error:
+      type: object
+      properties:
+        schemaVersion: &id008
+          type: integer
+          enum:
+          - 1
+        error: *id007
+      required:
+      - error
+    ChallengeRequest:
+      type: object
+      properties:
+        email: &id009
+          type: string
+          format: email
+        purpose:
+          type: string
+          enum:
+          - register
+          - recover
+      required:
+      - email
+      - purpose
+    Challenge:
+      type: object
+      properties:
+        schemaVersion: *id008
+        challengeId: *id007
+      required:
+      - schemaVersion
+      - challengeId
+    Registration:
+      type: object
+      properties:
+        challengeId: *id007
+        code: &id012
+          type: string
+          pattern: ^[0-9]{8}$
+        password: &id013
+          type: string
+          minLength: 15
+          maxLength: 128
+          writeOnly: true
+        deviceLabel: &id010
+          type: string
+          minLength: 1
+          maxLength: 80
+        transport: &id011
+          type: string
+          enum:
+          - bearer
+          - cookie
+          default: cookie
+      required:
+      - challengeId
+      - code
+      - password
+      - deviceLabel
+    Login:
+      type: object
+      properties:
+        email: *id009
+        password:
+          type: string
+          writeOnly: true
+        deviceLabel: *id010
+        transport: *id011
+      required:
+      - email
+      - password
+      - deviceLabel
+    Recovery:
+      type: object
+      properties:
+        challengeId: *id007
+        code: *id012
+        password: *id013
+      required:
+      - challengeId
+      - code
+      - password
+    Session:
+      type: object
+      properties:
+        schemaVersion: *id008
+        ownerId: *id007
+        profileId:
+          type: string
+          enum:
+          - local-profile
+        email: *id009
+        sessionId: *id007
+        expiresAt: &id014
+          type: string
+          format: date-time
+        token:
+          type: string
+          description: Only for transport=bearer. Store in OS secure storage.
+      required:
+      - schemaVersion
+      - ownerId
+      - profileId
+      - email
+      - sessionId
+      - expiresAt
+    Devices:
+      type: object
+      properties:
+        schemaVersion: *id008
+        sessions:
+          type: array
+          items:
+            type: object
+            properties:
+              sessionId: *id007
+              deviceLabel: *id007
+              createdAt: *id014
+              expiresAt: *id014
+              current:
+                type: boolean
+            required:
+            - sessionId
+            - deviceLabel
+            - createdAt
+            - expiresAt
+            - current
+      required:
+      - schemaVersion
+      - sessions
+    Result:
+      type: object
+      properties:
+        schemaVersion: *id008
+      required:
+      - schemaVersion
+      additionalProperties: true

@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:postgres/postgres.dart';
+import 'package:cloud_access/cloud_access.dart';
 import 'package:shelf/shelf.dart';
 
 final class ProcessingApiError implements Exception {
@@ -153,6 +154,7 @@ final class ProcessingService {
     required this.documents,
     required this.worker,
     this.allowedOrigins = const {},
+    this.cloudPolicies,
     http.Client? client,
   }) : client = client ?? http.Client();
   final Pool db;
@@ -160,6 +162,30 @@ final class ProcessingService {
   final JobWorker worker;
   final Set<String> allowedOrigins;
   final http.Client client;
+  final CloudPolicyGateway? cloudPolicies;
+  Future<CloudPolicy?> _policy(String owner) async {
+    if (cloudPolicies == null) return null;
+    try {
+      return await cloudPolicies!.policy(owner);
+    } catch (_) {
+      throw const ProcessingApiError(503, 'cloud_access_unavailable');
+    }
+  }
+
+  Future<Map<String, Object?>> usage(String owner) async {
+    final result = await db.execute(
+      Sql.named(
+        "SELECT to_char(CURRENT_TIMESTAMP AT TIME ZONE 'UTC','YYYY-MM'),count(*) FILTER(WHERE state='used'),count(*) FILTER(WHERE state='reserved') FROM processing_quota WHERE owner_id=@o AND period=to_char(CURRENT_TIMESTAMP AT TIME ZONE 'UTC','YYYY-MM')",
+      ),
+      parameters: {'o': owner},
+    );
+    return {
+      'period': result.single[0],
+      'usedJobs': result.single[1],
+      'reservedJobs': result.single[2],
+    };
+  }
+
   bool working = false;
   Future<void> migrate() => db.runTx((tx) async {
     await tx.execute('SELECT pg_advisory_xact_lock(5786205)');
@@ -169,8 +195,10 @@ final class ProcessingService {
     await tx.execute(
       'INSERT INTO processing_schema VALUES(1,1) ON CONFLICT DO NOTHING',
     );
-    if ((await tx.execute('SELECT version FROM processing_schema')).single[0] !=
-        1) {
+    final version =
+        (await tx.execute('SELECT version FROM processing_schema')).single[0]
+            as int;
+    if (version != 1 && version != 2) {
       throw StateError('Unsupported processing schema');
     }
     await tx.execute(
@@ -181,6 +209,15 @@ final class ProcessingService {
     await tx.execute(
       'CREATE TABLE IF NOT EXISTS processing_outbox(event_id text PRIMARY KEY,payload text NOT NULL,created_at timestamptz NOT NULL)',
     );
+    await tx.execute(
+      "CREATE TABLE IF NOT EXISTS processing_quota(owner_id text,job_id text,period text NOT NULL,state text NOT NULL CHECK(state IN ('reserved','used','released')),PRIMARY KEY(owner_id,job_id))",
+    );
+    if (version == 1) {
+      await tx.execute(
+        "INSERT INTO processing_quota SELECT owner_id,job_id,CASE WHEN status IN ('queued','ocr','extracting') THEN to_char(CURRENT_TIMESTAMP AT TIME ZONE 'UTC','YYYY-MM') ELSE 'legacy' END,CASE WHEN status='ready' THEN 'used' WHEN status IN ('queued','ocr','extracting') THEN 'reserved' ELSE 'released' END FROM jobs ON CONFLICT DO NOTHING",
+      );
+      await tx.execute('UPDATE processing_schema SET version=2');
+    }
     await tx.execute(
       "UPDATE jobs SET status='queued' WHERE status IN ('ocr','extracting')",
     );
@@ -272,15 +309,39 @@ final class ProcessingService {
             p[3] == 'processing-capabilities' &&
             req.method == 'GET') {
           final runtime = await worker.runtimeId();
+          CloudPolicy? policy;
+          try {
+            policy = await _policy(owner);
+          } on ProcessingApiError {
+            /* Existing jobs remain readable. */
+          }
+          final quota = await usage(owner);
           response = _json(200, {
             'schemaVersion': 1,
             'runtimeId': runtime,
-            'ready': runtime != null && access['processingAllowed'] == true,
+            'ownerId': owner,
+            'profileId': profile,
+            'ready':
+                runtime != null &&
+                access['processingAllowed'] == true &&
+                (policy?.canProcess ?? cloudPolicies == null) &&
+                (policy == null ||
+                    (quota['usedJobs'] as int) +
+                            (quota['reservedJobs'] as int) <
+                        policy.processingMonthlyLimit),
+            'processingAllowed':
+                access['processingAllowed'] == true &&
+                (policy?.canProcess ?? cloudPolicies == null),
+            'quota': {...quota, 'limitJobs': policy?.processingMonthlyLimit},
           });
         } else if (p.length == 4 &&
             p[3] == 'processing-jobs' &&
             req.method == 'POST') {
           if (access['processingAllowed'] != true) {
+            throw const ProcessingApiError(403, 'processing_denied');
+          }
+          final policy = await _policy(owner);
+          if (policy != null && !policy.canProcess) {
             throw const ProcessingApiError(403, 'processing_denied');
           }
           final b = jsonDecode(
@@ -351,6 +412,33 @@ final class ProcessingService {
               if (exists.isEmpty && pending >= 3) {
                 throw const ProcessingApiError(429, 'queue_full');
               }
+              final period =
+                  (await tx.execute(
+                        "SELECT to_char(CURRENT_TIMESTAMP AT TIME ZONE 'UTC','YYYY-MM')",
+                      )).single[0]
+                      as String;
+              if (exists.isEmpty && policy != null) {
+                // Refresh rights under the admission lock, then reserve a monthly
+                // slot in the same transaction that creates the job.
+                final current = await _policy(owner);
+                if (!current!.canProcess) {
+                  throw const ProcessingApiError(403, 'processing_denied');
+                }
+                final count =
+                    (await tx.execute(
+                          Sql.named(
+                            "SELECT count(*) FROM processing_quota WHERE owner_id=@o AND period=@p AND state IN ('used','reserved')",
+                          ),
+                          parameters: {'o': owner, 'p': period},
+                        )).single[0]
+                        as int;
+                if (count >= current.processingMonthlyLimit) {
+                  throw const ProcessingApiError(
+                    409,
+                    'processing_quota_exceeded',
+                  );
+                }
+              }
               await tx.execute(
                 Sql.named(
                   "INSERT INTO jobs(owner_id,profile_id,job_id,original_id,request,metadata,input_bytes,status,runtime_id,updated_at) VALUES(@o,@p,@i,@r,@q,@m,@b,'queued',@v,CURRENT_TIMESTAMP) ON CONFLICT DO NOTHING",
@@ -366,6 +454,14 @@ final class ProcessingService {
                   'v': runtime,
                 },
               );
+              if (exists.isEmpty) {
+                await tx.execute(
+                  Sql.named(
+                    "INSERT INTO processing_quota VALUES(@o,@i,@p,'reserved')",
+                  ),
+                  parameters: {'o': owner, 'i': id, 'p': period},
+                );
+              }
             });
             final row = (await db.execute(
               Sql.named('SELECT * FROM jobs WHERE owner_id=@o AND job_id=@i'),
@@ -386,12 +482,22 @@ final class ProcessingService {
               );
           if (rows.isEmpty) throw const ProcessingApiError(404, 'not_found');
           if (p.length == 6 && p[5] == 'cancel' && req.method == 'POST') {
-            await db.execute(
-              Sql.named(
-                "UPDATE jobs SET status='cancelled',input_bytes=''::bytea,updated_at=CURRENT_TIMESTAMP WHERE owner_id=@o AND job_id=@i AND status NOT IN ('ready','failed','cancelled')",
-              ),
-              parameters: {'o': owner, 'i': id},
-            );
+            await db.runTx((tx) async {
+              final changed = await tx.execute(
+                Sql.named(
+                  "UPDATE jobs SET status='cancelled',input_bytes=''::bytea,updated_at=CURRENT_TIMESTAMP WHERE owner_id=@o AND job_id=@i AND status NOT IN ('ready','failed','cancelled')",
+                ),
+                parameters: {'o': owner, 'i': id},
+              );
+              if (changed.affectedRows > 0) {
+                await tx.execute(
+                  Sql.named(
+                    "UPDATE processing_quota SET state='released' WHERE owner_id=@o AND job_id=@i AND state='reserved'",
+                  ),
+                  parameters: {'o': owner, 'i': id},
+                );
+              }
+            });
             response = _json(200, {'state': 'cancelled'});
           } else if (p.length == 5 && req.method == 'GET') {
             response = _json(200, _view(rows.single.toColumnMap()));
@@ -430,6 +536,22 @@ final class ProcessingService {
         );
         if (rows.isEmpty) return null;
         final row = rows.single.toColumnMap();
+        final policy = await _policy(row['owner_id'] as String);
+        if (policy != null && !policy.canProcess) {
+          await tx.execute(
+            Sql.named(
+              "UPDATE jobs SET status='cancelled',error_code='processing_denied',input_bytes=''::bytea WHERE owner_id=@o AND job_id=@i",
+            ),
+            parameters: {'o': row['owner_id'], 'i': row['job_id']},
+          );
+          await tx.execute(
+            Sql.named(
+              "UPDATE processing_quota SET state='released' WHERE owner_id=@o AND job_id=@i AND state='reserved'",
+            ),
+            parameters: {'o': row['owner_id'], 'i': row['job_id']},
+          );
+          return null;
+        }
         await tx.execute(
           Sql.named(
             "UPDATE jobs SET status='ocr',updated_at=CURRENT_TIMESTAMP WHERE owner_id=@o AND job_id=@i",
@@ -440,14 +562,18 @@ final class ProcessingService {
       });
       if (row == null) return;
       final args = {'o': row['owner_id'], 'i': row['job_id']};
-      Future<bool> cancelled() async =>
-          (await db.execute(
-            Sql.named(
-              'SELECT status FROM jobs WHERE owner_id=@o AND job_id=@i',
-            ),
-            parameters: args,
-          )).single[0] ==
-          'cancelled';
+      Future<bool> cancelled() async {
+        final policy = await _policy(row['owner_id'] as String);
+        if (policy != null && !policy.canProcess) return true;
+        return (await db.execute(
+              Sql.named(
+                'SELECT status FROM jobs WHERE owner_id=@o AND job_id=@i',
+              ),
+              parameters: args,
+            )).single[0] ==
+            'cancelled';
+      }
+
       try {
         final draft = await worker.run(
           jsonDecode(row['metadata'] as String) as Map<String, dynamic>,
@@ -467,6 +593,9 @@ final class ProcessingService {
           },
           cancelled,
         );
+        if (await cancelled()) {
+          throw const ProcessingApiError(403, 'processing_denied');
+        }
         await db.runTx((tx) async {
           final changed = await tx.execute(
             Sql.named(
@@ -475,6 +604,12 @@ final class ProcessingService {
             parameters: {...args, 'd': jsonEncode(draft)},
           );
           if (changed.affectedRows == 1) {
+            await tx.execute(
+              Sql.named(
+                "UPDATE processing_quota SET state='used' WHERE owner_id=@o AND job_id=@i AND state='reserved'",
+              ),
+              parameters: args,
+            );
             await tx.execute(
               Sql.named(
                 'INSERT INTO processing_outbox VALUES(@id,@p,CURRENT_TIMESTAMP) ON CONFLICT DO NOTHING',
@@ -493,15 +628,25 @@ final class ProcessingService {
           }
         });
       } catch (e) {
-        await db.execute(
-          Sql.named(
-            "UPDATE jobs SET status='failed',input_bytes=''::bytea,error_code=@e,updated_at=CURRENT_TIMESTAMP WHERE owner_id=@o AND job_id=@i AND status!='cancelled'",
-          ),
-          parameters: {
-            ...args,
-            'e': e is ProcessingApiError ? e.code : 'worker_failed',
-          },
-        );
+        await db.runTx((tx) async {
+          final changed = await tx.execute(
+            Sql.named(
+              "UPDATE jobs SET status='failed',input_bytes=''::bytea,error_code=@e,updated_at=CURRENT_TIMESTAMP WHERE owner_id=@o AND job_id=@i AND status!='cancelled'",
+            ),
+            parameters: {
+              ...args,
+              'e': e is ProcessingApiError ? e.code : 'worker_failed',
+            },
+          );
+          if (changed.affectedRows > 0) {
+            await tx.execute(
+              Sql.named(
+                "UPDATE processing_quota SET state='released' WHERE owner_id=@o AND job_id=@i AND state='reserved'",
+              ),
+              parameters: args,
+            );
+          }
+        });
       }
     } finally {
       working = false;

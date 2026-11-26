@@ -20,7 +20,7 @@ paths:
       operationId: recordSyncIdentity
       responses:
         '200':
-          description: Authorized owner/profile and stable dataset epoch. Token rotation does not change owner binding.
+          description: Authorized owner/profile and stable dataset epoch. Token rotation does not change owner binding. canWrite checks current policy; quota counts active owner records including profiles. Null recordLimit means policy unavailable.
           content:
             application/json:
               schema:
@@ -32,6 +32,8 @@ paths:
                   profileId: {type: string}
                   epoch: {type: string, minLength: 1}
                   canWrite: {type: boolean}
+                  recordUsage: {type: integer, minimum: 0}
+                  recordLimit: {type: integer, minimum: 0, nullable: true}
         default:
           $ref: '#/components/responses/Error'
   /v1/profiles/{profileId}/sync-operations:

@@ -1473,4 +1473,200 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get reportCopyError => 'Не удалось скопировать отчёт.';
+
+  @override
+  String get accountDescription =>
+      'Войдите или создайте аккаунт для подключения облака. Локальные записи доступны без входа.';
+
+  @override
+  String get accountManage => 'Вход и устройства';
+
+  @override
+  String get accountAction => 'Действие';
+
+  @override
+  String get accountLogin => 'Войти';
+
+  @override
+  String get accountRegister => 'Создать аккаунт';
+
+  @override
+  String get accountRecover => 'Восстановить доступ';
+
+  @override
+  String get accountSendCode => 'Отправить код на email';
+
+  @override
+  String get accountCode => 'Код из письма';
+
+  @override
+  String get accountCodeSent =>
+      'Если запрос применим к этому адресу, письмо отправлено. Код из 8 цифр действует 15 минут. Проверьте папку «Спам».';
+
+  @override
+  String get accountPassword => 'Пароль';
+
+  @override
+  String get accountNewPassword => 'Новый пароль';
+
+  @override
+  String get accountPasswordHint =>
+      'От 15 до 128 символов. Можно использовать пробелы.';
+
+  @override
+  String get accountShowPassword => 'Показать пароль';
+
+  @override
+  String get accountHidePassword => 'Скрыть пароль';
+
+  @override
+  String get accountDeviceName => 'Название устройства';
+
+  @override
+  String get accountThisDevice => 'Это устройство';
+
+  @override
+  String get accountResetPassword => 'Изменить пароль';
+
+  @override
+  String get accountChangeEmail => 'Изменить адрес или запросить новый код';
+
+  @override
+  String get accountRecovered =>
+      'Пароль изменён, прежние сессии завершены. Войдите с новым паролем.';
+
+  @override
+  String get accountSecondDeviceHint =>
+      'На втором устройстве войдите с тем же email и паролем, затем подключите синхронизацию.';
+
+  @override
+  String get accountConnectHint =>
+      'Подключение отправит подтверждённые локальные записи в этот аккаунт и получит облачные. Конфликты потребуют вашего выбора.';
+
+  @override
+  String get accountConnect => 'Подключить записи этого устройства';
+
+  @override
+  String get accountReconnect => 'Подключить синхронизацию повторно';
+
+  @override
+  String get accountDevices => 'Устройства и сессии';
+
+  @override
+  String get accountRefreshDevices => 'Обновить список';
+
+  @override
+  String get accountThisSession => 'текущая сессия';
+
+  @override
+  String get accountRevoke => 'Завершить сессию';
+
+  @override
+  String get accountLogout => 'Выйти на этом устройстве';
+
+  @override
+  String get accountLogoutAll => 'Завершить все сессии';
+
+  @override
+  String get accountEmailError => 'Укажите корректный email.';
+
+  @override
+  String get accountCodeError =>
+      'Код неверен, истёк или уже использован. Проверьте 8 цифр или запросите новый.';
+
+  @override
+  String get accountCredentialsError => 'Email или пароль неверен.';
+
+  @override
+  String get accountExists =>
+      'Аккаунт уже существует. Войдите или восстановите доступ.';
+
+  @override
+  String get accountRateLimited =>
+      'Слишком много попыток. Повторите через 15 минут.';
+
+  @override
+  String get accountBindingError =>
+      'Не удалось подключить синхронизацию. Проверьте её состояние. Если локальные записи уже связаны с другим аккаунтом или сервером, подключение блокируется, чтобы не смешать данные.';
+
+  @override
+  String get accountStorageError =>
+      'Вход выполнен, но не удалось сохранить сессию в защищённом хранилище. После перезапуска может потребоваться повторный вход.';
+
+  @override
+  String get accountSessionExpired =>
+      'Сессия завершена или истекла. Войдите снова. Локальные записи сохранены.';
+
+  @override
+  String get accountNetworkError =>
+      'Не удалось выполнить запрос. Проверьте соединение и повторите. Если операция уже завершилась, попробуйте войти.';
+
+  @override
+  String get cloudTitle => 'Облачные возможности и квоты';
+
+  @override
+  String get cloudRefresh => 'Обновить права и расход';
+
+  @override
+  String get cloudEnabled => 'доступно';
+
+  @override
+  String get cloudDisabled => 'недоступно';
+
+  @override
+  String get cloudSync => 'Синхронизация';
+
+  @override
+  String get cloudStorage => 'Оригиналы в облаке';
+
+  @override
+  String get cloudProcessing => 'Серверное распознавание';
+
+  @override
+  String get cloudUnavailable =>
+      'Не удалось проверить облачные права и квоты. Повторите позже. Локальные данные доступны.';
+
+  @override
+  String get cloudLastKnown =>
+      'Ниже — последние полученные данные; они могут быть устаревшими.';
+
+  @override
+  String get cloudLocalKept =>
+      'Отказ облачного доступа или исчерпание квоты сохраняет локальные записи, оригиналы и очередь отправки.';
+
+  @override
+  String get cloudSyncDenied =>
+      'Отправка записей в облако недоступна. Очередь сохранена; уже загруженные записи можно получать.';
+
+  @override
+  String get cloudSyncQuota =>
+      'Достигнут лимит облачных записей. Локальная запись и очередь сохранены.';
+
+  @override
+  String get cloudProcessingDenied =>
+      'Серверное распознавание недоступно для аккаунта. Локальная обработка и ручной ввод остаются доступны.';
+
+  @override
+  String get cloudProcessingQuota =>
+      'Месячная квота распознавания занята. Дождитесь завершения заданий или следующего месяца. Оригинал сохранён.';
+
+  @override
+  String cloudRecordUsage(int used, int limit) {
+    return 'Записей: $used из $limit';
+  }
+
+  @override
+  String cloudByteUsage(String used, String reserved, String limit) {
+    return 'Байтов: $used, зарезервировано: $reserved, лимит: $limit';
+  }
+
+  @override
+  String cloudJobUsage(int used, int reserved, int limit, String period) {
+    return 'За $period: $used из $limit, в очереди или работе: $reserved';
+  }
+
+  @override
+  String cloudUntil(String date) {
+    return 'Права действуют до $date';
+  }
 }

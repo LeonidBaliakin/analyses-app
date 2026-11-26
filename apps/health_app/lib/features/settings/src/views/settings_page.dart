@@ -12,11 +12,13 @@ class SettingsPage extends StatefulWidget {
     required this.viewModel,
     required this.onClose,
     required this.onStartIntroduction,
+    this.onOpenAccount,
     super.key,
   });
   final SettingsViewModel viewModel;
   final VoidCallback onClose;
   final VoidCallback onStartIntroduction;
+  final VoidCallback? onOpenAccount;
   @override
   State<SettingsPage> createState() => _SettingsPageState();
 }
@@ -51,23 +53,32 @@ class _SettingsPageState extends State<SettingsPage> {
                 const SizedBox(height: 8),
                 SectionHeading(l.account),
                 const SizedBox(height: 12),
-                for (final pair in [
-                  (l.nameLabel, 'Алексей'),
-                  (l.phoneLabel, '+7 921 000-00-00'),
-                  (l.emailLabel, ''),
-                ])
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: TextFormField(
-                      initialValue: pair.$2,
-                      readOnly: true,
-                      decoration: InputDecoration(labelText: pair.$1),
-                    ),
+                if (widget.onOpenAccount != null) ...[
+                  Text(l.accountDescription),
+                  const SizedBox(height: 12),
+                  FilledButton(
+                    onPressed: widget.onOpenAccount,
+                    child: Text(l.accountManage),
                   ),
-                Text(
-                  l.demoAccount,
-                  style: TextStyle(fontSize: 12, color: p.muted),
-                ),
+                ] else ...[
+                  for (final pair in [
+                    (l.nameLabel, 'Алексей'),
+                    (l.phoneLabel, '+7 921 000-00-00'),
+                    (l.emailLabel, ''),
+                  ])
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: TextFormField(
+                        initialValue: pair.$2,
+                        readOnly: true,
+                        decoration: InputDecoration(labelText: pair.$1),
+                      ),
+                    ),
+                  Text(
+                    l.demoAccount,
+                    style: TextStyle(fontSize: 12, color: p.muted),
+                  ),
+                ],
               ],
             ),
           ),

@@ -1,0 +1,226 @@
+openapi: 3.1.0
+info:
+  title: Internal simulation-only Notifications
+  version: 1.0.0
+  description: >-
+    No public client or provider API. No live delivery, recipient binding or webhook
+    acceptance. Bodies are limited to 8192 bytes. notificationId is both idempotency
+    and correlation ID. Workers share no database access. Unknown outcomes never
+    automatically resend. See docs/messenger-integrations.md.
+paths:
+  /health:
+    get:
+      responses:
+        '200':
+          description: Database ready; simulationOnly true
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /internal/bindings:
+    post:
+      security: [{Admin: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [schemaVersion, bindingId, ownerId, channel, enabled, simulationOnly]
+              properties:
+                schemaVersion: {const: 1}
+                bindingId: {$ref: '#/components/schemas/Id'}
+                ownerId: {$ref: '#/components/schemas/Id'}
+                channel: {$ref: '#/components/schemas/Channel'}
+                enabled: {type: boolean}
+                simulationOnly: {const: true}
+      responses:
+        '200': {description: Simulation binding created or enabled flag updated}
+        '400': {$ref: '#/components/responses/Invalid'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '409': {description: Binding already belongs to another owner or channel}
+        '413': {$ref: '#/components/responses/TooLarge'}
+        '503': {$ref: '#/components/responses/Unavailable'}
+  /internal/notifications:
+    post:
+      security: [{Publisher: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/Intent'}
+      responses:
+        '200':
+          description: Accepted or current state of identical replay
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Status'}
+        '400': {$ref: '#/components/responses/Invalid'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {description: Binding missing, disabled or belongs to another owner/channel}
+        '409': {description: Same notificationId with different intent}
+        '413': {$ref: '#/components/responses/TooLarge'}
+        '503': {$ref: '#/components/responses/Unavailable'}
+  /internal/notifications/{notificationId}:
+    parameters:
+      - name: notificationId
+        in: path
+        required: true
+        schema: {$ref: '#/components/schemas/Id'}
+    get:
+      security: [{Publisher: []}]
+      responses:
+        '200':
+          description: Current state; simulated never means delivered
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Status'}
+        '400': {$ref: '#/components/responses/Invalid'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '404': {description: Not found}
+        '503': {$ref: '#/components/responses/Unavailable'}
+  /internal/channels/{channel}/claim:
+    parameters:
+      - $ref: '#/components/parameters/ChannelPath'
+    post:
+      security: [{Worker: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [schemaVersion]
+              properties:
+                schemaVersion: {const: 1}
+      responses:
+        '200':
+          description: One 60-second attempt lease or null job; expired leases become unknown
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [schemaVersion, job]
+                properties:
+                  schemaVersion: {const: 1}
+                  job:
+                    oneOf:
+                      - type: 'null'
+                      - $ref: '#/components/schemas/Job'
+        '400': {$ref: '#/components/responses/Invalid'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '413': {$ref: '#/components/responses/TooLarge'}
+        '503': {$ref: '#/components/responses/Unavailable'}
+  /internal/channels/{channel}/result:
+    parameters:
+      - $ref: '#/components/parameters/ChannelPath'
+    post:
+      security: [{Worker: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/Receipt'}
+      responses:
+        '200':
+          description: Atomic state and receipt; identical replay returns original receipt
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Status'}
+        '400': {$ref: '#/components/responses/Invalid'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '404': {description: Notification not found for this channel}
+        '409': {description: stale_lease or receipt_mismatch}
+        '413': {$ref: '#/components/responses/TooLarge'}
+        '503': {$ref: '#/components/responses/Unavailable'}
+components:
+  securitySchemes:
+    Admin: {type: apiKey, in: header, name: x-notifications-admin-key}
+    Publisher: {type: apiKey, in: header, name: x-notifications-publisher-key}
+    Worker:
+      type: apiKey
+      in: header
+      name: x-notifications-worker-key
+      description: A distinct key per channel; cannot claim or report another channel
+  parameters:
+    ChannelPath:
+      name: channel
+      in: path
+      required: true
+      schema: {$ref: '#/components/schemas/Channel'}
+  responses:
+    Invalid: {description: schema, invalid_id, unexpected_fields, simulation_only or retry_delay}
+    Unauthorized: {description: Missing or wrong role/channel credential}
+    TooLarge: {description: Body larger than 8192 bytes}
+    Unavailable: {description: Database or service unavailable; JSON error unavailable}
+  schemas:
+    Id: {type: string, pattern: '^[A-Za-z0-9_-]{1,100}$'}
+    Channel: {type: string, enum: [telegram, vk, max]}
+    Template: {type: string, enum: [activity_available, processing_ready]}
+    Intent:
+      type: object
+      additionalProperties: false
+      required: [schemaVersion, notificationId, ownerId, channel, bindingId, template, locale]
+      properties:
+        schemaVersion: {const: 1}
+        notificationId: {$ref: '#/components/schemas/Id'}
+        ownerId: {$ref: '#/components/schemas/Id'}
+        channel: {$ref: '#/components/schemas/Channel'}
+        bindingId: {$ref: '#/components/schemas/Id'}
+        template: {$ref: '#/components/schemas/Template'}
+        locale: {type: string, enum: [ru, en]}
+    Job:
+      type: object
+      additionalProperties: false
+      required: [notificationId, attemptId, bindingId, channel, template, locale, simulationOnly]
+      properties:
+        notificationId: {$ref: '#/components/schemas/Id'}
+        attemptId: {$ref: '#/components/schemas/Id'}
+        bindingId: {$ref: '#/components/schemas/Id'}
+        channel: {$ref: '#/components/schemas/Channel'}
+        template: {$ref: '#/components/schemas/Template'}
+        locale: {type: string, enum: [ru, en]}
+        simulationOnly: {const: true}
+    Status:
+      type: object
+      required: [schemaVersion, notificationId, channel, state, attempts, revision, code]
+      properties:
+        schemaVersion: {const: 1}
+        notificationId: {$ref: '#/components/schemas/Id'}
+        channel: {$ref: '#/components/schemas/Channel'}
+        state: {type: string, enum: [queued, leased, simulated, retry, unknown, failed, cancelled]}
+        attempts: {type: integer, minimum: 0, maximum: 5}
+        revision: {type: integer, minimum: 1}
+        code: {type: [string, 'null']}
+    Receipt:
+      type: object
+      additionalProperties: false
+      required: [schemaVersion, notificationId, attemptId, outcome, code]
+      properties:
+        schemaVersion: {const: 1}
+        notificationId: {$ref: '#/components/schemas/Id'}
+        attemptId: {$ref: '#/components/schemas/Id'}
+        outcome: {type: string, enum: [simulated, retry, unknown, failed]}
+        code: {type: string, enum: [dry_run, provider_rate_limited, transport_not_sent, ambiguous_result, adapter_unavailable]}
+        retryAfterSeconds: {type: integer, minimum: 1, maximum: 86400, default: 30}
+      oneOf:
+        - properties:
+            outcome: {const: simulated}
+            code: {const: dry_run}
+        - properties:
+            outcome: {const: retry}
+            code: {enum: [provider_rate_limited, transport_not_sent]}
+        - properties:
+            outcome: {const: unknown}
+            code: {const: ambiguous_result}
+        - properties:
+            outcome: {const: failed}
+            code: {const: adapter_unavailable}
+    StateChanged:
+      description: Transactional outbox event; event ID is notificationId:revision. No exporter yet.
+      allOf:
+        - $ref: '#/components/schemas/Status'
+        - type: object
+          required: [type]
+          properties:
+            type: {const: NotificationStateChanged}
