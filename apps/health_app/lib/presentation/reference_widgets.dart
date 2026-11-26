@@ -4,9 +4,19 @@ import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
 
-class DemoPage extends StatelessWidget {
-  const DemoPage({required this.children, super.key});
+class DemoPage extends ReferencePage {
+  const DemoPage({required super.children, super.key})
+    : super(showDemoNotice: true);
+}
+
+class ReferencePage extends StatelessWidget {
+  const ReferencePage({
+    required this.children,
+    this.showDemoNotice = false,
+    super.key,
+  });
   final List<Widget> children;
+  final bool showDemoNotice;
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, c) => Align(
@@ -24,8 +34,9 @@ class DemoPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const DemoBanner(),
-              if (children.isEmpty || children.first is! RecordActions)
+              if (showDemoNotice) const DemoBanner(),
+              if (showDemoNotice &&
+                  (children.isEmpty || children.first is! RecordActions))
                 const SizedBox(height: 12),
               ...children,
             ],

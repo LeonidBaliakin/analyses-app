@@ -13,12 +13,14 @@ class AppShell extends StatelessWidget {
     required this.settings,
     this.onAdd,
     this.modeControl,
+    this.onDirectoryOpened,
     super.key,
   });
   final StatefulNavigationShell navigationShell;
   final SettingsViewModel settings;
   final VoidCallback? onAdd;
   final Widget? modeControl;
+  final VoidCallback? onDirectoryOpened;
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context), p = OrangePalette.of(context);
@@ -39,6 +41,11 @@ class AppShell extends StatelessWidget {
         }
       } else {
         navigationShell.goBranch(i > 2 ? i - 1 : i);
+        if (i == 3 || i == 4) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (context.mounted) onDirectoryOpened?.call();
+          });
+        }
       }
     }
 

@@ -150,3 +150,14 @@ Android APK 0.1.0 пользователь подтвердил как откр�
 `workers/messenger_delivery` — общий образ независимых Telegram/VK/MAX workers,
 режимы disabled/dry_run. Они не входят в Flutter pub workspace и не добавляют
 зависимости приложению или чистому медицинскому ядру. [Контракт и ограничения](messenger-integrations.md).
+
+## Реальный каталог учреждений
+
+`packages/provider_directory` содержит проверенный снимок публичного каталога
+двух городов и независимые от платформы фильтры и расчёт расстояния. Flutter-функция
+`directory` использует общий выбор адреса и геолокации, показывает контакты и
+переходы на сайт учреждения. [Состав и пределы](provider-directory-sources.md),
+[ADR 0016](adr/0016-local-provider-directory.md). Реестр, durable расписание и
+серверный каталог находятся в `services/provider_directory`; семь самостоятельных
+микросервисов собираются из `workers/provider_connector`. [ADR 0017](adr/0017-provider-connectors.md),
+[эксплуатация и границы публикации](operations/provider-connectors.md).

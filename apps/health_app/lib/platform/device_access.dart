@@ -38,12 +38,66 @@ final class DeviceCoordinates {
   final double longitude;
 }
 
+enum LocationSource { manual, gps }
+
+enum AddressLevel { city, street, building }
+
+/// A readable place; coordinates are optional implementation data for search.
+final class DeviceLocation {
+  const DeviceLocation({
+    required this.address,
+    this.coordinates,
+    this.source = LocationSource.manual,
+    this.isAddressPoint = true,
+    this.completion,
+    this.level,
+  });
+  final String address;
+  final DeviceCoordinates? coordinates;
+  final LocationSource source;
+
+  /// False for geocoder results representing a city or street, not a house.
+  final bool isAddressPoint;
+
+  /// The editable city/street/building prefix, without region/country labels.
+  final String? completion;
+  final AddressLevel? level;
+  String get inputText => completion ?? address;
+}
+
+abstract interface class AddressLookupGateway {
+  Future<List<DeviceLocation>> search(String query, {required String language});
+  Future<DeviceLocation?> reverse(
+    DeviceCoordinates coordinates, {
+    required String language,
+  });
+}
+
+final class UnavailableAddressLookup implements AddressLookupGateway {
+  const UnavailableAddressLookup();
+  @override
+  Future<List<DeviceLocation>> search(
+    String query, {
+    required String language,
+  }) async => [];
+  @override
+  Future<DeviceLocation?> reverse(
+    DeviceCoordinates coordinates, {
+    required String language,
+  }) async => null;
+}
+
+abstract interface class LocationRepository {
+  Future<DeviceLocation?> read();
+  Future<void> write(DeviceLocation location);
+}
+
 abstract interface class DeviceAccessGateway {
   bool get supportsCamera;
   bool get supportsSettings;
   Future<SelectedAttachment?> pick(AttachmentSource source);
   Future<List<SelectedAttachment>> recoverAttachments();
-  Future<DeviceCoordinates> locate();
+  Future<DeviceCoordinates> locate({bool requestPermission = true});
   Future<bool> openSettings({bool locationServices = false});
 }
 
@@ -60,7 +114,7 @@ final class UnavailableDeviceAccess implements DeviceAccessGateway {
   @override
   Future<List<SelectedAttachment>> recoverAttachments() async => [];
   @override
-  Future<DeviceCoordinates> locate() async =>
+  Future<DeviceCoordinates> locate({bool requestPermission = true}) async =>
       throw const DeviceAccessException(AccessIssue.unsupported);
   @override
   Future<bool> openSettings({bool locationServices = false}) async => false;

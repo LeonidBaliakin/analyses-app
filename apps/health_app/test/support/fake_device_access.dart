@@ -5,6 +5,7 @@ import 'package:health_app/platform/device_access.dart';
 final class FakeDeviceAccess implements DeviceAccessGateway {
   int pickCalls = 0;
   int locateCalls = 0;
+  bool? requestedLocationPermission;
   int recoveryCalls = 0;
   int settingsCalls = 0;
   bool locationSettings = false;
@@ -35,8 +36,9 @@ final class FakeDeviceAccess implements DeviceAccessGateway {
   }
 
   @override
-  Future<DeviceCoordinates> locate() async {
+  Future<DeviceCoordinates> locate({bool requestPermission = true}) async {
     locateCalls++;
+    requestedLocationPermission = requestPermission;
     if (locationIssue case final issue?) throw DeviceAccessException(issue);
     if (pendingLocation case final pending?) return await pending;
     return const DeviceCoordinates(59.93, 30.33);
@@ -47,6 +49,52 @@ final class FakeDeviceAccess implements DeviceAccessGateway {
     settingsCalls++;
     locationSettings = locationServices;
     return true;
+  }
+}
+
+final class FakeAddressLookup implements AddressLookupGateway {
+  DeviceLocation? result = const DeviceLocation(
+    address: 'Санкт-Петербург, Невский проспект, 1',
+    coordinates: DeviceCoordinates(59.93, 30.33),
+    source: LocationSource.gps,
+  );
+  List<DeviceLocation> suggestions = [];
+  bool fail = false;
+  int searchCalls = 0;
+  Future<List<DeviceLocation>> Function(String)? onSearch;
+  @override
+  Future<DeviceLocation?> reverse(
+    DeviceCoordinates coordinates, {
+    required String language,
+  }) async {
+    if (fail) throw Exception('synthetic lookup failure');
+    return result;
+  }
+
+  @override
+  Future<List<DeviceLocation>> search(
+    String query, {
+    required String language,
+  }) async {
+    searchCalls++;
+    if (fail) throw Exception('synthetic lookup failure');
+    return onSearch == null ? suggestions : await onSearch!(query);
+  }
+}
+
+final class MemoryLocationRepository implements LocationRepository {
+  DeviceLocation? saved;
+  bool fail = false;
+  @override
+  Future<DeviceLocation?> read() async {
+    if (fail) throw Exception('synthetic read failure');
+    return saved;
+  }
+
+  @override
+  Future<void> write(DeviceLocation location) async {
+    if (fail) throw Exception('synthetic write failure');
+    saved = location;
   }
 }
 

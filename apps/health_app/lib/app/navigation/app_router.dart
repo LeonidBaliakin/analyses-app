@@ -30,11 +30,21 @@ GoRouter createAppRouter(
   ReportsViewModel? reports,
   SyncViewModel? sync,
   AccountViewModel? account,
+  DirectoryViewModel? directory,
   ValueNotifier<bool>? showDemo,
   String? initialLocation,
 }) {
   var introductionOpen = false;
   late final GoRouter router;
+  Future<void> confirmDirectoryLocation(BuildContext context) async {
+    if (introductionOpen || !context.mounted) return;
+    final path = router.routeInformationProvider.value.uri.path;
+    if (path == AppDestination.labs.path ||
+        path == AppDestination.doctors.path) {
+      await showLocationSelection(context, prepareSession: true);
+    }
+  }
+
   Future<void> startIntroduction(BuildContext context) async {
     if (introductionOpen) return;
     introductionOpen = true;
@@ -106,10 +116,12 @@ GoRouter createAppRouter(
                 settings.error != SettingsError.load) {
               await startIntroduction(context);
             }
+            if (context.mounted) await confirmDirectoryLocation(context);
           },
           child: AppShell(
             navigationShell: shell,
             settings: settings,
+            onDirectoryOpened: () => confirmDirectoryLocation(context),
             onAdd: records == null
                 ? null
                 : () {
@@ -187,7 +199,10 @@ GoRouter createAppRouter(
               GoRoute(
                 path: AppDestination.labs.path,
                 name: AppDestination.labs.name,
-                builder: (context, state) => const DirectoryPage(),
+                builder: (context, state) => DirectoryPage(
+                  model: directory,
+                  requestLocationOnOpen: false,
+                ),
               ),
             ],
           ),
@@ -196,7 +211,11 @@ GoRouter createAppRouter(
               GoRoute(
                 path: AppDestination.doctors.path,
                 name: AppDestination.doctors.name,
-                builder: (context, state) => const DirectoryPage(doctors: true),
+                builder: (context, state) => DirectoryPage(
+                  doctors: true,
+                  model: directory,
+                  requestLocationOnOpen: false,
+                ),
               ),
             ],
           ),

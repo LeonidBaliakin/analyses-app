@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:design_system/design_system.dart';
+import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../l10n/generated/app_localizations.dart';
@@ -125,14 +128,7 @@ String accessIssueText(AppLocalizations l, AccessIssue issue) =>
     };
 
 String locationLabel(AppLocalizations l, DeviceAccessViewModel model) {
-  if (model.manualLocation case final address?) return address;
-  if (model.coordinates case final position?) {
-    return l.locationCoordinates(
-      position.latitude.toStringAsFixed(4),
-      position.longitude.toStringAsFixed(4),
-    );
-  }
-  return l.locationNotSelected;
+  return model.location?.address ?? l.locationNotSelected;
 }
 
 class _IssueMessage extends StatelessWidget {
@@ -215,15 +211,39 @@ class AttachmentSelectionStatus extends StatelessWidget {
   );
 }
 
-Future<void> showLocationSelection(BuildContext context) => showReferenceSheet(
-  context,
-  AppLocalizations.of(context).chooseLocation,
-  LocationControls(model: DeviceAccessScope.of(context)),
-);
+Future<void> showLocationSelection(
+  BuildContext context, {
+  bool prepareSession = false,
+}) async {
+  final model = DeviceAccessScope.of(context);
+  if (model.locationSelectionOpen ||
+      (prepareSession && model.locationConfirmed)) {
+    return;
+  }
+  model.locationSelectionOpen = true;
+  final l = AppLocalizations.of(context);
+  if (prepareSession) {
+    unawaited(model.prepareLocationForSession(language: l.localeName));
+  }
+  try {
+    await showReferenceSheet(
+      context,
+      l.chooseLocation,
+      LocationControls(
+        model: model,
+        onConfirmed: () => Navigator.of(context, rootNavigator: true).pop(),
+      ),
+    );
+  } finally {
+    model.locationSelectionOpen = false;
+    model.cancelAddressSearch();
+  }
+}
 
 class LocationControls extends StatefulWidget {
-  const LocationControls({required this.model, super.key});
+  const LocationControls({required this.model, this.onConfirmed, super.key});
   final DeviceAccessViewModel model;
+  final VoidCallback? onConfirmed;
 
   @override
   State<LocationControls> createState() => _LocationControlsState();
@@ -231,12 +251,56 @@ class LocationControls extends StatefulWidget {
 
 class _LocationControlsState extends State<LocationControls> {
   late final _address = TextEditingController(
-    text: widget.model.manualLocation,
+    text: widget.model.location?.address ?? widget.model.lastLocation?.address,
   );
+  late final _focus = FocusNode(onKeyEvent: _handleAddressKeys);
+  final _optionKeys = List.generate(5, (_) => GlobalKey());
+  int _highlighted = -1;
+  AddressLevel? _addressLevel;
+  DeviceLocation? _suggestion;
   bool _empty = false;
+
+  KeyEventResult _handleAddressKeys(FocusNode node, KeyEvent event) {
+    final options = widget.model.addressSuggestions;
+    if (options.isEmpty ||
+        (event is! KeyDownEvent && event is! KeyRepeatEvent)) {
+      return KeyEventResult.ignored;
+    }
+    final delta = event.logicalKey == LogicalKeyboardKey.arrowDown
+        ? 1
+        : event.logicalKey == LogicalKeyboardKey.arrowUp
+        ? -1
+        : 0;
+    if (delta == 0) return KeyEventResult.ignored;
+    setState(
+      () => _highlighted = (_highlighted + delta).clamp(0, options.length - 1),
+    );
+    final highlighted = _highlighted;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final optionContext = _optionKeys[highlighted].currentContext;
+      if (mounted && optionContext != null) {
+        Scrollable.ensureVisible(optionContext, alignment: .8);
+      }
+    });
+    return KeyEventResult.handled;
+  }
+
+  void _selectAddress(DeviceLocation option) {
+    widget.model.cancelAddressSearch();
+    _address.text = option.inputText;
+    _address.selection = TextSelection.collapsed(offset: _address.text.length);
+    setState(() {
+      _suggestion = option;
+      _addressLevel = option.level;
+      _highlighted = -1;
+    });
+    _focus.requestFocus();
+  }
 
   @override
   void dispose() {
+    widget.model.cancelAddressSearch();
+    _focus.dispose();
     _address.dispose();
     super.dispose();
   }
@@ -249,13 +313,68 @@ class _LocationControlsState extends State<LocationControls> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          if (model.pendingLocation case final candidate?) ...[
+            const SizedBox(height: 16),
+            Text(
+              l.confirmCurrentLocation,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            Semantics(
+              liveRegion: true,
+              child: Text(
+                candidate.address,
+                key: const Key('location-candidate'),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                FilledButton(
+                  key: const Key('confirm-location'),
+                  onPressed: model.isBusy
+                      ? null
+                      : () async {
+                          final accepted = await model.confirmLocation(
+                            language: l.localeName,
+                          );
+                          if (mounted &&
+                              accepted &&
+                              !model.locationSaveFailed) {
+                            widget.onConfirmed?.call();
+                          }
+                        },
+                  child: Text(l.confirmLocationYes),
+                ),
+                TextButton(
+                  key: const Key('edit-location'),
+                  onPressed: model.isBusy
+                      ? null
+                      : () {
+                          model.editLocation();
+                          _address.selection = TextSelection(
+                            baseOffset: 0,
+                            extentOffset: _address.text.length,
+                          );
+                          _focus.requestFocus();
+                        },
+                  child: Text(l.enterAnotherLocation),
+                ),
+              ],
+            ),
+          ],
+          const SizedBox(height: 8),
           Text(l.locationAccessExplanation),
           const SizedBox(height: 8),
           Semantics(liveRegion: true, child: Text(locationLabel(l, model))),
           const SizedBox(height: 8),
           OutlinedButton.icon(
             key: const Key('locate-device'),
-            onPressed: model.isBusy ? null : model.locate,
+            onPressed: model.isBusy
+                ? null
+                : () => model.locate(language: l.localeName),
             icon: const Icon(Icons.my_location),
             label: Text(l.useCurrentLocation),
           ),
@@ -263,10 +382,13 @@ class _LocationControlsState extends State<LocationControls> {
             LinearProgressIndicator(semanticsLabel: l.deviceAccessBusy),
           if (model.locationIssue case final issue?)
             _IssueMessage(issue: issue, model: model),
+          if (model.addressLookupFailed) Text(l.locationAddressUnavailable),
+          if (model.locationSaveFailed) Text(l.locationSaveFailed),
           const SizedBox(height: 16),
           TextField(
             key: const Key('manual-location'),
             controller: _address,
+            focusNode: _focus,
             enabled: !model.isBusy,
             textCapitalization: TextCapitalization.sentences,
             maxLength: 300,
@@ -275,18 +397,97 @@ class _LocationControlsState extends State<LocationControls> {
               hintText: l.manualLocationHint,
               errorText: _empty ? l.locationRequired : null,
             ),
-            onChanged: (_) {
-              if (_empty) setState(() => _empty = false);
+            onChanged: (value) {
+              setState(() {
+                _suggestion = null;
+                _empty = false;
+                _highlighted = -1;
+                if (!value.contains(',')) _addressLevel = null;
+              });
+              unawaited(model.searchAddresses(value, language: l.localeName));
+            },
+            onSubmitted: (_) {
+              final options = model.addressSuggestions;
+              if (options.isNotEmpty) {
+                _selectAddress(
+                  options[_highlighted.clamp(0, options.length - 1)],
+                );
+              }
             },
           ),
+          if (model.addressSuggestions.isNotEmpty)
+            Material(
+              key: const Key('address-suggestions'),
+              color: OrangePalette.of(context).card,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: OrangePalette.of(context).line),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (
+                    var index = 0;
+                    index < model.addressSuggestions.length;
+                    index++
+                  )
+                    ListTile(
+                      key: _optionKeys[index],
+                      selected: _highlighted == index,
+                      leading: const Icon(Icons.location_on_outlined),
+                      title: Text(model.addressSuggestions[index].address),
+                      onTap: () =>
+                          _selectAddress(model.addressSuggestions[index]),
+                    ),
+                ],
+              ),
+            ),
+          const SizedBox(height: 8),
+          Semantics(
+            liveRegion: true,
+            child: Text(switch (_addressLevel) {
+              AddressLevel.city => l.addressEnterStreet,
+              AddressLevel.street => l.addressEnterBuilding,
+              AddressLevel.building => l.addressReady,
+              null => l.addressEntrySequence,
+            }),
+          ),
+          if (model.isSearchingAddresses)
+            LinearProgressIndicator(semanticsLabel: l.searchingAddresses),
+          if (model.addressSearchFailed) Text(l.addressSuggestionsUnavailable),
+          if (model.addressSearchEmpty) Text(l.addressSuggestionsEmpty),
+          Text(
+            l.addressSearchProvider,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          if (model.lastLocation case final saved?)
+            TextButton.icon(
+              key: const Key('use-last-location'),
+              onPressed: model.isBusy
+                  ? null
+                  : () {
+                      _selectAddress(saved);
+                    },
+              icon: const Icon(Icons.history),
+              label: Text(l.lastLocationAddress(saved.address)),
+            ),
+          const SizedBox(height: 8),
           FilledButton(
             key: const Key('apply-manual-location'),
             onPressed: model.isBusy
                 ? null
-                : () {
-                    setState(
-                      () => _empty = !model.setManualLocation(_address.text),
+                : () async {
+                    final accepted = await model.setManualLocation(
+                      _address.text,
+                      suggestion: _suggestion,
+                      language: l.localeName,
                     );
+                    if (!mounted) return;
+                    setState(() => _empty = _address.text.trim().isEmpty);
+                    if (accepted && !model.locationSaveFailed) {
+                      widget.onConfirmed?.call();
+                    }
                   },
             child: Text(l.useThisLocation),
           ),

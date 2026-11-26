@@ -298,6 +298,189 @@ services:
       DELIVERY_MODE: ${MAX_DELIVERY_MODE:-disabled}
       NOTIFICATIONS_ENDPOINT: http://notifications:8085/
       NOTIFICATIONS_WORKER_KEY: ${NOTIFICATIONS_MAX_KEY:-}
+  directory-db:
+    profiles: [directory]
+    image: postgres:18.1-alpine3.22
+    restart: "no"
+    environment:
+      PGHOST: postgres
+      PGUSER: documents
+      PGDATABASE: postgres
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Configure server secrets}
+    volumes:
+      - ./directory.sql:/bootstrap/directory.sql:ro
+    command: [psql, -v, ON_ERROR_STOP=1, -f, /bootstrap/directory.sql]
+    depends_on:
+      postgres:
+        condition: service_healthy
+  provider-directory:
+    <<: *service
+    profiles: [directory]
+    build:
+      context: ./source
+      dockerfile: services/provider_directory/Dockerfile
+    environment:
+      DIRECTORY_DATABASE_URL: postgresql://documents:${POSTGRES_PASSWORD}@postgres:5432/provider_directory?sslmode=disable
+      DIRECTORY_BIND: 0.0.0.0
+      DIRECTORY_ALLOWED_ORIGINS: ${DIRECTORY_ALLOWED_ORIGINS:-}
+      DIRECTORY_ADMIN_KEY: ${DIRECTORY_ADMIN_KEY:-}
+      DIRECTORY_INVITRO_KEY: ${DIRECTORY_INVITRO_KEY:-}
+      DIRECTORY_HELIX_KEY: ${DIRECTORY_HELIX_KEY:-}
+      DIRECTORY_SMCLINIC_KEY: ${DIRECTORY_SMCLINIC_KEY:-}
+      DIRECTORY_SCANDINAVIA_KEY: ${DIRECTORY_SCANDINAVIA_KEY:-}
+      DIRECTORY_SOVA_KEY: ${DIRECTORY_SOVA_KEY:-}
+      DIRECTORY_MEDEXPERT_KEY: ${DIRECTORY_MEDEXPERT_KEY:-}
+      DIRECTORY_CSP_KEY: ${DIRECTORY_CSP_KEY:-}
+    ports:
+      - "${DIRECTORY_BIND:-127.0.0.1}:${DIRECTORY_PORT:-18086}:8086"
+    healthcheck:
+      test: [CMD, /app/directory, --health]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    depends_on:
+      directory-db:
+        condition: service_completed_successfully
+  connector-invitro:
+    <<: *service
+    profiles: [directory]
+    build:
+      context: ./source
+      dockerfile: workers/provider_connector/Dockerfile
+      args:
+        CONNECTOR_SOURCE: invitro
+    environment:
+      CONNECTOR_BIND: 0.0.0.0
+      DIRECTORY_ENDPOINT: http://provider-directory:8086/
+      DIRECTORY_CONNECTOR_KEY: ${DIRECTORY_INVITRO_KEY:-}
+    healthcheck:
+      test: [CMD, /app/connector, --health]
+      interval: 15s
+      timeout: 3s
+      retries: 6
+    depends_on:
+      provider-directory:
+        condition: service_healthy
+  connector-helix:
+    <<: *service
+    profiles: [directory]
+    build:
+      context: ./source
+      dockerfile: workers/provider_connector/Dockerfile
+      args:
+        CONNECTOR_SOURCE: helix
+    environment:
+      CONNECTOR_BIND: 0.0.0.0
+      DIRECTORY_ENDPOINT: http://provider-directory:8086/
+      DIRECTORY_CONNECTOR_KEY: ${DIRECTORY_HELIX_KEY:-}
+    healthcheck:
+      test: [CMD, /app/connector, --health]
+      interval: 15s
+      timeout: 3s
+      retries: 6
+    depends_on:
+      provider-directory:
+        condition: service_healthy
+  connector-smclinic:
+    <<: *service
+    profiles: [directory]
+    build:
+      context: ./source
+      dockerfile: workers/provider_connector/Dockerfile
+      args:
+        CONNECTOR_SOURCE: smclinic
+    environment:
+      CONNECTOR_BIND: 0.0.0.0
+      DIRECTORY_ENDPOINT: http://provider-directory:8086/
+      DIRECTORY_CONNECTOR_KEY: ${DIRECTORY_SMCLINIC_KEY:-}
+    healthcheck:
+      test: [CMD, /app/connector, --health]
+      interval: 15s
+      timeout: 3s
+      retries: 6
+    depends_on:
+      provider-directory:
+        condition: service_healthy
+  connector-scandinavia:
+    <<: *service
+    profiles: [directory]
+    build:
+      context: ./source
+      dockerfile: workers/provider_connector/Dockerfile
+      args:
+        CONNECTOR_SOURCE: scandinavia
+    environment:
+      CONNECTOR_BIND: 0.0.0.0
+      DIRECTORY_ENDPOINT: http://provider-directory:8086/
+      DIRECTORY_CONNECTOR_KEY: ${DIRECTORY_SCANDINAVIA_KEY:-}
+    healthcheck:
+      test: [CMD, /app/connector, --health]
+      interval: 15s
+      timeout: 3s
+      retries: 6
+    depends_on:
+      provider-directory:
+        condition: service_healthy
+  connector-sova:
+    <<: *service
+    profiles: [directory]
+    build:
+      context: ./source
+      dockerfile: workers/provider_connector/Dockerfile
+      args:
+        CONNECTOR_SOURCE: sova
+    environment:
+      CONNECTOR_BIND: 0.0.0.0
+      DIRECTORY_ENDPOINT: http://provider-directory:8086/
+      DIRECTORY_CONNECTOR_KEY: ${DIRECTORY_SOVA_KEY:-}
+    healthcheck:
+      test: [CMD, /app/connector, --health]
+      interval: 15s
+      timeout: 3s
+      retries: 6
+    depends_on:
+      provider-directory:
+        condition: service_healthy
+  connector-medexpert:
+    <<: *service
+    profiles: [directory]
+    build:
+      context: ./source
+      dockerfile: workers/provider_connector/Dockerfile
+      args:
+        CONNECTOR_SOURCE: medexpert
+    environment:
+      CONNECTOR_BIND: 0.0.0.0
+      DIRECTORY_ENDPOINT: http://provider-directory:8086/
+      DIRECTORY_CONNECTOR_KEY: ${DIRECTORY_MEDEXPERT_KEY:-}
+    healthcheck:
+      test: [CMD, /app/connector, --health]
+      interval: 15s
+      timeout: 3s
+      retries: 6
+    depends_on:
+      provider-directory:
+        condition: service_healthy
+  connector-csp:
+    <<: *service
+    profiles: [directory]
+    build:
+      context: ./source
+      dockerfile: workers/provider_connector/Dockerfile
+      args:
+        CONNECTOR_SOURCE: csp
+    environment:
+      CONNECTOR_BIND: 0.0.0.0
+      DIRECTORY_ENDPOINT: http://provider-directory:8086/
+      DIRECTORY_CONNECTOR_KEY: ${DIRECTORY_CSP_KEY:-}
+    healthcheck:
+      test: [CMD, /app/connector, --health]
+      interval: 15s
+      timeout: 3s
+      retries: 6
+    depends_on:
+      provider-directory:
+        condition: service_healthy
 secrets:
   s3_config:
     file: .secrets/s3.json

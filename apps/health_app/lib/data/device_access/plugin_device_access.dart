@@ -59,31 +59,33 @@ final class PluginDeviceAccess implements DeviceAccessGateway {
   );
 
   @override
-  Future<DeviceCoordinates> locate() => _translate(() async {
-    if (!await Geolocator.isLocationServiceEnabled()) {
-      throw const DeviceAccessException(AccessIssue.serviceDisabled);
-    }
-    var permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-    }
-    if (permission == LocationPermission.deniedForever) {
-      throw const DeviceAccessException(AccessIssue.permanentlyDenied);
-    }
-    // Browsers without the Permissions API report unableToDetermine even
-    // though getCurrentPosition can still ask the user for permission.
-    if (permission == LocationPermission.denied ||
-        (!kIsWeb && permission == LocationPermission.unableToDetermine)) {
-      throw const DeviceAccessException(AccessIssue.denied);
-    }
-    final position = await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.medium,
-        timeLimit: Duration(seconds: 20),
-      ),
-    );
-    return DeviceCoordinates(position.latitude, position.longitude);
-  });
+  Future<DeviceCoordinates> locate({bool requestPermission = true}) =>
+      _translate(() async {
+        if (!await Geolocator.isLocationServiceEnabled()) {
+          throw const DeviceAccessException(AccessIssue.serviceDisabled);
+        }
+        var permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied && requestPermission) {
+          permission = await Geolocator.requestPermission();
+        }
+        if (permission == LocationPermission.deniedForever) {
+          throw const DeviceAccessException(AccessIssue.permanentlyDenied);
+        }
+        // Browsers without the Permissions API report unableToDetermine even
+        // though getCurrentPosition can still ask the user for permission.
+        if (permission == LocationPermission.denied ||
+            ((!kIsWeb || !requestPermission) &&
+                permission == LocationPermission.unableToDetermine)) {
+          throw const DeviceAccessException(AccessIssue.denied);
+        }
+        final position = await Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.medium,
+            timeLimit: Duration(seconds: 20),
+          ),
+        );
+        return DeviceCoordinates(position.latitude, position.longitude);
+      });
 
   @override
   Future<bool> openSettings({bool locationServices = false}) => _translate(() {

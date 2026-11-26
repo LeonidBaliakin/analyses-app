@@ -13,6 +13,10 @@
       - analyses_telegram_delivery_mode in ['disabled', 'dry_run']
       - analyses_vk_delivery_mode in ['disabled', 'dry_run']
       - analyses_max_delivery_mode in ['disabled', 'dry_run']
+      - analyses_directory_bind in ['127.0.0.1', '0.0.0.0']
+      - analyses_directory_port | int > 1024
+      - analyses_directory_port | int < 65536
+      - "'\n' not in analyses_directory_allowed_origins"
       - analyses_llama_image is match('^ghcr[.]io/ggml-org/llama[.]cpp:[A-Za-z0-9_-]+@sha256:[a-f0-9]{64}$')
       - "'\n' not in analyses_allowed_origins"
 - name: Create deployment directories
@@ -22,6 +26,10 @@
     mode: '0755'
   loop:
     - source/services/notifications
+    - source/services/provider_directory
+    - source/workers/provider_connector
+    - source/packages/provider_directory
+    - source/packages/medical_terminology
     - source/workers/messenger_delivery
     - source/services/entitlements
     - source/packages/cloud_access
@@ -45,6 +53,22 @@
     mode: '0644'
     directory_mode: '0755'
   loop:
+    - services/provider_directory/Dockerfile
+    - services/provider_directory/pubspec.yaml
+    - services/provider_directory/pubspec.lock
+    - services/provider_directory/lib/
+    - services/provider_directory/bin/
+    - services/provider_directory/config/
+    - workers/provider_connector/Dockerfile
+    - workers/provider_connector/pubspec.yaml
+    - workers/provider_connector/pubspec.lock
+    - workers/provider_connector/lib/
+    - workers/provider_connector/bin/
+    - packages/provider_directory/pubspec.yaml
+    - packages/provider_directory/lib/
+    - packages/provider_directory/data/
+    - packages/medical_terminology/pubspec.yaml
+    - packages/medical_terminology/lib/
     - services/notifications/Dockerfile
     - services/notifications/pubspec.yaml
     - services/notifications/pubspec.lock
@@ -97,7 +121,7 @@
     src: "{{ analyses_source_root }}/infra/server/{{ item }}"
     dest: "{{ analyses_root }}/{{ item }}"
     mode: '0644'
-  loop: [compose.yaml, processing.sql, records.sql, identity.sql, entitlements.sql, notifications.sql, bootstrap_secrets.py]
+  loop: [compose.yaml, processing.sql, records.sql, identity.sql, entitlements.sql, notifications.sql, directory.sql, bootstrap_secrets.py]
 - name: Ensure persistent server credentials without rotating existing keys
   ansible.builtin.command:
     argv: ["{{ ansible_facts.python.executable }}", "{{ analyses_root }}/bootstrap_secrets.py", "{{ analyses_root }}/.secrets/bootstrap.json"]
@@ -145,7 +169,7 @@
     project_name: "{{ analyses_project_name }}"
     state: present
     build: "{{ 'always' if server_source.changed else 'policy' }}"
-    profiles: "{{ (['test-mail'] if analyses_smtp_host == 'mailpit' else []) + (['messengers'] if analyses_messengers_enabled | bool else []) }}"
+    profiles: "{{ (['test-mail'] if analyses_smtp_host == 'mailpit' else []) + (['messengers'] if analyses_messengers_enabled | bool else []) + (['directory'] if analyses_directory_enabled | bool else []) }}"
     wait: true
     wait_timeout: "{{ analyses_wait_timeout }}"
     remove_orphans: false
@@ -210,4 +234,13 @@
     chdir: "{{ analyses_root }}"
   changed_when: false
   when: analyses_messengers_enabled | bool
+  no_log: true
+
+- name: Verify provider registry and independently deployed connectors
+  ansible.builtin.command:
+    argv: [docker, compose, --profile, directory, exec, -T, "{{ item }}", "{{ '/app/directory' if item == 'provider-directory' else '/app/connector' }}", --health]
+    chdir: "{{ analyses_root }}"
+  loop: [provider-directory, connector-invitro, connector-helix, connector-smclinic, connector-scandinavia, connector-sova, connector-medexpert, connector-csp]
+  changed_when: false
+  when: analyses_directory_enabled | bool
   no_log: true

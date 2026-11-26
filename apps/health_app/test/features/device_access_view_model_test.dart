@@ -63,13 +63,13 @@ void main() {
       final gateway = FakeDeviceAccess()..locationIssue = issue;
       final model = DeviceAccessViewModel(gateway: gateway);
       addTearDown(model.dispose);
-      model.setManualLocation('  Казань, улица Баумана  ');
+      await model.setManualLocation('  Казань, улица Баумана  ');
       await model.locate();
       expect(model.manualLocation, 'Казань, улица Баумана');
       expect(model.locationIssue, issue);
-      expect(model.setManualLocation(' '), isFalse);
+      expect(await model.setManualLocation(' '), isFalse);
       expect(model.manualLocation, 'Казань, улица Баумана');
-      expect(model.setManualLocation('Москва'), isTrue);
+      expect(await model.setManualLocation('Москва'), isTrue);
       expect(model.locationIssue, isNull);
       expect(gateway.locateCalls, 1);
     });
@@ -78,13 +78,19 @@ void main() {
   test(
     'a successful location replaces manual address; manual replaces GPS',
     () async {
-      final model = DeviceAccessViewModel(gateway: FakeDeviceAccess());
+      final model = DeviceAccessViewModel(
+        gateway: FakeDeviceAccess(),
+        addressLookup: FakeAddressLookup(),
+      );
       addTearDown(model.dispose);
-      model.setManualLocation('Казань');
+      await model.setManualLocation('Казань');
       await model.locate();
+      expect(model.pendingLocation!.address, contains('Невский'));
+      expect(model.manualLocation, 'Казань');
+      await model.confirmLocation();
       expect(model.coordinates!.latitude, 59.93);
       expect(model.manualLocation, isNull);
-      model.setManualLocation('Москва');
+      await model.setManualLocation('Москва');
       expect(model.coordinates, isNull);
     },
   );
@@ -102,7 +108,7 @@ void main() {
       gateway.locationIssue = null;
       await model.locate();
       expect(model.locationIssue, isNull);
-      expect(model.coordinates, isNotNull);
+      expect(model.coordinates, isNull); // GPS still requires confirmation.
     },
   );
 

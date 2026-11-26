@@ -1,0 +1,12 @@
+name: provider_directory
+description: Public provider directory snapshots and platform independent proximity search.
+version: 0.1.0
+publish_to: none
+resolution: workspace
+environment:
+  sdk: ^3.14.0
+dependencies:
+  medical_terminology: ^0.1.0
+dev_dependencies:
+  lints: ^6.1.0
+  test: ^1.26.3

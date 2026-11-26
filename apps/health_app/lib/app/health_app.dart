@@ -14,6 +14,10 @@ import '../features/reports/reports.dart';
 import '../features/sync/sync.dart';
 import '../features/account/account.dart';
 import '../features/device_access/device_access.dart';
+import '../features/directory/directory.dart';
+
+import 'package:provider_directory/provider_directory.dart';
+
 import '../presentation/demo_catalog.dart';
 import '../l10n/generated/app_localizations.dart';
 import 'navigation/app_router.dart';
@@ -31,6 +35,7 @@ class HealthApp extends StatefulWidget {
     this.reports,
     this.sync,
     this.account,
+    this.directory,
     super.key,
   });
 
@@ -44,6 +49,7 @@ class HealthApp extends StatefulWidget {
   final ReportsViewModel? reports;
   final SyncViewModel? sync;
   final AccountViewModel? account;
+  final DirectoryViewModel? directory;
 
   @override
   State<HealthApp> createState() => _HealthAppState();
@@ -55,6 +61,8 @@ class _HealthAppState extends State<HealthApp> {
       widget.deviceAccess ??
       DeviceAccessViewModel(gateway: const UnavailableDeviceAccess());
   late AppPreferences _preferences = widget.settings.preferences;
+  late final _directory =
+      widget.directory ?? DirectoryViewModel(catalog: bundledDirectory());
   late final GoRouter _router = createAppRouter(
     widget.settings,
     widget.catalog,
@@ -64,6 +72,7 @@ class _HealthAppState extends State<HealthApp> {
     reports: widget.reports,
     sync: widget.sync,
     account: widget.account,
+    directory: _directory,
     showDemo: _showDemo,
     initialLocation: widget.initialLocation,
   );
@@ -120,6 +129,7 @@ class _HealthAppState extends State<HealthApp> {
     widget.settings.removeListener(_applyAppearance);
     _router.dispose();
     _showDemo.dispose();
+    _directory.dispose();
     widget.account?.dispose();
     widget.sync?.dispose();
     widget.reports?.dispose();

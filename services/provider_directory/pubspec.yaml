@@ -1,0 +1,19 @@
+name: provider_directory_service
+description: Source registry, durable connector scheduling and public directory snapshots.
+publish_to: none
+environment:
+  sdk: ^3.14.0
+dependencies:
+  crypto: ^3.0.7
+  postgres: 3.7.0
+  provider_directory:
+    path: ../../packages/provider_directory
+  shelf: ^1.4.2
+dev_dependencies:
+  lints: ^6.1.0
+  test: ^1.26.3
+dependency_overrides:
+  medical_terminology:
+    path: ../../packages/medical_terminology
+  medical_domain:
+    path: ../../packages/medical_domain

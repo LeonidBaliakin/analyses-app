@@ -5,6 +5,7 @@ environment:
 workspace:
   - apps/health_app
   - packages/medical_domain
+  - packages/provider_directory
   - packages/medical_terminology
   - packages/document_domain
   - packages/record_sync

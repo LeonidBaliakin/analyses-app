@@ -950,11 +950,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get locationNotSelected => 'Location not selected';
 
   @override
-  String locationCoordinates(String latitude, String longitude) {
-    return 'Coordinates: $latitude, $longitude';
-  }
-
-  @override
   String get useCurrentLocation => 'Use my current location';
 
   @override
@@ -1058,7 +1053,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get introductionLabsBody =>
-      'In Laboratories, search for tests and add them to your list. The example compares laboratory prices and locations for that list.';
+      'In Find a lab, search for tests or providers in Saint Petersburg and Voronezh. Choose an address or device location to see the nearest branches. Confirm availability of network-listed tests at the branch.';
 
   @override
   String get introductionDoctorsTitle => 'Find a specialist';
@@ -1072,7 +1067,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get introductionAppointmentBody =>
-      'The doctor card contains the clinic booking action. In the example it shows a preview; the app does not book an appointment. You can repeat these steps from Settings at any time.';
+      'The card links to the provider’s booking website and phone number. The clinic confirms your booking. You can repeat this introduction in Settings.';
 
   @override
   String get introductionNotice =>
@@ -1662,5 +1657,174 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String cloudUntil(String date) {
     return 'Access valid until $date';
+  }
+
+  @override
+  String get confirmCurrentLocation => 'Are you here?';
+
+  @override
+  String get confirmLocationYes => 'Yes, I am here';
+
+  @override
+  String get enterAnotherLocation => 'No, enter another address';
+
+  @override
+  String get locationAddressUnavailable =>
+      'Could not find an address for your GPS location. Check the last address or enter a new one manually.';
+
+  @override
+  String get locationSaveFailed =>
+      'This address is available for this session, but could not be saved on this device. Try selecting it again.';
+
+  @override
+  String get searchingAddresses => 'Searching for addresses…';
+
+  @override
+  String get addressSuggestionsUnavailable =>
+      'Address suggestions are unavailable. You can enter an address manually.';
+
+  @override
+  String get addressSuggestionsEmpty =>
+      'No addresses found. Refine your search or use the address you entered.';
+
+  @override
+  String get addressSearchProvider =>
+      'Address lookup: Photon · © OpenStreetMap contributors. Your query or coordinates are sent to the address search service.';
+
+  @override
+  String lastLocationAddress(String address) {
+    return 'Last address: $address';
+  }
+
+  @override
+  String get directoryCity => 'City';
+
+  @override
+  String get directorySpb => 'Saint Petersburg';
+
+  @override
+  String get directoryVoronezh => 'Voronezh';
+
+  @override
+  String get directoryNeedPoint =>
+      'Could not determine coordinates for this address. Select an address suggestion with a house number or confirm your device location to calculate distances.';
+
+  @override
+  String get directorySorted => 'Nearest first · straight-line distance';
+
+  @override
+  String get directoryDoctorSearch => 'Doctor, specialty or clinic';
+
+  @override
+  String get directoryLabSearch => 'Test, provider or address';
+
+  @override
+  String get directorySpecialty => 'Specialty';
+
+  @override
+  String get directoryAllSpecialties => 'All specialties';
+
+  @override
+  String get directoryTestDetails => 'Panel, specimen and method';
+
+  @override
+  String get directorySpecimen => 'Specimen';
+
+  @override
+  String get directoryMethod => 'Method';
+
+  @override
+  String get directoryComponents => 'Panel components';
+
+  @override
+  String get directoryNotPublished => 'Not specified by the source';
+
+  @override
+  String get directoryChooseTests => 'Choose tests';
+
+  @override
+  String get directoryTestSearchNotice =>
+      'Choose a test type. The dictionary groups provider name variants; cards show the original formulations.';
+
+  @override
+  String get directoryLinkFailed =>
+      'Could not open the link. Copy the website address from the card or use its phone number.';
+
+  @override
+  String directoryResults(int count) {
+    return 'Results: $count';
+  }
+
+  @override
+  String directorySnapshot(String date) {
+    return 'Directory verified on $date · doctors and services may change.';
+  }
+
+  @override
+  String get directoryOutsideCoverage =>
+      'This location is outside the pilot search area. Choose an address in Saint Petersburg or Voronezh.';
+
+  @override
+  String get directoryEmpty =>
+      'No matches in this directory snapshot. Change your search, city or selected tests.';
+
+  @override
+  String get directoryCoverage =>
+      'A selection of providers in Saint Petersburg and Voronezh. The provider confirms your booking.';
+
+  @override
+  String get directoryMapAttribution => 'Geodata © OpenStreetMap contributors';
+
+  @override
+  String get directoryUnknownDistance => 'Distance unavailable';
+
+  @override
+  String directoryMeters(String value) {
+    return '$value m straight-line distance';
+  }
+
+  @override
+  String directoryKilometers(String value) {
+    return '$value km straight-line distance';
+  }
+
+  @override
+  String get directoryAvailabilityUnknown =>
+      'Tests appear in the network catalogue. Confirm availability at this branch.';
+
+  @override
+  String get directoryAllTests => 'Test catalogue';
+
+  @override
+  String get directorySource => 'Source';
+
+  @override
+  String get directoryContactNotice => 'Published provider or network contact.';
+
+  @override
+  String get addressEntrySequence =>
+      'Start with a city, then choose a street and building.';
+
+  @override
+  String get addressEnterStreet => 'City selected. Now enter a street.';
+
+  @override
+  String get addressEnterBuilding =>
+      'Street selected. Now enter a building number.';
+
+  @override
+  String get addressReady =>
+      'Address selected. Confirm it using the button below.';
+
+  @override
+  String get directoryRefresh => 'Refresh directory';
+
+  @override
+  String get directoryRefreshFailed =>
+      'Unable to refresh. Showing the last saved version.';
+
+  @override
+  String directorySourceChecked(String date) {
+    return 'Address checked: $date';
   }
 }

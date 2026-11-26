@@ -343,7 +343,6 @@
   "accessIntroSaveError": "Could not save your choice. Try continuing again.",
   "locationAccessExplanation": "Location is used to choose nearby clinics. Use your device location or enter a city and address manually.",
   "locationNotSelected": "Location not selected",
-  "locationCoordinates": "Coordinates: {latitude}, {longitude}",
   "useCurrentLocation": "Use my current location",
   "deviceAccessBusy": "Waiting for your device",
   "manualLocation": "Enter location manually",
@@ -365,16 +364,6 @@
   "attachmentSessionOnly": "Files are selected for this app session. Saving to medical history and processing are not connected yet; select the files again after restarting.",
   "cameraUnavailable": "Taking photos is unavailable on this device. Choose a photo from your library or files.",
   "directoryLocationPreview": "Your selected location does not yet change the demo addresses and distances.",
-  "@locationCoordinates": {
-    "placeholders": {
-      "latitude": {
-        "type": "String"
-      },
-      "longitude": {
-        "type": "String"
-      }
-    }
-  },
   "introductionStep": "Step {current} of {total}",
   "@introductionStep": {
     "placeholders": {
@@ -393,11 +382,11 @@
   "introductionSummaryTitle": "Explore your results",
   "introductionSummaryBody": "Summary brings results together. In the example you can open a body system, select a marker and view its history. Show your doctor opens the section for sharing reports.",
   "introductionLabsTitle": "Compare laboratories",
-  "introductionLabsBody": "In Laboratories, search for tests and add them to your list. The example compares laboratory prices and locations for that list.",
+  "introductionLabsBody": "In Find a lab, search for tests or providers in Saint Petersburg and Voronezh. Choose an address or device location to see the nearest branches. Confirm availability of network-listed tests at the branch.",
   "introductionDoctorsTitle": "Find a specialist",
   "introductionDoctorsBody": "In Doctors, search for a specialty or a doctor and open a card. It shows the clinic and information about the appointment.",
   "introductionAppointmentTitle": "Plan an appointment",
-  "introductionAppointmentBody": "The doctor card contains the clinic booking action. In the example it shows a preview; the app does not book an appointment. You can repeat these steps from Settings at any time.",
+  "introductionAppointmentBody": "The card links to the provider’s booking website and phone number. The clinic confirms your booking. You can repeat this introduction in Settings.",
   "introductionNotice": "This introduction shows sections without changing your records. Actions unavailable in this version are labelled in the interface.",
   "introductionSkip": "Skip",
   "introductionBack": "Back",
@@ -650,6 +639,95 @@
     }
   },
   "@cloudUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmCurrentLocation": "Are you here?",
+  "confirmLocationYes": "Yes, I am here",
+  "enterAnotherLocation": "No, enter another address",
+  "locationAddressUnavailable": "Could not find an address for your GPS location. Check the last address or enter a new one manually.",
+  "locationSaveFailed": "This address is available for this session, but could not be saved on this device. Try selecting it again.",
+  "searchingAddresses": "Searching for addresses…",
+  "addressSuggestionsUnavailable": "Address suggestions are unavailable. You can enter an address manually.",
+  "addressSuggestionsEmpty": "No addresses found. Refine your search or use the address you entered.",
+  "addressSearchProvider": "Address lookup: Photon · © OpenStreetMap contributors. Your query or coordinates are sent to the address search service.",
+  "lastLocationAddress": "Last address: {address}",
+  "@lastLocationAddress": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
+  "directoryCity": "City",
+  "directorySpb": "Saint Petersburg",
+  "directoryVoronezh": "Voronezh",
+  "directoryNeedPoint": "Could not determine coordinates for this address. Select an address suggestion with a house number or confirm your device location to calculate distances.",
+  "directorySorted": "Nearest first · straight-line distance",
+  "directoryDoctorSearch": "Doctor, specialty or clinic",
+  "directoryLabSearch": "Test, provider or address",
+  "directorySpecialty": "Specialty",
+  "directoryAllSpecialties": "All specialties",
+  "directoryTestDetails": "Panel, specimen and method",
+  "directorySpecimen": "Specimen",
+  "directoryMethod": "Method",
+  "directoryComponents": "Panel components",
+  "directoryNotPublished": "Not specified by the source",
+  "directoryChooseTests": "Choose tests",
+  "directoryTestSearchNotice": "Choose a test type. The dictionary groups provider name variants; cards show the original formulations.",
+  "directoryLinkFailed": "Could not open the link. Copy the website address from the card or use its phone number.",
+  "directoryResults": "Results: {count}",
+  "@directoryResults": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "directorySnapshot": "Directory verified on {date} · doctors and services may change.",
+  "@directorySnapshot": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "directoryOutsideCoverage": "This location is outside the pilot search area. Choose an address in Saint Petersburg or Voronezh.",
+  "directoryEmpty": "No matches in this directory snapshot. Change your search, city or selected tests.",
+  "directoryCoverage": "A selection of providers in Saint Petersburg and Voronezh. The provider confirms your booking.",
+  "directoryMapAttribution": "Geodata © OpenStreetMap contributors",
+  "directoryUnknownDistance": "Distance unavailable",
+  "directoryMeters": "{value} m straight-line distance",
+  "@directoryMeters": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "directoryKilometers": "{value} km straight-line distance",
+  "@directoryKilometers": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "directoryAvailabilityUnknown": "Tests appear in the network catalogue. Confirm availability at this branch.",
+  "directoryAllTests": "Test catalogue",
+  "directorySource": "Source",
+  "directoryContactNotice": "Published provider or network contact.",
+  "addressEntrySequence": "Start with a city, then choose a street and building.",
+  "addressEnterStreet": "City selected. Now enter a street.",
+  "addressEnterBuilding": "Street selected. Now enter a building number.",
+  "addressReady": "Address selected. Confirm it using the button below.",
+  "directoryRefresh": "Refresh directory",
+  "directoryRefreshFailed": "Unable to refresh. Showing the last saved version.",
+  "directorySourceChecked": "Address checked: {date}",
+  "@directorySourceChecked": {
     "placeholders": {
       "date": {
         "type": "String"

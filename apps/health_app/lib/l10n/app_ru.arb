@@ -343,7 +343,6 @@
   "accessIntroSaveError": "Не удалось сохранить выбор. Попробуйте продолжить ещё раз.",
   "locationAccessExplanation": "Геолокация нужна для выбора ближайших клиник. Можно определить позицию устройства или указать город и адрес вручную.",
   "locationNotSelected": "Местоположение не выбрано",
-  "locationCoordinates": "Координаты: {latitude}, {longitude}",
   "useCurrentLocation": "Определить моё местоположение",
   "deviceAccessBusy": "Ожидание ответа устройства",
   "manualLocation": "Местоположение вручную",
@@ -365,16 +364,6 @@
   "attachmentSessionOnly": "Файлы выбраны на время текущего запуска. Сохранение в медицинскую историю и обработка пока не подключены; после перезапуска потребуется выбрать их заново.",
   "cameraUnavailable": "Съёмка недоступна на этом устройстве. Прикрепите фотографию из медиатеки или файлов.",
   "directoryLocationPreview": "Выбранное местоположение пока не изменяет демонстрационные адреса и расстояния.",
-  "@locationCoordinates": {
-    "placeholders": {
-      "latitude": {
-        "type": "String"
-      },
-      "longitude": {
-        "type": "String"
-      }
-    }
-  },
   "introductionStep": "Шаг {current} из {total}",
   "introductionProfileTitle": "Заполните профиль",
   "introductionProfileBody": "Начните с возраста, пола и роста в разделе «Профиль». По мере необходимости добавляйте препараты, жалобы и другие события, чтобы собрать медицинскую историю в одном месте.",
@@ -383,11 +372,11 @@
   "introductionSummaryTitle": "Посмотрите результаты",
   "introductionSummaryBody": "Сводка объединяет результаты. В примере можно открыть систему организма, выбрать показатель и посмотреть историю. Кнопка «Показать врачу» открывает раздел передачи отчётов.",
   "introductionLabsTitle": "Сравните лаборатории",
-  "introductionLabsBody": "В разделе «Лаборатории» найдите анализы и добавьте их в список. В примере для этого списка можно сравнить цены и расположение лабораторий.",
+  "introductionLabsBody": "В разделе «Где сдать» найдите анализы или учреждение в Санкт-Петербурге и Воронеже. Выберите адрес или геолокацию, чтобы увидеть ближайшие филиалы. Доступность анализов из каталога сети уточняйте в филиале.",
   "introductionDoctorsTitle": "Найдите специалиста",
   "introductionDoctorsBody": "В разделе «Врачи» найдите специальность или врача и откройте карточку. В ней показаны клиника и сведения о приёме.",
   "introductionAppointmentTitle": "Запланируйте приём",
-  "introductionAppointmentBody": "В карточке врача есть действие для записи в клинику. В примере оно показывает предварительный просмотр, приложение не записывает на приём. Эти шаги можно в любой момент повторить из настроек.",
+  "introductionAppointmentBody": "Карточка содержит сайт записи и телефон учреждения. Запись подтверждается клиникой. Повторить знакомство можно в настройках.",
   "introductionNotice": "Знакомство показывает разделы и не изменяет ваши записи. Действия, недоступные в этой версии, отмечены в интерфейсе.",
   "introductionSkip": "Пропустить",
   "introductionBack": "Назад",
@@ -640,6 +629,95 @@
     }
   },
   "@cloudUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmCurrentLocation": "Вы находитесь здесь?",
+  "confirmLocationYes": "Да, я здесь",
+  "enterAnotherLocation": "Нет, указать другой адрес",
+  "locationAddressUnavailable": "Не удалось определить адрес по GPS. Проверьте последний адрес или введите новый вручную.",
+  "locationSaveFailed": "Адрес действует в этом сеансе, но сохранить его на устройстве не удалось. Повторите выбор адреса.",
+  "searchingAddresses": "Ищем адреса…",
+  "addressSuggestionsUnavailable": "Подсказки адресов недоступны. Можно ввести адрес вручную.",
+  "addressSuggestionsEmpty": "Адреса не найдены. Уточните запрос или используйте введённый адрес.",
+  "addressSearchProvider": "Подсказки и адрес по GPS: Photon · © OpenStreetMap contributors. Запрос или координаты передаются сервису поиска адресов.",
+  "lastLocationAddress": "Последний адрес: {address}",
+  "@lastLocationAddress": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
+  "directoryCity": "Город",
+  "directorySpb": "Санкт-Петербург",
+  "directoryVoronezh": "Воронеж",
+  "directoryNeedPoint": "Координаты этого адреса не определены. Для расчёта расстояния выберите подсказку с номером дома или подтвердите геолокацию.",
+  "directorySorted": "Сначала ближайшие · расстояние по прямой",
+  "directoryDoctorSearch": "Врач, специальность или клиника",
+  "directoryLabSearch": "Анализ, учреждение или адрес",
+  "directorySpecialty": "Специальность",
+  "directoryAllSpecialties": "Все специальности",
+  "directoryTestDetails": "Состав, материал и метод",
+  "directorySpecimen": "Материал",
+  "directoryMethod": "Метод",
+  "directoryComponents": "Состав",
+  "directoryNotPublished": "Не уточнён источником",
+  "directoryChooseTests": "Выбрать анализы",
+  "directoryTestSearchNotice": "Выберите тип анализа. Варианты названий лабораторий объединены по словарю; в карточках показаны исходные формулировки.",
+  "directoryLinkFailed": "Не удалось открыть ссылку. Скопируйте адрес сайта из карточки или позвоните по указанному номеру.",
+  "directoryResults": "Найдено: {count}",
+  "@directoryResults": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "directorySnapshot": "Справочник проверен {date} · состав врачей и услуг может меняться.",
+  "@directorySnapshot": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "directoryOutsideCoverage": "Точка находится за пределами пилотного поиска. Выберите адрес в Санкт-Петербурге или Воронеже.",
+  "directoryEmpty": "Совпадений в текущей подборке нет. Измените поиск, город или список анализов.",
+  "directoryCoverage": "Подборка учреждений Санкт-Петербурга и Воронежа. Запись подтверждается на стороне учреждения.",
+  "directoryMapAttribution": "Геоданные © OpenStreetMap contributors",
+  "directoryUnknownDistance": "Расстояние не определено",
+  "directoryMeters": "{value} м по прямой",
+  "@directoryMeters": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "directoryKilometers": "{value} км по прямой",
+  "@directoryKilometers": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "directoryAvailabilityUnknown": "Анализы найдены в каталоге сети. Доступность в этом филиале нужно уточнить.",
+  "directoryAllTests": "Каталог анализов",
+  "directorySource": "Источник",
+  "directoryContactNotice": "Указан опубликованный контакт учреждения или сети.",
+  "addressEntrySequence": "Начните с города, затем выберите улицу и дом.",
+  "addressEnterStreet": "Город выбран. Теперь введите улицу.",
+  "addressEnterBuilding": "Улица выбрана. Теперь введите номер дома.",
+  "addressReady": "Адрес выбран. Подтвердите его кнопкой ниже.",
+  "directoryRefresh": "Обновить каталог",
+  "directoryRefreshFailed": "Обновление недоступно. Показана последняя сохранённая версия.",
+  "directorySourceChecked": "Адрес проверен: {date}",
+  "@directorySourceChecked": {
     "placeholders": {
       "date": {
         "type": "String"

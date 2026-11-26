@@ -1872,12 +1872,6 @@ abstract class AppLocalizations {
   /// **'Location not selected'**
   String get locationNotSelected;
 
-  /// No description provided for @locationCoordinates.
-  ///
-  /// In en, this message translates to:
-  /// **'Coordinates: {latitude}, {longitude}'**
-  String locationCoordinates(String latitude, String longitude);
-
   /// No description provided for @useCurrentLocation.
   ///
   /// In en, this message translates to:
@@ -2055,7 +2049,7 @@ abstract class AppLocalizations {
   /// No description provided for @introductionLabsBody.
   ///
   /// In en, this message translates to:
-  /// **'In Laboratories, search for tests and add them to your list. The example compares laboratory prices and locations for that list.'**
+  /// **'In Find a lab, search for tests or providers in Saint Petersburg and Voronezh. Choose an address or device location to see the nearest branches. Confirm availability of network-listed tests at the branch.'**
   String get introductionLabsBody;
 
   /// No description provided for @introductionDoctorsTitle.
@@ -2079,7 +2073,7 @@ abstract class AppLocalizations {
   /// No description provided for @introductionAppointmentBody.
   ///
   /// In en, this message translates to:
-  /// **'The doctor card contains the clinic booking action. In the example it shows a preview; the app does not book an appointment. You can repeat these steps from Settings at any time.'**
+  /// **'The card links to the provider’s booking website and phone number. The clinic confirms your booking. You can repeat this introduction in Settings.'**
   String get introductionAppointmentBody;
 
   /// No description provided for @introductionNotice.
@@ -3101,6 +3095,288 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Access valid until {date}'**
   String cloudUntil(String date);
+
+  /// No description provided for @confirmCurrentLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you here?'**
+  String get confirmCurrentLocation;
+
+  /// No description provided for @confirmLocationYes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, I am here'**
+  String get confirmLocationYes;
+
+  /// No description provided for @enterAnotherLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'No, enter another address'**
+  String get enterAnotherLocation;
+
+  /// No description provided for @locationAddressUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not find an address for your GPS location. Check the last address or enter a new one manually.'**
+  String get locationAddressUnavailable;
+
+  /// No description provided for @locationSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'This address is available for this session, but could not be saved on this device. Try selecting it again.'**
+  String get locationSaveFailed;
+
+  /// No description provided for @searchingAddresses.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching for addresses…'**
+  String get searchingAddresses;
+
+  /// No description provided for @addressSuggestionsUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Address suggestions are unavailable. You can enter an address manually.'**
+  String get addressSuggestionsUnavailable;
+
+  /// No description provided for @addressSuggestionsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No addresses found. Refine your search or use the address you entered.'**
+  String get addressSuggestionsEmpty;
+
+  /// No description provided for @addressSearchProvider.
+  ///
+  /// In en, this message translates to:
+  /// **'Address lookup: Photon · © OpenStreetMap contributors. Your query or coordinates are sent to the address search service.'**
+  String get addressSearchProvider;
+
+  /// No description provided for @lastLocationAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Last address: {address}'**
+  String lastLocationAddress(String address);
+
+  /// No description provided for @directoryCity.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get directoryCity;
+
+  /// No description provided for @directorySpb.
+  ///
+  /// In en, this message translates to:
+  /// **'Saint Petersburg'**
+  String get directorySpb;
+
+  /// No description provided for @directoryVoronezh.
+  ///
+  /// In en, this message translates to:
+  /// **'Voronezh'**
+  String get directoryVoronezh;
+
+  /// No description provided for @directoryNeedPoint.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not determine coordinates for this address. Select an address suggestion with a house number or confirm your device location to calculate distances.'**
+  String get directoryNeedPoint;
+
+  /// No description provided for @directorySorted.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearest first · straight-line distance'**
+  String get directorySorted;
+
+  /// No description provided for @directoryDoctorSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor, specialty or clinic'**
+  String get directoryDoctorSearch;
+
+  /// No description provided for @directoryLabSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Test, provider or address'**
+  String get directoryLabSearch;
+
+  /// No description provided for @directorySpecialty.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialty'**
+  String get directorySpecialty;
+
+  /// No description provided for @directoryAllSpecialties.
+  ///
+  /// In en, this message translates to:
+  /// **'All specialties'**
+  String get directoryAllSpecialties;
+
+  /// No description provided for @directoryTestDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Panel, specimen and method'**
+  String get directoryTestDetails;
+
+  /// No description provided for @directorySpecimen.
+  ///
+  /// In en, this message translates to:
+  /// **'Specimen'**
+  String get directorySpecimen;
+
+  /// No description provided for @directoryMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Method'**
+  String get directoryMethod;
+
+  /// No description provided for @directoryComponents.
+  ///
+  /// In en, this message translates to:
+  /// **'Panel components'**
+  String get directoryComponents;
+
+  /// No description provided for @directoryNotPublished.
+  ///
+  /// In en, this message translates to:
+  /// **'Not specified by the source'**
+  String get directoryNotPublished;
+
+  /// No description provided for @directoryChooseTests.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose tests'**
+  String get directoryChooseTests;
+
+  /// No description provided for @directoryTestSearchNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a test type. The dictionary groups provider name variants; cards show the original formulations.'**
+  String get directoryTestSearchNotice;
+
+  /// No description provided for @directoryLinkFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the link. Copy the website address from the card or use its phone number.'**
+  String get directoryLinkFailed;
+
+  /// No description provided for @directoryResults.
+  ///
+  /// In en, this message translates to:
+  /// **'Results: {count}'**
+  String directoryResults(int count);
+
+  /// No description provided for @directorySnapshot.
+  ///
+  /// In en, this message translates to:
+  /// **'Directory verified on {date} · doctors and services may change.'**
+  String directorySnapshot(String date);
+
+  /// No description provided for @directoryOutsideCoverage.
+  ///
+  /// In en, this message translates to:
+  /// **'This location is outside the pilot search area. Choose an address in Saint Petersburg or Voronezh.'**
+  String get directoryOutsideCoverage;
+
+  /// No description provided for @directoryEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No matches in this directory snapshot. Change your search, city or selected tests.'**
+  String get directoryEmpty;
+
+  /// No description provided for @directoryCoverage.
+  ///
+  /// In en, this message translates to:
+  /// **'A selection of providers in Saint Petersburg and Voronezh. The provider confirms your booking.'**
+  String get directoryCoverage;
+
+  /// No description provided for @directoryMapAttribution.
+  ///
+  /// In en, this message translates to:
+  /// **'Geodata © OpenStreetMap contributors'**
+  String get directoryMapAttribution;
+
+  /// No description provided for @directoryUnknownDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance unavailable'**
+  String get directoryUnknownDistance;
+
+  /// No description provided for @directoryMeters.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} m straight-line distance'**
+  String directoryMeters(String value);
+
+  /// No description provided for @directoryKilometers.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} km straight-line distance'**
+  String directoryKilometers(String value);
+
+  /// No description provided for @directoryAvailabilityUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Tests appear in the network catalogue. Confirm availability at this branch.'**
+  String get directoryAvailabilityUnknown;
+
+  /// No description provided for @directoryAllTests.
+  ///
+  /// In en, this message translates to:
+  /// **'Test catalogue'**
+  String get directoryAllTests;
+
+  /// No description provided for @directorySource.
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get directorySource;
+
+  /// No description provided for @directoryContactNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Published provider or network contact.'**
+  String get directoryContactNotice;
+
+  /// No description provided for @addressEntrySequence.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with a city, then choose a street and building.'**
+  String get addressEntrySequence;
+
+  /// No description provided for @addressEnterStreet.
+  ///
+  /// In en, this message translates to:
+  /// **'City selected. Now enter a street.'**
+  String get addressEnterStreet;
+
+  /// No description provided for @addressEnterBuilding.
+  ///
+  /// In en, this message translates to:
+  /// **'Street selected. Now enter a building number.'**
+  String get addressEnterBuilding;
+
+  /// No description provided for @addressReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Address selected. Confirm it using the button below.'**
+  String get addressReady;
+
+  /// No description provided for @directoryRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh directory'**
+  String get directoryRefresh;
+
+  /// No description provided for @directoryRefreshFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to refresh. Showing the last saved version.'**
+  String get directoryRefreshFailed;
+
+  /// No description provided for @directorySourceChecked.
+  ///
+  /// In en, this message translates to:
+  /// **'Address checked: {date}'**
+  String directorySourceChecked(String date);
 }
 
 class _AppLocalizationsDelegate

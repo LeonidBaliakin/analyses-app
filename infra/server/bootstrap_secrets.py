@@ -12,7 +12,10 @@ values = json.loads(path.read_text()) if path.exists() else {}
 updated = False
 for name in ('postgres_password', 's3_access_key', 's3_secret_key', 'client_token',
              'identity_service_key', 'identity_mail_key', 'cloud_service_key', 'cloud_admin_key', 'notifications_publisher_key', 'notifications_admin_key',
-             'notifications_telegram_key', 'notifications_vk_key', 'notifications_max_key'):
+             'notifications_telegram_key', 'notifications_vk_key', 'notifications_max_key',
+             'directory_admin_key', 'directory_invitro_key', 'directory_helix_key',
+             'directory_smclinic_key', 'directory_scandinavia_key', 'directory_sova_key',
+             'directory_medexpert_key', 'directory_csp_key'):
     if name not in values:
         values[name] = (base64.b64encode(secrets.token_bytes(32)).decode()
                         if name == 'identity_mail_key' else secrets.token_hex(32))

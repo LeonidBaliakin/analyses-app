@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
 import 'app/health_app.dart';
@@ -26,9 +27,18 @@ import 'package:flutter/foundation.dart';
 
 import 'data/reports/export_report.dart';
 import 'data/device_access/plugin_device_access.dart';
+import 'data/device_access/photon_address_lookup.dart';
+import 'data/preferences/location_repository.dart';
 import 'features/device_access/device_access.dart';
 import 'features/settings/settings.dart';
 import 'presentation/demo_catalog.dart';
+
+import 'package:provider_directory/provider_directory.dart';
+
+import 'features/directory/directory.dart';
+import 'data/directory/open_directory_url.dart';
+import 'data/directory/catalog_repository.dart';
+import 'data/directory/directory_endpoint.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,9 +58,20 @@ Future<void> main() async {
   final deviceGateway = PluginDeviceAccess();
   final deviceAccess = DeviceAccessViewModel(
     gateway: deviceGateway,
+    addressLookup: PhotonAddressLookup(
+      client: http.Client(),
+      endpoint: Uri.parse(
+        const String.fromEnvironment(
+          'ADDRESS_LOOKUP_URL',
+          defaultValue: 'https://photon.komoot.io/',
+        ),
+      ),
+    ),
+    locationRepository: SharedPreferencesLocationRepository(preferences),
     introductionRequired: introductionRequired,
     rememberIntroduction: () => preferences.setBool(introductionKey, true),
   );
+  await deviceAccess.restoreLocation();
   await deviceAccess.recoverAttachments();
   final database = openRecordsDatabase();
   final records = RecordsViewModel(
@@ -144,6 +165,26 @@ Future<void> main() async {
       return true;
     },
   );
+  final directoryUri = directoryEndpoint(
+    configuredUrl: const String.fromEnvironment('PROVIDER_DIRECTORY_URL'),
+    development: kDebugMode,
+    web: kIsWeb,
+    android: !kIsWeb && defaultTargetPlatform == TargetPlatform.android,
+    page: Uri.base,
+  );
+  final directoryRepository = directoryUri == null
+      ? null
+      : DirectoryCatalogRepository(
+          client: http.Client(),
+          preferences: preferences,
+          endpoint: directoryUri,
+        );
+  final directory = DirectoryViewModel(
+    catalog: bundledDirectory(),
+    openUrl: openDirectoryUrl,
+    loadCachedCatalog: directoryRepository?.cached,
+    refreshCatalog: directoryRepository?.refresh,
+  );
   runApp(
     HealthApp(
       settings: settings,
@@ -155,8 +196,10 @@ Future<void> main() async {
       reports: reports,
       sync: sync,
       account: account,
+      directory: directory,
     ),
   );
   // Restoring a session must not delay or block opening local medical records.
   unawaited(account.restore());
+  if (directoryRepository != null) unawaited(directory.refresh());
 }

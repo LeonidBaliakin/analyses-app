@@ -1,0 +1,232 @@
+{
+  "schemaVersion": 1,
+  "sources": [
+    {
+      "id": "invitro",
+      "name": "ИНВИТРО",
+      "cities": [
+        "spb",
+        "voronezh"
+      ],
+      "allowedOrigins": [
+        "https://www.invitro.ru"
+      ],
+      "parserVersion": "1",
+      "enabled": true,
+      "intervalSeconds": 86400,
+      "requestDelayMs": 2000,
+      "maxPages": 250,
+      "branchPages": [
+        {
+          "city": "spb",
+          "url": "https://www.invitro.ru/offices/piter/"
+        },
+        {
+          "city": "voronezh",
+          "url": "https://www.invitro.ru/offices/voronezh/"
+        }
+      ],
+      "cataloguePages": [
+        {
+          "city": "spb",
+          "url": "https://www.invitro.ru/analizes/for-doctors/piter/"
+        },
+        {
+          "city": "voronezh",
+          "url": "https://www.invitro.ru/analizes/for-doctors/voronezh/"
+        }
+      ]
+    },
+    {
+      "id": "helix",
+      "name": "Хеликс",
+      "cities": [
+        "spb",
+        "voronezh"
+      ],
+      "allowedOrigins": [
+        "https://helix.ru"
+      ],
+      "parserVersion": "1",
+      "enabled": true,
+      "intervalSeconds": 86400,
+      "requestDelayMs": 2000,
+      "maxPages": 250,
+      "branchPages": [
+        {
+          "city": "spb",
+          "url": "https://helix.ru/centers"
+        },
+        {
+          "city": "voronezh",
+          "url": "https://helix.ru/voronezh/centers"
+        }
+      ],
+      "cataloguePages": [
+        {
+          "city": "spb",
+          "url": "https://helix.ru/catalog/190-vse-analizy"
+        },
+        {
+          "city": "voronezh",
+          "url": "https://helix.ru/voronezh/catalog/190-vse-analizy"
+        }
+      ]
+    },
+    {
+      "id": "smclinic",
+      "name": "СМ-Клиника",
+      "cities": [
+        "spb"
+      ],
+      "allowedOrigins": [
+        "https://www.smclinic-spb.ru"
+      ],
+      "parserVersion": "1",
+      "enabled": true,
+      "intervalSeconds": 86400,
+      "requestDelayMs": 2000,
+      "maxPages": 250,
+      "branchPages": [
+        {
+          "city": "spb",
+          "url": "https://www.smclinic-spb.ru/contacts"
+        }
+      ],
+      "cataloguePages": [
+        {
+          "city": "spb",
+          "url": "https://www.smclinic-spb.ru/doctor"
+        },
+        {
+          "city": "spb",
+          "url": "https://www.smclinic-spb.ru/diagnostika-analizi"
+        }
+      ]
+    },
+    {
+      "id": "scandinavia",
+      "name": "Скандинавия",
+      "cities": [
+        "spb"
+      ],
+      "allowedOrigins": [
+        "https://www.avaclinic.ru"
+      ],
+      "parserVersion": "1",
+      "enabled": true,
+      "intervalSeconds": 86400,
+      "requestDelayMs": 2000,
+      "maxPages": 250,
+      "branchPages": [
+        {
+          "city": "spb",
+          "url": "https://www.avaclinic.ru/offices/"
+        }
+      ],
+      "cataloguePages": [
+        {
+          "city": "spb",
+          "url": "https://www.avaclinic.ru/doctors/"
+        },
+        {
+          "city": "spb",
+          "url": "https://www.avaclinic.ru/service/diagnostika/laboratornye-issledovaniya/"
+        }
+      ]
+    },
+    {
+      "id": "sova",
+      "name": "СОВА",
+      "cities": [
+        "voronezh"
+      ],
+      "allowedOrigins": [
+        "https://voronezh.sovamed.ru"
+      ],
+      "parserVersion": "1",
+      "enabled": true,
+      "intervalSeconds": 86400,
+      "requestDelayMs": 2000,
+      "maxPages": 250,
+      "branchPages": [
+        {
+          "city": "voronezh",
+          "url": "https://voronezh.sovamed.ru/o-sove/contacts/"
+        }
+      ],
+      "cataloguePages": [
+        {
+          "city": "voronezh",
+          "url": "https://voronezh.sovamed.ru/vrachi/"
+        },
+        {
+          "city": "voronezh",
+          "url": "https://voronezh.sovamed.ru/services/laboratornaya-diagnostika/"
+        }
+      ]
+    },
+    {
+      "id": "medexpert",
+      "name": "МедЭксперт",
+      "cities": [
+        "voronezh"
+      ],
+      "allowedOrigins": [
+        "https://www.med-exp.ru"
+      ],
+      "parserVersion": "1",
+      "enabled": true,
+      "intervalSeconds": 86400,
+      "requestDelayMs": 2000,
+      "maxPages": 250,
+      "branchPages": [
+        {
+          "city": "voronezh",
+          "url": "https://www.med-exp.ru/med_points"
+        }
+      ],
+      "cataloguePages": [
+        {
+          "city": "voronezh",
+          "url": "https://www.med-exp.ru/specialists"
+        },
+        {
+          "city": "voronezh",
+          "url": "https://www.med-exp.ru/price"
+        }
+      ]
+    },
+    {
+      "id": "csp",
+      "name": "ЦСП — Центр современной педиатрии",
+      "cities": [
+        "voronezh"
+      ],
+      "allowedOrigins": [
+        "https://csp-vrn.ru"
+      ],
+      "parserVersion": "1",
+      "enabled": true,
+      "intervalSeconds": 86400,
+      "requestDelayMs": 2000,
+      "maxPages": 250,
+      "branchPages": [
+        {
+          "city": "voronezh",
+          "url": "https://csp-vrn.ru/contact/"
+        }
+      ],
+      "cataloguePages": [
+        {
+          "city": "voronezh",
+          "url": "https://csp-vrn.ru/uzspecialist/"
+        },
+        {
+          "city": "voronezh",
+          "url": "https://csp-vrn.ru/analysis/"
+        }
+      ]
+    }
+  ]
+}

@@ -126,3 +126,12 @@ provider tokens не используются и внешняя доставка
 Отключение профиля не останавливает прежние контейнеры: используйте явный
 `docker compose --profile messengers stop delivery-telegram delivery-vk delivery-max notifications`.
 [Пошаговая инструкция и подготовка оператором](../../docs/operations/messengers.md).
+
+## Каталог медицинских учреждений
+
+`analyses_directory_enabled: true` включает optional profile `directory`: реестр
+с собственной БД и семь отдельных микросервисов парсеров ИНВИТРО, Хеликс,
+СМ-Клиника, Скандинавия, СОВА, МедЭксперт и ЦСП. По умолчанию API слушает
+`127.0.0.1:18086`; `analyses_directory_allowed_origins` задаёт CORS для web.
+Восемь ключей добавляются без ротации прежних. Миграции и readiness входят в
+deployment. [Расписание, API, обновление одного парсера и ограничения](../../docs/operations/provider-connectors.md).

@@ -35,6 +35,20 @@ Future<SettingsViewModel> launch(
     ),
   );
   await tester.pumpAndSettle();
+  // These tests cover the other controls; session confirmation has its own tests.
+  if (find.byKey(const Key('manual-location')).evaluate().isNotEmpty) {
+    await tester.tap(
+      find
+          .descendant(
+            of: find.byType(Dialog),
+            matching: find.byTooltip(
+              language == AppLanguage.ru ? 'Закрыть' : 'Close',
+            ),
+          )
+          .first,
+    );
+    await tester.pumpAndSettle();
+  }
   return settings;
 }
 
@@ -211,17 +225,22 @@ void main() {
   }
 
   testWidgets(
-    'directory search adds a test without filtering out laboratories',
+    'directory search filters real providers by original test names',
     (tester) async {
       await launch(tester, initialLocation: '/labs', language: AppLanguage.ru);
-      final search = find.byType(TextField).first;
+      final search = find.byKey(const Key('directory-lab-search'));
       await tester.enterText(search, 'Витамин D');
       await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(ListTile, 'Витамин D'));
+      expect(find.text('Хеликс · ДЦ Автово'), findsOneWidget);
+      expect(find.text('Скандинавия · Отделение «Литейное»'), findsNothing);
+      expect(tester.widget<TextField>(search).controller!.text, 'Витамин D');
+      await tester.tap(find.text('Выбрать анализы'));
       await tester.pumpAndSettle();
-      expect(find.text('Витамин D'), findsOneWidget);
-      expect(tester.widget<TextField>(search).controller!.text, isEmpty);
-      expect(find.text('МедЛаб Центр'), findsOneWidget);
+      await tester.ensureVisible(find.widgetWithText(FilterChip, 'Ферритин'));
+      await tester.tap(find.widgetWithText(FilterChip, 'Ферритин'));
+      await tester.pumpAndSettle();
+      expect(find.widgetWithText(InputChip, 'Ферритин'), findsOneWidget);
+      expect(find.text('Хеликс · ДЦ Автово'), findsOneWidget);
     },
   );
 

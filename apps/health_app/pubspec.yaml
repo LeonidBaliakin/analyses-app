@@ -1,7 +1,7 @@
 name: health_app
 description: Local-first health records application.
 publish_to: 'none'
-version: 0.1.4+5
+version: 0.1.5+6
 resolution: workspace
 
 environment:
@@ -10,6 +10,8 @@ environment:
 dependencies:
   record_sync: ^0.1.0
   medical_domain: ^0.1.0
+  provider_directory: ^0.1.0
+  url_launcher: ^6.3.3
   medical_terminology: ^0.1.0
   document_domain: ^0.1.0
   document_processing: ^0.1.0
@@ -35,6 +37,10 @@ dependencies:
   file_selector: ^1.1.0
 
 dev_dependencies:
+  flutter_driver:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
   drift: ^2.35.4
   flutter_test:
     sdk: flutter
