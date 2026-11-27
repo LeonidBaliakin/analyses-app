@@ -30,7 +30,17 @@ final class CspParser extends NetworkParser {
       'specialty',
       nameSelector: 'h2',
     ),
-    ...links(p, '.link_cardspec[href*="/team/"]', 'doctor', nameSelector: 'h2'),
+    for (final e in p.document.querySelectorAll(
+      '.link_cardspec[href*="/team/"]',
+    ))
+      ...links(
+            p,
+            '.link_cardspec[href="${e.attributes['href']}"]',
+            'doctor',
+            nameSelector: 'h2',
+          )
+          .take(1)
+          .map((v) => {...v, 'sourceSpecialty': text(e.querySelector('p'))}),
     ...links(p, '.link_carddoctor[href], .link_doctor[href]', 'doctor'),
     ...links(
       p,

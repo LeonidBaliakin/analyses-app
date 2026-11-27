@@ -73,7 +73,9 @@ class DirectoryService {
                 .single[0]
             as String;
     final previous = jsonDecode(payload) as Json;
-    final scoped = constrainInvitroCoverage(previous);
+    final scoped = reconcileReviewedBranches(
+      constrainInvitroCoverage(previous),
+    );
     if (!identical(scoped, previous)) {
       scoped['publishedAt'] =
           ((await tx.execute('SELECT CURRENT_TIMESTAMP')).single[0] as DateTime)

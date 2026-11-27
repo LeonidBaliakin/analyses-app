@@ -41,6 +41,7 @@ final class MedexpertParser extends NetworkParser {
           'availabilityStatus': 'unverified',
           'name': label.attributes['data-name'],
           'sourceCategory': label.attributes['data-category'],
+          'sourceCenters': label.attributes['data-centers'],
           'sourcePrice': text(e.querySelector('.block_2_price')),
           'source': '${p.uri}#${label.id}',
           'checkedAt': p.date,

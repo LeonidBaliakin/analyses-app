@@ -71,6 +71,87 @@ Json result() => {
 };
 
 void main() {
+  test('v2 cannot claim completeness with missing pages or mismatched source totals', () {
+    final c = config('synthetic')..['parserVersion'] = '2';
+    c['cataloguePages'] = [
+      {'city': 'spb', 'url': 'https://example.org/catalogue'},
+    ];
+    Json valid() {
+      final input = result()..['parserVersion'] = '2';
+      (input['catalogueStatus'] as List).single.addAll({
+        'coverage': 'complete',
+        'coverageMethod': 'source_total',
+        'expectedItems': 1,
+        'pendingPages': 0,
+      });
+      return input;
+    }
+
+    expect(mergeImport(seed(), c, valid(), 'job')['version'], 'job');
+    for (final change in <void Function(Json)>[
+      (j) => (j['catalogueStatus'] as List).clear(),
+      (j) => (j['catalogueStatus'] as List).single['expectedItems'] = 2,
+      (j) => (j['catalogueStatus'] as List).single['pendingPages'] = 1,
+      (j) => (j['catalogueStatus'] as List).single['failures'] = [
+        {'error': 'timeout'},
+      ],
+    ]) {
+      final input = valid();
+      change(input);
+      expect(() => mergeImport(seed(), c, input, 'job'), throwsFormatException);
+    }
+  });
+  test('reviewed branch identities collapse imported duplicates and keep doctor references', () {
+    final previous = seed();
+    final original = branch(
+      'sm-dybenko',
+      network: 'smclinic',
+      website: 'https://www.smclinic-spb.ru/contacts',
+    );
+    final duplicate = branch(
+      'smclinic-duplicate',
+      network: 'smclinic',
+      website: 'https://www.smclinic-spb.ru/about-smspb/dybenko',
+    );
+    original.addAll({'lat': 59.9, 'lon': 30.3});
+    original['source'] = 'https://www.smclinic-spb.ru/contacts';
+    duplicate['source'] = 'https://www.smclinic-spb.ru/contacts';
+    (previous['branches'] as List).addAll(<Json>[original, duplicate]);
+    (previous['doctors'] as List).single['branchIds'] = [
+      'sm-dybenko',
+      'smclinic-duplicate',
+    ];
+    final corrected = reconcileReviewedBranches(previous);
+    expect(corrected['branches'], hasLength(2));
+    expect((corrected['branches'] as List).last['id'], 'sm-dybenko');
+    expect(
+      (corrected['branches'] as List).last['website'],
+      duplicate['website'],
+    );
+    expect((corrected['doctors'] as List).single['branchIds'], ['sm-dybenko']);
+    expect(corrected['branchIdentityReview'], hasLength(2));
+    expect((corrected['branches'] as List).last['lat'], 59.9);
+    final withoutPoint = jsonDecode(jsonEncode(corrected)) as Json;
+    (withoutPoint['branches'] as List).last.remove('lat');
+    (withoutPoint['branches'] as List).last.remove('lon');
+    expect(
+      (reconcileReviewedBranches(withoutPoint)['branches'] as List).last['lat'],
+      59.9,
+    );
+    expect(reconcileReviewedBranches(corrected), same(corrected));
+    final c = config('smclinic');
+    c['allowedOrigins'] = ['https://www.smclinic-spb.ru'];
+    final input = result()..['sourceId'] = 'smclinic';
+    input['branches'] = [duplicate];
+    input['items'] = <Json>[];
+    input['catalogueStatus'] = <Json>[];
+    final merged = mergeImport(previous, c, input, 'repeat');
+    expect(
+      (merged['branches'] as List).where((b) => b['network'] == 'smclinic'),
+      hasLength(1),
+    );
+    expect((merged['branches'] as List).last['id'], 'sm-dybenko');
+  });
   test('coverage correction preserves excluded facts and is idempotent', () {
     final previous = seed();
     (previous['branches'] as List).add(
@@ -219,6 +300,43 @@ void main() {
       );
     },
   );
+  test('identity repair publishes once across registry restarts', () async {
+    final previous = seed();
+    (previous['branches'] as List).addAll(<Json>[
+      branch(
+        'sm-dybenko',
+        network: 'smclinic',
+        website: 'https://www.smclinic-spb.ru/contacts',
+      ),
+      branch(
+        'smclinic-duplicate',
+        network: 'smclinic',
+        website: 'https://www.smclinic-spb.ru/about-smspb/dybenko',
+      ),
+    ]);
+    await db.execute(
+      Sql.named('UPDATE catalog SET payload=@p WHERE id=1'),
+      parameters: {'p': jsonEncode(previous)},
+    );
+    await api.migrate([config('synthetic'), config('other')], seed());
+    final first = (await db.execute('SELECT payload FROM catalog WHERE id=1'))
+        .single[0];
+    expect((jsonDecode(first as String)['branches'] as List), hasLength(2));
+    expect(
+      (await db.execute('SELECT count(*) FROM directory_outbox')).single[0],
+      1,
+    );
+    api = service();
+    await api.migrate([config('synthetic'), config('other')], seed());
+    expect(
+      (await db.execute('SELECT payload FROM catalog WHERE id=1')).single[0],
+      first,
+    );
+    expect(
+      (await db.execute('SELECT count(*) FROM directory_outbox')).single[0],
+      1,
+    );
+  });
   test('concurrent claims serialize one job and exact completion replay emits one event', () async {
     final responses = await Future.wait([
       call('internal/sources/synthetic/claim'),

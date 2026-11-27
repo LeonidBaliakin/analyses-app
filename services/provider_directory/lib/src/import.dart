@@ -32,6 +32,93 @@ bool invitroAddressMatchesCity(Json branch) => (branch['address'] as String)
     .toLowerCase()
     .contains(branch['city'] == 'spb' ? 'санкт-петербург' : 'воронеж');
 
+/// Reviewed source identities, not fuzzy address/name matching. The original
+/// seed used the contacts index as the website for these four offices.
+const reviewedBranchIdentities = {
+  'https://www.smclinic-spb.ru/about-smspb/dybenko': 'sm-dybenko',
+  'https://www.smclinic-spb.ru/about-smspb/udarnikov': 'sm-udarnikov',
+  'https://www.smclinic-spb.ru/about-smspb/dunaiskii': 'sm-dunay',
+  'https://www.smclinic-spb.ru/about-smspb/klinika-v-viborgskom':
+      'sm-vyborgskoe',
+};
+
+Json reconcileReviewedBranches(Json previous) {
+  final branches = (previous['branches'] as List).cast<Json>().toList();
+  final aliases = <String, String>{};
+  final restored = <String>[];
+  final review = <Json>[
+    ...(previous['branchIdentityReview'] as List? ?? []).cast<Json>(),
+  ];
+  for (final entry in reviewedBranchIdentities.entries) {
+    final canonical = branches
+        .where((b) => b['network'] == 'smclinic' && b['id'] == entry.value)
+        .toList();
+    final observed = branches
+        .where(
+          (b) =>
+              b['network'] == 'smclinic' &&
+              b['website'] == entry.key &&
+              b['id'] != entry.value,
+        )
+        .toList();
+    if (canonical.length != 1) continue;
+    if (observed.isEmpty && canonical.single['lat'] == null) {
+      final oldPoints = review
+          .where(
+            (b) =>
+                b['id'] == entry.value && b['lat'] != null && b['lon'] != null,
+          )
+          .toList();
+      final sameReviewedAddress = review.any(
+        (b) =>
+            b['website'] == entry.key &&
+            b['address'] == canonical.single['address'],
+      );
+      if (oldPoints.length == 1 && sameReviewedAddress) {
+        branches[branches.indexOf(canonical.single)] = {
+          ...canonical.single,
+          for (final field in ['lat', 'lon', 'coordinateSource'])
+            if (oldPoints.single[field] != null) field: oldPoints.single[field],
+        };
+        restored.add(entry.value);
+      }
+    }
+    if (observed.length != 1) continue;
+    final old = canonical.single, fresh = observed.single;
+    aliases[fresh['id'] as String] = old['id'] as String;
+    review.addAll([old, fresh]);
+    final merged = <String, dynamic>{...old, ...fresh, 'id': old['id']};
+    // These exact pairs were reviewed as the same physical offices. Preserve
+    // the confirmed point; later unreviewed address changes still clear it.
+    branches[branches.indexOf(old)] = merged;
+    branches.remove(fresh);
+  }
+  if (aliases.isEmpty && restored.isEmpty) return previous;
+  final result = <String, dynamic>{
+    ...previous,
+    'version':
+        'identity-${fingerprint([previous['version'], aliases, restored])}',
+    'branches': branches,
+    'branchIdentityAliases': {
+      ...?previous['branchIdentityAliases'] as Json?,
+      ...aliases,
+    },
+    'branchIdentityReview': review,
+    for (final kind in ['doctors', 'tests'])
+      kind: [
+        for (final item in (previous[kind] as List).cast<Json>())
+          {
+            ...item,
+            'branchIds': {
+              for (final id in item['branchIds'] as List) aliases[id] ?? id,
+            }.toList(),
+          },
+      ],
+  };
+  ProviderCatalog.fromJson(result);
+  return result;
+}
+
 /// Regional office pages also list neighbouring cities. Preserve their raw
 /// facts for review, but do not publish them under a different city's filter.
 Json constrainInvitroCoverage(Json previous) {
@@ -61,6 +148,7 @@ Json constrainInvitroCoverage(Json previous) {
 /// Additive import: missing rows never imply a closure or a deletion. Fields
 /// from an earlier observation retain their original verification date.
 Json mergeImport(Json previous, Json config, Json input, String job) {
+  previous = reconcileReviewedBranches(previous);
   final source = config['id'] as String;
   final incoming = (input['branches'] as List).cast<Json>();
   if (input['schemaVersion'] != 1 ||
@@ -121,13 +209,53 @@ Json mergeImport(Json previous, Json config, Json input, String job) {
       throw const FormatException('invalid_item');
     }
   }
-  for (final status in (input['catalogueStatus'] as List).cast<Json>()) {
+  final statuses = (input['catalogueStatus'] as List).cast<Json>();
+  if (config['parserVersion'] == '2') {
+    final expected = {
+      for (final p in config['cataloguePages'] as List)
+        '${p['city']}:${p['url']}',
+    };
+    final actual = {for (final p in statuses) '${p['city']}:${p['url']}'};
+    if (statuses.length != expected.length ||
+        actual.length != expected.length ||
+        !actual.containsAll(expected)) {
+      throw const FormatException('missing_collection_status');
+    }
+  }
+  for (final status in statuses) {
     if (!allowedUrl(status['url'] as String, config) ||
         !(config['cities'] as List).contains(status['city']) ||
         !['observed', 'failed'].contains(status['status']) ||
         (status['pages'] as int) < 0 ||
         (status['items'] as int) < 0) {
       throw const FormatException('invalid_catalogue_status');
+    }
+    if (config['parserVersion'] == '2') {
+      final total = status['expectedItems'];
+      final complete = status['coverage'] == 'complete';
+      final rows = status['observedRows'];
+      if (rows != null &&
+          (rows is! int ||
+              rows < status['items'] ||
+              status['duplicateRows'] != rows - status['items'])) {
+        throw const FormatException('invalid_row_count');
+      }
+      if (!['complete', 'partial'].contains(status['coverage']) ||
+          ![
+            'source_total',
+            'linked_sections',
+          ].contains(status['coverageMethod']) ||
+          complete != (status['status'] == 'observed') ||
+          (total != null && (total is! int || total < 0 || total > 30000)) ||
+          (status['coverageMethod'] == 'source_total' && total == null) ||
+          (complete &&
+              total != null &&
+              total != (status['observedRows'] ?? status['items'])) ||
+          (complete &&
+              (status['pendingPages'] != 0 ||
+                  (status['failures'] as List? ?? []).isNotEmpty))) {
+        throw const FormatException('invalid_completeness');
+      }
     }
   }
   final branches = (previous['branches'] as List)
@@ -139,7 +267,10 @@ Json mergeImport(Json previous, Json config, Json input, String job) {
         .where(
           (old) =>
               old['network'] == source &&
-              (old['id'] == b['id'] || old['website'] == b['website']),
+              (old['id'] == b['id'] ||
+                  old['website'] == b['website'] ||
+                  (source == 'smclinic' &&
+                      old['id'] == reviewedBranchIdentities[b['website']])),
         )
         .toList();
     if (matches.length > 1) throw const FormatException('ambiguous_branch');
@@ -149,8 +280,13 @@ Json mergeImport(Json previous, Json config, Json input, String job) {
       final old = matches.single;
       final index = branches.indexOf(old);
       final updated = <String, dynamic>{...old, ...b, 'id': old['id']};
+      final reviewedIdentityUpgrade =
+          source == 'smclinic' &&
+          old['website'] == 'https://www.smclinic-spb.ru/contacts' &&
+          old['id'] == reviewedBranchIdentities[b['website']];
       // Coordinates from an earlier address must never locate a moved office.
       if (old['address'] != b['address'] &&
+          !reviewedIdentityUpgrade &&
           (b['lat'] == null || b['lon'] == null)) {
         updated.remove('lat');
         updated.remove('lon');

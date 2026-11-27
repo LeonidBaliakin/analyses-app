@@ -23,17 +23,59 @@ final class SmclinicParser extends NetworkParser {
   @override
   List<Json> catalogue(SourcePage p) => [
     ...links(p, '.specialists-list__link[href]', 'specialty'),
-    ...links(
-      p,
-      '.doctor-card__top[href]',
-      'doctor',
-      nameSelector: '.doctor-card__name',
-    ),
+    for (final card in p.document.querySelectorAll('.doctor-card'))
+      if (card.querySelector(
+            '.doctor-card__top[href], a.doctor-card__cell[href]',
+          )
+          case final a?)
+        if (text(a.querySelector('.doctor-card__name')).isNotEmpty)
+          {
+            'id': stableId(
+              source,
+              '${p.city}:doctor:${p.url(a.attributes['href']!)}',
+            ),
+            'network': source,
+            'city': p.city,
+            'kind': 'doctor',
+            'name': text(a.querySelector('.doctor-card__name')),
+            'sourceSpecialty': text(card.querySelector('.doctor-card__spec')),
+            'sourceLocation': text(
+              card.querySelector(
+                '.doctor-card__metro, [class^="slider-metro-"]',
+              ),
+            ),
+            'availabilityStatus': 'unverified',
+            'source': p.url(a.attributes['href']!).toString(),
+            'listingSource': p.uri.toString(),
+            'checkedAt': p.date,
+          },
     ...links(
       p,
       'a[href*="/diagnostika-analizi/laboratoria/"]:not(.b-analyzes-lab__button)',
       'category',
     ),
+    // Some published tests have an individual descriptive page without a
+    // tariff table. Preserve its exact title and explicit absence of a price.
+    if (p.document.querySelector('tr.price__row') == null &&
+        p.uri.path.startsWith('/diagnostika-analizi/laboratoria/') &&
+        p.document.querySelector(
+              r'.breadcrumbs a[href$="/laboratoria"], .breadcrumbs a[href$="/laboratoria/"]',
+            ) !=
+            null)
+      if (p.document.querySelector('h1.h1_speciality') case final heading?)
+        if (text(heading).isNotEmpty)
+          {
+            'id': stableId(source, '${p.city}:test:${p.uri}'),
+            'network': source,
+            'city': p.city,
+            'kind': 'test',
+            'name': text(heading),
+            'availabilityStatus': 'unverified',
+            'sourcePriceStatus': 'not_observed',
+            'source': p.uri.toString(),
+            'listingSource': p.uri.toString(),
+            'checkedAt': p.date,
+          },
     ...rows(
       p,
       'tr.price__row',
@@ -49,7 +91,7 @@ final class SmclinicParser extends NetworkParser {
         '.specialists-list__link[href^="/doctor/"]',
       ))
         page.url(a.attributes['href']!),
-    if (page.uri.path == '/diagnostika-analizi')
+    if (page.uri.path.startsWith('/diagnostika-analizi'))
       for (final a in page.document.querySelectorAll(
         'a[href^="/diagnostika-analizi/laboratoria/"]:not(.b-analyzes-lab__button)',
       ))

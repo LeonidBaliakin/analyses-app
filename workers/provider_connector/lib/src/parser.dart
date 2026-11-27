@@ -65,14 +65,66 @@ final class SourcePage {
 
 abstract class NetworkParser {
   String get source;
+  String get version => '2';
   List<Json> branches(SourcePage page);
 
   /// Raw source facts. A listing/category never becomes a confirmed physician
   /// practice or a medically equivalent test without its own verified mapping.
   List<Json> catalogue(SourcePage page);
 
+  Uri initialPage(Uri configured) => configured;
   List<Uri> nextPages(SourcePage page) => [];
   bool acceptsNext(Uri first, Uri next) => first.path == next.path;
+
+  /// Count supplied by the source for this collection, never an estimate.
+  int? expectedItems(SourcePage page) => null;
+  bool emptyAllowed(SourcePage page) => expectedItems(page) == 0;
+  String get coverageMethod => 'linked_sections';
+
+  /// Only compiled, read-only catalogue operations used by the public site.
+  /// This is separate from HTML crawling; it never grants another origin,
+  /// authentication, booking, or arbitrary query parameters.
+  bool publicCatalogueRequest(Uri uri) => false;
+}
+
+Json mergeObservation(Json? previous, Json incoming) {
+  if (previous == null) return incoming;
+  const listingFields = [
+    'listingSource',
+    'name',
+    'sourcePrice',
+    'sourcePriceDetails',
+    'sourceSpecialty',
+    'sourceLocation',
+    'sourceCategory',
+  ];
+  List<Json> listings(Json item) =>
+      (item['sourceListings'] as List?)?.cast<Json>() ??
+      [
+        {
+          for (final field in listingFields)
+            if (item[field] != null) field: item[field],
+        },
+      ];
+  final sourceListings = <String, Json>{
+    for (final listing in [...listings(previous), ...listings(incoming)])
+      jsonEncode(listing): listing,
+  };
+  List<String> values(String plural, String singular) => {
+    ...((previous[plural] as List?) ?? []).cast<String>(),
+    if (previous[singular] case final String v when v.isNotEmpty) v,
+    ...((incoming[plural] as List?) ?? []).cast<String>(),
+    if (incoming[singular] case final String v when v.isNotEmpty) v,
+  }.toList()..sort();
+  return {
+    ...previous,
+    ...incoming,
+    'listingSources': values('listingSources', 'listingSource'),
+    'sourceSpecialties': values('sourceSpecialties', 'sourceSpecialty'),
+    'sourceLocations': values('sourceLocations', 'sourceLocation'),
+    'sourceCategories': values('sourceCategories', 'sourceCategory'),
+    'sourceListings': sourceListings.values.toList(),
+  };
 }
 
 List<Json> links(

@@ -17,6 +17,33 @@ SourcePage page(
 );
 
 void main() {
+  test('SM clinic supports both doctor card templates and unpriced test detail pages', () {
+    final parser = SmclinicParser();
+    final cards = parser.catalogue(
+      page(
+        parser,
+        '<div class="doctor-card"><a class="doctor-card__cell" href="/doctor/synthetic"><div class="doctor-card__name">Синтетический врач</div><div class="doctor-card__spec">Исходная специальность</div></a><p class="slider-metro-one">Исходный адрес</p></div>',
+        city: 'spb',
+        path: '/doctor/specialty',
+      ),
+    );
+    expect(cards.single['kind'], 'doctor');
+    expect(cards.single['sourceLocation'], 'Исходный адрес');
+    final item = parser
+        .catalogue(
+          page(
+            parser,
+            '<div class="breadcrumbs"><a href="/diagnostika-analizi/laboratoria">Лаборатория</a></div><h1 class="h1_speciality">Исходное исследование</h1>',
+            city: 'spb',
+            path: '/diagnostika-analizi/laboratoria/synthetic',
+          ),
+        )
+        .single;
+    expect(item['kind'], 'test');
+    expect(item['sourcePriceStatus'], 'not_observed');
+    expect(item.containsKey('sourcePrice'), isFalse);
+  });
+
   test('Invitro regional list never assigns a neighbouring town to Saint Petersburg', () {
     final parser = InvitroParser();
     final html =

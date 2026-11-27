@@ -9,6 +9,15 @@ import 'package:shelf/shelf_io.dart' as shelf;
 import 'fetcher.dart';
 import 'parser.dart';
 
+Uri canonicalPage(Uri uri) => uri.hasQuery
+    ? uri.removeFragment().replace(
+        queryParameters: {
+          for (final key in (uri.queryParametersAll.keys.toList()..sort()))
+            key: uri.queryParametersAll[key]!,
+        },
+      )
+    : uri.removeFragment();
+
 Future<Json> collect(
   NetworkParser parser,
   Json config,
@@ -34,17 +43,25 @@ Future<Json> collect(
   var totalPages = 0;
   for (final spec in config['cataloguePages'] as List) {
     final first = Uri.parse(spec['url'] as String);
-    final visited = <Uri>{}, queue = <Uri>[first];
-    var count = 0;
-    String? error;
-    try {
-      while (queue.isNotEmpty) {
-        if (totalPages >= (config['maxPages'] as int)) {
-          throw const FetchFailure('page_limit');
-        }
-        final uri = queue.removeAt(0);
-        if (!visited.add(uri)) continue;
-        await heartbeat();
+    final visited = <Uri>{},
+        queue = <Uri>[canonicalPage(parser.initialPage(first))],
+        ids = <String>{};
+    final failures = <Json>[];
+    final signatures = <String>{};
+    int? expected;
+    var successfulPages = 0, observedRows = 0;
+    while (queue.isNotEmpty) {
+      final uri = queue.removeAt(0);
+      if (!visited.add(uri)) continue;
+      if (totalPages >= (config['maxPages'] as int)) {
+        failures.add({'url': uri.toString(), 'error': 'page_limit'});
+        break;
+      }
+      totalPages++;
+      // Registry/lease failures abort the job; they are not website page gaps.
+      await heartbeat();
+      // A failed child must not discard the remaining discovered inventory.
+      try {
         final page = SourcePage(
           parser.source,
           spec['city'] as String,
@@ -52,40 +69,94 @@ Future<Json> collect(
           await fetcher.get(uri),
           DateTime.now().toUtc(),
         );
-        totalPages++;
         final found = parser.catalogue(page);
-        if (found.isEmpty) throw const FormatException('catalogue_missing');
+        final total = parser.expectedItems(page);
+        if (total != null) {
+          if (expected != null && expected != total) {
+            throw const FetchFailure('inventory_changed');
+          }
+          expected = total;
+        }
+        final nextPages = parser.nextPages(page);
+        if (found.isEmpty && !parser.emptyAllowed(page) && nextPages.isEmpty) {
+          throw const FormatException('catalogue_missing');
+        }
+        if (expected != null && found.isNotEmpty) {
+          final signature = stableId(
+            parser.source,
+            jsonEncode([
+              for (final item in found)
+                [
+                  for (final key in [
+                    'id',
+                    'name',
+                    'sourcePrice',
+                    'sourceSpecialty',
+                    'sourceLocation',
+                  ])
+                    item[key],
+                ],
+            ]),
+          );
+          if (!signatures.add(signature)) {
+            throw const FetchFailure('repeated_inventory_page');
+          }
+        }
         for (final item in found) {
-          // Ignore navigation to partner domains. It is not fetched or published.
           if (fetcher.allows(Uri.parse(item['source'] as String))) {
-            items[item['id'] as String] = item;
-            count++;
+            observedRows++;
+            final id = item['id'] as String;
+            items[id] = mergeObservation(items[id], item);
+            ids.add(id);
           }
         }
-        for (final next in parser.nextPages(page)) {
-          // Pagination remains inside the selected regional collection.
+        for (final discovered in nextPages) {
+          final next = canonicalPage(discovered);
           if (!parser.acceptsNext(first, next) || !fetcher.allows(next)) {
-            throw const FetchFailure('pagination_region_mismatch');
+            failures.add({
+              'url': next.toString(),
+              'error': 'pagination_region_mismatch',
+            });
+          } else if (!visited.contains(next) && !queue.contains(next)) {
+            queue.add(next);
           }
-          if (!visited.contains(next)) queue.add(next);
         }
+        successfulPages++;
+      } catch (e) {
+        failures.add({'url': uri.toString(), 'error': failureCode(e)});
       }
-    } catch (e) {
-      error = failureCode(e);
+    }
+    if (expected != null && expected != observedRows) {
+      failures.add({
+        'url': first.toString(),
+        'error': 'inventory_count_mismatch',
+      });
     }
     statuses.add({
       'url': first.toString(),
       'city': spec['city'],
-      'status': error == null ? 'observed' : 'failed',
+      'status': failures.isEmpty ? 'observed' : 'failed',
+      'coverage': failures.isEmpty ? 'complete' : 'partial',
+      'coverageMethod': expected == null
+          ? parser.coverageMethod
+          : 'source_total',
       'pages': visited.length,
-      'items': count,
-      'error': ?error,
+      'successfulPages': successfulPages,
+      'pendingPages': queue.length,
+      'items': ids.length,
+      'observedRows': observedRows,
+      'duplicateRows': observedRows - ids.length,
+      'expectedItems': ?expected,
+      if (failures.isNotEmpty) ...{
+        'error': failures.first['error'],
+        'failures': failures,
+      },
     });
   }
   return {
     'schemaVersion': 1,
     'sourceId': parser.source,
-    'parserVersion': config['parserVersion'],
+    'parserVersion': parser.version,
     'fetchedAt': DateTime.now().toUtc().toIso8601String(),
     'startedAt': started.toIso8601String(),
     'branches': branches,
@@ -136,8 +207,18 @@ Future<void> runConnector(
     final bytes = await response.stream.toBytes().timeout(
       const Duration(seconds: 15),
     );
-    if (response.statusCode != 200 || bytes.length > 1024 * 1024) {
+    if (bytes.length > 1024 * 1024) {
       throw const FetchFailure('registry_unavailable');
+    }
+    if (response.statusCode != 200) {
+      // Surface only the registry's bounded technical code, never its body or
+      // credentials. A rejected import is different from a network outage.
+      final error = (jsonDecode(utf8.decode(bytes)) as Json)['error'];
+      throw FetchFailure(
+        error is String && RegExp(r'^[a-z0-9_]{1,64}$').hasMatch(error)
+            ? 'registry_$error'
+            : 'registry_http_${response.statusCode}',
+      );
     }
     return jsonDecode(utf8.decode(bytes)) as Json;
   }
@@ -153,7 +234,10 @@ Future<void> runConnector(
                   const Duration(seconds: 90)
           ? 200
           : 503,
-      body: jsonEncode({'sourceId': parser.source, 'parserVersion': '1'}),
+      body: jsonEncode({
+        'sourceId': parser.source,
+        'parserVersion': parser.version,
+      }),
       headers: {'content-type': 'application/json'},
     ),
     env['CONNECTOR_BIND'] ?? '127.0.0.1',
@@ -181,14 +265,10 @@ Future<void> runConnector(
         if (job != null) {
           final path = 'internal/sources/${parser.source}/jobs/${job['jobId']}';
           final config = job['config'] as Json;
-          if (config['id'] != parser.source ||
-              (config['allowedOrigins'] as List).length != 1 ||
-              (config['allowedOrigins'] as List).single != origin) {
-            throw const FetchFailure('source_mismatch');
-          }
           final fetcher = PublicFetcher(
             client,
             origin,
+            publicCatalogueRequest: parser.publicCatalogueRequest,
             delay: Duration(
               milliseconds: (config['requestDelayMs'] as int).clamp(
                 1000,
@@ -203,6 +283,12 @@ Future<void> runConnector(
           }
 
           try {
+            if (config['parserVersion'] != parser.version ||
+                config['id'] != parser.source ||
+                (config['allowedOrigins'] as List).length != 1 ||
+                (config['allowedOrigins'] as List).single != origin) {
+              throw const FetchFailure('source_mismatch');
+            }
             final data = await collect(parser, config, fetcher, heartbeat);
             // A lost completion response is replayed with the same immutable data.
             Object? lastError;

@@ -11,7 +11,7 @@
       "allowedOrigins": [
         "https://www.invitro.ru"
       ],
-      "parserVersion": "1",
+      "parserVersion": "2",
       "enabled": true,
       "intervalSeconds": 86400,
       "requestDelayMs": 2000,
@@ -29,11 +29,27 @@
       "cataloguePages": [
         {
           "city": "spb",
-          "url": "https://www.invitro.ru/analizes/for-doctors/piter/"
+          "url": "https://www.invitro.ru/golk/tests/api/v1/tests?cityID=992d4482-b30b-4b71-b4eb-df0a9387b9de&limit=100&offset=0"
+        },
+        {
+          "city": "spb",
+          "url": "https://www.invitro.ru/golk/tests/api/v1/complexes/categories?cityID=992d4482-b30b-4b71-b4eb-df0a9387b9de"
+        },
+        {
+          "city": "spb",
+          "url": "https://www.invitro.ru/golk/tests/api/v1/checkups-examinations/?cityID=992d4482-b30b-4b71-b4eb-df0a9387b9de&limit=100&offset=0"
         },
         {
           "city": "voronezh",
-          "url": "https://www.invitro.ru/analizes/for-doctors/voronezh/"
+          "url": "https://www.invitro.ru/golk/tests/api/v1/tests?cityID=3e0a9101-41d0-468b-bf3f-e323a2a1cf4d&limit=100&offset=0"
+        },
+        {
+          "city": "voronezh",
+          "url": "https://www.invitro.ru/golk/tests/api/v1/complexes/categories?cityID=3e0a9101-41d0-468b-bf3f-e323a2a1cf4d"
+        },
+        {
+          "city": "voronezh",
+          "url": "https://www.invitro.ru/golk/tests/api/v1/checkups-examinations/?cityID=3e0a9101-41d0-468b-bf3f-e323a2a1cf4d&limit=100&offset=0"
         }
       ]
     },
@@ -47,7 +63,7 @@
       "allowedOrigins": [
         "https://helix.ru"
       ],
-      "parserVersion": "1",
+      "parserVersion": "2",
       "enabled": true,
       "intervalSeconds": 86400,
       "requestDelayMs": 2000,
@@ -65,11 +81,19 @@
       "cataloguePages": [
         {
           "city": "spb",
-          "url": "https://helix.ru/catalog/190-vse-analizy"
+          "url": "https://helix.ru/api/catalog/items/list/v2?cityId=2&filter.categoryId=190&pagination.take=100&pagination.skip=0"
+        },
+        {
+          "city": "spb",
+          "url": "https://helix.ru/api/catalog/items/list/v2?cityId=2&filter.categoryId=191&pagination.take=100&pagination.skip=0"
         },
         {
           "city": "voronezh",
-          "url": "https://helix.ru/voronezh/catalog/190-vse-analizy"
+          "url": "https://helix.ru/api/catalog/items/list/v2?cityId=84&filter.categoryId=190&pagination.take=100&pagination.skip=0"
+        },
+        {
+          "city": "voronezh",
+          "url": "https://helix.ru/api/catalog/items/list/v2?cityId=84&filter.categoryId=191&pagination.take=100&pagination.skip=0"
         }
       ]
     },
@@ -82,7 +106,7 @@
       "allowedOrigins": [
         "https://www.smclinic-spb.ru"
       ],
-      "parserVersion": "1",
+      "parserVersion": "2",
       "enabled": true,
       "intervalSeconds": 86400,
       "requestDelayMs": 2000,
@@ -100,7 +124,7 @@
         },
         {
           "city": "spb",
-          "url": "https://www.smclinic-spb.ru/diagnostika-analizi"
+          "url": "https://www.smclinic-spb.ru/diagnostika-analizi/laboratoria"
         }
       ]
     },
@@ -113,11 +137,11 @@
       "allowedOrigins": [
         "https://www.avaclinic.ru"
       ],
-      "parserVersion": "1",
+      "parserVersion": "2",
       "enabled": true,
       "intervalSeconds": 86400,
       "requestDelayMs": 2000,
-      "maxPages": 250,
+      "maxPages": 350,
       "branchPages": [
         {
           "city": "spb",
@@ -131,7 +155,7 @@
         },
         {
           "city": "spb",
-          "url": "https://www.avaclinic.ru/service/diagnostika/laboratornye-issledovaniya/"
+          "url": "https://www.avaclinic.ru/prices/"
         }
       ]
     },
@@ -144,7 +168,7 @@
       "allowedOrigins": [
         "https://voronezh.sovamed.ru"
       ],
-      "parserVersion": "1",
+      "parserVersion": "2",
       "enabled": true,
       "intervalSeconds": 86400,
       "requestDelayMs": 2000,
@@ -152,7 +176,7 @@
       "branchPages": [
         {
           "city": "voronezh",
-          "url": "https://voronezh.sovamed.ru/o-sove/contacts/"
+          "url": "https://voronezh.sovamed.ru/contact-us/"
         }
       ],
       "cataloguePages": [
@@ -175,7 +199,7 @@
       "allowedOrigins": [
         "https://www.med-exp.ru"
       ],
-      "parserVersion": "1",
+      "parserVersion": "2",
       "enabled": true,
       "intervalSeconds": 86400,
       "requestDelayMs": 2000,
@@ -206,7 +230,7 @@
       "allowedOrigins": [
         "https://csp-vrn.ru"
       ],
-      "parserVersion": "1",
+      "parserVersion": "2",
       "enabled": true,
       "intervalSeconds": 86400,
       "requestDelayMs": 2000,

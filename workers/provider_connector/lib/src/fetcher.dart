@@ -16,11 +16,13 @@ class PublicFetcher {
     this.delay = const Duration(seconds: 2),
     this.maxBytes = 8 * 1024 * 1024,
     this.timeout = const Duration(seconds: 20),
+    this.publicCatalogueRequest,
   });
   final http.Client client;
   final String origin;
   final Duration delay, timeout;
   final int maxBytes;
+  final bool Function(Uri)? publicCatalogueRequest;
   DateTime? _last;
   String? _robots;
 
@@ -31,6 +33,11 @@ class PublicFetcher {
     var uri = url;
     for (var redirect = 0; redirect < 4; redirect++) {
       if (!allows(uri)) throw const FetchFailure('origin_denied');
+      if (_robots != null &&
+          !robotsAllow(_robots!, uri) &&
+          !(publicCatalogueRequest?.call(uri) ?? false)) {
+        throw const FetchFailure('robots_denied');
+      }
       if (_last != null) {
         final wait = delay - DateTime.now().difference(_last!);
         if (wait > Duration.zero) await Future<void>.delayed(wait);
@@ -94,8 +101,25 @@ class PublicFetcher {
         }
       }
     }
-    if (!robotsAllow(_robots!, uri)) throw const FetchFailure('robots_denied');
-    return _read(uri);
+    for (var attempt = 0; ; attempt++) {
+      try {
+        return await _read(uri);
+      } catch (e) {
+        // Permanent denials and parser failures are never hammered/retried.
+        if (attempt >= 2 ||
+            ![
+              'timeout',
+              'http_429',
+              'http_500',
+              'http_502',
+              'http_503',
+              'http_504',
+            ].contains(failureCode(e))) {
+          rethrow;
+        }
+        await Future<void>.delayed(Duration(seconds: 2 << attempt));
+      }
+    }
   }
 }
 

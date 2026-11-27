@@ -100,6 +100,46 @@ void main() {
     );
     expect(requests, 1);
   });
+  test('403 is permanent and a catalogue allowlist does not grant arbitrary queries', () async {
+    final called = <Uri>[];
+    final parser = HelixParser();
+    final client = MockClient((r) async {
+      called.add(r.url);
+      return http.Response(
+        r.url.path == '/robots.txt'
+            ? 'User-agent: *\nDisallow: *?*'
+            : 'Forbidden',
+        r.url.path == '/robots.txt' ? 200 : 403,
+      );
+    });
+    addTearDown(client.close);
+    final fetcher = PublicFetcher(
+      client,
+      'https://helix.ru',
+      delay: Duration.zero,
+      publicCatalogueRequest: parser.publicCatalogueRequest,
+    );
+    await expectLater(
+      fetcher.get(
+        Uri.parse(
+          'https://helix.ru/api/catalog/items/list/v2?cityId=84&filter.categoryId=190&pagination.take=100&pagination.skip=0',
+        ),
+      ),
+      throwsA(isA<FetchFailure>().having((e) => e.code, 'code', 'http_403')),
+    );
+    expect(called, hasLength(2));
+    await expectLater(
+      fetcher.get(
+        Uri.parse(
+          'https://helix.ru/api/catalog/items/list/v2?cityId=84&filter.categoryId=190&pagination.take=100&pagination.skip=0&action=book',
+        ),
+      ),
+      throwsA(
+        isA<FetchFailure>().having((e) => e.code, 'code', 'robots_denied'),
+      ),
+    );
+    expect(called, hasLength(2));
+  });
   test('oversized and timed out source responses fail explicitly', () async {
     final client = MockClient(
       (r) async =>

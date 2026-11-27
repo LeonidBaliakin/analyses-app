@@ -237,6 +237,27 @@ components:
               pages: {type: integer}
               items: {type: integer}
               error: {type: string}
+              coverage:
+                enum: [complete, partial]
+                description: Required by parser v2. Completeness of the configured collection, not medical verification or the entire city.
+              coverageMethod:
+                enum: [source_total, linked_sections]
+              expectedItems:
+                type: integer
+                minimum: 0
+                description: The source's published listing total; complete source_total requires observedRows to match it. Repeated placements can share one unique item.
+              observedRows: {type: integer, minimum: 0}
+              duplicateRows: {type: integer, minimum: 0}
+              successfulPages: {type: integer, minimum: 0}
+              pendingPages: {type: integer, minimum: 0}
+              failures:
+                type: array
+                items:
+                  type: object
+                  required: [url, error]
+                  properties:
+                    url: {type: string, format: uri}
+                    error: {type: string}
     Catalog:
       type: object
       required: [schemaVersion, version, checkedAt, branches, doctors, tests]
@@ -256,3 +277,11 @@ components:
           type: array
           description: Preserved regional source facts excluded from pilot city search pending address coverage review.
           items: {$ref: '#/components/schemas/Branch'}
+        branchIdentityAliases:
+          type: object
+          additionalProperties: {type: string}
+          description: Reviewed duplicate source IDs mapped to their preserved canonical IDs.
+        branchIdentityReview:
+          type: array
+          items: {$ref: '#/components/schemas/Branch'}
+          description: Original rows preserved by an explicit branch identity correction.
