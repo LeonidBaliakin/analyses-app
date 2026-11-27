@@ -9,8 +9,12 @@ import 'package:http/testing.dart';
 import 'shared_preferences_repository_test.dart' show FakePreferences;
 
 void main() {
-  final payload = File('../../packages/provider_directory/data/catalog.json')
-      .readAsStringSync();
+  final snapshot = jsonDecode(
+    File('../../packages/provider_directory/data/catalog.json')
+        .readAsStringSync(),
+  ) as Map<String, dynamic>;
+  snapshot['publishedAt'] = '2026-11-27T10:30:00Z';
+  final payload = jsonEncode(snapshot);
   test(
     'public catalogue is validated and available in a new offline repository',
     () async {
@@ -51,6 +55,11 @@ void main() {
         endpoint: endpoint,
       );
       expect((await restored.cached())!.version, fresh.version);
+      expect(
+        (await restored.cached())!.publishedAt,
+        DateTime.utc(2026, 11, 27, 10, 30),
+      );
+      expect(fresh.checkedAt, DateTime(2026, 11, 27));
       await expectLater(restored.refresh(), throwsException);
       expect(
         (await restored.cached())!.branches,

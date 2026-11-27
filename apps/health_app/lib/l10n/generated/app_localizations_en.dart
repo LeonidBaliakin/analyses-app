@@ -1032,7 +1032,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get introductionProfileBody =>
-      'Start with age, sex and height in Profile. Add medications, symptoms and other events as needed to keep your health history together.';
+      'Enter your date of birth and height. You can add other details later.';
 
   @override
   String get introductionReportsTitle => 'Add your first test report';
@@ -1046,7 +1046,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get introductionSummaryBody =>
-      'Summary brings results together. In the example you can open a body system, select a marker and view its history. Show your doctor opens the section for sharing reports.';
+      'The summary shows your latest visit. History compares tests by date, with indicator selection and events.';
 
   @override
   String get introductionLabsTitle => 'Compare laboratories';
@@ -1361,7 +1361,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reportExport => 'Save HTML for viewing and printing';
 
   @override
-  String get reportSaved => 'Report saved';
+  String get reportSaved =>
+      'Printable version saved. Open it in a browser and choose Print → Save as PDF.';
 
   @override
   String get reportExportError => 'Could not save the report. Try again.';
@@ -1757,7 +1758,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String directorySnapshot(String date) {
-    return 'Directory verified on $date · doctors and services may change.';
+    return 'Doctors and tests: reviewed selection from $date.';
   }
 
   @override
@@ -1766,7 +1767,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get directoryEmpty =>
-      'No matches in this directory snapshot. Change your search, city or selected tests.';
+      'No matches in this directory selection. Change your search, city, network or selected tests.';
 
   @override
   String get directoryCoverage =>
@@ -1827,4 +1828,163 @@ class AppLocalizationsEn extends AppLocalizations {
   String directorySourceChecked(String date) {
     return 'Address checked: $date';
   }
+
+  @override
+  String get directoryNetwork => 'Clinic or laboratory network';
+
+  @override
+  String get directoryAllNetworks => 'All networks';
+
+  @override
+  String directoryPublished(String date) {
+    return 'Directory updated: $date';
+  }
+
+  @override
+  String get directoryPublicationNotice =>
+      'Updates add branch addresses. New doctors, services and prices appear after review. Check availability and prices on the provider’s website.';
+
+  @override
+  String directoryDoctorChecked(String date) {
+    return 'Doctor details checked: $date';
+  }
+
+  @override
+  String get directoryNetworkPhone =>
+      'Network contact number. Specify the branch when calling.';
+
+  @override
+  String get directoryPhoneUnavailable =>
+      'No phone number listed. Open the provider’s website to contact them.';
+
+  @override
+  String get analysisHistory => 'Analysis history';
+
+  @override
+  String get historyRecent => 'Latest two visits';
+
+  @override
+  String get historyAll => 'All history';
+
+  @override
+  String get historyCustom => 'Choose dates';
+
+  @override
+  String get historyPeriod => 'Visit period';
+
+  @override
+  String get historyRotate => 'Rotate view';
+
+  @override
+  String get historyEvents => 'Event timeline';
+
+  @override
+  String get historyIllnesses => 'Illnesses';
+
+  @override
+  String get historyComplaints => 'Symptoms';
+
+  @override
+  String get historyNoEvents => 'No events in this period.';
+
+  @override
+  String get historyEmpty =>
+      'No results in this period. Change the dates or selected indicators.';
+
+  @override
+  String get historySearch => 'Find and select indicators';
+
+  @override
+  String get historyReset => 'Reset selection';
+
+  @override
+  String get historyScrollBack => 'Scroll to earlier dates';
+
+  @override
+  String get historyScrollForward => 'Scroll to later dates';
+
+  @override
+  String get historyTableHint =>
+      'Select an indicator for details. Scroll dates horizontally.';
+
+  @override
+  String get historyPrint => 'Print / PDF';
+
+  @override
+  String get sharingAccess => 'Link and QR access';
+
+  @override
+  String get sharingOptions => 'Choose what to share';
+
+  @override
+  String get profileHelp => 'How this relates to your tests';
+
+  @override
+  String get profileHelpBody =>
+      'Medications, weight and illnesses appear on timelines beside test dates.';
+
+  @override
+  String get profileOverview =>
+      'Information about you for your conversation with a doctor.';
+
+  @override
+  String get copyAddress => 'Copy address';
+
+  @override
+  String get addressCopied => 'Address copied';
+
+  @override
+  String get copyFailed =>
+      'Could not copy. Select and copy the address manually.';
+
+  @override
+  String get historyExportHint =>
+      'Save the printable HTML version. Open it in a browser and choose Print → Save as PDF.';
+
+  @override
+  String get tourShareTitle => 'Share your tests';
+
+  @override
+  String get tourShareBody =>
+      'Show a QR code or send a link to a specialist. Access duration and shared data are set separately.';
+
+  @override
+  String get tourAddAnalysis => 'Add a test';
+
+  @override
+  String get historyOpen => 'Open history';
+
+  @override
+  String get visitHistory => 'Test visits';
+
+  @override
+  String get linkCopied => 'Link copied';
+
+  @override
+  String get manageSharing => 'Manage access in settings';
+
+  @override
+  String get history30Days => 'Last 30 days';
+
+  @override
+  String get history180Days => 'Last 180 days';
+
+  @override
+  String get uploadReviewHint =>
+      'Check values against the original report before saving.';
+
+  @override
+  String get supportRecognition => 'Report recognition';
+
+  @override
+  String get supportBug => 'Application error';
+
+  @override
+  String get supportAccess => 'Doctor access';
+
+  @override
+  String get supportIdea => 'Idea or suggestion';
+
+  @override
+  String get supportOther => 'Other';
 }

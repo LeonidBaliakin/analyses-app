@@ -219,7 +219,7 @@ void main() {
       ];
       await tester.pumpAndSettle();
       expect(tester.getRect(find.byType(Scaffold)).size, const Size(900, 840));
-      expect(find.text('Upload test reports'), findsOneWidget);
+      expect(find.text('Test visits'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   }
@@ -254,11 +254,11 @@ void main() {
       expect(find.text('Orange of Health'), findsOneWidget);
       await tester.tap(find.byKey(const Key('nav-1')));
       await tester.pumpAndSettle();
-      expect(find.text('Upload test reports'), findsOneWidget);
+      expect(find.text('Test visits'), findsOneWidget);
       tester.view.physicalSize = const Size(1200, 800);
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('desktop-navigation')), findsOneWidget);
-      expect(find.text('Upload test reports'), findsOneWidget);
+      expect(find.text('Test visits'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );
@@ -370,9 +370,7 @@ void main() {
       await tester.tap(find.text('Photograph a report'));
       await tester.pumpAndSettle();
       expect(
-        find.text(
-          'This is an interface preview. Sign-in, medical record storage and external services are not connected yet.',
-        ),
+        find.text('Check values against the original report before saving.'),
         findsWidgets,
       );
     },
@@ -450,11 +448,11 @@ void main() {
       ),
     ];
     await tester.pumpAndSettle();
-    expect(find.text('Upload test reports'), findsOneWidget);
+    expect(find.text('Test visits'), findsOneWidget);
     expect(tester.getRect(find.byType(Scaffold)).right, lessThanOrEqualTo(590));
     tester.view.displayFeatures = const [];
     await tester.pumpAndSettle();
-    expect(find.text('Upload test reports'), findsOneWidget);
+    expect(find.text('Test visits'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }

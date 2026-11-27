@@ -99,7 +99,7 @@ class AppShell extends StatelessWidget {
               ),
               actions: [
                 for (final a in [
-                  (5, Icons.qr_code_2, l.showDoctor),
+                  (5, Icons.qr_code_2, l.sharingAccess),
                   (4, Icons.person_outline, l.profile),
                   (6, Icons.settings_outlined, l.settings),
                 ])

@@ -4,6 +4,8 @@ import 'package:medical_domain/medical_domain.dart';
 
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../presentation/category_presentation.dart';
+import '../../../presentation/reference_widgets.dart';
+import 'record_activity.dart';
 import 'record_editor.dart';
 import 'record_history.dart';
 import 'records_view_model.dart';
@@ -81,7 +83,11 @@ class _RecordsPageState extends State<RecordsPage> with WidgetsBindingObserver {
                           children: [
                             Expanded(
                               child: Text(
-                                l.localTitle,
+                                switch (widget.section) {
+                                  RecordsSection.summary => l.summary,
+                                  RecordsSection.results => l.results,
+                                  RecordsSection.profile => l.profile,
+                                },
                                 style: Theme.of(context)
                                     .textTheme
                                     .headlineSmall,
@@ -161,6 +167,11 @@ class _RecordsPageState extends State<RecordsPage> with WidgetsBindingObserver {
                       ),
                     ),
                   if (profile != null) ...[
+                    RecordActions(
+                      onAddEvent: () => showRecordActivity(context, model),
+                      onDiary: () =>
+                          showRecordActivity(context, model, diary: true),
+                    ),
                     if (widget.section == RecordsSection.profile) ...[
                       PaperCard(
                         child: Column(
@@ -346,9 +357,24 @@ class _RecordsPageState extends State<RecordsPage> with WidgetsBindingObserver {
             (a.record as LabResult).date,
           ),
         );
-    return entries.isEmpty
-        ? [Text(AppLocalizations.of(context).localEmpty)]
-        : [for (final e in entries) _entry(e)];
+    if (entries.isEmpty) return [Text(AppLocalizations.of(context).localEmpty)];
+    final visits = <(CalendarDate, String), List<RecordEntry>>{};
+    for (final entry in entries) {
+      final result = entry.record as LabResult;
+      visits.putIfAbsent((result.date, result.laboratory), () => []).add(entry);
+    }
+    return [
+      for (final visit in visits.entries)
+        ExpansionTile(
+          key: PageStorageKey('local-visit-${visit.key.$1}-${visit.key.$2}'),
+          initiallyExpanded: true,
+          title: Text('${visit.key.$1} · ${visit.key.$2}'),
+          subtitle: Text(
+            AppLocalizations.of(context).resultCount(visit.value.length),
+          ),
+          children: [for (final entry in visit.value) _entry(entry)],
+        ),
+    ];
   }
 
   List<Widget> _entries(RecordKind kind) {

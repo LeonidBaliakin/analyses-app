@@ -675,7 +675,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Что-то не работает или есть идея? Напишите нам, ответим на почту.';
 
   @override
-  String get supportSubject => 'Тема';
+  String get supportSubject => 'Тема обращения';
 
   @override
   String get supportMessage => 'Сообщение';
@@ -1035,7 +1035,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get introductionProfileBody =>
-      'Начните с возраста, пола и роста в разделе «Профиль». По мере необходимости добавляйте препараты, жалобы и другие события, чтобы собрать медицинскую историю в одном месте.';
+      'Укажите дату рождения и рост. Остальные данные можно внести позже.';
 
   @override
   String get introductionReportsTitle => 'Добавьте первый анализ';
@@ -1049,7 +1049,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get introductionSummaryBody =>
-      'Сводка объединяет результаты. В примере можно открыть систему организма, выбрать показатель и посмотреть историю. Кнопка «Показать врачу» открывает раздел передачи отчётов.';
+      'На сводке видна последняя сдача. В истории можно сравнить анализы по датам, выбрать показатели и посмотреть события.';
 
   @override
   String get introductionLabsTitle => 'Сравните лаборатории';
@@ -1365,7 +1365,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get reportExport => 'Сохранить HTML для просмотра и печати';
 
   @override
-  String get reportSaved => 'Отчёт сохранён';
+  String get reportSaved =>
+      'Печатная версия сохранена. Откройте её в браузере и выберите «Печать → Сохранить как PDF».';
 
   @override
   String get reportExportError =>
@@ -1763,7 +1764,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String directorySnapshot(String date) {
-    return 'Справочник проверен $date · состав врачей и услуг может меняться.';
+    return 'Врачи и исследования: проверенная подборка от $date.';
   }
 
   @override
@@ -1772,7 +1773,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get directoryEmpty =>
-      'Совпадений в текущей подборке нет. Измените поиск, город или список анализов.';
+      'Совпадений в текущей подборке нет. Измените поиск, город, сеть или список анализов.';
 
   @override
   String get directoryCoverage =>
@@ -1834,4 +1835,162 @@ class AppLocalizationsRu extends AppLocalizations {
   String directorySourceChecked(String date) {
     return 'Адрес проверен: $date';
   }
+
+  @override
+  String get directoryNetwork => 'Сеть клиник или лабораторий';
+
+  @override
+  String get directoryAllNetworks => 'Все сети';
+
+  @override
+  String directoryPublished(String date) {
+    return 'Каталог обновлён: $date';
+  }
+
+  @override
+  String get directoryPublicationNotice =>
+      'Обновление добавляет адреса филиалов. Новые врачи, услуги и цены появляются после проверки. Наличие и стоимость уточняйте на сайте учреждения.';
+
+  @override
+  String directoryDoctorChecked(String date) {
+    return 'Данные врача проверены: $date';
+  }
+
+  @override
+  String get directoryNetworkPhone =>
+      'Общий номер сети. Уточните нужный филиал при звонке.';
+
+  @override
+  String get directoryPhoneUnavailable =>
+      'Телефон не указан. Для связи откройте сайт учреждения.';
+
+  @override
+  String get analysisHistory => 'История анализов';
+
+  @override
+  String get historyRecent => 'Две последние';
+
+  @override
+  String get historyAll => 'Вся история';
+
+  @override
+  String get historyCustom => 'Выбрать даты';
+
+  @override
+  String get historyPeriod => 'Период сдач';
+
+  @override
+  String get historyRotate => 'Повернуть просмотр';
+
+  @override
+  String get historyEvents => 'График событий';
+
+  @override
+  String get historyIllnesses => 'Болезни';
+
+  @override
+  String get historyComplaints => 'Жалобы';
+
+  @override
+  String get historyNoEvents => 'За выбранный период событий нет.';
+
+  @override
+  String get historyEmpty =>
+      'За выбранный период результатов нет. Измените даты или выбор показателей.';
+
+  @override
+  String get historySearch => 'Найти и выбрать показатели';
+
+  @override
+  String get historyReset => 'Сбросить выбор';
+
+  @override
+  String get historyScrollBack => 'Прокрутить к ранним датам';
+
+  @override
+  String get historyScrollForward => 'Прокрутить к поздним датам';
+
+  @override
+  String get historyTableHint =>
+      'Нажмите название показателя для подробностей. Даты прокручиваются по горизонтали.';
+
+  @override
+  String get historyPrint => 'Печать / PDF';
+
+  @override
+  String get sharingAccess => 'Доступ по ссылке и QR';
+
+  @override
+  String get sharingOptions => 'Какие данные открыть';
+
+  @override
+  String get profileHelp => 'Как это связано с анализами';
+
+  @override
+  String get profileHelpBody =>
+      'Препараты, вес и болезни видны на графиках рядом с датами сдач.';
+
+  @override
+  String get profileOverview => 'Данные о вас для разговора с врачом.';
+
+  @override
+  String get copyAddress => 'Скопировать адрес';
+
+  @override
+  String get addressCopied => 'Адрес скопирован';
+
+  @override
+  String get copyFailed =>
+      'Не удалось скопировать. Выделите и скопируйте адрес вручную.';
+
+  @override
+  String get historyExportHint =>
+      'Сохраните печатную версию HTML. Откройте её в браузере и выберите «Печать → Сохранить как PDF».';
+
+  @override
+  String get tourShareTitle => 'Поделитесь анализами';
+
+  @override
+  String get tourShareBody =>
+      'Покажите QR-код или отправьте ссылку специалисту. Срок и состав доступа настраиваются отдельно.';
+
+  @override
+  String get tourAddAnalysis => 'Добавить анализ';
+
+  @override
+  String get historyOpen => 'Открыть историю';
+
+  @override
+  String get visitHistory => 'История сдач';
+
+  @override
+  String get linkCopied => 'Ссылка скопирована';
+
+  @override
+  String get manageSharing => 'Управление доступом в настройках';
+
+  @override
+  String get history30Days => 'Последние 30 дней';
+
+  @override
+  String get history180Days => 'Последние 180 дней';
+
+  @override
+  String get uploadReviewHint =>
+      'Перед сохранением сверьте значения с исходным бланком.';
+
+  @override
+  String get supportRecognition => 'Не распознался анализ';
+
+  @override
+  String get supportBug => 'Ошибка в приложении';
+
+  @override
+  String get supportAccess => 'Вопрос по доступу врачу';
+
+  @override
+  String get supportIdea => 'Идея или пожелание';
+
+  @override
+  String get supportOther => 'Другое';
 }

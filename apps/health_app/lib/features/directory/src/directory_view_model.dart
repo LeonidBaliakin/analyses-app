@@ -22,6 +22,7 @@ final class DirectoryViewModel extends ChangeNotifier {
     void apply(ProviderCatalog? value) {
       if (value == null || _disposed) return;
       _catalog = value;
+      _checkNetwork();
       final valid = catalog.testOptions(city).map((o) => o.id).toSet();
       _testIds.removeWhere((id) => !valid.contains(id));
       if (specialtyId != null &&
@@ -52,6 +53,7 @@ final class DirectoryViewModel extends ChangeNotifier {
   DirectoryCity city = DirectoryCity.spb;
   String labQuery = '', doctorQuery = '';
   String? specialtyId;
+  String? networkId;
   final Set<String> _testIds = {};
   Set<String> get testIds => Set.unmodifiable(_testIds);
   GeoPoint? origin;
@@ -61,14 +63,50 @@ final class DirectoryViewModel extends ChangeNotifier {
 
   List<DirectoryHit> hits({required bool doctors}) => outsideCoverage
       ? []
-      : catalog.search(
-          city: city,
-          origin: origin,
-          doctorsOnly: doctors,
-          query: doctors ? doctorQuery : labQuery,
-          testIds: doctors ? const {} : _testIds,
-          specialtyId: doctors ? specialtyId : null,
-        );
+      : catalog
+            .search(
+              city: city,
+              origin: origin,
+              doctorsOnly: doctors,
+              query: doctors ? doctorQuery : labQuery,
+              testIds: doctors ? const {} : _testIds,
+              specialtyId: doctors ? specialtyId : null,
+            )
+            .where(
+              (hit) => networkId == null || hit.branch.network == networkId,
+            )
+            .toList();
+
+  List<String> get availableNetworks =>
+      (catalog.branches
+          .where((b) => b.city == city)
+          .map((b) => b.network)
+          .toSet()
+          .toList()
+        ..sort((a, b) => networkLabel(a).compareTo(networkLabel(b))));
+
+  String networkLabel(String id) => switch (id) {
+    'invitro' => 'ИНВИТРО',
+    'helix' => 'Хеликс',
+    'smclinic' => 'СМ-Клиника',
+    'scandinavia' => 'Скандинавия',
+    'sova' => 'СОВА',
+    'medexpert' => 'МедЭксперт',
+    'csp' => 'ЦСП',
+    _ => id,
+  };
+
+  void selectNetwork(String? id) {
+    if (id != null && !availableNetworks.contains(id)) return;
+    networkId = id;
+    notifyListeners();
+  }
+
+  void _checkNetwork() {
+    if (networkId != null && !availableNetworks.contains(networkId)) {
+      networkId = null;
+    }
+  }
 
   List<DirectoryTestOption> availableTests(String language) =>
       (catalog.testOptions(city).toList()..sort(
@@ -79,6 +117,7 @@ final class DirectoryViewModel extends ChangeNotifier {
 
   void selectCity(DirectoryCity value) {
     city = value;
+    _checkNetwork();
     _testIds.clear();
     specialtyId = null;
     notifyListeners();
@@ -145,6 +184,7 @@ final class DirectoryViewModel extends ChangeNotifier {
       outsideCoverage = distance > 100000;
       if (closest != null && !outsideCoverage && city != closest.city) {
         city = closest.city;
+        _checkNetwork();
         _testIds.clear();
         specialtyId = null;
       }

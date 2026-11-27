@@ -8,6 +8,8 @@ import '../../features/directory/directory.dart';
 import '../../features/documents/documents.dart';
 import '../../features/processing/processing.dart';
 import '../../features/reports/reports.dart';
+import '../../features/results/results.dart';
+import '../../data/reports/export_report.dart';
 import '../../features/sync/sync.dart';
 import '../../features/account/account.dart';
 import '../../features/introduction/introduction.dart';
@@ -18,6 +20,7 @@ import '../../features/sharing/sharing.dart';
 import '../../features/summary/summary.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../presentation/demo_catalog.dart';
+import '../../presentation/reference_widgets.dart';
 import '../shell/app_shell.dart';
 import 'app_destination.dart';
 
@@ -36,6 +39,14 @@ GoRouter createAppRouter(
 }) {
   var introductionOpen = false;
   late final GoRouter router;
+  void closeHistory() {
+    if (router.canPop()) {
+      router.pop();
+    } else {
+      router.goNamed(AppDestination.summary.name);
+    }
+  }
+
   Future<void> confirmDirectoryLocation(BuildContext context) async {
     if (introductionOpen || !context.mounted) return;
     final path = router.routeInformationProvider.value.uri.path;
@@ -49,22 +60,100 @@ GoRouter createAppRouter(
     if (introductionOpen) return;
     introductionOpen = true;
     final origin = router.routeInformationProvider.value.uri.toString();
+    var startUpload = false;
     try {
       await showAppIntroduction(
         context,
         onComplete: settings.completeIntroduction,
+        onFinish: () => startUpload = true,
+        onOpenStep: (step) async {
+          final local = records != null && !showDemo!.value;
+          switch (step) {
+            case IntroductionStep.profile:
+              if (local) {
+                await showRecordEditor(
+                  context,
+                  records,
+                  RecordKind.profile,
+                  entry: records.profile,
+                );
+              } else {
+                await showReferenceSheet(
+                  context,
+                  AppLocalizations.of(context).profile,
+                  Text(
+                    '${catalog.profile['name']}\n${catalog.profile['dob']}\n${catalog.profile['h']}',
+                  ),
+                );
+              }
+            case IntroductionStep.reports:
+              await showAddAnalysis(
+                context,
+                showOtherRecords: false,
+                onManualEntry: local
+                    ? () => showRecordEditor(
+                        context,
+                        records,
+                        records.profile == null
+                            ? RecordKind.profile
+                            : RecordKind.result,
+                      )
+                    : null,
+              );
+            case IntroductionStep.summary:
+              if (local && reports != null) {
+                await Navigator.of(context, rootNavigator: true).push<void>(
+                  MaterialPageRoute(
+                    builder: (context) => Scaffold(
+                      body: SafeArea(
+                        child: ReportsPage(
+                          model: reports,
+                          onClose: () => Navigator.of(context).pop(),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              } else {
+                await showHistory(context, catalog, export: exportReport);
+              }
+            default:
+              break;
+          }
+        },
         onStepChanged: (step) => router.goNamed(switch (step) {
           IntroductionStep.profile => AppDestination.profile.name,
           IntroductionStep.reports => AppDestination.results.name,
           IntroductionStep.summary => AppDestination.summary.name,
           IntroductionStep.laboratories => AppDestination.labs.name,
-          IntroductionStep.specialists ||
-          IntroductionStep.appointment => AppDestination.doctors.name,
+          IntroductionStep.specialists => AppDestination.doctors.name,
+          IntroductionStep.appointment => AppDestination.sharing.name,
         }),
       );
     } finally {
       introductionOpen = false;
-      if (context.mounted) router.go(origin);
+      if (context.mounted) {
+        router.go(startUpload ? AppDestination.results.path : origin);
+        if (startUpload) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (context.mounted) {
+              showAddAnalysis(
+                context,
+                showOtherRecords: false,
+                onManualEntry: records == null
+                    ? null
+                    : () => showRecordEditor(
+                        context,
+                        records,
+                        records.profile == null
+                            ? RecordKind.profile
+                            : RecordKind.result,
+                      ),
+              );
+            }
+          });
+        }
+      }
     }
   }
 
@@ -79,8 +168,7 @@ GoRouter createAppRouter(
                   section: section,
                   reports: reports,
                   sync: sync,
-                  onOpenReport: () =>
-                      router.goNamed(AppDestination.sharing.name),
+                  onOpenReport: () => router.push('/history'),
                   onOpenSync: sync == null ? null : () => router.go('/sync'),
                   onOpenOriginals: originals == null
                       ? null
@@ -122,26 +210,29 @@ GoRouter createAppRouter(
             navigationShell: shell,
             settings: settings,
             onDirectoryOpened: () => confirmDirectoryLocation(context),
-            onAdd: records == null
-                ? null
-                : () {
-                    if (showDemo!.value) {
-                      showAddAnalysis(context);
-                      return;
-                    }
-                    if (records.profile == null) {
-                      showRecordEditor(context, records, RecordKind.profile);
-                    } else {
-                      showAddAnalysis(
-                        context,
-                        onManualEntry: () => showRecordEditor(
-                          context,
-                          records,
-                          RecordKind.result,
-                        ),
-                      );
-                    }
-                  },
+            onAdd: () {
+              if (records == null || showDemo!.value) {
+                showAddAnalysis(
+                  context,
+                  onAddEvent: () => showDemoActivity(context, catalog),
+                  onDiary: () =>
+                      showDemoActivity(context, catalog, diary: true),
+                );
+                return;
+              }
+              if (records.profile == null) {
+                showRecordEditor(context, records, RecordKind.profile);
+              } else {
+                showAddAnalysis(
+                  context,
+                  onAddEvent: () => showRecordActivity(context, records),
+                  onDiary: () =>
+                      showRecordActivity(context, records, diary: true),
+                  onManualEntry: () =>
+                      showRecordEditor(context, records, RecordKind.result),
+                );
+              }
+            },
             modeControl: records == null
                 ? null
                 : ValueListenableBuilder<bool>(
@@ -172,8 +263,9 @@ GoRouter createAppRouter(
                   RecordsSection.summary,
                   SummaryPage(
                     catalog: catalog,
-                    onShowDoctor: () =>
-                        context.goNamed(AppDestination.sharing.name),
+                    onOpenHistory: () => context.push('/history'),
+                    onAddEvent: () => showDemoActivity(context, catalog),
+                    onStartIntroduction: () => startIntroduction(context),
                   ),
                 ),
               ),
@@ -188,7 +280,11 @@ GoRouter createAppRouter(
                   RecordsSection.results,
                   DocumentsPage(
                     catalog: catalog,
-                    onAdd: () => showAddAnalysis(context),
+                    onAddEvent: () => showDemoActivity(context, catalog),
+                    onDiary: () =>
+                        showDemoActivity(context, catalog, diary: true),
+                    onAdd: () =>
+                        showAddAnalysis(context, showOtherRecords: false),
                   ),
                 ),
               ),
@@ -224,8 +320,15 @@ GoRouter createAppRouter(
               GoRoute(
                 path: AppDestination.profile.path,
                 name: AppDestination.profile.name,
-                builder: (context, state) =>
-                    page(RecordsSection.profile, ProfilePage(catalog: catalog)),
+                builder: (context, state) => page(
+                  RecordsSection.profile,
+                  ProfilePage(
+                    catalog: catalog,
+                    onAddEvent: () => showDemoActivity(context, catalog),
+                    onDiary: () =>
+                        showDemoActivity(context, catalog, diary: true),
+                  ),
+                ),
               ),
             ],
           ),
@@ -234,14 +337,11 @@ GoRouter createAppRouter(
               GoRoute(
                 path: AppDestination.sharing.path,
                 name: AppDestination.sharing.name,
-                builder: (context, state) => reports == null
-                    ? SharingPage(catalog: catalog)
-                    : ValueListenableBuilder<bool>(
-                        valueListenable: showDemo!,
-                        builder: (context, example, _) => example
-                            ? SharingPage(catalog: catalog)
-                            : ReportsPage(model: reports),
-                      ),
+                builder: (context, state) => SharingPage(
+                  catalog: catalog,
+                  onOpenSettings: () =>
+                      router.goNamed(AppDestination.settings.name),
+                ),
               ),
             ],
           ),
@@ -253,6 +353,8 @@ GoRouter createAppRouter(
                 builder: (context, state) => SettingsPage(
                   viewModel: settings,
                   onStartIntroduction: () => startIntroduction(context),
+                  onOpenSharing: () =>
+                      router.goNamed(AppDestination.sharing.name),
                   onOpenAccount: account == null
                       ? null
                       : () => router.go('/account'),
@@ -262,6 +364,29 @@ GoRouter createAppRouter(
             ],
           ),
         ],
+      ),
+      GoRoute(
+        path: '/history',
+        builder: (context, state) => Scaffold(
+          body: SafeArea(
+            child: reports == null
+                ? DemoHistoryPage(
+                    catalog: catalog,
+                    export: exportReport,
+                    onClose: closeHistory,
+                  )
+                : ValueListenableBuilder<bool>(
+                    valueListenable: showDemo!,
+                    builder: (context, example, _) => example
+                        ? DemoHistoryPage(
+                            catalog: catalog,
+                            export: exportReport,
+                            onClose: closeHistory,
+                          )
+                        : ReportsPage(model: reports, onClose: closeHistory),
+                  ),
+          ),
+        ),
       ),
       GoRoute(
         path: AppDestination.documents.path,

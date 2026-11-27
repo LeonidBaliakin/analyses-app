@@ -71,34 +71,69 @@ Json result() => {
 };
 
 void main() {
-  test('v2 cannot claim completeness with missing pages or mismatched source totals', () {
-    final c = config('synthetic')..['parserVersion'] = '2';
-    c['cataloguePages'] = [
-      {'city': 'spb', 'url': 'https://example.org/catalogue'},
-    ];
-    Json valid() {
-      final input = result()..['parserVersion'] = '2';
-      (input['catalogueStatus'] as List).single.addAll({
-        'coverage': 'complete',
-        'coverageMethod': 'source_total',
-        'expectedItems': 1,
-        'pendingPages': 0,
-      });
-      return input;
-    }
+  for (final version in ['2', '3']) {
+    test(
+      'v$version cannot claim completeness with missing pages or mismatched source totals',
+      () {
+        final c = config('synthetic')..['parserVersion'] = version;
+        c['cataloguePages'] = [
+          {'city': 'spb', 'url': 'https://example.org/catalogue'},
+        ];
+        Json valid() {
+          final input = result()..['parserVersion'] = version;
+          (input['catalogueStatus'] as List).single.addAll({
+            'coverage': 'complete',
+            'coverageMethod': 'source_total',
+            'expectedItems': 1,
+            'pendingPages': 0,
+          });
+          return input;
+        }
 
-    expect(mergeImport(seed(), c, valid(), 'job')['version'], 'job');
-    for (final change in <void Function(Json)>[
-      (j) => (j['catalogueStatus'] as List).clear(),
-      (j) => (j['catalogueStatus'] as List).single['expectedItems'] = 2,
-      (j) => (j['catalogueStatus'] as List).single['pendingPages'] = 1,
-      (j) => (j['catalogueStatus'] as List).single['failures'] = [
-        {'error': 'timeout'},
-      ],
+        expect(mergeImport(seed(), c, valid(), 'job')['version'], 'job');
+        for (final change in <void Function(Json)>[
+          (j) => (j['catalogueStatus'] as List).clear(),
+          (j) => (j['catalogueStatus'] as List).single['expectedItems'] = 2,
+          (j) => (j['catalogueStatus'] as List).single['pendingPages'] = 1,
+          (j) => (j['catalogueStatus'] as List).single['failures'] = [
+            {'error': 'timeout'},
+          ],
+        ]) {
+          final input = valid();
+          change(input);
+          expect(
+            () => mergeImport(seed(), c, input, 'job'),
+            throwsFormatException,
+          );
+        }
+      },
+    );
+  }
+  test('raw price contract preserves tariffs without publishing verified practices', () {
+    final input = result();
+    final item = Json.from((input['items'] as List).single as Json);
+    input['items'] = <Json>[item];
+    item.addAll({
+      'kind': 'service',
+      'sourcePrice': 'от 3 200 руб.',
+      'sourcePriceStatus': 'observed',
+      'sourcePriceDetails': 'Цена (руб.): от 3 200; В рассрочку*: от 320',
+      'listingSource': 'https://example.org/catalogue',
+    });
+    final merged = mergeImport(seed(), config('synthetic'), input, 'price-job');
+    expect(merged['doctors'], seed()['doctors']);
+    expect(merged['tests'], isEmpty);
+    for (final invalid in <Json>[
+      {'sourcePriceStatus': 'observed', 'sourcePrice': ''},
+      {'sourcePriceStatus': 'observed', 'sourcePrice': null},
+      {'sourcePriceStatus': 'not_observed', 'sourcePrice': '0'},
+      {'sourcePriceStatus': 'unknown', 'sourcePrice': '320'},
     ]) {
-      final input = valid();
-      change(input);
-      expect(() => mergeImport(seed(), c, input, 'job'), throwsFormatException);
+      item.addAll(invalid);
+      expect(
+        () => mergeImport(seed(), config('synthetic'), input, 'invalid'),
+        throwsFormatException,
+      );
     }
   });
   test('reviewed branch identities collapse imported duplicates and keep doctor references', () {
@@ -363,6 +398,66 @@ void main() {
     payload['items'] = [];
     expect((await complete(job, payload)).statusCode, 409);
   });
+  test(
+    'v3 prices survive registry restart and replay without duplicate offers',
+    () async {
+      final source = config('synthetic')
+        ..addAll({
+          'parserVersion': '3',
+          'cataloguePages': [
+            {'city': 'spb', 'url': 'https://example.org/catalogue'},
+          ],
+        });
+      await api.migrate([source, config('other')], seed());
+      final job = await claim();
+      expect((job['config'] as Json)['parserVersion'], '3');
+      final payload = result()..['parserVersion'] = '3';
+      payload['items'] = <Json>[
+        {
+          ...((payload['items'] as List).single as Json),
+          'kind': 'service',
+          'sourcePrice': 'от 3 200 руб.',
+          'sourcePriceStatus': 'observed',
+          'sourcePriceDetails': 'В рассрочку*: от 320',
+          'listingSource': 'https://example.org/catalogue',
+        },
+      ];
+      (payload['catalogueStatus'] as List).single.addAll({
+        'coverage': 'complete',
+        'coverageMethod': 'linked_sections',
+        'pendingPages': 0,
+      });
+      expect((await complete(job, payload)).statusCode, 200);
+      expect((await complete(job, payload)).statusCode, 200);
+      api = service();
+      await api.migrate([source, config('other')], seed());
+      final stored = await decode(
+        await call(
+          'internal/sources/synthetic/items',
+          method: 'GET',
+          token: admin,
+        ),
+      );
+      expect(stored['items'], payload['items']);
+      expect(
+        (await db.execute('SELECT count(*) FROM directory_outbox')).single[0],
+        1,
+      );
+      final catalog = await decode(
+        await call('v1/directory/catalog', method: 'GET'),
+      );
+      expect(catalog['doctors'], seed()['doctors']);
+      expect(catalog['tests'], isEmpty);
+      expect(
+        (await call(
+          'internal/sources/synthetic/items',
+          method: 'GET',
+          token: 'synthetic-unauthorized',
+        )).statusCode,
+        401,
+      );
+    },
+  );
   test('expired leases survive restart and fence out an old worker', () async {
     final first = await claim();
     await db.execute(

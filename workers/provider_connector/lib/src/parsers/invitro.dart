@@ -118,7 +118,7 @@ final class InvitroParser extends NetworkParser {
           'sourceCode': v['code'] ?? v['article'],
           'sourceCategory': v['sourceCategory'],
           'sourceCollection': p.uri.path,
-          'sourcePrice': v['price']?.toString(),
+          ...priceFields(v['price']?.toString()),
           'currency': 'RUB',
           'sourceAdditionalServices': v['additional_services'],
           'sourceDeadline': v['deadline'],

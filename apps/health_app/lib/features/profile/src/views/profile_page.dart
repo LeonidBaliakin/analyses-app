@@ -8,30 +8,30 @@ import '../../../../presentation/reference_labels.dart';
 import '../../../../presentation/reference_widgets.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({required this.catalog, super.key});
+  const ProfilePage({
+    required this.catalog,
+    this.onAddEvent,
+    this.onDiary,
+    super.key,
+  });
   final DemoCatalog catalog;
+  final VoidCallback? onAddEvent, onDiary;
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context), p = OrangePalette.of(context);
     return DemoPage(
       children: [
-        const RecordActions(),
         PaperCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SectionHeading(l.profile),
               const SizedBox(height: 5),
-              Text(l.profileIntro, style: TextStyle(color: p.secondary)),
+              Text(l.profileOverview, style: TextStyle(color: p.secondary)),
               const SizedBox(height: 16),
               Text(
                 l.profileComplete,
                 style: const TextStyle(fontWeight: FontWeight.w800),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                l.profileCompleteHint,
-                style: TextStyle(color: p.muted, fontSize: 12),
               ),
               const SizedBox(height: 8),
               ClipRRect(
@@ -43,13 +43,19 @@ class ProfilePage extends StatelessWidget {
                   backgroundColor: p.accentSoft,
                 ),
               ),
+              ExpansionTile(
+                tilePadding: EdgeInsets.zero,
+                title: Text(l.profileHelp),
+                children: [Text(l.profileHelpBody)],
+              ),
             ],
           ),
         ),
         const SizedBox(height: 14),
+        RecordActions(onAddEvent: onAddEvent, onDiary: onDiary),
         AdaptiveTiles(
           children: [
-            for (var i = 0; i < catalog.profileCards.length; i++)
+            for (final i in [1, 0, 2, 3, 4, 5, 6, 7, 8, 9])
               ColorTile(
                 title: profileTitle(context, i),
                 subtitle: profileSubtitle(context, i),

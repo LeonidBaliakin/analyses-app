@@ -1,5 +1,6 @@
 import 'package:design_system/design_system.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter/services.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../presentation/reference_widgets.dart';
@@ -8,19 +9,36 @@ import '../device_access/device_access.dart';
 Future<void> showAddAnalysis(
   BuildContext context, {
   VoidCallback? onManualEntry,
+  bool showOtherRecords = true,
+  VoidCallback? onAddEvent,
+  VoidCallback? onDiary,
 }) {
   final model = DeviceAccessScope.of(context);
   return showReferenceSheet(
     context,
     AppLocalizations.of(context).addAnalysis,
-    _CaptureOptions(model: model, onManualEntry: onManualEntry),
+    _CaptureOptions(
+      model: model,
+      onManualEntry: onManualEntry,
+      showOtherRecords: showOtherRecords,
+      onAddEvent: onAddEvent,
+      onDiary: onDiary,
+    ),
   );
 }
 
 class _CaptureOptions extends StatelessWidget {
-  const _CaptureOptions({required this.model, this.onManualEntry});
+  const _CaptureOptions({
+    required this.model,
+    this.onManualEntry,
+    required this.showOtherRecords,
+    this.onAddEvent,
+    this.onDiary,
+  });
   final DeviceAccessViewModel model;
   final VoidCallback? onManualEntry;
+  final bool showOtherRecords;
+  final VoidCallback? onAddEvent, onDiary;
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
@@ -33,7 +51,6 @@ class _CaptureOptions extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const RecordActions(),
         if (onManualEntry != null)
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
@@ -67,7 +84,6 @@ class _CaptureOptions extends StatelessWidget {
             l.addFilesHint,
             AttachmentSource.files,
           ),
-          (Icons.mail_outline, l.addMailTitle, l.demoEmail, null),
         ])
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
@@ -81,9 +97,7 @@ class _CaptureOptions extends StatelessWidget {
                       (option.$4 == AttachmentSource.camera &&
                           !model.supportsCamera)
                   ? null
-                  : () => option.$4 == null
-                        ? showUnavailable(context, option.$2)
-                        : model.pick(option.$4!),
+                  : () => model.pick(option.$4),
               child: Row(
                 children: [
                   Container(
@@ -126,7 +140,53 @@ class _CaptureOptions extends StatelessWidget {
           LinearProgressIndicator(semanticsLabel: l.deviceAccessBusy),
         AttachmentSelectionStatus(model: model),
         const SizedBox(height: 10),
-        Text(l.previewOnly, style: TextStyle(color: p.muted, fontSize: 12)),
+        Text(
+          l.uploadReviewHint,
+          style: TextStyle(color: p.secondary, fontSize: 12),
+        ),
+        ExpansionTile(
+          tilePadding: EdgeInsets.zero,
+          title: Text(l.forwardMail),
+          children: [
+            Row(
+              children: [
+                const Expanded(
+                  child: SelectableText('a.ivanov@in.orange-health.ru'),
+                ),
+                IconButton(
+                  tooltip: l.copyAddress,
+                  icon: const Icon(Icons.copy),
+                  onPressed: () async {
+                    try {
+                      await Clipboard.setData(
+                        const ClipboardData(
+                          text: 'a.ivanov@in.orange-health.ru',
+                        ),
+                      );
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(l.addressCopied)),
+                        );
+                      }
+                    } on Exception {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text(l.copyFailed)));
+                      }
+                    }
+                  },
+                ),
+              ],
+            ),
+            Text(
+              l.demoEmail,
+              style: TextStyle(color: p.secondary, fontSize: 12),
+            ),
+          ],
+        ),
+        if (showOtherRecords)
+          RecordActions(onAddEvent: onAddEvent, onDiary: onDiary),
       ],
     );
   }

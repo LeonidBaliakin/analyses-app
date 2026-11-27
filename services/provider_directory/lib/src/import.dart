@@ -208,9 +208,19 @@ Json mergeImport(Json previous, Json config, Json input, String job) {
             .isAfter(DateTime.parse(input['fetchedAt'] as String))) {
       throw const FormatException('invalid_item');
     }
+    if (i.containsKey('sourcePriceStatus')) {
+      final status = i['sourcePriceStatus'];
+      final price = i['sourcePrice'];
+      if (!['observed', 'not_observed'].contains(status) ||
+          (status == 'observed' &&
+              (price is! String || price.trim().isEmpty)) ||
+          (status == 'not_observed' && i.containsKey('sourcePrice'))) {
+        throw const FormatException('invalid_source_price');
+      }
+    }
   }
   final statuses = (input['catalogueStatus'] as List).cast<Json>();
-  if (config['parserVersion'] == '2') {
+  if (config['parserVersion'] != '1') {
     final expected = {
       for (final p in config['cataloguePages'] as List)
         '${p['city']}:${p['url']}',
@@ -230,7 +240,7 @@ Json mergeImport(Json previous, Json config, Json input, String job) {
         (status['items'] as int) < 0) {
       throw const FormatException('invalid_catalogue_status');
     }
-    if (config['parserVersion'] == '2') {
+    if (config['parserVersion'] != '1') {
       final total = status['expectedItems'];
       final complete = status['coverage'] == 'complete';
       final rows = status['observedRows'];

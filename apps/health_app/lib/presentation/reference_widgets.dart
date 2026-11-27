@@ -90,54 +90,57 @@ Future<void> showReferenceSheet(
   String title,
   Widget child, {
   bool orange = false,
+  bool fullscreen = false,
 }) => showDialog<void>(
   context: context,
   builder: (context) => Dialog(
-    insetPadding: const EdgeInsets.all(14),
+    insetPadding: fullscreen ? EdgeInsets.zero : const EdgeInsets.all(14),
     clipBehavior: Clip.antiAlias,
     child: ConstrainedBox(
       constraints: BoxConstraints(
-        maxWidth: 850,
-        maxHeight: MediaQuery.sizeOf(context).height * .88,
+        maxWidth: fullscreen ? MediaQuery.sizeOf(context).width : 850,
+        maxHeight: MediaQuery.sizeOf(context).height * (fullscreen ? 1 : .88),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: orange ? OrangePalette.orangeGradient : null,
-              color: orange ? null : OrangePalette.of(context).accentSoft,
-            ),
-            padding: const EdgeInsets.fromLTRB(16, 5, 4, 5),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: orange ? Colors.white : null,
+      child: SafeArea(
+        child: Column(
+          mainAxisSize: fullscreen ? MainAxisSize.max : MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                gradient: orange ? OrangePalette.orangeGradient : null,
+                color: orange ? null : OrangePalette.of(context).accentSoft,
+              ),
+              padding: const EdgeInsets.fromLTRB(16, 5, 4, 5),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: orange ? Colors.white : null,
+                      ),
                     ),
                   ),
-                ),
-                IconButton(
-                  tooltip: AppLocalizations.of(context).close,
-                  icon: const Icon(Icons.close),
-                  color: orange ? Colors.white : null,
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ],
+                  IconButton(
+                    tooltip: AppLocalizations.of(context).close,
+                    icon: const Icon(Icons.close),
+                    color: orange ? Colors.white : null,
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Flexible(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(18),
-              child: child,
+            Flexible(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(18),
+                child: child,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     ),
   ),
@@ -151,7 +154,8 @@ Future<void> showUnavailable(BuildContext context, String title) =>
     );
 
 class RecordActions extends StatelessWidget {
-  const RecordActions({super.key});
+  const RecordActions({this.onAddEvent, this.onDiary, super.key});
+  final VoidCallback? onAddEvent, onDiary;
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context), p = OrangePalette.of(context);
@@ -161,7 +165,10 @@ class RecordActions extends StatelessWidget {
         spacing: 8,
         runSpacing: 4,
         children: [
-          for (final text in [l.addEvent, l.measurementDiary])
+          for (final (text, action) in [
+            (l.addEvent, onAddEvent),
+            (l.measurementDiary, onDiary),
+          ])
             OutlinedButton(
               style: OutlinedButton.styleFrom(
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -173,7 +180,7 @@ class RecordActions extends StatelessWidget {
                     : const Color(0xFFFFBE88),
                 side: const BorderSide(color: Color(0xFFEAB387)),
               ),
-              onPressed: () => showUnavailable(context, text),
+              onPressed: action ?? () => showUnavailable(context, text),
               child: Text(text),
             ),
         ],

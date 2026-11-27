@@ -33,7 +33,7 @@ final class SovaParser extends NetworkParser {
             e.querySelector('.staff-card__column-2 > .staff-card__text'),
           ),
           'sourceLocation': text(e.querySelector('.staff-card__clinic-change')),
-          'sourcePrice': text(e.querySelector('.staff-cart_price-wrap')),
+          ...priceFields(text(e.querySelector('.staff-cart_price-wrap'))),
           'availabilityStatus': 'unverified',
           'source': p.url(a.attributes['href']!).toString(),
           'listingSource': p.uri.toString(),

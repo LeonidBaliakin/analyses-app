@@ -49,6 +49,22 @@ Future<void> restore(
 }
 
 void main() {
+  testWidgets(
+    'tour actions return to the same step without completing the tour',
+    (tester) async {
+      await launch(tester, introductionCompleted: false);
+      await press(tester, const Key('introduction-try'));
+      await tester.tap(find.byTooltip('Close').last);
+      await tester.pumpAndSettle();
+      expect(find.text('Step 1 of 6'), findsOneWidget);
+      await press(tester, next);
+      await press(tester, const Key('introduction-try'));
+      expect(find.text('File or PDF'), findsOneWidget);
+      await tester.tap(find.byTooltip('Close').last);
+      await tester.pumpAndSettle();
+      expect(find.text('Step 2 of 6'), findsOneWidget);
+    },
+  );
   testWidgets('first launch opens the six step app introduction', (
     tester,
   ) async {
@@ -97,7 +113,7 @@ void main() {
         '/',
         '/labs',
         '/doctors',
-        '/doctors',
+        '/sharing',
       ].indexed) {
         await press(tester, next);
         expect(route(tester), path);
@@ -105,7 +121,15 @@ void main() {
       }
       await press(tester, next);
       expect(find.byKey(introduction), findsNothing);
-      expect(route(tester), '/settings');
+      expect(route(tester), '/results');
+      expect(find.text('File or PDF'), findsOneWidget);
+      await tester.tap(find.byTooltip('Close').last);
+      await tester.pumpAndSettle();
+      final router =
+          tester.widget<MaterialApp>(find.byType(MaterialApp)).routerConfig!
+              as GoRouter;
+      router.go('/settings');
+      await tester.pumpAndSettle();
       expect(find.text('Keep this draft'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
@@ -130,7 +154,11 @@ void main() {
           await press(tester, skip);
         }
         expect(storage.value.introductionCompleted, isTrue);
-        expect(route(tester), '/');
+        expect(route(tester), complete ? '/results' : '/');
+        if (complete) {
+          await tester.tap(find.byTooltip('Close').last);
+          await tester.pumpAndSettle();
+        }
         await settings.setLanguage(AppLanguage.ru);
         await settings.setThemeMode(AppThemeMode.dark);
         await restore(tester, storage);

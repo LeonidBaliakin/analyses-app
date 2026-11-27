@@ -11,7 +11,7 @@
       "allowedOrigins": [
         "https://www.invitro.ru"
       ],
-      "parserVersion": "2",
+      "parserVersion": "3",
       "enabled": true,
       "intervalSeconds": 86400,
       "requestDelayMs": 2000,
@@ -63,7 +63,7 @@
       "allowedOrigins": [
         "https://helix.ru"
       ],
-      "parserVersion": "2",
+      "parserVersion": "3",
       "enabled": true,
       "intervalSeconds": 86400,
       "requestDelayMs": 2000,
@@ -106,7 +106,7 @@
       "allowedOrigins": [
         "https://www.smclinic-spb.ru"
       ],
-      "parserVersion": "2",
+      "parserVersion": "3",
       "enabled": true,
       "intervalSeconds": 86400,
       "requestDelayMs": 2000,
@@ -125,6 +125,10 @@
         {
           "city": "spb",
           "url": "https://www.smclinic-spb.ru/diagnostika-analizi/laboratoria"
+        },
+        {
+          "city": "spb",
+          "url": "https://www.smclinic-spb.ru/uslugi/tseny-i-stoimost-uslug"
         }
       ]
     },
@@ -137,7 +141,7 @@
       "allowedOrigins": [
         "https://www.avaclinic.ru"
       ],
-      "parserVersion": "2",
+      "parserVersion": "3",
       "enabled": true,
       "intervalSeconds": 86400,
       "requestDelayMs": 2000,
@@ -168,7 +172,7 @@
       "allowedOrigins": [
         "https://voronezh.sovamed.ru"
       ],
-      "parserVersion": "2",
+      "parserVersion": "3",
       "enabled": true,
       "intervalSeconds": 86400,
       "requestDelayMs": 2000,
@@ -199,7 +203,7 @@
       "allowedOrigins": [
         "https://www.med-exp.ru"
       ],
-      "parserVersion": "2",
+      "parserVersion": "3",
       "enabled": true,
       "intervalSeconds": 86400,
       "requestDelayMs": 2000,
@@ -230,7 +234,7 @@
       "allowedOrigins": [
         "https://csp-vrn.ru"
       ],
-      "parserVersion": "2",
+      "parserVersion": "3",
       "enabled": true,
       "intervalSeconds": 86400,
       "requestDelayMs": 2000,
@@ -249,6 +253,10 @@
         {
           "city": "voronezh",
           "url": "https://csp-vrn.ru/analysis/"
+        },
+        {
+          "city": "voronezh",
+          "url": "https://csp-vrn.ru/vaccine/"
         }
       ]
     }

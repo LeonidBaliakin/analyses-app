@@ -12,11 +12,14 @@ import '../view_models/summary_view_model.dart';
 class SummaryPage extends StatefulWidget {
   const SummaryPage({
     required this.catalog,
-    required this.onShowDoctor,
+    required this.onOpenHistory,
+    this.onStartIntroduction,
+    this.onAddEvent,
     super.key,
   });
   final DemoCatalog catalog;
-  final VoidCallback onShowDoctor;
+  final VoidCallback onOpenHistory;
+  final VoidCallback? onStartIntroduction, onAddEvent;
   @override
   State<SummaryPage> createState() => _SummaryPageState();
 }
@@ -41,8 +44,8 @@ class _SummaryPageState extends State<SummaryPage> {
           LayoutBuilder(
             builder: (context, c) {
               final cards = [
-                _LatestVisit(catalog: d, onShowDoctor: widget.onShowDoctor),
-                _VisitEvents(catalog: d),
+                _LatestVisit(catalog: d),
+                _VisitEvents(catalog: d, onAddEvent: widget.onAddEvent),
               ];
               if (c.maxWidth < 300 ||
                   MediaQuery.textScalerOf(context).scale(14) > 19) {
@@ -63,6 +66,35 @@ class _SummaryPageState extends State<SummaryPage> {
             },
           ),
           const SizedBox(height: 16),
+          const SizedBox(height: 20),
+          PaperCard(
+            padding: const EdgeInsets.all(16),
+            child: InkWell(
+              onTap: widget.onOpenHistory,
+              child: Row(
+                children: [
+                  Icon(Icons.table_chart_outlined, color: p.accent, size: 30),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l.analysisHistory,
+                          style: const TextStyle(fontWeight: FontWeight.w800),
+                        ),
+                        Text(
+                          l.historySub,
+                          style: TextStyle(color: p.muted, fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right),
+                ],
+              ),
+            ),
+          ),
           SectionHeading(l.systemsHeading),
           const SizedBox(height: 8),
           TextField(
@@ -74,58 +106,10 @@ class _SummaryPageState extends State<SummaryPage> {
             ),
           ),
           const SizedBox(height: 12),
-          PaperCard(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 4,
-                  alignment: WrapAlignment.spaceBetween,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    Text(
-                      l.shownSystems(model.visible.length, d.systems.length),
-                      style: TextStyle(fontSize: 12, color: p.secondary),
-                    ),
-                    FilledButton.icon(
-                      style: FilledButton.styleFrom(
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      onPressed: () => _chooseSystems(context),
-                      icon: const Icon(Icons.filter_list, size: 15),
-                      label: Text(l.chooseSystems),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 7,
-                  runSpacing: 7,
-                  children: [
-                    for (var i = 0; i < d.sections.length; i++)
-                      _SectionChip(
-                        label: sectionTitle(context, i),
-                        count:
-                            '${d.sections[i].where(model.visible.contains).length}/${d.sections[i].length}',
-                        color: OrangePalette.systemColors[i],
-                        selected: d.sections[i].any(model.visible.contains),
-                        onTap: () => model.toggleSection(d.sections[i]),
-                      ),
-                  ],
-                ),
-              ],
-            ),
-          ),
           Align(
             alignment: Alignment.centerLeft,
             child: TextButton(
-              onPressed: () => showReferenceSheet(
-                context,
-                l.showHints,
-                Text(l.sourceDisclaimer),
-              ),
+              onPressed: widget.onStartIntroduction,
               child: Text(l.showHints),
             ),
           ),
@@ -180,35 +164,6 @@ class _SummaryPageState extends State<SummaryPage> {
               padding: const EdgeInsets.all(24),
               child: Text(l.noMatches),
             ),
-          const SizedBox(height: 20),
-          PaperCard(
-            padding: const EdgeInsets.all(16),
-            child: InkWell(
-              onTap: () => showHistory(context, d),
-              child: Row(
-                children: [
-                  Icon(Icons.table_chart_outlined, color: p.accent, size: 30),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l.fullHistory,
-                          style: const TextStyle(fontWeight: FontWeight.w800),
-                        ),
-                        Text(
-                          l.historySub,
-                          style: TextStyle(color: p.muted, fontSize: 12),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Icon(Icons.chevron_right),
-                ],
-              ),
-            ),
-          ),
           const SizedBox(height: 18),
           Text(
             l.sourceDisclaimer,
@@ -232,47 +187,11 @@ class _SummaryPageState extends State<SummaryPage> {
                 .contains(model.query),
       )
       .toList();
-  Future<void> _chooseSystems(BuildContext context) {
-    final l = AppLocalizations.of(context),
-        selected = Set<int>.of(model.visible);
-    return showReferenceSheet(
-      context,
-      l.chooseSystems,
-      StatefulBuilder(
-        builder: (context, setState) => Column(
-          children: [
-            for (var i = 0; i < widget.catalog.systems.length; i++)
-              CheckboxListTile(
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-                title: Text(systemTitle(context, i)),
-                value: selected.contains(i),
-                onChanged: (value) => setState(() {
-                  if (value == true) {
-                    selected.add(i);
-                  } else {
-                    selected.remove(i);
-                  }
-                }),
-              ),
-            FilledButton(
-              onPressed: () {
-                model.selectSystems(selected);
-                Navigator.of(context).pop();
-              },
-              child: Text(l.chooseSystems),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 class _LatestVisit extends StatelessWidget {
-  const _LatestVisit({required this.catalog, required this.onShowDoctor});
+  const _LatestVisit({required this.catalog});
   final DemoCatalog catalog;
-  final VoidCallback onShowDoctor;
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context), p = OrangePalette.of(context);
@@ -356,16 +275,6 @@ class _LatestVisit extends StatelessWidget {
                 ),
               ),
             ),
-          const SizedBox(height: 2),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: const Color(0xFF6944BE),
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            ),
-            onPressed: onShowDoctor,
-            child: Text(l.showDoctor, style: const TextStyle(fontSize: 11.5)),
-          ),
         ],
       ),
     );
@@ -425,8 +334,9 @@ class _VisitHeader extends StatelessWidget {
 }
 
 class _VisitEvents extends StatelessWidget {
-  const _VisitEvents({required this.catalog});
+  const _VisitEvents({required this.catalog, this.onAddEvent});
   final DemoCatalog catalog;
+  final VoidCallback? onAddEvent;
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context), p = OrangePalette.of(context);
@@ -494,20 +404,7 @@ class _VisitEvents extends StatelessWidget {
               padding: EdgeInsets.zero,
               alignment: Alignment.centerLeft,
             ),
-            onPressed: () => showReferenceSheet(
-              context,
-              l.visitEvents,
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  for (final text in catalog.eventLabels)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 14),
-                      child: Text(text),
-                    ),
-                ],
-              ),
-            ),
+            onPressed: () => showDemoActivity(context, catalog),
             child: Text(l.moreEvents),
           ),
           OutlinedButton(
@@ -519,75 +416,13 @@ class _VisitEvents extends StatelessWidget {
               side: const BorderSide(color: Color(0xFFEAB387)),
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             ),
-            onPressed: () => showUnavailable(context, l.addEvent),
+            onPressed: onAddEvent ?? () => showDemoActivity(context, catalog),
             child: Text(l.addEvent, style: const TextStyle(fontSize: 11.5)),
           ),
         ],
       ),
     );
   }
-}
-
-class _SectionChip extends StatelessWidget {
-  const _SectionChip({
-    required this.label,
-    required this.count,
-    required this.color,
-    required this.selected,
-    required this.onTap,
-  });
-  final String label, count;
-  final Color color;
-  final bool selected;
-  final VoidCallback onTap;
-  @override
-  Widget build(BuildContext context) => Semantics(
-    button: true,
-    selected: selected,
-    child: InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
-        decoration: BoxDecoration(
-          color: selected ? color.withValues(alpha: .055) : Colors.transparent,
-          border: Border.all(
-            color: color.withValues(alpha: selected ? 0.45 : 0.15),
-          ),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 8,
-              height: 8,
-              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-            ),
-            const SizedBox(width: 5),
-            Flexible(
-              child: Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ),
-            const SizedBox(width: 4),
-            Text(
-              count,
-              style: TextStyle(
-                fontSize: 10,
-                color: OrangePalette.of(context).muted,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
 }
 
 class _SystemTile extends StatelessWidget {

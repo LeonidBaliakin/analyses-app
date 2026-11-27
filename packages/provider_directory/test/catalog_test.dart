@@ -60,6 +60,19 @@ Map<String, dynamic> fixture() => {
 
 void main() {
   test(
+    'publication date never replaces review dates in refreshed snapshots',
+    () {
+      final json = fixture()..['publishedAt'] = '2026-11-27T10:30:00Z';
+      (json['branches'] as List).first['phoneScope'] = 'network';
+      final catalog = ProviderCatalog.fromJson(json);
+      expect(catalog.publishedAt, DateTime.utc(2026, 11, 27, 10, 30));
+      expect(catalog.checkedAt, DateTime(2026, 11, 26));
+      expect(catalog.branches.first.checkedAt, DateTime(2026, 11, 26));
+      expect(catalog.branches.first.phoneScope, 'network');
+      expect(ProviderCatalog.fromJson(fixture()).publishedAt, isNull);
+    },
+  );
+  test(
     'verified specialties and initials find all practices of the same doctor',
     () {
       final catalog = bundledDirectory();

@@ -5,7 +5,10 @@ import 'package:medical_domain/medical_domain.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../presentation/record_fields.dart';
 import 'reports_view_model.dart';
-import 'report_document.dart';
+import '../../history/history.dart';
+import '../../../presentation/reference_widgets.dart';
+import 'local_history.dart';
+import '../../records/records.dart';
 
 class ReportsSummary extends StatelessWidget {
   const ReportsSummary({required this.model, required this.onOpen, super.key});
@@ -57,151 +60,150 @@ class ReportsSummary extends StatelessWidget {
 }
 
 class ReportsPage extends StatefulWidget {
-  const ReportsPage({required this.model, super.key});
+  const ReportsPage({required this.model, this.onClose, super.key});
   final ReportsViewModel model;
+  final VoidCallback? onClose;
   @override
   State<ReportsPage> createState() => _ReportsPageState();
 }
 
 class _ReportsPageState extends State<ReportsPage> {
-  late final start = TextEditingController(
-        text: widget.model.period.start.toString(),
-      ),
-      end = TextEditingController(text: widget.model.period.end.toString());
+  HistoryViewModel? _history;
+  HealthReport get _all => HealthReport.build(
+    widget.model.records.entries,
+    RecordsViewModel.profileId,
+    ReportPeriod(CalendarDate(1, 1, 1), CalendarDate(9999, 12, 31)),
+  );
+  @override
+  void initState() {
+    super.initState();
+    widget.model.records.addListener(_update);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final data = localHistoryData(_all, context);
+    if (_history == null) {
+      _history = HistoryViewModel(data, today: widget.model.records.today);
+    } else {
+      _history!.updateData(data);
+    }
+  }
+
+  void _update() {
+    if (mounted) _history?.updateData(localHistoryData(_all, context));
+  }
+
   @override
   void dispose() {
-    start.dispose();
-    end.dispose();
+    widget.model.records.removeListener(_update);
+    _history?.dispose();
     super.dispose();
+  }
+
+  Future<void> _export() async {
+    final history = _history!,
+        m = widget.model,
+        l = AppLocalizations.of(context);
+    if (history.invalidPeriod) return;
+    m.setPeriod(history.period.start.toString(), history.period.end.toString());
+    final html = historyDocument(
+      history,
+      l,
+      profile: m.records.profile == null
+          ? ''
+          : recordFields(
+              l,
+              m.records.profile!.record,
+            ).map((f) => '${f.$1}: ${f.$2}').join(' · '),
+    );
+    if (await m.saveHtml(html, snapshotPeriod: history.period) && mounted) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(l.reportSaved)));
+    }
+  }
+
+  void _details(HistoryRow row) {
+    final l = AppLocalizations.of(context);
+    final series = _all.series.firstWhere(
+      (s) => s.results.any((r) => r.id == row.id),
+    );
+    showReferenceSheet(
+      context,
+      row.name,
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (final result in series.results.where(
+            (r) => _history!.period.includes(r.date),
+          ))
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (final field in recordFields(l, result))
+                    if (field.$2.isNotEmpty) Text('${field.$1}: ${field.$2}'),
+                  if (result.documentSource != null)
+                    Text(
+                      '${l.reportOriginal}: ${result.documentSource!.fields['evidence'] ?? ''}',
+                    ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: widget.model,
     builder: (context, _) {
-      final m = widget.model, l = AppLocalizations.of(context), r = m.report;
-      Widget section(String title, Iterable<HealthRecord> records) => Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      final m = widget.model, l = AppLocalizations.of(context);
+      return Column(
         children: [
-          const SizedBox(height: 24),
-          Text(title, style: Theme.of(context).textTheme.titleLarge),
-          for (final record in records)
+          if (m.error != null)
             Padding(
-              padding: const EdgeInsets.only(top: 12),
-              child: PaperCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    for (final f in recordFields(l, record))
-                      if (f.$2.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 6),
-                          child: Text('${f.$1}: ${f.$2}'),
-                        ),
-                    if (record is LabResult && record.documentSource != null)
-                      Text(
-                        '${l.reportOriginal}: ${record.documentSource!.fields['evidence'] ?? ''}',
-                      ),
-                  ],
-                ),
-              ),
+              padding: const EdgeInsets.all(8),
+              child: Text(l.reportExportError),
             ),
-        ],
-      );
-      return UnobstructedPane(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(16, 20, 16, 120),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 1000),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    l.reportTitle,
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(l.reportScope),
-                  const SizedBox(height: 16),
-                  Wrap(
-                    spacing: 16,
-                    runSpacing: 16,
-                    children: [
-                      for (final pair in [
-                        (start, l.reportFrom, 'report-from'),
-                        (end, l.reportTo, 'report-to'),
-                      ])
-                        SizedBox(
-                          width: 260,
-                          child: TextField(
-                            key: Key(pair.$3),
-                            controller: pair.$1,
-                            onChanged: (_) => m.setPeriod(start.text, end.text),
-                            decoration: InputDecoration(
-                              labelText: pair.$2,
-                              hintText: 'YYYY-MM-DD',
-                              errorText: m.invalid ? l.reportInvalid : null,
+          if (!m.canExport)
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: Text(l.reportSaveUnavailable),
+            ),
+          Expanded(
+            child: AnalysisHistoryView(
+              model: _history!,
+              onClose: widget.onClose,
+              onCopy: m.copy == null
+                  ? null
+                  : () async {
+                      if (await m.copyText(
+                            historyText(
+                              _history!,
+                              l,
+                              profile: m.records.profile == null
+                                  ? ''
+                                  : recordFields(l, m.records.profile!.record)
+                                        .map((f) => '${f.$1}: ${f.$2}')
+                                        .join(' · '),
                             ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  FilledButton.icon(
-                    key: const Key('export-local-report'),
-                    onPressed: !m.canExport || m.invalid || m.exporting
-                        ? null
-                        : () async {
-                            final snapshot = m.report;
-                            final html = reportDocument(snapshot, l);
-                            if (await m.saveHtml(
-                                  html,
-                                  snapshotPeriod: snapshot.period,
-                                ) &&
-                                context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(l.reportSaved)),
-                              );
-                            }
-                          },
-                    icon: const Icon(Icons.download_outlined),
-                    label: Text(l.reportExport),
-                  ),
-                  if (!m.canExport) Text(l.reportSaveUnavailable),
-                  if (m.copy != null)
-                    TextButton.icon(
-                      key: const Key('copy-local-report'),
-                      onPressed: m.invalid || m.exporting
-                          ? null
-                          : () async {
-                              if (await m.copyText(reportText(m.report, l)) &&
-                                  context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(l.reportCopied)),
-                                );
-                              }
-                            },
-                      icon: const Icon(Icons.copy),
-                      label: Text(l.reportCopy),
-                    ),
-                  if (m.error != null)
-                    Text(
-                      m.error == 'copy'
-                          ? l.reportCopyError
-                          : l.reportExportError,
-                    ),
-                  const SizedBox(height: 12),
-                  Text(l.reportNoInterpretation),
-                  if (r.profile != null) section(l.profile, [r.profile!]),
-                  section(l.localResults, r.results),
-                  section(l.localMedications, r.medications),
-                  section(l.localMeasurements, r.measurements),
-                ],
-              ),
+                          ) &&
+                          context.mounted) {
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text(l.reportCopied)));
+                      }
+                    },
+              onOpenRow: _details,
+              onExport: m.canExport ? _export : null,
+              exporting: m.exporting,
             ),
           ),
-        ),
+        ],
       );
     },
   );

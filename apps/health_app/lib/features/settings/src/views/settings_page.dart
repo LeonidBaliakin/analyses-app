@@ -13,18 +13,20 @@ class SettingsPage extends StatefulWidget {
     required this.onClose,
     required this.onStartIntroduction,
     this.onOpenAccount,
+    this.onOpenSharing,
     super.key,
   });
   final SettingsViewModel viewModel;
   final VoidCallback onClose;
   final VoidCallback onStartIntroduction;
-  final VoidCallback? onOpenAccount;
+  final VoidCallback? onOpenAccount, onOpenSharing;
   @override
   State<SettingsPage> createState() => _SettingsPageState();
 }
 
 class _SettingsPageState extends State<SettingsPage> {
   final support = TextEditingController();
+  int supportTopic = 0;
   @override
   void dispose() {
     support.dispose();
@@ -38,7 +40,7 @@ class _SettingsPageState extends State<SettingsPage> {
         model = widget.viewModel;
     return ListenableBuilder(
       listenable: model,
-      builder: (context, _) => DemoPage(
+      builder: (context, _) => ReferencePage(
         children: [
           PaperCard(
             child: Column(
@@ -166,15 +168,19 @@ class _SettingsPageState extends State<SettingsPage> {
           const SizedBox(height: 14),
           for (final title in [l.accessToMine, l.sharedWithMe]) ...[
             PaperCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: ExpansionTile(
+                tilePadding: EdgeInsets.zero,
+                title: Text(title),
                 children: [
-                  SectionHeading(title),
-                  const SizedBox(height: 8),
                   Text(
                     l.noSharedAccess,
-                    style: TextStyle(color: p.muted, fontSize: 12),
+                    style: TextStyle(color: p.secondary, fontSize: 12),
                   ),
+                  if (widget.onOpenSharing != null && title == l.accessToMine)
+                    TextButton(
+                      onPressed: widget.onOpenSharing,
+                      child: Text(l.sharingTitle),
+                    ),
                 ],
               ),
             ),
@@ -209,6 +215,25 @@ class _SettingsPageState extends State<SettingsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SectionHeading(l.support),
+                const SizedBox(height: 12),
+                AppSelect<int>(
+                  label: l.supportSubject,
+                  value: supportTopic,
+                  options: [
+                    for (var i = 0; i < 5; i++)
+                      AppSelectOption(
+                        value: i,
+                        label: [
+                          l.supportRecognition,
+                          l.supportBug,
+                          l.supportAccess,
+                          l.supportIdea,
+                          l.supportOther,
+                        ][i],
+                      ),
+                  ],
+                  onChanged: (value) => setState(() => supportTopic = value),
+                ),
                 const SizedBox(height: 6),
                 Text(
                   l.supportHint,

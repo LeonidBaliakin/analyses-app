@@ -4,6 +4,29 @@ import 'package:provider_directory/provider_directory.dart';
 
 void main() {
   test(
+    'network filter applies to clinics and doctors and follows city coverage',
+    () {
+      final model = DirectoryViewModel(catalog: bundledDirectory());
+      addTearDown(model.dispose);
+      model.selectNetwork('smclinic');
+      expect(model.hits(doctors: false), hasLength(4));
+      expect(model.hits(doctors: true), isNotEmpty);
+      expect(
+        model.hits(doctors: true).every((h) => h.branch.network == 'smclinic'),
+        isTrue,
+      );
+      model.selectNetwork('unknown');
+      expect(model.networkId, 'smclinic');
+      model.setOrigin('Synthetic Voronezh location', GeoPoint(51.67, 39.2));
+      expect(model.city, DirectoryCity.voronezh);
+      expect(model.networkId, isNull);
+      model.selectNetwork('csp');
+      expect(model.hits(doctors: false), hasLength(5));
+      model.selectCity(DirectoryCity.spb);
+      expect(model.networkId, isNull);
+    },
+  );
+  test(
     'specialty IDs filter doctors, retain aliases and clear on a city change',
     () {
       final model = DirectoryViewModel(catalog: bundledDirectory());

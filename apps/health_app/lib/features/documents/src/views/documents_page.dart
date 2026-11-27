@@ -7,97 +7,42 @@ import '../../../../presentation/reference_widgets.dart';
 import '../../../results/results.dart';
 
 class DocumentsPage extends StatelessWidget {
-  const DocumentsPage({required this.catalog, required this.onAdd, super.key});
+  const DocumentsPage({
+    required this.catalog,
+    required this.onAdd,
+    this.onAddEvent,
+    this.onDiary,
+    super.key,
+  });
   final DemoCatalog catalog;
+  final VoidCallback? onAddEvent, onDiary;
   final VoidCallback onAdd;
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context), p = OrangePalette.of(context);
     return DemoPage(
       children: [
-        const RecordActions(),
         PaperCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SectionHeading(l.uploadTitle),
-              const SizedBox(height: 5),
-              Text(l.uploadIntro, style: TextStyle(color: p.secondary)),
-              const SizedBox(height: 14),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: p.paper,
-                  border: Border.all(color: p.line, width: 2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  children: [
-                    Text(l.uploadDrop, style: TextStyle(color: p.secondary)),
-                    const SizedBox(height: 14),
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 8,
-                      runSpacing: 0,
-                      children: [
-                        FilledButton(
-                          onPressed: onAdd,
-                          child: Text(l.takePhoto),
-                        ),
-                        OutlinedButton(
-                          onPressed: onAdd,
-                          child: Text(l.fromGallery),
-                        ),
-                        OutlinedButton(
-                          onPressed: onAdd,
-                          child: Text(l.filePdf),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 18),
-                    Text(
-                      l.uploadPermission,
-                      style: TextStyle(fontSize: 12, color: p.secondary),
-                    ),
-                  ],
-                ),
+              Wrap(
+                spacing: 12,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  SectionHeading(l.results),
+                  FilledButton.icon(
+                    onPressed: onAdd,
+                    icon: const Icon(Icons.add),
+                    label: Text(l.addAnalysis),
+                  ),
+                ],
               ),
               const SizedBox(height: 12),
-              for (final pair in [
-                (l.photoScreenshot, l.photoAdvice),
-                (l.filePdf, l.pdfAdvice),
-                (
-                  l.forwardMail,
-                  '${l.mailAdvice} a.ivanov@in.orange-health.ru · ${l.demoEmail}',
-                ),
-              ])
-                Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: p.line),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        pair.$1,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 12,
-                        ),
-                      ),
-                      Text(
-                        pair.$2,
-                        style: TextStyle(fontSize: 12, color: p.secondary),
-                      ),
-                    ],
-                  ),
-                ),
-              const SizedBox(height: 14),
+              RecordActions(onAddEvent: onAddEvent, onDiary: onDiary),
+              SectionHeading(l.visitHistory),
+              const SizedBox(height: 8),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: DataTable(

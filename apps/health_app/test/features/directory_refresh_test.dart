@@ -18,11 +18,13 @@ void main() {
       final selected = model.availableTests('ru').first.id;
       model.toggleTest(selected);
       model.setQuery('Хеликс', doctors: false);
+      model.selectNetwork('helix');
       model.setOrigin('Synthetic origin', GeoPoint(51.7, 39.2));
       await model.refresh();
       expect(model.city, DirectoryCity.voronezh);
       expect(model.testIds, {selected});
       expect(model.labQuery, 'Хеликс');
+      expect(model.networkId, 'helix');
       expect(model.originLabel, 'Synthetic origin');
       expect(model.refreshFailed, isFalse);
     },

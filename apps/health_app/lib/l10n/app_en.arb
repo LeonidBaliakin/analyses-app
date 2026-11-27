@@ -376,11 +376,11 @@
     }
   },
   "introductionProfileTitle": "Complete your profile",
-  "introductionProfileBody": "Start with age, sex and height in Profile. Add medications, symptoms and other events as needed to keep your health history together.",
+  "introductionProfileBody": "Enter your date of birth and height. You can add other details later.",
   "introductionReportsTitle": "Add your first test report",
   "introductionReportsBody": "The Tests section contains your results. The plus button opens the available ways to add data. Review recognised values against the original report before confirming them.",
   "introductionSummaryTitle": "Explore your results",
-  "introductionSummaryBody": "Summary brings results together. In the example you can open a body system, select a marker and view its history. Show your doctor opens the section for sharing reports.",
+  "introductionSummaryBody": "The summary shows your latest visit. History compares tests by date, with indicator selection and events.",
   "introductionLabsTitle": "Compare laboratories",
   "introductionLabsBody": "In Find a lab, search for tests or providers in Saint Petersburg and Voronezh. Choose an address or device location to see the nearest branches. Confirm availability of network-listed tests at the branch.",
   "introductionDoctorsTitle": "Find a specialist",
@@ -486,7 +486,7 @@
   "reportNoInterpretation": "Original values and references are preserved without conversion.",
   "reportPrevious": "Previous compatible result in period",
   "reportExport": "Save HTML for viewing and printing",
-  "reportSaved": "Report saved",
+  "reportSaved": "Printable version saved. Open it in a browser and choose Print → Save as PDF.",
   "reportExportError": "Could not save the report. Try again.",
   "reportOriginal": "Original document fragment",
   "syncTitle": "Record synchronization",
@@ -687,7 +687,7 @@
       }
     }
   },
-  "directorySnapshot": "Directory verified on {date} · doctors and services may change.",
+  "directorySnapshot": "Doctors and tests: reviewed selection from {date}.",
   "@directorySnapshot": {
     "placeholders": {
       "date": {
@@ -696,7 +696,7 @@
     }
   },
   "directoryOutsideCoverage": "This location is outside the pilot search area. Choose an address in Saint Petersburg or Voronezh.",
-  "directoryEmpty": "No matches in this directory snapshot. Change your search, city or selected tests.",
+  "directoryEmpty": "No matches in this directory selection. Change your search, city, network or selected tests.",
   "directoryCoverage": "A selection of providers in Saint Petersburg and Voronezh. The provider confirms your booking.",
   "directoryMapAttribution": "Geodata © OpenStreetMap contributors",
   "directoryUnknownDistance": "Distance unavailable",
@@ -733,5 +733,67 @@
         "type": "String"
       }
     }
-  }
+  },
+  "directoryNetwork": "Clinic or laboratory network",
+  "directoryAllNetworks": "All networks",
+  "directoryPublished": "Directory updated: {date}",
+  "directoryPublicationNotice": "Updates add branch addresses. New doctors, services and prices appear after review. Check availability and prices on the provider’s website.",
+  "directoryDoctorChecked": "Doctor details checked: {date}",
+  "directoryNetworkPhone": "Network contact number. Specify the branch when calling.",
+  "directoryPhoneUnavailable": "No phone number listed. Open the provider’s website to contact them.",
+  "@directoryPublished": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@directoryDoctorChecked": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "analysisHistory": "Analysis history",
+  "historyRecent": "Latest two visits",
+  "historyAll": "All history",
+  "historyCustom": "Choose dates",
+  "historyPeriod": "Visit period",
+  "historyRotate": "Rotate view",
+  "historyEvents": "Event timeline",
+  "historyIllnesses": "Illnesses",
+  "historyComplaints": "Symptoms",
+  "historyNoEvents": "No events in this period.",
+  "historyEmpty": "No results in this period. Change the dates or selected indicators.",
+  "historySearch": "Find and select indicators",
+  "historyReset": "Reset selection",
+  "historyScrollBack": "Scroll to earlier dates",
+  "historyScrollForward": "Scroll to later dates",
+  "historyTableHint": "Select an indicator for details. Scroll dates horizontally.",
+  "historyPrint": "Print / PDF",
+  "sharingAccess": "Link and QR access",
+  "sharingOptions": "Choose what to share",
+  "profileHelp": "How this relates to your tests",
+  "profileHelpBody": "Medications, weight and illnesses appear on timelines beside test dates.",
+  "profileOverview": "Information about you for your conversation with a doctor.",
+  "copyAddress": "Copy address",
+  "addressCopied": "Address copied",
+  "copyFailed": "Could not copy. Select and copy the address manually.",
+  "historyExportHint": "Save the printable HTML version. Open it in a browser and choose Print → Save as PDF.",
+  "tourShareTitle": "Share your tests",
+  "tourShareBody": "Show a QR code or send a link to a specialist. Access duration and shared data are set separately.",
+  "tourAddAnalysis": "Add a test",
+  "historyOpen": "Open history",
+  "visitHistory": "Test visits",
+  "linkCopied": "Link copied",
+  "manageSharing": "Manage access in settings",
+  "history30Days": "Last 30 days",
+  "history180Days": "Last 180 days",
+  "uploadReviewHint": "Check values against the original report before saving.",
+  "supportRecognition": "Report recognition",
+  "supportBug": "Application error",
+  "supportAccess": "Doctor access",
+  "supportIdea": "Idea or suggestion",
+  "supportOther": "Other"
 }

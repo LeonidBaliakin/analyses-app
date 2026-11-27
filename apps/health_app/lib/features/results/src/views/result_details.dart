@@ -2,11 +2,14 @@ import 'dart:math' as math;
 
 import 'package:design_system/design_system.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:medical_domain/medical_domain.dart';
 
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../../../presentation/demo_catalog.dart';
 import '../../../../presentation/reference_labels.dart';
 import '../../../../presentation/reference_widgets.dart';
+import '../../../history/history.dart';
+import '../demo_history.dart';
 
 Color _statusColor(BuildContext context, String status) {
   final p = OrangePalette.of(context);
@@ -76,6 +79,7 @@ Future<void> showComparison(BuildContext context, DemoCatalog catalog) {
           .toList(),
       compare: true,
     ),
+    fullscreen: true,
   );
 }
 
@@ -336,43 +340,137 @@ class _HistoryPainter extends CustomPainter {
       oldDelegate.points != points || oldDelegate.palette != palette;
 }
 
-Future<void> showHistory(BuildContext context, DemoCatalog catalog) {
-  final l = AppLocalizations.of(context), p = OrangePalette.of(context);
-  return showReferenceSheet(
-    context,
-    l.fullHistory,
-    SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: DataTable(
-        headingRowColor: WidgetStatePropertyAll(p.paper),
-        columnSpacing: 18,
-        columns: [
-          DataColumn(label: Text(l.indicator)),
-          for (final date in catalog.dates) DataColumn(label: Text(date)),
-        ],
-        rows: [
-          for (final r in catalog.results)
-            DataRow(
-              onSelectChanged: (_) => showResultDetails(context, catalog, r),
-              cells: [
-                DataCell(
-                  SizedBox(
-                    width: 180,
-                    child: Text(r.name, style: const TextStyle(fontSize: 12)),
-                  ),
-                ),
-                for (var i = 0; i < catalog.dates.length; i++)
-                  DataCell(
-                    Text(
-                      r.points.where((p) => p.visit == i).firstOrNull?.raw ??
-                          '—',
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                  ),
-              ],
-            ),
-        ],
+Future<void> showHistory(
+  BuildContext context,
+  DemoCatalog catalog, {
+  Future<bool> Function(String, String)? export,
+}) => Navigator.of(context, rootNavigator: true).push<void>(
+  MaterialPageRoute(
+    fullscreenDialog: true,
+    builder: (context) => Scaffold(
+      body: SafeArea(
+        child: DemoHistoryPage(
+          catalog: catalog,
+          export: export,
+          onClose: () => Navigator.of(context).pop(),
+        ),
       ),
     ),
+  ),
+);
+
+class DemoHistoryPage extends StatefulWidget {
+  const DemoHistoryPage({
+    required this.catalog,
+    this.export,
+    this.onClose,
+    super.key,
+  });
+  final DemoCatalog catalog;
+  final Future<bool> Function(String, String)? export;
+  final VoidCallback? onClose;
+  @override
+  State<DemoHistoryPage> createState() => _DemoHistoryPageState();
+}
+
+class _DemoHistoryPageState extends State<DemoHistoryPage> {
+  HistoryViewModel? _model;
+  bool _exporting = false;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final now = DateTime.now();
+    if (_model == null) {
+      _model = HistoryViewModel(
+        demoHistoryData(context, widget.catalog),
+        today: CalendarDate(now.year, now.month, now.day),
+      );
+    } else {
+      _model!.updateData(demoHistoryData(context, widget.catalog));
+    }
+  }
+
+  @override
+  void dispose() {
+    _model?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _export() async {
+    if (_exporting) return;
+    setState(() => _exporting = true);
+    final l = AppLocalizations.of(context);
+    try {
+      final saved = await widget.export!(
+        'analysis-history.html',
+        historyDocument(_model!, l),
+      );
+      if (saved && mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(l.historyExportHint)));
+      }
+    } on Exception {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(l.reportExportError)));
+      }
+    } finally {
+      if (mounted) setState(() => _exporting = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => AnalysisHistoryView(
+    model: _model!,
+    onClose: widget.onClose,
+    onOpenRow: (row) => showResultDetails(
+      context,
+      widget.catalog,
+      widget.catalog.result(row.id),
+    ),
+    onExport: widget.export == null ? null : _export,
+    exporting: _exporting,
+  );
+}
+
+Future<void> showDemoActivity(
+  BuildContext context,
+  DemoCatalog catalog, {
+  bool diary = false,
+}) {
+  final l = AppLocalizations.of(context);
+  final events =
+      demoHistoryData(context, catalog).events
+          .where((e) => !diary || e.kind == HistoryEventKind.measurement)
+          .toList()
+        ..sort((a, b) => b.start.compareTo(a.start));
+  return showReferenceSheet(
+    context,
+    diary ? l.measurementDiary : l.visitEvents,
+    Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(l.demoTitle),
+        for (var i = 0; i < events.length; i++) ...[
+          if (i == 0 ||
+              events[i - 1].start.month != events[i].start.month ||
+              events[i - 1].start.year != events[i].start.year)
+            Padding(
+              padding: const EdgeInsets.only(top: 16, bottom: 8),
+              child: Text(
+                '${events[i].start.year}-${events[i].start.month.toString().padLeft(2, '0')}',
+                style: const TextStyle(fontWeight: FontWeight.w800),
+              ),
+            ),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(events[i].name),
+            subtitle: Text('${events[i].start} · ${events[i].detail}'),
+          ),
+        ],
+        if (events.isEmpty) Text(l.historyNoEvents),
+      ],
+    ),
+    fullscreen: true,
   );
 }

@@ -8,14 +8,20 @@ Future<void> showAppIntroduction(
   BuildContext context, {
   required Future<bool> Function() onComplete,
   required ValueChanged<IntroductionStep> onStepChanged,
+  VoidCallback? onFinish,
+  Future<void> Function(IntroductionStep)? onOpenStep,
 }) async {
   final model = IntroductionViewModel(complete: onComplete);
   try {
     final closed = showDialog<void>(
       context: context,
       barrierDismissible: false,
-      builder: (context) =>
-          _IntroductionDialog(model: model, onStepChanged: onStepChanged),
+      builder: (context) => _IntroductionDialog(
+        model: model,
+        onStepChanged: onStepChanged,
+        onFinish: onFinish,
+        onOpenStep: onOpenStep,
+      ),
     );
     onStepChanged(model.step);
     await closed;
@@ -25,9 +31,16 @@ Future<void> showAppIntroduction(
 }
 
 class _IntroductionDialog extends StatelessWidget {
-  const _IntroductionDialog({required this.model, required this.onStepChanged});
+  const _IntroductionDialog({
+    required this.model,
+    required this.onStepChanged,
+    this.onFinish,
+    this.onOpenStep,
+  });
 
   final IntroductionViewModel model;
+  final VoidCallback? onFinish;
+  final Future<void> Function(IntroductionStep)? onOpenStep;
   final ValueChanged<IntroductionStep> onStepChanged;
 
   @override
@@ -62,14 +75,15 @@ class _IntroductionDialog extends StatelessWidget {
           Icons.medical_services_outlined,
         ),
         IntroductionStep.appointment => (
-          l.introductionAppointmentTitle,
-          l.introductionAppointmentBody,
-          Icons.event_available_outlined,
+          l.tourShareTitle,
+          l.tourShareBody,
+          Icons.qr_code_2,
         ),
       };
-      Future<void> finish() async {
+      Future<void> finish({bool add = false}) async {
         if (await model.finish() && context.mounted) {
           Navigator.of(context).pop();
+          if (add) onFinish?.call();
         }
       }
 
@@ -141,9 +155,21 @@ class _IntroductionDialog extends StatelessWidget {
             ),
           ),
           actions: [
+            if (onOpenStep != null && model.index < 3)
+              TextButton(
+                key: const Key('introduction-try'),
+                onPressed: model.isSaving
+                    ? null
+                    : () => onOpenStep!(model.step),
+                child: Text(switch (model.step) {
+                  IntroductionStep.profile => l.localEditProfile,
+                  IntroductionStep.reports => l.addAnalysis,
+                  _ => l.historyOpen,
+                }),
+              ),
             TextButton(
               key: const Key('introduction-skip'),
-              onPressed: model.isSaving ? null : finish,
+              onPressed: model.isSaving ? null : () => finish(),
               child: Text(l.introductionSkip),
             ),
             if (model.index > 0)
@@ -163,14 +189,14 @@ class _IntroductionDialog extends StatelessWidget {
                   ? null
                   : () {
                       if (model.isLast) {
-                        finish();
+                        finish(add: true);
                       } else {
                         model.next();
                         onStepChanged(model.step);
                       }
                     },
               child: Text(
-                model.isLast ? l.introductionDone : l.introductionNext,
+                model.isLast ? l.tourAddAnalysis : l.introductionNext,
               ),
             ),
           ],

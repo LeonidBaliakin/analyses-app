@@ -64,7 +64,7 @@ final class HelixParser extends NetworkParser {
               'name': clean((v['name'] ?? v['title']) as String),
               'sourceCode': code,
               'availabilityStatus': 'city_network_offer',
-              if (v['price'] != null) 'sourcePrice': v['price'].toString(),
+              ...priceFields(v['price']?.toString()),
               'currency': 'RUB',
               'source': p
                   .url(

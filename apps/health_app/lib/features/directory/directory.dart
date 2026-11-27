@@ -91,20 +91,54 @@ class _DirectoryPageState extends State<DirectoryPage> {
               children: [
                 SectionHeading(widget.doctors ? l.nearbyDoctors : l.labsTitle),
                 const SizedBox(height: 12),
-                AppSelect<DirectoryCity>(
-                  label: l.directoryCity,
-                  value: model.city,
-                  options: [
-                    AppSelectOption(
-                      value: DirectoryCity.spb,
-                      label: l.directorySpb,
-                    ),
-                    AppSelectOption(
-                      value: DirectoryCity.voronezh,
-                      label: l.directoryVoronezh,
-                    ),
-                  ],
-                  onChanged: model.selectCity,
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final city = AppSelect<DirectoryCity>(
+                      label: l.directoryCity,
+                      value: model.city,
+                      options: [
+                        AppSelectOption(
+                          value: DirectoryCity.spb,
+                          label: l.directorySpb,
+                        ),
+                        AppSelectOption(
+                          value: DirectoryCity.voronezh,
+                          label: l.directoryVoronezh,
+                        ),
+                      ],
+                      onChanged: model.selectCity,
+                    );
+                    final network = AppSelect<String?>(
+                      key: const Key('directory-network'),
+                      label: l.directoryNetwork,
+                      value: model.networkId,
+                      options: [
+                        AppSelectOption(
+                          value: null,
+                          label: l.directoryAllNetworks,
+                        ),
+                        for (final id in model.availableNetworks)
+                          AppSelectOption(
+                            value: id,
+                            label: model.networkLabel(id),
+                          ),
+                      ],
+                      onChanged: model.selectNetwork,
+                    );
+                    if (constraints.maxWidth >= 600) {
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(child: city),
+                          const SizedBox(width: 12),
+                          Expanded(child: network),
+                        ],
+                      );
+                    }
+                    return Column(
+                      children: [city, const SizedBox(height: 12), network],
+                    );
+                  },
                 ),
                 const SizedBox(height: 12),
                 ListenableBuilder(
@@ -242,7 +276,11 @@ class _DirectoryPageState extends State<DirectoryPage> {
                                 .availableTests(l.localeName)
                                 .where((t) => model.testIds.contains(t.id)))
                           InputChip(
-                            label: Text(test.label.inLanguage(l.localeName)),
+                            label: Text(
+                              test.label.inLanguage(l.localeName),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                             onDeleted: () => model.toggleTest(test.id),
                           ),
                       ],
@@ -266,11 +304,27 @@ class _DirectoryPageState extends State<DirectoryPage> {
               children: [
                 SectionHeading(l.directoryResults(hits.length)),
                 const SizedBox(height: 8),
+                if (model.catalog.publishedAt case final publishedAt?) ...[
+                  Text(
+                    l.directoryPublished(
+                      DateFormat.yMMMd(l.localeName)
+                          .format(publishedAt.toLocal()),
+                    ),
+                    key: const Key('directory-publication-date'),
+                    style: TextStyle(color: p.secondary, fontSize: 13),
+                  ),
+                  const SizedBox(height: 4),
+                ],
                 Text(
                   l.directorySnapshot(
                     DateFormat.yMMMd(l.localeName)
                         .format(model.catalog.checkedAt),
                   ),
+                  style: TextStyle(color: p.secondary, fontSize: 13),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  l.directoryPublicationNotice,
                   style: TextStyle(color: p.secondary, fontSize: 13),
                 ),
                 if (model.refreshCatalog != null) ...[
@@ -326,6 +380,8 @@ class _ProviderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context), p = OrangePalette.of(context);
     final branch = hit.branch, doctor = hit.doctor;
+    final phone = branch.phone.replaceAll(RegExp(r'[^+0-9]'), '');
+    final hasPhone = phone.contains(RegExp(r'[0-9]'));
     final distance = hit.distanceMeters;
     final distanceLabel = distance == null
         ? l.directoryUnknownDistance
@@ -358,6 +414,13 @@ class _ProviderCard extends StatelessWidget {
               style: TextStyle(color: p.accent, fontWeight: FontWeight.w600),
             ),
             Text(branch.name, style: TextStyle(color: p.secondary)),
+            Text(
+              l.directoryDoctorChecked(
+                DateFormat.yMMMd(l.localeName)
+                    .format(doctor.checkedAt ?? model.catalog.checkedAt),
+              ),
+              style: TextStyle(color: p.secondary, fontSize: 12),
+            ),
           ],
           const SizedBox(height: 8),
           SelectableText(branch.address),
@@ -447,16 +510,12 @@ class _ProviderCard extends StatelessWidget {
                 icon: const Icon(Icons.open_in_new, size: 18),
                 label: Text(l.bookWebsite),
               ),
-              OutlinedButton.icon(
-                onPressed: () => model.open(
-                  Uri(
-                    scheme: 'tel',
-                    path: branch.phone.replaceAll(RegExp(r'[^+0-9]'), ''),
-                  ),
+              if (hasPhone)
+                OutlinedButton.icon(
+                  onPressed: () => model.open(Uri(scheme: 'tel', path: phone)),
+                  icon: const Icon(Icons.phone_outlined, size: 18),
+                  label: Text(branch.phone),
                 ),
-                icon: const Icon(Icons.phone_outlined, size: 18),
-                label: Text(branch.phone),
-              ),
               if (doctor == null && branch.testsUrl != null)
                 TextButton(
                   onPressed: () => model.open(branch.testsUrl!),
@@ -470,7 +529,11 @@ class _ProviderCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            l.directoryContactNotice,
+            !hasPhone
+                ? l.directoryPhoneUnavailable
+                : branch.phoneScope == 'network'
+                ? l.directoryNetworkPhone
+                : l.directoryContactNotice,
             style: TextStyle(color: p.secondary, fontSize: 12),
           ),
           SelectableText(

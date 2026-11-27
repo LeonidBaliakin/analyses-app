@@ -65,7 +65,7 @@ final class SourcePage {
 
 abstract class NetworkParser {
   String get source;
-  String get version => '2';
+  String get version => '3';
   List<Json> branches(SourcePage page);
 
   /// Raw source facts. A listing/category never becomes a confirmed physician
@@ -93,7 +93,12 @@ Json mergeObservation(Json? previous, Json incoming) {
     'listingSource',
     'name',
     'sourcePrice',
+    'sourcePriceStatus',
     'sourcePriceDetails',
+    'currency',
+    'sourceCode',
+    'sourceCenters',
+    'sourceAdditionalServices',
     'sourceSpecialty',
     'sourceLocation',
     'sourceCategory',
@@ -116,7 +121,7 @@ Json mergeObservation(Json? previous, Json incoming) {
     ...((incoming[plural] as List?) ?? []).cast<String>(),
     if (incoming[singular] case final String v when v.isNotEmpty) v,
   }.toList()..sort();
-  return {
+  final merged = {
     ...previous,
     ...incoming,
     'listingSources': values('listingSources', 'listingSource'),
@@ -124,6 +129,28 @@ Json mergeObservation(Json? previous, Json incoming) {
     'sourceLocations': values('sourceLocations', 'sourceLocation'),
     'sourceCategories': values('sourceCategories', 'sourceCategory'),
     'sourceListings': sourceListings.values.toList(),
+  };
+  // An unpriced placement must not give a previous placement's price new
+  // provenance. Earlier offers remain intact in sourceListings.
+  if (incoming.containsKey('sourcePriceStatus')) {
+    for (final field in ['sourcePrice', 'sourcePriceDetails']) {
+      if (!incoming.containsKey(field)) merged.remove(field);
+    }
+  }
+  return merged;
+}
+
+/// Preserve source wording, never turn a missing tariff into zero. Details may
+/// contain labelled instalments/discounts; they are not the primary price.
+Json priceFields(String? value, {String? details}) {
+  final price = clean(value);
+  final observed =
+      RegExp(r'\d').hasMatch(price) || price.toLowerCase() == 'бесплатно';
+  final description = clean(details ?? (observed ? null : price));
+  return {
+    'sourcePriceStatus': observed ? 'observed' : 'not_observed',
+    if (observed) 'sourcePrice': price,
+    if (description.isNotEmpty) 'sourcePriceDetails': description,
   };
 }
 
@@ -172,10 +199,10 @@ List<Json> rows(
         'kind': kind,
         'availabilityStatus': 'unverified',
         'name': text(e.querySelector(nameSelector)),
-        if (priceSelector != null &&
-            text(e.querySelector(priceSelector)).isNotEmpty)
-          'sourcePrice': text(e.querySelector(priceSelector)),
+        if (priceSelector != null)
+          ...priceFields(text(e.querySelector(priceSelector))),
         'source': page.uri.toString(),
+        'listingSource': page.uri.toString(),
         'checkedAt': page.date,
       },
 ];

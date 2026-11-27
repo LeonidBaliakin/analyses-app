@@ -42,12 +42,28 @@ final class CspParser extends NetworkParser {
           .take(1)
           .map((v) => {...v, 'sourceSpecialty': text(e.querySelector('p'))}),
     ...links(p, '.link_carddoctor[href], .link_doctor[href]', 'doctor'),
-    ...links(
-      p,
-      '.link_cardservice[href*="/analysis/"]',
-      'test',
-      nameSelector: 'h4',
-    ),
+    // Both appointment and lab categories publish tariffs in the service
+    // card itself. Its URL identifies the offer, not a matched doctor's name.
+    for (final card in p.document.querySelectorAll(
+      '.link_cardservice[href*="/analysis/"], '
+      '.link_cardservice[href*="/uzspecialist/"], '
+      '.link_cardservice[href*="/vaccine/"]',
+    ))
+      ...links(
+            p,
+            '.link_cardservice[href="${card.attributes['href']}"]',
+            p.url(card.attributes['href']!).path.startsWith('/analysis/')
+                ? 'test'
+                : 'service',
+            nameSelector: 'h4',
+          )
+          .take(1)
+          .map(
+            (v) => {
+              ...v,
+              ...priceFields(text(card.querySelector('.txt_priceh'))),
+            },
+          ),
     ...rows(p, 'tr', 'td:first-child'),
   ];
   @override

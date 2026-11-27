@@ -45,6 +45,7 @@ final class ProviderBranch {
       name = j['name'] as String,
       address = j['address'] as String,
       phone = j['phone'] as String,
+      phoneScope = j['phoneScope'] as String?,
       website = _web(j['website']),
       source = _web(j['source']),
       checkedAt = DateTime.parse(j['checkedAt'] as String),
@@ -60,6 +61,7 @@ final class ProviderBranch {
       testsUrl = j['testsUrl'] == null ? null : _web(j['testsUrl']);
 
   final String id, network, name, address, phone;
+  final String? phoneScope;
   final DirectoryCity city;
   final Uri website, source;
   final Uri? coordinateSource, testsUrl;
@@ -152,6 +154,9 @@ final class ProviderCatalog {
        specialties = specialties ?? bundledMedicalSpecialties,
        version = j['version'] as String,
        checkedAt = DateTime.parse(j['checkedAt'] as String),
+       publishedAt = j['publishedAt'] == null
+           ? null
+           : DateTime.parse(j['publishedAt'] as String),
        branches = List.unmodifiable(
          (j['branches'] as List).map(
            (v) => ProviderBranch.fromJson(v as Map<String, dynamic>),
@@ -205,6 +210,9 @@ final class ProviderCatalog {
   final LaboratoryTestRelease terminology;
   final MedicalSpecialtyRelease specialties;
   final DateTime checkedAt;
+
+  /// Publication of the aggregate, not verification of every doctor or test.
+  final DateTime? publishedAt;
   final List<ProviderBranch> branches;
   final List<ProviderDoctor> doctors;
   final List<ProviderTest> tests;

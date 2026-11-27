@@ -2013,7 +2013,7 @@ abstract class AppLocalizations {
   /// No description provided for @introductionProfileBody.
   ///
   /// In en, this message translates to:
-  /// **'Start with age, sex and height in Profile. Add medications, symptoms and other events as needed to keep your health history together.'**
+  /// **'Enter your date of birth and height. You can add other details later.'**
   String get introductionProfileBody;
 
   /// No description provided for @introductionReportsTitle.
@@ -2037,7 +2037,7 @@ abstract class AppLocalizations {
   /// No description provided for @introductionSummaryBody.
   ///
   /// In en, this message translates to:
-  /// **'Summary brings results together. In the example you can open a body system, select a marker and view its history. Show your doctor opens the section for sharing reports.'**
+  /// **'The summary shows your latest visit. History compares tests by date, with indicator selection and events.'**
   String get introductionSummaryBody;
 
   /// No description provided for @introductionLabsTitle.
@@ -2589,7 +2589,7 @@ abstract class AppLocalizations {
   /// No description provided for @reportSaved.
   ///
   /// In en, this message translates to:
-  /// **'Report saved'**
+  /// **'Printable version saved. Open it in a browser and choose Print → Save as PDF.'**
   String get reportSaved;
 
   /// No description provided for @reportExportError.
@@ -3267,7 +3267,7 @@ abstract class AppLocalizations {
   /// No description provided for @directorySnapshot.
   ///
   /// In en, this message translates to:
-  /// **'Directory verified on {date} · doctors and services may change.'**
+  /// **'Doctors and tests: reviewed selection from {date}.'**
   String directorySnapshot(String date);
 
   /// No description provided for @directoryOutsideCoverage.
@@ -3279,7 +3279,7 @@ abstract class AppLocalizations {
   /// No description provided for @directoryEmpty.
   ///
   /// In en, this message translates to:
-  /// **'No matches in this directory snapshot. Change your search, city or selected tests.'**
+  /// **'No matches in this directory selection. Change your search, city, network or selected tests.'**
   String get directoryEmpty;
 
   /// No description provided for @directoryCoverage.
@@ -3377,6 +3377,294 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Address checked: {date}'**
   String directorySourceChecked(String date);
+
+  /// No description provided for @directoryNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinic or laboratory network'**
+  String get directoryNetwork;
+
+  /// No description provided for @directoryAllNetworks.
+  ///
+  /// In en, this message translates to:
+  /// **'All networks'**
+  String get directoryAllNetworks;
+
+  /// No description provided for @directoryPublished.
+  ///
+  /// In en, this message translates to:
+  /// **'Directory updated: {date}'**
+  String directoryPublished(String date);
+
+  /// No description provided for @directoryPublicationNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Updates add branch addresses. New doctors, services and prices appear after review. Check availability and prices on the provider’s website.'**
+  String get directoryPublicationNotice;
+
+  /// No description provided for @directoryDoctorChecked.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor details checked: {date}'**
+  String directoryDoctorChecked(String date);
+
+  /// No description provided for @directoryNetworkPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Network contact number. Specify the branch when calling.'**
+  String get directoryNetworkPhone;
+
+  /// No description provided for @directoryPhoneUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No phone number listed. Open the provider’s website to contact them.'**
+  String get directoryPhoneUnavailable;
+
+  /// No description provided for @analysisHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis history'**
+  String get analysisHistory;
+
+  /// No description provided for @historyRecent.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest two visits'**
+  String get historyRecent;
+
+  /// No description provided for @historyAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All history'**
+  String get historyAll;
+
+  /// No description provided for @historyCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose dates'**
+  String get historyCustom;
+
+  /// No description provided for @historyPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit period'**
+  String get historyPeriod;
+
+  /// No description provided for @historyRotate.
+  ///
+  /// In en, this message translates to:
+  /// **'Rotate view'**
+  String get historyRotate;
+
+  /// No description provided for @historyEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Event timeline'**
+  String get historyEvents;
+
+  /// No description provided for @historyIllnesses.
+  ///
+  /// In en, this message translates to:
+  /// **'Illnesses'**
+  String get historyIllnesses;
+
+  /// No description provided for @historyComplaints.
+  ///
+  /// In en, this message translates to:
+  /// **'Symptoms'**
+  String get historyComplaints;
+
+  /// No description provided for @historyNoEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'No events in this period.'**
+  String get historyNoEvents;
+
+  /// No description provided for @historyEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No results in this period. Change the dates or selected indicators.'**
+  String get historyEmpty;
+
+  /// No description provided for @historySearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Find and select indicators'**
+  String get historySearch;
+
+  /// No description provided for @historyReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset selection'**
+  String get historyReset;
+
+  /// No description provided for @historyScrollBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Scroll to earlier dates'**
+  String get historyScrollBack;
+
+  /// No description provided for @historyScrollForward.
+  ///
+  /// In en, this message translates to:
+  /// **'Scroll to later dates'**
+  String get historyScrollForward;
+
+  /// No description provided for @historyTableHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select an indicator for details. Scroll dates horizontally.'**
+  String get historyTableHint;
+
+  /// No description provided for @historyPrint.
+  ///
+  /// In en, this message translates to:
+  /// **'Print / PDF'**
+  String get historyPrint;
+
+  /// No description provided for @sharingAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Link and QR access'**
+  String get sharingAccess;
+
+  /// No description provided for @sharingOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose what to share'**
+  String get sharingOptions;
+
+  /// No description provided for @profileHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'How this relates to your tests'**
+  String get profileHelp;
+
+  /// No description provided for @profileHelpBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Medications, weight and illnesses appear on timelines beside test dates.'**
+  String get profileHelpBody;
+
+  /// No description provided for @profileOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Information about you for your conversation with a doctor.'**
+  String get profileOverview;
+
+  /// No description provided for @copyAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy address'**
+  String get copyAddress;
+
+  /// No description provided for @addressCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Address copied'**
+  String get addressCopied;
+
+  /// No description provided for @copyFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not copy. Select and copy the address manually.'**
+  String get copyFailed;
+
+  /// No description provided for @historyExportHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Save the printable HTML version. Open it in a browser and choose Print → Save as PDF.'**
+  String get historyExportHint;
+
+  /// No description provided for @tourShareTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your tests'**
+  String get tourShareTitle;
+
+  /// No description provided for @tourShareBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Show a QR code or send a link to a specialist. Access duration and shared data are set separately.'**
+  String get tourShareBody;
+
+  /// No description provided for @tourAddAnalysis.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a test'**
+  String get tourAddAnalysis;
+
+  /// No description provided for @historyOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open history'**
+  String get historyOpen;
+
+  /// No description provided for @visitHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Test visits'**
+  String get visitHistory;
+
+  /// No description provided for @linkCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied'**
+  String get linkCopied;
+
+  /// No description provided for @manageSharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage access in settings'**
+  String get manageSharing;
+
+  /// No description provided for @history30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 30 days'**
+  String get history30Days;
+
+  /// No description provided for @history180Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 180 days'**
+  String get history180Days;
+
+  /// No description provided for @uploadReviewHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Check values against the original report before saving.'**
+  String get uploadReviewHint;
+
+  /// No description provided for @supportRecognition.
+  ///
+  /// In en, this message translates to:
+  /// **'Report recognition'**
+  String get supportRecognition;
+
+  /// No description provided for @supportBug.
+  ///
+  /// In en, this message translates to:
+  /// **'Application error'**
+  String get supportBug;
+
+  /// No description provided for @supportAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor access'**
+  String get supportAccess;
+
+  /// No description provided for @supportIdea.
+  ///
+  /// In en, this message translates to:
+  /// **'Idea or suggestion'**
+  String get supportIdea;
+
+  /// No description provided for @supportOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get supportOther;
 }
 
 class _AppLocalizationsDelegate

@@ -83,6 +83,37 @@ final class SmclinicParser extends NetworkParser {
       kind: p.uri.path.startsWith('/diagnostika-analizi/') ? 'test' : 'service',
       priceSelector: '.price__cell',
     ),
+    // The general price list is a different template. Its second price is an
+    // instalment, not a cheaper tariff. Folder rows have no td.name/data-code.
+    for (final row in p.document.querySelectorAll(
+      '.pricelist tr, .global-price tr',
+    ))
+      if (row.querySelector('td.name[data-code]') case final name?)
+        if (text(name).isNotEmpty && name.attributes['data-code']!.isNotEmpty)
+          {
+            'id': stableId(
+              source,
+              '${p.city}:service:code:${name.attributes['data-code']}',
+            ),
+            'network': source,
+            'city': p.city,
+            'kind': 'service',
+            'name': text(name),
+            'sourceCode': name.attributes['data-code'],
+            ...priceFields(
+              text(row.querySelector('td.price:not(.js-price-part)')),
+              details: [
+                'Цена (руб.): ${text(row.querySelector('td.price:not(.js-price-part)'))}',
+                if (row.querySelector('td.js-price-part') case final part?)
+                  'В рассрочку*: ${text(part)}',
+              ].join('; '),
+            ),
+            'currency': 'RUB',
+            'availabilityStatus': 'unverified',
+            'source': p.uri.toString(),
+            'listingSource': p.uri.toString(),
+            'checkedAt': p.date,
+          },
   ];
   @override
   List<Uri> nextPages(SourcePage page) => [

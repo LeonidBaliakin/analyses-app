@@ -117,6 +117,17 @@ void main() {
         );
         await tester.pumpWidget(app(Scaffold(body: home()), language, dark));
         await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('history-period')));
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find.text(language == 'ru' ? 'Выбрать даты' : 'Choose dates').last,
+        );
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byKey(const Key('report-to')),
+          '2026-11-25',
+        );
+        await tester.pumpAndSettle();
         await tester.enterText(
           find.byKey(const Key('report-from')),
           '2026-11-20',
@@ -138,7 +149,7 @@ void main() {
           '2026-11-01',
         );
         await tester.pumpAndSettle();
-        final button = find.byKey(const Key('export-local-report'));
+        final button = find.byKey(const Key('history-export'));
         await tester.ensureVisible(button);
         await tester.tap(button);
         await tester.pumpAndSettle();
@@ -151,7 +162,7 @@ void main() {
           '2026-10-01',
         );
         await tester.pumpAndSettle();
-        expect(tester.widget<FilledButton>(button).onPressed, isNull);
+        expect(tester.widget<IconButton>(button).onPressed, isNull);
         expect(tester.takeException(), isNull);
       },
     );
@@ -232,12 +243,7 @@ void main() {
         app(Scaffold(body: ReportsPage(model: model)), 'en', false),
       );
       await tester.pumpAndSettle();
-      expect(
-        tester
-            .widget<FilledButton>(find.byKey(const Key('export-local-report')))
-            .onPressed,
-        isNull,
-      );
+      expect(find.byKey(const Key('history-export')), findsNothing);
       final button = find.byKey(const Key('copy-local-report'));
       await tester.ensureVisible(button);
       await tester.tap(button);

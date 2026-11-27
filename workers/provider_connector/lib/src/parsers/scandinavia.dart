@@ -58,11 +58,9 @@ final class ScandinaviaParser extends NetworkParser {
               'city': p.city,
               'kind': 'service',
               'name': text(e.querySelector('.pricesSection_name')),
-              'sourcePrice': text(
-                e.querySelector('.pricesSection_value.primary'),
-              ),
-              'sourcePriceDetails': text(
-                e.querySelector('.pricesSection_values'),
+              ...priceFields(
+                text(e.querySelector('.pricesSection_value.primary')),
+                details: text(e.querySelector('.pricesSection_values')),
               ),
               'availabilityStatus': 'unverified',
               'source': p.uri.toString(),

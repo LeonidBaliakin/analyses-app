@@ -205,6 +205,19 @@ components:
         name: {type: string, minLength: 1, maxLength: 1000}
         sourceCode: {type: string}
         sourcePrice: {type: string, description: Original text; may include currency or a starting-price qualifier}
+        sourcePriceStatus:
+          enum: [observed, not_observed]
+          description: Observed requires a nonempty sourcePrice; not_observed omits sourcePrice and never means zero. Optional for older observations and category/doctor listings without tariffs.
+        sourcePriceDetails:
+          type: string
+          description: Original context including labelled instalments, subscription/discount conditions or an unavailable-price message. An instalment is not the full price.
+        currency: {type: string, description: Currency when explicitly supplied by the source or its tariff header}
+        listingSource: {type: string, format: uri, description: Page or public API where this offer and price were observed; source may link to its detail page}
+        sourceCenters: {type: string, description: Original source centre restrictions; not verified branch availability}
+        sourceListings:
+          type: array
+          description: Separate raw placements of a repeated offer, preserving their price, context and listingSource. Prices are never averaged or merged into a minimum.
+          items: {type: object}
         source: {type: string, format: uri}
         checkedAt: {type: string, format: date}
         availabilityStatus: {enum: [unverified, city_network_offer]}
@@ -239,7 +252,7 @@ components:
               error: {type: string}
               coverage:
                 enum: [complete, partial]
-                description: Required by parser v2. Completeness of the configured collection, not medical verification or the entire city.
+                description: Required by parser v2 and later. Completeness of the configured collection, not price availability, medical verification or the entire city.
               coverageMethod:
                 enum: [source_total, linked_sections]
               expectedItems:
