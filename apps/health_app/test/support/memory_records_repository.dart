@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:medical_domain/medical_domain.dart';
 
-class MemoryRecordsRepository implements HealthRecordsRepository {
+class MemoryRecordsRepository implements HealthRecordBatchRepository {
   final entries = <String, RecordEntry>{};
   final mutations = <RecordMutation>[];
   bool failRead = false, failWrite = false;
@@ -14,6 +14,21 @@ class MemoryRecordsRepository implements HealthRecordsRepository {
     return entries.values
         .where((e) => e.record.profileId == profileId && !e.deleted)
         .toList();
+  }
+
+  @override
+  Future<List<int>> commitBatch(List<RecordMutation> values) async {
+    final previous = Map<String, RecordEntry>.of(entries),
+        count = mutations.length;
+    try {
+      return [for (final value in values) await commit(value)];
+    } catch (_) {
+      entries
+        ..clear()
+        ..addAll(previous);
+      mutations.removeRange(count, mutations.length);
+      rethrow;
+    }
   }
 
   @override

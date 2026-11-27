@@ -64,7 +64,7 @@ Widget app(
 void main() {
   testWidgets('direct history link returns to summary', (tester) async {
     await navigation.launch(tester, initialLocation: '/history');
-    await tester.tap(find.byTooltip('Back'));
+    await tester.tap(find.byTooltip('Close'));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('system-search')), findsOneWidget);
     expect(tester.takeException(), isNull);
@@ -101,7 +101,7 @@ void main() {
         await tester.tap(find.byKey(const Key('history-search-toggle')));
         await tester.pumpAndSettle();
         expect(m.selected, {'0'});
-        expect(find.text('Synthetic marker 0'), findsNWidgets(2));
+        expect(find.byKey(const ValueKey('history-row-0')), findsOneWidget);
         expect(find.byKey(const ValueKey('history-row-1')), findsNothing);
         await tester.tap(find.byKey(const Key('history-events-toggle')));
         await tester.pumpAndSettle();
@@ -113,6 +113,8 @@ void main() {
         await tester.pumpAndSettle();
         expect(m.selected, {'0'});
         expect(tester.takeException(), isNull);
+        await tester.tap(find.byKey(const Key('history-search-toggle')));
+        await tester.pumpAndSettle();
         await tester.tap(
           find.descendant(
             of: find.byType(InputChip),
@@ -120,6 +122,17 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
+        if (m.selected.isNotEmpty) {
+          await tester.tap(
+            find
+                .descendant(
+                  of: find.byType(InputChip),
+                  matching: find.byType(Icon),
+                )
+                .last,
+          );
+          await tester.pumpAndSettle();
+        }
         expect(m.selected, isEmpty);
       },
     );

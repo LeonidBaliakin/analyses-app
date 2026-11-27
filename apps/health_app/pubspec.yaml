@@ -1,7 +1,7 @@
 name: health_app
 description: Local-first health records application.
 publish_to: 'none'
-version: 0.1.6+7
+version: 0.1.7+8
 resolution: workspace
 
 environment:
@@ -35,6 +35,9 @@ dependencies:
   geolocator: ^14.1.2
   image_picker: ^1.2.4
   file_selector: ^1.1.0
+  pdf: ^3.13.1
+  printing: ^5.15.1
+  cupertino_icons: ^2.0.0
 
 dev_dependencies:
   flutter_driver:

@@ -52,6 +52,14 @@ List<(String, String)> recordFields(
       (l.localNotes, r.notes),
     ],
     MedicationCourse() => [
+      (
+        l.medicationMode,
+        switch (r.regimen) {
+          MedicationRegimen.course => l.medicationCourse,
+          MedicationRegimen.ongoing => l.medicationConstant,
+          null => l.profileNotStated,
+        },
+      ),
       (l.localStartDate, r.start.toString()),
       (l.localEndDate, r.end?.toString() ?? ''),
       (l.localDosage, r.dosage),

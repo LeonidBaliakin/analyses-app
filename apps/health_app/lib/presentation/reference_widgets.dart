@@ -1,6 +1,7 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:go_router/go_router.dart';
 
 import '../l10n/generated/app_localizations.dart';
 
@@ -26,9 +27,9 @@ class ReferencePage extends StatelessWidget {
         child: SingleChildScrollView(
           key: PageStorageKey(runtimeType),
           padding: EdgeInsets.fromLTRB(
-            c.maxWidth < 600 ? 12 : 24,
+            c.maxWidth < 760 ? 12 : 16,
             14,
-            c.maxWidth < 600 ? 12 : 24,
+            c.maxWidth < 760 ? 12 : 16,
             110,
           ),
           child: Column(
@@ -55,7 +56,7 @@ class DemoBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
       decoration: BoxDecoration(
-        color: p.accentSoft,
+        color: p.accentSoft.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
@@ -71,12 +72,21 @@ class DemoBanner extends StatelessWidget {
                   TextSpan(text: ' ${l.demoIntro}'),
                 ],
               ),
-              style: const TextStyle(fontSize: 12.5, height: 1.55),
+              style: const TextStyle(fontSize: 12, height: 1.7),
             ),
           ),
           const SizedBox(width: 14),
           FilledButton(
-            onPressed: () => showUnavailable(context, l.signIn),
+            onPressed: () {
+              final router = GoRouter.of(context);
+              if (router.configuration
+                  .findMatch(Uri.parse('/account'))
+                  .isError) {
+                showUnavailable(context, l.signIn);
+              } else {
+                context.push('/account');
+              }
+            },
             child: Text(l.signIn),
           ),
         ],
@@ -91,15 +101,23 @@ Future<void> showReferenceSheet(
   Widget child, {
   bool orange = false,
   bool fullscreen = false,
+  bool plainHeader = false,
+  Widget? titleWidget,
+  double maxWidth = 640,
 }) => showDialog<void>(
   context: context,
   builder: (context) => Dialog(
-    insetPadding: fullscreen ? EdgeInsets.zero : const EdgeInsets.all(14),
+    alignment: MediaQuery.sizeOf(context).width <= 760 && !fullscreen
+        ? Alignment.bottomCenter
+        : Alignment.center,
+    insetPadding: fullscreen || MediaQuery.sizeOf(context).width <= 760
+        ? EdgeInsets.zero
+        : const EdgeInsets.all(24),
     clipBehavior: Clip.antiAlias,
     child: ConstrainedBox(
       constraints: BoxConstraints(
-        maxWidth: fullscreen ? MediaQuery.sizeOf(context).width : 850,
-        maxHeight: MediaQuery.sizeOf(context).height * (fullscreen ? 1 : .88),
+        maxWidth: fullscreen ? MediaQuery.sizeOf(context).width : maxWidth,
+        maxHeight: MediaQuery.sizeOf(context).height * (fullscreen ? 1 : .92),
       ),
       child: SafeArea(
         child: Column(
@@ -108,26 +126,50 @@ Future<void> showReferenceSheet(
           children: [
             Container(
               decoration: BoxDecoration(
-                gradient: orange ? OrangePalette.orangeGradient : null,
-                color: orange ? null : OrangePalette.of(context).accentSoft,
+                gradient: orange
+                    ? OrangePalette.orangeGradient
+                    : plainHeader
+                    ? null
+                    : OrangePalette.violetGradient,
+                color: orange
+                    ? null
+                    : plainHeader
+                    ? OrangePalette.of(context).card
+                    : OrangePalette.of(context).accentSoft,
               ),
-              padding: const EdgeInsets.fromLTRB(16, 5, 4, 5),
+              padding: EdgeInsets.fromLTRB(
+                16,
+                plainHeader ? 9 : 14,
+                16,
+                plainHeader ? 9 : 14,
+              ),
               child: Row(
                 children: [
                   Expanded(
-                    child: Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                        color: orange ? Colors.white : null,
-                      ),
-                    ),
+                    child:
+                        titleWidget ??
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: plainHeader ? 18 : 16,
+                            fontWeight: FontWeight.w800,
+                            color: plainHeader ? null : Colors.white,
+                          ),
+                        ),
                   ),
                   IconButton(
                     tooltip: AppLocalizations.of(context).close,
-                    icon: const Icon(Icons.close),
-                    color: orange ? Colors.white : null,
+                    style: IconButton.styleFrom(
+                      backgroundColor: plainHeader
+                          ? OrangePalette.of(context).accentSoft
+                          : Colors.white.withValues(alpha: .18),
+                      minimumSize: const Size(44, 44),
+                      maximumSize: const Size(44, 44),
+                    ),
+                    icon: const Icon(Icons.close, size: 18),
+                    color: plainHeader
+                        ? OrangePalette.of(context).accent
+                        : Colors.white,
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                 ],
@@ -135,7 +177,7 @@ Future<void> showReferenceSheet(
             ),
             Flexible(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(18),
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
                 child: child,
               ),
             ),
@@ -161,28 +203,55 @@ class RecordActions extends StatelessWidget {
     final l = AppLocalizations.of(context), p = OrangePalette.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Wrap(
-        spacing: 8,
-        runSpacing: 4,
+      child: Row(
         children: [
-          for (final (text, action) in [
+          for (final (index, pair) in [
             (l.addEvent, onAddEvent),
             (l.measurementDiary, onDiary),
-          ])
-            OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                minimumSize: const Size(0, 32),
-                backgroundColor: p.orangeSoft,
-                foregroundColor:
-                    Theme.of(context).brightness == Brightness.light
-                    ? const Color(0xFF893900)
-                    : const Color(0xFFFFBE88),
-                side: const BorderSide(color: Color(0xFFEAB387)),
+          ].indexed) ...[
+            if (index > 0) const SizedBox(width: 8),
+            Expanded(
+              child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(0, 48),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 9,
+                    vertical: 7,
+                  ),
+                ),
+                onPressed: pair.$2 ?? () => showUnavailable(context, pair.$1),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        color: index == 0 ? p.orangeSoft : p.accentSoft,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(
+                        index == 0
+                            ? Icons.event_note_outlined
+                            : Icons.menu_book_outlined,
+                        size: 16,
+                        color: index == 0 ? const Color(0xFF893900) : p.accent,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        pair.$1,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              onPressed: action ?? () => showUnavailable(context, text),
-              child: Text(text),
             ),
+          ],
         ],
       ),
     );
@@ -193,8 +262,15 @@ class SectionHeading extends StatelessWidget {
   const SectionHeading(this.text, {super.key});
   final String text;
   @override
-  Widget build(BuildContext context) =>
-      Text(text, style: Theme.of(context).textTheme.titleMedium);
+  Widget build(BuildContext context) => Text(
+    text,
+    style: TextStyle(
+      fontSize: 17,
+      fontWeight: FontWeight.w800,
+      height: 1.25,
+      color: OrangePalette.of(context).ink,
+    ),
+  );
 }
 
 class OriginalIcon extends StatelessWidget {

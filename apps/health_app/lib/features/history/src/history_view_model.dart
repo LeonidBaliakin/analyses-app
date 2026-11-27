@@ -66,6 +66,27 @@ final class HistoryViewModel extends ChangeNotifier {
         ..sort((a, b) => b.start.compareTo(a.start)));
   List<HistoryPoint> points(HistoryRow row, CalendarDate date) =>
       row.points.where((p) => p.date == date).toList();
+  HistoryPrintSnapshot printSnapshot({String profile = ''}) =>
+      HistoryPrintSnapshot(
+        rows: [
+          for (final row in rows)
+            HistoryRow(
+              id: row.id,
+              name: row.name,
+              group: row.group,
+              context: row.context,
+              points: List.unmodifiable(
+                row.points.where((p) => period.includes(p.date)),
+              ),
+            ),
+        ],
+        dates: dates,
+        events: showEvents ? events : const [],
+        period: period,
+        isDemo: data.isDemo,
+        profile: profile,
+      );
+
   void updateData(HistoryData value) {
     _data = value;
     _dates = null;

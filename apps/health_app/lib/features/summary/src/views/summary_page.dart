@@ -7,6 +7,7 @@ import '../../../../presentation/demo_catalog.dart';
 import '../../../../presentation/reference_labels.dart';
 import '../../../../presentation/reference_widgets.dart';
 import '../../../results/results.dart';
+import '../../../profile/profile.dart';
 import '../view_models/summary_view_model.dart';
 
 class SummaryPage extends StatefulWidget {
@@ -14,11 +15,13 @@ class SummaryPage extends StatefulWidget {
     required this.catalog,
     required this.onOpenHistory,
     this.onStartIntroduction,
+    this.onPrintSystems,
     this.onAddEvent,
     super.key,
   });
   final DemoCatalog catalog;
   final VoidCallback onOpenHistory;
+  final ValueChanged<Set<int>>? onPrintSystems;
   final VoidCallback? onStartIntroduction, onAddEvent;
   @override
   State<SummaryPage> createState() => _SummaryPageState();
@@ -44,7 +47,7 @@ class _SummaryPageState extends State<SummaryPage> {
           LayoutBuilder(
             builder: (context, c) {
               final cards = [
-                _LatestVisit(catalog: d),
+                _LatestVisit(catalog: d, width: (c.maxWidth - 10) / 2 - 22),
                 _VisitEvents(catalog: d, onAddEvent: widget.onAddEvent),
               ];
               if (c.maxWidth < 300 ||
@@ -66,35 +69,31 @@ class _SummaryPageState extends State<SummaryPage> {
             },
           ),
           const SizedBox(height: 16),
-          const SizedBox(height: 20),
-          PaperCard(
-            padding: const EdgeInsets.all(16),
-            child: InkWell(
-              onTap: widget.onOpenHistory,
-              child: Row(
-                children: [
-                  Icon(Icons.table_chart_outlined, color: p.accent, size: 30),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l.analysisHistory,
-                          style: const TextStyle(fontWeight: FontWeight.w800),
-                        ),
-                        Text(
-                          l.historySub,
-                          style: TextStyle(color: p.muted, fontSize: 12),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Icon(Icons.chevron_right),
-                ],
+          SpotlightAnchor(
+            id: 'analysis-history',
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: OutlinedButton.icon(
+                key: const Key('open-analysis-history'),
+                style: OutlinedButton.styleFrom(
+                  backgroundColor: p.accentSoft,
+                  foregroundColor: p.accent,
+                  minimumSize: const Size(0, 44),
+                ),
+                onPressed: widget.onOpenHistory,
+                icon: const Icon(Icons.table_chart_outlined, size: 17),
+                label: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(child: Text(l.analysisHistory)),
+                    const SizedBox(width: 8),
+                    const Icon(Icons.chevron_right, size: 14),
+                  ],
+                ),
               ),
             ),
           ),
+          const SizedBox(height: 24),
           SectionHeading(l.systemsHeading),
           const SizedBox(height: 8),
           TextField(
@@ -106,6 +105,52 @@ class _SummaryPageState extends State<SummaryPage> {
             ),
           ),
           const SizedBox(height: 12),
+          PaperCard(
+            padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+            child: Column(
+              children: [
+                Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  spacing: 10,
+                  runSpacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Text(
+                      l.shownSystems(model.visible.length, d.systems.length),
+                      style: TextStyle(fontSize: 12.5, color: p.secondary),
+                    ),
+                    FilledButton.icon(
+                      key: const Key('choose-systems'),
+                      onPressed: () => _choose(context),
+                      icon: const Icon(Icons.filter_list, size: 15),
+                      label: Text(l.chooseSystems),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      for (var i = 0; i < d.sections.length; i++)
+                        _SectionChip(
+                          label: sectionTitle(context, i),
+                          count: d.sections[i]
+                              .where(model.visible.contains)
+                              .length,
+                          total: d.sections[i].length,
+                          color: OrangePalette.systemColors[i],
+                          onTap: () => model.toggleSection(d.sections[i]),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
           Align(
             alignment: Alignment.centerLeft,
             child: TextButton(
@@ -132,8 +177,8 @@ class _SummaryPageState extends State<SummaryPage> {
                     Text(
                       sectionTitle(context, section),
                       style: TextStyle(
-                        color: OrangePalette.systemColors[section],
-                        fontSize: 13,
+                        color: p.ink,
+                        fontSize: 14,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -152,7 +197,28 @@ class _SummaryPageState extends State<SummaryPage> {
               AdaptiveTiles(
                 children: [
                   for (final system in _systems(context, section))
-                    _SystemTile(system: system, section: section, catalog: d),
+                    Stack(
+                      children: [
+                        _SystemTile(
+                          system: system,
+                          section: section,
+                          catalog: d,
+                          onTap: model.selecting
+                              ? () => model.togglePrintSystem(system.id)
+                              : null,
+                        ),
+                        if (model.selecting)
+                          Positioned(
+                            right: 4,
+                            top: 4,
+                            child: Checkbox(
+                              value: model.printSystems.contains(system.id),
+                              onChanged: (_) =>
+                                  model.togglePrintSystem(system.id),
+                            ),
+                          ),
+                      ],
+                    ),
                 ],
               ),
             ],
@@ -165,11 +231,97 @@ class _SummaryPageState extends State<SummaryPage> {
               child: Text(l.noMatches),
             ),
           const SizedBox(height: 18),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              OutlinedButton(
+                onPressed: model.togglePrinting,
+                child: Text(model.selecting ? l.localCancel : l.selectPrint),
+              ),
+              if (model.selecting)
+                FilledButton(
+                  onPressed:
+                      model.printSystems.isEmpty ||
+                          widget.onPrintSystems == null
+                      ? null
+                      : () =>
+                            widget.onPrintSystems!(model.printSystems.toSet()),
+                  child: Text(
+                    '${l.printSelected} (${model.printSystems.length})',
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 18),
           Text(
             l.sourceDisclaimer,
             style: TextStyle(color: p.muted, fontSize: 11.5),
           ),
         ],
+      ),
+    );
+  }
+
+  void _choose(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    showReferenceSheet(
+      context,
+      l.chooseSystems,
+      StatefulBuilder(
+        builder: (context, update) => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Wrap(
+              spacing: 8,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    model.selectSystems(
+                      widget.catalog.systems.map((s) => s.id).toSet(),
+                    );
+                    update(() {});
+                  },
+                  child: Text(l.allSystems),
+                ),
+                TextButton(
+                  onPressed: () {
+                    model.selectSystems({});
+                    update(() {});
+                  },
+                  child: Text(l.clearSelection),
+                ),
+              ],
+            ),
+            for (
+              var section = 0;
+              section < widget.catalog.sections.length;
+              section++
+            ) ...[
+              Text(
+                sectionTitle(context, section),
+                style: const TextStyle(fontWeight: FontWeight.w800),
+              ),
+              for (final id in widget.catalog.sections[section])
+                CheckboxListTile(
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(systemTitle(context, id)),
+                  value: model.visible.contains(id),
+                  onChanged: (_) {
+                    final ids = model.visible.toSet();
+                    if (!ids.remove(id)) ids.add(id);
+                    model.selectSystems(ids);
+                    update(() {});
+                  },
+                ),
+            ],
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(l.localSave),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -190,7 +342,8 @@ class _SummaryPageState extends State<SummaryPage> {
 }
 
 class _LatestVisit extends StatelessWidget {
-  const _LatestVisit({required this.catalog});
+  const _LatestVisit({required this.catalog, required this.width});
+  final double width;
   final DemoCatalog catalog;
   @override
   Widget build(BuildContext context) {
@@ -198,7 +351,7 @@ class _LatestVisit extends StatelessWidget {
     final labels = [l.inRange, l.outOfRange, l.notRecently, l.allResults];
     return PaperCard(
       padding: const EdgeInsets.all(10),
-      stripe: const Color(0xFF7956D9),
+
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -231,50 +384,64 @@ class _LatestVisit extends StatelessWidget {
               ),
             ),
           ),
-          for (var i = 0; i < labels.length; i++)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 5),
-              child: Material(
-                color: p.paper,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  side: BorderSide(color: p.line),
-                ),
-                child: InkWell(
-                  onTap: () => showResultFilter(context, catalog, i),
-                  borderRadius: BorderRadius.circular(8),
+          Wrap(
+            spacing: 5,
+            runSpacing: 0,
+            children: [
+              for (var i = 0; i < labels.length; i++)
+                SizedBox(
+                  width: MediaQuery.sizeOf(context).width > 540
+                      ? (width - 5) / 2
+                      : width,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 7,
-                      vertical: 7,
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            labels[i],
-                            style: const TextStyle(fontSize: 11.5, height: 1.3),
+                    padding: const EdgeInsets.only(bottom: 5),
+                    child: Material(
+                      color: p.paper,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        side: BorderSide(color: p.line),
+                      ),
+                      child: InkWell(
+                        onTap: () => showResultFilter(context, catalog, i),
+                        borderRadius: BorderRadius.circular(8),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 7,
+                            vertical: 7,
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  labels[i],
+                                  style: const TextStyle(
+                                    fontSize: 11.5,
+                                    height: 1.3,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${catalog.counts[i]}',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 12,
+                                  color: i == 0
+                                      ? p.green
+                                      : i == 1
+                                      ? p.red
+                                      : p.ink,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${catalog.counts[i]}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 12,
-                            color: i == 0
-                                ? p.green
-                                : i == 1
-                                ? p.red
-                                : p.ink,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
+            ],
+          ),
         ],
       ),
     );
@@ -295,8 +462,8 @@ class _VisitHeader extends StatelessWidget {
   Widget build(BuildContext context) => Row(
     children: [
       Container(
-        width: 25,
-        height: 25,
+        width: MediaQuery.sizeOf(context).width <= 480 ? 25 : 38,
+        height: MediaQuery.sizeOf(context).width <= 480 ? 25 : 38,
         decoration: BoxDecoration(
           color: color.withValues(alpha: .1),
           borderRadius: BorderRadius.circular(8),
@@ -310,8 +477,11 @@ class _VisitHeader extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 12.5,
+              style: TextStyle(
+                fontSize: (MediaQuery.sizeOf(context).width * .026).clamp(
+                  13,
+                  19,
+                ),
                 fontWeight: FontWeight.w800,
                 height: 1.2,
               ),
@@ -342,7 +512,7 @@ class _VisitEvents extends StatelessWidget {
     final l = AppLocalizations.of(context), p = OrangePalette.of(context);
     return PaperCard(
       padding: const EdgeInsets.all(10),
-      stripe: const Color(0xFFE8590C),
+
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -353,7 +523,15 @@ class _VisitEvents extends StatelessWidget {
             color: const Color(0xFFC65B17),
           ),
           const SizedBox(height: 10),
-          for (var i = 0; i < catalog.eventLabels.length; i++)
+          for (
+            var i = 0;
+            i <
+                (MediaQuery.sizeOf(context).width <= 540 ? 5 : 3).clamp(
+                  0,
+                  catalog.eventLabels.length,
+                );
+            i++
+          )
             Padding(
               padding: const EdgeInsets.only(bottom: 4),
               child: Tooltip(
@@ -384,7 +562,7 @@ class _VisitEvents extends StatelessWidget {
                       Expanded(
                         child: Text(
                           catalog.eventLabels[i],
-                          maxLines: 1,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             fontWeight: FontWeight.w800,
@@ -398,26 +576,42 @@ class _VisitEvents extends StatelessWidget {
                 ),
               ),
             ),
-          const SizedBox(height: 14),
-          TextButton(
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.zero,
-              alignment: Alignment.centerLeft,
-            ),
-            onPressed: () => showDemoActivity(context, catalog),
-            child: Text(l.moreEvents),
-          ),
-          OutlinedButton(
-            style: OutlinedButton.styleFrom(
-              backgroundColor: p.orangeSoft,
-              foregroundColor: Theme.of(context).brightness == Brightness.light
-                  ? const Color(0xFF893900)
-                  : const Color(0xFFFFBE88),
-              side: const BorderSide(color: Color(0xFFEAB387)),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            ),
-            onPressed: onAddEvent ?? () => showDemoActivity(context, catalog),
-            child: Text(l.addEvent, style: const TextStyle(fontSize: 11.5)),
+          const SizedBox(height: 10),
+          const Divider(),
+          Row(
+            children: [
+              Expanded(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: const Size(0, 36),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    onPressed: () => showDemoActivity(context, catalog),
+                    child: Text(
+                      '${l.moreEvents} ${catalog.eventLabels.length - (MediaQuery.sizeOf(context).width <= 540 ? 5 : 3)}',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  foregroundColor: const Color(0xFF913B0C),
+                  minimumSize: const Size(0, 36),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                onPressed:
+                    onAddEvent ?? () => showDemoEventCapture(context, catalog),
+                child: Text(l.addShort, style: const TextStyle(fontSize: 11)),
+              ),
+            ],
           ),
         ],
       ),
@@ -430,7 +624,9 @@ class _SystemTile extends StatelessWidget {
     required this.system,
     required this.section,
     required this.catalog,
+    this.onTap,
   });
+  final VoidCallback? onTap;
   final DemoSystem system;
   final int section;
   final DemoCatalog catalog;
@@ -447,7 +643,16 @@ class _SystemTile extends StatelessWidget {
       icon: SvgPicture.asset('assets/icons/${system.icon}.svg'),
       color: OrangePalette.systemColors[section],
       empty: empty,
-      onTap: () => showSystemResults(context, catalog, system),
+      badge: [1, 8, 9, 12, 14, 15].contains(system.id)
+          ? StatusPill(
+              label: empty
+                  ? (system.id == 14 ? l.validityMonth : l.validityFortnight)
+                  : l.verifyHospitalValidity,
+              color: empty ? p.secondary : const Color(0xFF963B0C),
+              background: empty ? p.paper : p.orangeSoft,
+            )
+          : null,
+      onTap: onTap ?? () => showSystemResults(context, catalog, system),
       footer: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -476,6 +681,70 @@ class _SystemTile extends StatelessWidget {
                 : p.greenSoft,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _SectionChip extends StatelessWidget {
+  const _SectionChip({
+    required this.label,
+    required this.count,
+    required this.total,
+    required this.color,
+    required this.onTap,
+  });
+  final String label;
+  final int count, total;
+  final Color color;
+  final VoidCallback onTap;
+  @override
+  Widget build(BuildContext context) {
+    final p = OrangePalette.of(context);
+    return Semantics(
+      checked: count > 0,
+      button: true,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+          decoration: BoxDecoration(
+            color: count > 0 ? Color.lerp(p.card, color, .1) : p.card,
+            border: Border.all(
+              color: count > 0 ? Color.lerp(p.card, color, .45)! : p.line,
+            ),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 9,
+                height: 9,
+                decoration: BoxDecoration(
+                  color: count > 0 ? color : p.muted,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 5),
+              Flexible(
+                child: Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 5),
+              Text(
+                '$count/$total',
+                style: TextStyle(fontSize: 10, color: p.muted),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

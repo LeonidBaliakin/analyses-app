@@ -1,3 +1,5 @@
+import 'package:health_app/features/capture/src/event_capture_view.dart';
+
 import 'dart:ui' show DisplayFeature, DisplayFeatureType, DisplayFeatureState;
 import 'dart:io';
 
@@ -434,15 +436,28 @@ void main() {
     (tester) async {
       final repository = withProfile();
       await launch(tester, repository, route: '/profile');
-      await tap(tester, find.text('Add course'));
-      await enter(tester, 'name', 'Synthetic course');
-      await enter(tester, 'start', '2026-01-20');
-      await enter(tester, 'end', '2026-01-19');
-      await tap(tester, find.byKey(const Key('record-save')));
-      expect(find.text('End date is before start date'), findsOneWidget);
-      await enter(tester, 'end', '2026-12-01');
-      await tap(tester, find.byKey(const Key('record-save')));
-      expect(find.text('Synthetic course'), findsOneWidget);
+      await tap(tester, find.text('Medications and supplements'));
+      final capture = tester
+          .widget<EventCaptureView>(find.byType(EventCaptureView))
+          .model;
+      final rowId = capture.rows!.single.id;
+      Future<void> fill(String key, String value) async {
+        final field = find.byKey(ValueKey('$rowId:$key'));
+        await tester.ensureVisible(field);
+        await tester.enterText(field, value);
+        await tester.pumpAndSettle();
+      }
+
+      await fill('name', 'Synthetic course');
+      await fill('from', '2026-01-20');
+      await fill('to', '2026-01-19');
+      await tap(tester, find.widgetWithText(FilledButton, 'Add'));
+      expect(find.text('Check the entered fields.'), findsOneWidget);
+      await fill('to', '2026-12-01');
+      await tap(tester, find.widgetWithText(FilledButton, 'Add'));
+      expect(find.textContaining('Synthetic course'), findsOneWidget);
+      await tap(tester, find.byTooltip('Close'));
+      await tap(tester, find.text('Weight'));
       await tap(tester, find.text('Add measurement'));
       await enter(tester, 'name', 'Synthetic glucose');
       await enter(tester, 'value', '5,10');

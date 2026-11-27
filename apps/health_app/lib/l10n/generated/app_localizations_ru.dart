@@ -124,8 +124,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get signIn => 'Войти';
 
   @override
-  String get previewOnly =>
-      'Это демонстрация интерфейса. Вход, сохранение медицинских данных и внешние сервисы пока не подключены.';
+  String get previewOnly => 'Эта возможность пока недоступна.';
 
   @override
   String get close => 'Закрыть';
@@ -448,7 +447,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Данные о вас, которые помогают врачу читать анализы. Препараты, вес и болезни показываются на графиках анализов по тем же датам. Сервис сам ничего по профилю не оценивает.';
 
   @override
-  String get profileComplete => 'Профиль заполнен на 100%';
+  String get profileComplete => 'Заполнено 100%';
 
   @override
   String get profileCompleteHint =>
@@ -485,22 +484,22 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileDocuments => 'Документы и исследования';
 
   @override
-  String get profileComplaintsSub => 'Что беспокоит и с какого времени';
+  String get profileComplaintsSub => 'Что беспокоит';
 
   @override
   String get profileBaseSub => 'Пол, возраст, рост';
 
   @override
-  String get profileMedicinesSub => 'Курсы и постоянный приём';
+  String get profileMedicinesSub => 'Что вы принимаете';
 
   @override
   String get profileWeightSub => 'Динамика веса';
 
   @override
-  String get profileIllnessSub => 'За последний год: температура, антибиотики';
+  String get profileIllnessSub => 'Чем и когда болели';
 
   @override
-  String get profileHospitalSub => 'Когда и где лежали в больнице';
+  String get profileHospitalSub => 'Стационар и даты';
 
   @override
   String get profileAllergiesSub => 'На что и как проявляется';
@@ -590,18 +589,17 @@ class AppLocalizationsRu extends AppLocalizations {
   String get whatTests => 'Какие анализы взять →';
 
   @override
-  String get sharingTitle => 'Показать анализы специалисту';
+  String get sharingTitle => 'Поделиться анализами';
 
   @override
   String get doctorView => 'Открыть вид для врача';
 
   @override
   String get sharingIntro =>
-      'Разовый доступ: специалист сканирует QR-код или открывает ссылку. Регистрация ему не нужна. Если специалисту нужен постоянный доступ, он регистрируется, и вы открываете доступ его аккаунту. Закрыть доступ можно в любой момент.';
+      'Отправьте ссылку или покажите QR-код специалисту.';
 
   @override
-  String get sharingDemo =>
-      'Ссылка и QR-код демонстрационные. Доступ к медицинским данным не предоставляется.';
+  String get sharingDemo => 'Демо · ссылка и QR-код для примера.';
 
   @override
   String get accessDuration => 'Срок доступа';
@@ -656,7 +654,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get emailLabel => 'Почта';
 
   @override
-  String get accessToMine => 'У кого есть доступ к моим анализам';
+  String get accessToMine => 'Кому я открыл доступ';
 
   @override
   String get sharedWithMe => 'Мне открыли доступ';
@@ -1031,46 +1029,46 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get introductionProfileTitle => 'Заполните профиль';
+  String get introductionProfileTitle => 'Начните с профиля';
 
   @override
   String get introductionProfileBody =>
       'Укажите дату рождения и рост. Остальные данные можно внести позже.';
 
   @override
-  String get introductionReportsTitle => 'Добавьте первый анализ';
+  String get introductionReportsTitle => 'Добавьте анализ';
 
   @override
   String get introductionReportsBody =>
-      'В разделе «Анализы» находятся ваши результаты. Кнопка с плюсом открывает доступные способы добавления данных. Распознанные значения нужно сверить с исходным бланком перед подтверждением.';
+      'Загрузите фото, скриншот или PDF. Перед сохранением сверьте показатели с бланком.';
 
   @override
-  String get introductionSummaryTitle => 'Посмотрите результаты';
+  String get introductionSummaryTitle => 'Сравните результаты';
 
   @override
   String get introductionSummaryBody =>
-      'На сводке видна последняя сдача. В истории можно сравнить анализы по датам, выбрать показатели и посмотреть события.';
+      'На сводке видна последняя сдача. В истории можно сравнить анализы по датам.';
 
   @override
-  String get introductionLabsTitle => 'Сравните лаборатории';
+  String get introductionLabsTitle => 'Выберите лабораторию';
 
   @override
   String get introductionLabsBody =>
-      'В разделе «Где сдать» найдите анализы или учреждение в Санкт-Петербурге и Воронеже. Выберите адрес или геолокацию, чтобы увидеть ближайшие филиалы. Доступность анализов из каталога сети уточняйте в филиале.';
+      'Соберите список анализов и сравните лаборатории по цене и расстоянию.';
 
   @override
   String get introductionDoctorsTitle => 'Найдите специалиста';
 
   @override
   String get introductionDoctorsBody =>
-      'В разделе «Врачи» найдите специальность или врача и откройте карточку. В ней показаны клиника и сведения о приёме.';
+      'Посмотрите, какие анализы взять на приём. Из карточки можно перейти к записи на сайте клиники.';
 
   @override
-  String get introductionAppointmentTitle => 'Запланируйте приём';
+  String get introductionAppointmentTitle => 'Поделитесь анализами';
 
   @override
   String get introductionAppointmentBody =>
-      'Карточка содержит сайт записи и телефон учреждения. Запись подтверждается клиникой. Повторить знакомство можно в настройках.';
+      'На приёме покажите QR-код или отправьте ссылку. Срок доступа настраивается здесь же.';
 
   @override
   String get introductionNotice =>
@@ -1993,4 +1991,505 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get supportOther => 'Другое';
+
+  @override
+  String get addShort => '+ Добавить';
+
+  @override
+  String get clearSelection => 'Снять все';
+
+  @override
+  String get verifyHospitalValidity => 'уточнить срок для госпитализации';
+
+  @override
+  String get validityFortnight => 'срок 14 дней';
+
+  @override
+  String get validityMonth => 'срок 1 месяц';
+
+  @override
+  String get historyShort => 'История';
+
+  @override
+  String get historyLegend => 'Обозначения в таблице';
+
+  @override
+  String get historyPdfActions => 'Действия с PDF';
+
+  @override
+  String get historySavePdf => 'Сохранить PDF';
+
+  @override
+  String get historySharePdf => 'Передать PDF';
+
+  @override
+  String get diaryTileSubtitle => 'Сахар, давление, сон';
+
+  @override
+  String get visitReason => 'Повод:';
+
+  @override
+  String get reasonDoctor => 'По назначению врача';
+
+  @override
+  String get reasonCheckup => 'Чекап';
+
+  @override
+  String get reasonRoutine => 'Диспансеризация';
+
+  @override
+  String get reasonHospital => 'В больнице';
+
+  @override
+  String get reasonSanatorium => 'Санаторий «Белые ночи»';
+
+  @override
+  String get reasonAdd => '+ повод';
+
+  @override
+  String get myAnalyses => 'Мои анализы';
+
+  @override
+  String get allOption => 'Все';
+
+  @override
+  String get historyPeriodEvents => 'События за период';
+
+  @override
+  String get durationMonth => '30 дней';
+
+  @override
+  String get onlyOutsideRange => 'Только вне референса';
+
+  @override
+  String get selectedBlocks => 'Выбранные блоки';
+
+  @override
+  String get notificationsAndPermissions => 'Уведомления и разрешения';
+
+  @override
+  String get selectedSpecialties => 'Выбранные специальности';
+
+  @override
+  String get testsToTake => 'Список на сдачу';
+
+  @override
+  String get basicTestSet => '+ Базовый набор';
+
+  @override
+  String get directoryFilters => 'Фильтры каталога';
+
+  @override
+  String get directoryPriceUnknown => 'Цена не опубликована';
+
+  @override
+  String get directoryContactsAndSource => 'Контакты и источник';
+
+  @override
+  String get profileFieldSex => 'Пол';
+
+  @override
+  String get profileFieldHeight => 'Рост, см';
+
+  @override
+  String get profileFieldWaist => 'Обхват талии, см';
+
+  @override
+  String get profileFieldHips => 'Обхват бёдер, см';
+
+  @override
+  String get profileFieldChest => 'Обхват груди, см';
+
+  @override
+  String get profileFieldCycle => 'День цикла в дату сдачи';
+
+  @override
+  String get profileFieldCity => 'Город';
+
+  @override
+  String get profileFieldTravel => 'Поездки за последний год: куда и когда';
+
+  @override
+  String get profileFieldActivity => 'Спорт и физическая активность';
+
+  @override
+  String get profileFieldSport => 'Вид спорта';
+
+  @override
+  String get profileFieldFoodNotes => 'Особенности питания';
+
+  @override
+  String get profileFieldStress => 'Был ли сильный стресс за последний месяц';
+
+  @override
+  String get profileFieldSleep => 'Сон, в среднем часов в сутки';
+
+  @override
+  String get profileFieldDiet => 'Тип питания';
+
+  @override
+  String get profileFieldSmoking => 'Курение';
+
+  @override
+  String get profileFieldPacksPerDay => 'Пачек в день';
+
+  @override
+  String get profileFieldSmokingQuitPrecision => 'Когда бросили курить';
+
+  @override
+  String get profileFieldSmokingQuitDate => 'Дата';
+
+  @override
+  String get profileFieldSmokingQuitYear => 'Примерный год';
+
+  @override
+  String get profileFieldAlcohol => 'Алкоголь, как часто';
+
+  @override
+  String get profileFieldAlcoholAmount => 'Алкоголь, сколько за раз';
+
+  @override
+  String get profileFieldAlcoholQuitPrecision => 'Когда бросили пить';
+
+  @override
+  String get profileFieldAlcoholQuitDate => 'Дата';
+
+  @override
+  String get profileFieldAlcoholQuitYear => 'Примерный год';
+
+  @override
+  String get profileSexMale => 'Мужской';
+
+  @override
+  String get profileSexFemale => 'Женский';
+
+  @override
+  String get profileOptionalMeasures => 'Обхваты · необязательно';
+
+  @override
+  String get profileAddRecord => '+ Добавить запись';
+
+  @override
+  String get profileDescription => 'Описание';
+
+  @override
+  String get profileWhen => 'Когда';
+
+  @override
+  String get profileUnknownDate => 'Дата неизвестна';
+
+  @override
+  String get profileExactDate => 'Точная дата';
+
+  @override
+  String get profileApproximateYear => 'Примерный год';
+
+  @override
+  String get profileChildhood => 'С детства';
+
+  @override
+  String get profileRemoveEntry => 'Удалить запись';
+
+  @override
+  String get profileChronic => 'Хронические заболевания';
+
+  @override
+  String get profileSurgery => 'Операции и травмы';
+
+  @override
+  String get profileFamily => 'Наследственные и генетические заболевания';
+
+  @override
+  String get profileOtherHistory => 'Другое, что важно знать врачу';
+
+  @override
+  String get profileActivity1 => 'Почти нет: сидячая работа, без спорта';
+
+  @override
+  String get profileActivity2 => '1–2 тренировки или прогулки в неделю';
+
+  @override
+  String get profileActivity3 => '3–4 тренировки в неделю';
+
+  @override
+  String get profileActivity4 => '5 и больше тренировок или физический труд';
+
+  @override
+  String get profileNo => 'Нет';
+
+  @override
+  String get profileSometimes => 'Да, эпизодически';
+
+  @override
+  String get profileOften => 'Да, почти постоянно';
+
+  @override
+  String get profileDietNormal => 'Обычное';
+
+  @override
+  String get profileDietVegetarian => 'Вегетарианское';
+
+  @override
+  String get profileDietVegan => 'Веганское';
+
+  @override
+  String get profileDietKeto => 'Низкоуглеводное / кето';
+
+  @override
+  String get profileDietFasting => 'Интервальное голодание';
+
+  @override
+  String get profileNeverSmoked => 'Не курю';
+
+  @override
+  String get profileSmokes => 'Курю';
+
+  @override
+  String get profileFormerSmoker => 'Бросил(а)';
+
+  @override
+  String get profileNoAlcohol => 'Не пью';
+
+  @override
+  String get profileFormerDrinker => 'Раньше пил(а)';
+
+  @override
+  String get profileAlcoholRare => 'Реже раза в неделю';
+
+  @override
+  String get profileAlcoholWeekly => '1–3 раза в неделю';
+
+  @override
+  String get profileAlcoholOften => 'Чаще';
+
+  @override
+  String get profilePacksHalf => 'Половина пачки';
+
+  @override
+  String get profileNotStated => 'Не указано';
+
+  @override
+  String get profileEventName => 'Что произошло';
+
+  @override
+  String get profileFrom => 'С';
+
+  @override
+  String get profileTo => 'По';
+
+  @override
+  String get profileTemperature =>
+      'Максимальная температура, °C (необязательно)';
+
+  @override
+  String get profileInstitution => 'Где';
+
+  @override
+  String get profileOutcomes => 'Итог госпитализации';
+
+  @override
+  String get profileReaction => 'Как проявляется';
+
+  @override
+  String get profileAdd => 'Добавить';
+
+  @override
+  String get profileSave => 'Сохранить';
+
+  @override
+  String get medicationExperience => 'Опыт приёма';
+
+  @override
+  String get medicationFirstCourse => 'Первый курс';
+
+  @override
+  String get medicationRepeatCourse => 'Повторный курс';
+
+  @override
+  String get medicationUnknownCourse => 'Не помню';
+
+  @override
+  String get medicationReason => 'Причина назначения';
+
+  @override
+  String profileFilledPercent(int percent) {
+    return 'Заполнено $percent%';
+  }
+
+  @override
+  String profileEntries(int count) {
+    return '$count запис.';
+  }
+
+  @override
+  String get tourOpenBasics => 'Открыть основные данные';
+
+  @override
+  String get tourOpenUpload => 'Открыть способы загрузки';
+
+  @override
+  String get otherRecords => 'Другие записи';
+
+  @override
+  String get pdfUnit => 'Ед.';
+
+  @override
+  String get pdfReference => 'Референс';
+
+  @override
+  String get captureWhat => 'Что произошло?';
+
+  @override
+  String get captureHint => 'Напишите, что произошло…';
+
+  @override
+  String get captureDictate => 'Диктовать';
+
+  @override
+  String get captureExample => 'Посмотреть пример';
+
+  @override
+  String get captureCheck => 'Проверить записи';
+
+  @override
+  String get captureReview => 'Проверьте записи';
+
+  @override
+  String get captureSource => 'Исходный рассказ';
+
+  @override
+  String get captureConfirm => 'Подтвердить и сохранить';
+
+  @override
+  String get captureVoiceHint =>
+      'Включите диктовку на клавиатуре устройства или введите текст.';
+
+  @override
+  String get captureLocalHint =>
+      'Локальный черновик. Проверьте названия, даты и разделы перед сохранением.';
+
+  @override
+  String get captureMissingDate =>
+      'Уточните дату: год не указан или дата не распознана.';
+
+  @override
+  String get captureKind => 'Раздел';
+
+  @override
+  String get captureIllness => 'Болезнь';
+
+  @override
+  String get captureMedication => 'Препарат';
+
+  @override
+  String get captureHospital => 'Госпитализация';
+
+  @override
+  String get captureComplaint => 'Жалоба';
+
+  @override
+  String get captureWeight => 'Вес';
+
+  @override
+  String get captureAllergy => 'Аллергия';
+
+  @override
+  String get captureTravel => 'Поездка';
+
+  @override
+  String get captureSample =>
+      'С 10.11.2026 болел ОРВИ, с 11.11.2026 принимал витамин D. Был в санатории в Кисловодске.';
+
+  @override
+  String get medicationMode => 'Режим приёма';
+
+  @override
+  String get medicationConstant => 'Постоянно';
+
+  @override
+  String get medicationCourse => 'Курс';
+
+  @override
+  String get diaryWhat => 'Что измерили';
+
+  @override
+  String get diaryGlucose => 'Сахар крови';
+
+  @override
+  String get diaryPressure => 'Давление';
+
+  @override
+  String get diarySleep => 'Сон';
+
+  @override
+  String get diaryGlucoseValue => 'Глюкоза, ммоль/л';
+
+  @override
+  String get diarySystolic => 'Верхнее, мм рт. ст.';
+
+  @override
+  String get diaryDiastolic => 'Нижнее, мм рт. ст.';
+
+  @override
+  String get diarySleepValue => 'Продолжительность, ч';
+
+  @override
+  String get diarySave => 'Сохранить измерение';
+
+  @override
+  String get diaryEntries => 'Записи';
+
+  @override
+  String get diaryEmpty => 'Записей пока нет.';
+
+  @override
+  String get selectPrint => 'Выбрать для печати';
+
+  @override
+  String get printSelected => 'Печать выбранных';
+
+  @override
+  String get medicationActive => 'принимает';
+
+  @override
+  String get medicationCompleted => 'закончен';
+
+  @override
+  String get guestCaption => 'Гость · данные для примера';
+
+  @override
+  String get signInRegister => 'Войти или зарегистрироваться';
+
+  @override
+  String get labShort => 'Лаб.';
+
+  @override
+  String get reasonDoctorShort => 'Назначил врач';
+
+  @override
+  String get captureMedicationName => 'Препарат и дозировка';
+
+  @override
+  String get captureIllnessName => 'Чем болели';
+
+  @override
+  String get captureComplaintName => 'Что беспокоит';
+
+  @override
+  String get captureHospitalName => 'Причина госпитализации';
+
+  @override
+  String get captureAllergyName => 'На что аллергия';
+
+  @override
+  String get captureStartDate => 'Дата начала';
+
+  @override
+  String get captureEndDate => 'Дата окончания';
+
+  @override
+  String get chooseDate => 'Выбрать дату';
+
+  @override
+  String get chooseTime => 'Выбрать время';
 }

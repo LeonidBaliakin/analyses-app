@@ -57,6 +57,7 @@ class HealthApp extends StatefulWidget {
 
 class _HealthAppState extends State<HealthApp> {
   final _showDemo = ValueNotifier(false);
+  final _anchors = SpotlightAnchors();
   late final _deviceAccess =
       widget.deviceAccess ??
       DeviceAccessViewModel(gateway: const UnavailableDeviceAccess());
@@ -120,7 +121,10 @@ class _HealthAppState extends State<HealthApp> {
     },
     builder: (context, child) => DeviceAccessScope(
       model: _deviceAccess,
-      child: UnobstructedPane(child: child!),
+      child: SpotlightScope(
+        anchors: _anchors,
+        child: UnobstructedPane(child: child!),
+      ),
     ),
   );
 

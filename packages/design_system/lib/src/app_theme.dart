@@ -68,12 +68,14 @@ abstract final class AppTheme {
         style: FilledButton.styleFrom(
           backgroundColor: p.accent,
           foregroundColor: colors.onPrimary,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           minimumSize: const Size(0, 36),
           padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 9),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
           textStyle: const TextStyle(
             fontFamily: 'packages/design_system/Manrope',
             fontSize: 12,
+            height: 1.25,
             fontWeight: FontWeight.w800,
           ),
         ),
@@ -83,12 +85,14 @@ abstract final class AppTheme {
           foregroundColor: p.ink,
           backgroundColor: p.card,
           side: BorderSide(color: p.line),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           minimumSize: const Size(0, 36),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
           textStyle: const TextStyle(
             fontFamily: 'packages/design_system/Manrope',
             fontSize: 12,
+            height: 1.25,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -99,6 +103,7 @@ abstract final class AppTheme {
           textStyle: const TextStyle(
             fontFamily: 'packages/design_system/Manrope',
             fontSize: 12,
+            height: 1.25,
             fontWeight: FontWeight.w600,
           ),
         ),

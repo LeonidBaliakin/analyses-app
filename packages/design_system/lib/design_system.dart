@@ -7,3 +7,4 @@ export 'src/empty_state.dart';
 
 export 'src/orange_palette.dart';
 export 'src/orange_components.dart';
+export 'src/spotlight_anchor.dart';

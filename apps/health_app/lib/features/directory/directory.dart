@@ -86,61 +86,11 @@ class _DirectoryPageState extends State<DirectoryPage> {
       return ReferencePage(
         children: [
           PaperCard(
+            padding: const EdgeInsets.all(14),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SectionHeading(widget.doctors ? l.nearbyDoctors : l.labsTitle),
-                const SizedBox(height: 12),
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    final city = AppSelect<DirectoryCity>(
-                      label: l.directoryCity,
-                      value: model.city,
-                      options: [
-                        AppSelectOption(
-                          value: DirectoryCity.spb,
-                          label: l.directorySpb,
-                        ),
-                        AppSelectOption(
-                          value: DirectoryCity.voronezh,
-                          label: l.directoryVoronezh,
-                        ),
-                      ],
-                      onChanged: model.selectCity,
-                    );
-                    final network = AppSelect<String?>(
-                      key: const Key('directory-network'),
-                      label: l.directoryNetwork,
-                      value: model.networkId,
-                      options: [
-                        AppSelectOption(
-                          value: null,
-                          label: l.directoryAllNetworks,
-                        ),
-                        for (final id in model.availableNetworks)
-                          AppSelectOption(
-                            value: id,
-                            label: model.networkLabel(id),
-                          ),
-                      ],
-                      onChanged: model.selectNetwork,
-                    );
-                    if (constraints.maxWidth >= 600) {
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(child: city),
-                          const SizedBox(width: 12),
-                          Expanded(child: network),
-                        ],
-                      );
-                    }
-                    return Column(
-                      children: [city, const SizedBox(height: 12), network],
-                    );
-                  },
-                ),
-                const SizedBox(height: 12),
                 ListenableBuilder(
                   listenable: _device!,
                   builder: (context, _) => Wrap(
@@ -169,198 +119,285 @@ class _DirectoryPageState extends State<DirectoryPage> {
                     ],
                   ),
                 ),
-                Text(
-                  model.origin == null
-                      ? l.directoryNeedPoint
-                      : l.directorySorted,
-                  style: TextStyle(color: p.secondary, fontSize: 13),
-                ),
-                const SizedBox(height: 16),
-                if (widget.doctors) ...[
-                  AppSelect<String?>(
-                    key: const Key('directory-specialty'),
-                    label: l.directorySpecialty,
-                    value: model.specialtyId,
-                    options: [
-                      AppSelectOption(
-                        value: null,
-                        label: l.directoryAllSpecialties,
-                      ),
-                      for (final specialty in model.availableSpecialties(
-                        l.localeName,
-                      ))
-                        AppSelectOption(
-                          value: specialty.id,
-                          label: specialty.label.inLanguage(l.localeName),
-                        ),
-                    ],
-                    onChanged: model.selectSpecialty,
+
+                if (model.origin == null)
+                  Text(
+                    l.directoryNeedPoint,
+                    style: TextStyle(fontSize: 11, color: p.secondary),
                   ),
-                  const SizedBox(height: 12),
-                ],
-                TextField(
-                  key: Key(
-                    widget.doctors
-                        ? 'directory-doctor-search'
-                        : 'directory-lab-search',
-                  ),
-                  controller: searchController,
-                  onChanged: (value) =>
-                      model.setQuery(value, doctors: widget.doctors),
-                  decoration: InputDecoration(
-                    labelText: widget.doctors
-                        ? l.directoryDoctorSearch
-                        : l.directoryLabSearch,
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: searchController.text.isEmpty
-                        ? null
-                        : IconButton(
-                            tooltip: l.close,
-                            onPressed: () {
-                              searchController.clear();
-                              model.setQuery('', doctors: widget.doctors);
-                            },
-                            icon: const Icon(Icons.close),
-                          ),
-                  ),
-                ),
-                if (!widget.doctors) ...[
-                  const SizedBox(height: 8),
-                  ExpansionTile(
-                    // Its bool must not share storage with text scroll offsets.
-                    key: const PageStorageKey('directory-test-selection'),
-                    tilePadding: EdgeInsets.zero,
-                    title: Text(l.directoryChooseTests),
-                    children: [
-                      Text(
-                        l.directoryTestSearchNotice,
-                        style: TextStyle(color: p.secondary, fontSize: 13),
-                      ),
-                      const SizedBox(height: 8),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            for (final test in model.availableTests(
-                              l.localeName,
-                            ))
-                              ConstrainedBox(
-                                constraints: const BoxConstraints(
-                                  maxWidth: 300,
-                                ),
-                                child: FilterChip(
-                                  label: Text(
-                                    test.label.inLanguage(l.localeName),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  selected: model.testIds.contains(test.id),
-                                  onSelected: (_) => model.toggleTest(test.id),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                    ],
-                  ),
-                  if (model.testIds.isNotEmpty)
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        for (final test
-                            in model
-                                .availableTests(l.localeName)
-                                .where((t) => model.testIds.contains(t.id)))
-                          InputChip(
-                            label: Text(
-                              test.label.inLanguage(l.localeName),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
+                SpotlightAnchor(
+                  id: widget.doctors ? 'doctor-search' : 'lab-search',
+                  child: TextField(
+                    key: Key(
+                      widget.doctors
+                          ? 'directory-doctor-search'
+                          : 'directory-lab-search',
+                    ),
+                    controller: searchController,
+                    onChanged: (v) =>
+                        model.setQuery(v, doctors: widget.doctors),
+                    decoration: InputDecoration(
+                      hintText: widget.doctors
+                          ? l.directoryDoctorSearch
+                          : l.directoryLabSearch,
+                      prefixIcon: const Icon(Icons.search, size: 18),
+                      suffixIcon: searchController.text.isEmpty
+                          ? null
+                          : IconButton(
+                              tooltip: l.close,
+                              onPressed: () {
+                                searchController.clear();
+                                model.setQuery('', doctors: widget.doctors);
+                              },
+                              icon: const Icon(Icons.close, size: 18),
                             ),
-                            onDeleted: () => model.toggleTest(test.id),
-                          ),
-                      ],
+                    ),
+                  ),
+                ),
+                if (!widget.doctors && model.labQuery.isNotEmpty) ...[
+                  for (final test in model.suggestTests(l.localeName).take(10))
+                    ListTile(
+                      dense: true,
+                      title: Text(
+                        test.label.inLanguage(l.localeName),
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                      onTap: () {
+                        model.toggleTest(test.id);
+                        searchController.clear();
+                        model.setQuery('', doctors: false);
+                      },
                     ),
                 ],
+                const SizedBox(height: 12),
+                QuietFold(
+                  key: PageStorageKey(
+                    widget.doctors
+                        ? 'directory-specialty-selection'
+                        : 'directory-test-selection',
+                  ),
+                  title: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          widget.doctors
+                              ? l.selectedSpecialties
+                              : l.testsToTake,
+                        ),
+                      ),
+                      StatusPill(
+                        label:
+                            '${widget.doctors ? model.specialtyIds.length : model.testIds.length}',
+                        color: p.accent,
+                        background: p.accentSoft,
+                      ),
+                    ],
+                  ),
+                  children: [
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: [
+                        if (widget.doctors)
+                          for (final option in model.availableSpecialties(
+                            l.localeName,
+                          ))
+                            OptionChip(
+                              label: Text(
+                                option.label.inLanguage(l.localeName),
+                              ),
+                              selected: model.specialtyIds.contains(option.id),
+                              onSelected: (_) =>
+                                  model.toggleSpecialty(option.id),
+                            )
+                        else
+                          for (final option in model.availableTests(
+                            l.localeName,
+                          ))
+                            OptionChip(
+                              label: Text(
+                                option.label.inLanguage(l.localeName),
+                              ),
+                              selected: model.testIds.contains(option.id),
+                              onSelected: (_) => model.toggleTest(option.id),
+                            ),
+                      ],
+                    ),
+                  ],
+                ),
+                if (!widget.doctors)
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: p.orangeSoft,
+                        foregroundColor: const Color(0xFF893900),
+                      ),
+                      onPressed: model.selectBasicTests,
+                      child: Text(l.basicTestSet),
+                    ),
+                  ),
+                QuietFold(
+                  key: const Key('directory-filters'),
+                  compact: true,
+                  title: Text(l.directoryFilters),
+                  children: [
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final city = AppSelect<DirectoryCity>(
+                          label: l.directoryCity,
+                          value: model.city,
+                          options: [
+                            AppSelectOption(
+                              value: DirectoryCity.spb,
+                              label: l.directorySpb,
+                            ),
+                            AppSelectOption(
+                              value: DirectoryCity.voronezh,
+                              label: l.directoryVoronezh,
+                            ),
+                          ],
+                          onChanged: model.selectCity,
+                        );
+                        final network = AppSelect<String?>(
+                          key: const Key('directory-network'),
+                          label: l.directoryNetwork,
+                          value: model.networkId,
+                          options: [
+                            AppSelectOption(
+                              value: null,
+                              label: l.directoryAllNetworks,
+                            ),
+                            for (final id in model.availableNetworks)
+                              AppSelectOption(
+                                value: id,
+                                label: model.networkLabel(id),
+                              ),
+                          ],
+                          onChanged: model.selectNetwork,
+                        );
+                        if (constraints.maxWidth >= 600) {
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(child: city),
+                              const SizedBox(width: 12),
+                              Expanded(child: network),
+                            ],
+                          );
+                        }
+                        return Column(
+                          children: [city, const SizedBox(height: 12), network],
+                        );
+                      },
+                    ),
+
+                    AppSelect<String?>(
+                      key: const Key('directory-specialty'),
+                      label: l.directorySpecialty,
+                      value: model.specialtyId,
+                      options: [
+                        AppSelectOption(
+                          value: null,
+                          label: l.directoryAllSpecialties,
+                        ),
+                        for (final specialty in model.availableSpecialties(
+                          l.localeName,
+                        ))
+                          AppSelectOption(
+                            value: specialty.id,
+                            label: specialty.label.inLanguage(l.localeName),
+                          ),
+                      ],
+                      onChanged: model.selectSpecialty,
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                ),
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           if (model.linkFailed)
             Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Text(
-                l.directoryLinkFailed,
-                style: TextStyle(color: p.secondary),
-              ),
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Text(l.directoryLinkFailed),
             ),
           PaperCard(
+            padding: const EdgeInsets.all(14),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SectionHeading(l.directoryResults(hits.length)),
-                const SizedBox(height: 8),
-                if (model.catalog.publishedAt case final publishedAt?) ...[
-                  Text(
-                    l.directoryPublished(
-                      DateFormat.yMMMd(l.localeName)
-                          .format(publishedAt.toLocal()),
-                    ),
-                    key: const Key('directory-publication-date'),
-                    style: TextStyle(color: p.secondary, fontSize: 13),
-                  ),
-                  const SizedBox(height: 4),
-                ],
-                Text(
-                  l.directorySnapshot(
-                    DateFormat.yMMMd(l.localeName)
-                        .format(model.catalog.checkedAt),
-                  ),
-                  style: TextStyle(color: p.secondary, fontSize: 13),
+                SectionHeading(
+                  widget.doctors
+                      ? l.directoryResults(hits.length)
+                      : l.nearbyLabs,
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  l.directoryPublicationNotice,
-                  style: TextStyle(color: p.secondary, fontSize: 13),
-                ),
-                if (model.refreshCatalog != null) ...[
-                  TextButton.icon(
-                    onPressed: model.isRefreshing ? null : model.refresh,
-                    icon: model.isRefreshing
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.refresh),
-                    label: Text(l.directoryRefresh),
-                  ),
-                  if (model.refreshFailed)
-                    Text(
-                      l.directoryRefreshFailed,
-                      style: TextStyle(color: p.secondary, fontSize: 13),
-                    ),
-                ],
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 if (model.outsideCoverage)
                   Text(l.directoryOutsideCoverage)
                 else if (hits.isEmpty)
                   Text(l.directoryEmpty),
                 for (final hit in hits) _ProviderCard(hit: hit, model: model),
-                const SizedBox(height: 8),
-                Text(
-                  l.directoryCoverage,
-                  style: TextStyle(color: p.secondary, fontSize: 13),
-                ),
-                TextButton(
-                  onPressed: () => model.open(
-                    Uri.parse('https://www.openstreetmap.org/copyright'),
-                  ),
-                  child: Text(l.directoryMapAttribution),
+                QuietFold(
+                  key: const Key('directory-sources'),
+                  title: Text(l.directorySource),
+                  children: [
+                    if (model.catalog.publishedAt case final publishedAt?) ...[
+                      Text(
+                        l.directoryPublished(
+                          DateFormat.yMMMd(l.localeName)
+                              .format(publishedAt.toLocal()),
+                        ),
+                        key: const Key('directory-publication-date'),
+                        style: TextStyle(color: p.secondary, fontSize: 13),
+                      ),
+                      const SizedBox(height: 4),
+                    ],
+                    Text(
+                      l.directorySnapshot(
+                        DateFormat.yMMMd(l.localeName)
+                            .format(model.catalog.checkedAt),
+                      ),
+                      style: TextStyle(color: p.secondary, fontSize: 13),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      l.directoryPublicationNotice,
+                      style: TextStyle(color: p.secondary, fontSize: 13),
+                    ),
+                    if (model.refreshCatalog != null) ...[
+                      TextButton.icon(
+                        onPressed: model.isRefreshing ? null : model.refresh,
+                        icon: model.isRefreshing
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Icon(Icons.refresh),
+                        label: Text(l.directoryRefresh),
+                      ),
+                      if (model.refreshFailed)
+                        Text(
+                          l.directoryRefreshFailed,
+                          style: TextStyle(color: p.secondary, fontSize: 13),
+                        ),
+                    ],
+
+                    Text(
+                      l.directoryCoverage,
+                      style: TextStyle(fontSize: 12, color: p.secondary),
+                    ),
+                    TextButton(
+                      onPressed: () => model.open(
+                        Uri.parse('https://www.openstreetmap.org/copyright'),
+                      ),
+                      child: Text(l.directoryMapAttribution),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -393,48 +430,84 @@ class _ProviderCard extends StatelessWidget {
     return Container(
       key: ValueKey('provider-${hit.id}'),
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: p.paper,
+        color: p.card,
         border: Border.all(color: p.line),
         borderRadius: BorderRadius.circular(13),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            doctor?.name ?? branch.name,
-            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
-          ),
-          if (doctor != null) ...[
-            const SizedBox(height: 4),
-            Text(
-              doctor.specialty,
-              style: TextStyle(color: p.accent, fontWeight: FontWeight.w600),
-            ),
-            Text(branch.name, style: TextStyle(color: p.secondary)),
-            Text(
-              l.directoryDoctorChecked(
-                DateFormat.yMMMd(l.localeName)
-                    .format(doctor.checkedAt ?? model.catalog.checkedAt),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: p.accentSoft,
+                  borderRadius: BorderRadius.circular(9),
+                ),
+                child: Icon(
+                  doctor == null
+                      ? Icons.science_outlined
+                      : Icons.medical_services_outlined,
+                  color: p.accent,
+                  size: 19,
+                ),
               ),
-              style: TextStyle(color: p.secondary, fontSize: 12),
-            ),
-          ],
-          const SizedBox(height: 8),
-          SelectableText(branch.address),
-          Text(
-            l.directorySourceChecked(
-              DateFormat.yMMMd(l.localeName).format(branch.checkedAt),
-            ),
-            style: TextStyle(color: p.secondary, fontSize: 12),
+              const SizedBox(width: 9),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      doctor?.name ?? branch.name,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    if (doctor != null)
+                      Text(
+                        doctor.specialty,
+                        style: TextStyle(fontSize: 12, color: p.secondary),
+                      ),
+                    Text(
+                      '${doctor == null ? '' : '${branch.name}, '}${branch.address}',
+                      style: TextStyle(fontSize: 12, color: p.secondary),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            distanceLabel,
-            key: ValueKey('distance-${hit.id}'),
-            style: TextStyle(color: p.accent, fontWeight: FontWeight.w700),
+          const SizedBox(height: 10),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  l.directoryPriceUnknown,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  distanceLabel,
+                  key: ValueKey('distance-${hit.id}'),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
           ),
           if (hit.needsConfirmation) ...[
             const SizedBox(height: 8),
@@ -510,35 +583,62 @@ class _ProviderCard extends StatelessWidget {
                 icon: const Icon(Icons.open_in_new, size: 18),
                 label: Text(l.bookWebsite),
               ),
-              if (hasPhone)
-                OutlinedButton.icon(
-                  onPressed: () => model.open(Uri(scheme: 'tel', path: phone)),
-                  icon: const Icon(Icons.phone_outlined, size: 18),
-                  label: Text(branch.phone),
-                ),
-              if (doctor == null && branch.testsUrl != null)
-                TextButton(
-                  onPressed: () => model.open(branch.testsUrl!),
-                  child: Text(l.directoryAllTests),
-                ),
-              TextButton(
-                onPressed: () => model.open(doctor?.source ?? branch.source),
-                child: Text(l.directorySource),
-              ),
             ],
           ),
-          const SizedBox(height: 4),
-          Text(
-            !hasPhone
-                ? l.directoryPhoneUnavailable
-                : branch.phoneScope == 'network'
-                ? l.directoryNetworkPhone
-                : l.directoryContactNotice,
-            style: TextStyle(color: p.secondary, fontSize: 12),
-          ),
-          SelectableText(
-            (doctor?.source ?? branch.website).toString(),
-            style: TextStyle(color: p.secondary, fontSize: 12),
+          QuietFold(
+            compact: true,
+            title: Text(l.directoryContactsAndSource),
+            children: [
+              Text(
+                l.directorySourceChecked(
+                  DateFormat.yMMMd(l.localeName).format(branch.checkedAt),
+                ),
+                style: TextStyle(fontSize: 12, color: p.secondary),
+              ),
+              if (doctor != null)
+                Text(
+                  l.directoryDoctorChecked(
+                    DateFormat.yMMMd(l.localeName)
+                        .format(doctor.checkedAt ?? model.catalog.checkedAt),
+                  ),
+                  style: TextStyle(fontSize: 12, color: p.secondary),
+                ),
+              Wrap(
+                spacing: 8,
+                children: [
+                  if (hasPhone)
+                    OutlinedButton.icon(
+                      onPressed: () =>
+                          model.open(Uri(scheme: 'tel', path: phone)),
+                      icon: const Icon(Icons.phone_outlined, size: 18),
+                      label: Text(branch.phone),
+                    ),
+                  if (doctor == null && branch.testsUrl != null)
+                    TextButton(
+                      onPressed: () => model.open(branch.testsUrl!),
+                      child: Text(l.directoryAllTests),
+                    ),
+                  TextButton(
+                    onPressed: () =>
+                        model.open(doctor?.source ?? branch.source),
+                    child: Text(l.directorySource),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                !hasPhone
+                    ? l.directoryPhoneUnavailable
+                    : branch.phoneScope == 'network'
+                    ? l.directoryNetworkPhone
+                    : l.directoryContactNotice,
+                style: TextStyle(color: p.secondary, fontSize: 12),
+              ),
+              SelectableText(
+                (doctor?.source ?? branch.website).toString(),
+                style: TextStyle(color: p.secondary, fontSize: 12),
+              ),
+            ],
           ),
         ],
       ),

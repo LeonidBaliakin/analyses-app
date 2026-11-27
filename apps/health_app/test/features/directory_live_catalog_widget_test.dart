@@ -62,6 +62,8 @@ void main() {
         harness(device, model, language: language, dark: language == 'en'),
       );
       await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('directory-filters')));
+      await tester.pumpAndSettle();
       final network = find.byKey(const Key('directory-network'));
       await tester.ensureVisible(network);
       await tester.tap(
@@ -76,7 +78,13 @@ void main() {
       expect(find.byIcon(Icons.phone_outlined), findsNothing);
       final context = tester.element(find.byType(DirectoryPage));
       final l = AppLocalizations.of(context);
+      await tester.ensureVisible(find.text(l.directoryContactsAndSource));
+      await tester.tap(find.text(l.directoryContactsAndSource));
+      await tester.pumpAndSettle();
       expect(find.text(l.directoryPhoneUnavailable), findsOneWidget);
+      await tester.ensureVisible(find.byKey(const Key('directory-sources')));
+      await tester.tap(find.byKey(const Key('directory-sources')));
+      await tester.pumpAndSettle();
 
       expect(
         find.byKey(const Key('directory-publication-date')),
@@ -118,6 +126,12 @@ void main() {
         final l = AppLocalizations.of(
           tester.element(find.byType(DirectoryPage)),
         );
+        await tester.ensureVisible(find.text(l.directoryContactsAndSource));
+        await tester.tap(find.text(l.directoryContactsAndSource));
+        await tester.pumpAndSettle();
+        await tester.ensureVisible(find.byKey(const Key('directory-sources')));
+        await tester.tap(find.byKey(const Key('directory-sources')));
+        await tester.pumpAndSettle();
         final dates = [27, 20, 26, 21]
             .map(
               (day) =>

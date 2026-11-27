@@ -60,8 +60,14 @@ class ReportsSummary extends StatelessWidget {
 }
 
 class ReportsPage extends StatefulWidget {
-  const ReportsPage({required this.model, this.onClose, super.key});
+  const ReportsPage({
+    required this.model,
+    this.onClose,
+    this.exportPdf,
+    super.key,
+  });
   final ReportsViewModel model;
+  final HistoryPdfExporter? exportPdf;
   final VoidCallback? onClose;
   @override
   State<ReportsPage> createState() => _ReportsPageState();
@@ -69,6 +75,7 @@ class ReportsPage extends StatefulWidget {
 
 class _ReportsPageState extends State<ReportsPage> {
   HistoryViewModel? _history;
+  bool _pdfBusy = false, _pdfFailed = false;
   HealthReport get _all => HealthReport.build(
     widget.model.records.entries,
     RecordsViewModel.profileId,
@@ -124,6 +131,30 @@ class _ReportsPageState extends State<ReportsPage> {
     }
   }
 
+  Future<void> _pdf(bool share) async {
+    if (_pdfBusy || _history!.invalidPeriod) return;
+    final l = AppLocalizations.of(context);
+    final snapshot = _history!.printSnapshot(
+      profile: widget.model.records.profile == null
+          ? ''
+          : recordFields(
+              l,
+              widget.model.records.profile!.record,
+            ).map((f) => '${f.$1}: ${f.$2}').join(' · '),
+    );
+    setState(() {
+      _pdfBusy = true;
+      _pdfFailed = false;
+    });
+    try {
+      await widget.exportPdf!(snapshot, l.localeName, share);
+    } catch (_) {
+      if (mounted) setState(() => _pdfFailed = true);
+    } finally {
+      if (mounted) setState(() => _pdfBusy = false);
+    }
+  }
+
   void _details(HistoryRow row) {
     final l = AppLocalizations.of(context);
     final series = _all.series.firstWhere(
@@ -164,12 +195,12 @@ class _ReportsPageState extends State<ReportsPage> {
       final m = widget.model, l = AppLocalizations.of(context);
       return Column(
         children: [
-          if (m.error != null)
+          if (m.error != null || _pdfFailed)
             Padding(
               padding: const EdgeInsets.all(8),
               child: Text(l.reportExportError),
             ),
-          if (!m.canExport)
+          if (!m.canExport && widget.exportPdf == null)
             Padding(
               padding: const EdgeInsets.all(8),
               child: Text(l.reportSaveUnavailable),
@@ -199,8 +230,13 @@ class _ReportsPageState extends State<ReportsPage> {
                       }
                     },
               onOpenRow: _details,
-              onExport: m.canExport ? _export : null,
-              exporting: m.exporting,
+              onExport: widget.exportPdf != null
+                  ? () => _pdf(false)
+                  : m.canExport
+                  ? _export
+                  : null,
+              onShare: widget.exportPdf == null ? null : () => _pdf(true),
+              exporting: m.exporting || _pdfBusy,
             ),
           ),
         ],

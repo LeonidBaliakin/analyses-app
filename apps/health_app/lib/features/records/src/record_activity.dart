@@ -5,6 +5,11 @@ import '../../../l10n/generated/app_localizations.dart';
 import '../../../presentation/record_fields.dart';
 import '../../../presentation/reference_widgets.dart';
 import 'record_editor.dart';
+import '../../profile/profile.dart';
+import '../../capture/capture.dart';
+
+import 'package:document_processing/document_processing.dart';
+
 import 'records_view_model.dart';
 
 Future<void> showRecordActivity(
@@ -38,6 +43,71 @@ Future<void> showRecordActivity(
               : (record as MedicationCourse).start;
           return date(b.record).compareTo(date(a.record));
         });
+        if (!diary) {
+          return ProfileCoursesView(
+            addForm: EventRecordForm(
+              profile: model.profile!.record as MedicalProfile,
+              today: model.today,
+              kind: CapturedEventKind.medication,
+              newId: model.newId,
+              save: (records, operation) => model.saveBatch([
+                for (final record in records)
+                  RecordMutation(
+                    operationId: '$operation:${record.id}',
+                    record: record,
+                    expectedRevision: 0,
+                  ),
+              ]),
+            ),
+            courses: entries
+                .where((e) => e.record is MedicationCourse)
+                .map((e) => e.record as MedicationCourse)
+                .toList(),
+            today: model.today,
+            onAdd: () =>
+                showRecordEditor(context, model, RecordKind.medication),
+            onEdit: (r) => showRecordEditor(
+              context,
+              model,
+              RecordKind.medication,
+              entry: entries.firstWhere((e) => e.record.id == r.id),
+            ),
+            onExperience: (r, value) {
+              final old = entries.firstWhere((e) => e.record.id == r.id);
+              model.save(
+                RecordMutation(
+                  operationId: model.newId(),
+                  expectedRevision: old.revision,
+                  record: MedicationCourse(
+                    id: r.id,
+                    profileId: r.profileId,
+                    name: r.name,
+                    start: r.start,
+                    end: r.end,
+                    dosage: r.dosage,
+                    schedule: r.schedule,
+                    prescribedBy: r.prescribedBy,
+                    reason: r.reason,
+                    experience: value,
+                    regimen: r.regimen,
+                    notes: r.notes,
+                  ),
+                ),
+              );
+            },
+            onRemove: (r) {
+              final old = entries.firstWhere((e) => e.record.id == r.id);
+              model.save(
+                RecordMutation(
+                  operationId: model.newId(),
+                  record: r,
+                  expectedRevision: old.revision,
+                  delete: true,
+                ),
+              );
+            },
+          );
+        }
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -89,6 +159,6 @@ Future<void> showRecordActivity(
         );
       },
     ),
-    fullscreen: true,
+    fullscreen: false,
   );
 }

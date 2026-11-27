@@ -29,7 +29,7 @@ HistoryData demoHistoryData(BuildContext context, DemoCatalog catalog) {
               HistoryPoint(
                 date: date(point.date),
                 value: point.raw,
-                unit: result.unit,
+                unit: result.unit == '—' ? '' : result.unit,
                 reference: result.reference,
                 source: catalog.labs[point.visit],
                 status: point.status,

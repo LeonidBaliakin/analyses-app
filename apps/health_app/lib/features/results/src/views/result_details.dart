@@ -363,10 +363,14 @@ class DemoHistoryPage extends StatefulWidget {
   const DemoHistoryPage({
     required this.catalog,
     this.export,
+    this.exportPdf,
+    this.selectedSystemIds,
     this.onClose,
     super.key,
   });
   final DemoCatalog catalog;
+  final Set<int>? selectedSystemIds;
+  final HistoryPdfExporter? exportPdf;
   final Future<bool> Function(String, String)? export;
   final VoidCallback? onClose;
   @override
@@ -385,6 +389,13 @@ class _DemoHistoryPageState extends State<DemoHistoryPage> {
         demoHistoryData(context, widget.catalog),
         today: CalendarDate(now.year, now.month, now.day),
       );
+      if (widget.selectedSystemIds case final ids?) {
+        for (final result in widget.catalog.results.where(
+          (r) => ids.contains(r.systemId),
+        )) {
+          _model!.select(result.id);
+        }
+      }
     } else {
       _model!.updateData(demoHistoryData(context, widget.catalog));
     }
@@ -396,15 +407,18 @@ class _DemoHistoryPageState extends State<DemoHistoryPage> {
     super.dispose();
   }
 
-  Future<void> _export() async {
+  Future<void> _export({bool share = false}) async {
     if (_exporting) return;
     setState(() => _exporting = true);
     final l = AppLocalizations.of(context);
     try {
-      final saved = await widget.export!(
-        'analysis-history.html',
-        historyDocument(_model!, l),
-      );
+      final snapshot = _model!.printSnapshot();
+      final saved = widget.exportPdf != null
+          ? await widget.exportPdf!(snapshot, l.localeName, share)
+          : await widget.export!(
+              'analysis-history.html',
+              historyDocument(_model!, l),
+            );
       if (saved && mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(l.historyExportHint)));
@@ -428,7 +442,10 @@ class _DemoHistoryPageState extends State<DemoHistoryPage> {
       widget.catalog,
       widget.catalog.result(row.id),
     ),
-    onExport: widget.export == null ? null : _export,
+    onExport: widget.export == null && widget.exportPdf == null
+        ? null
+        : _export,
+    onShare: widget.exportPdf == null ? null : () => _export(share: true),
     exporting: _exporting,
   );
 }

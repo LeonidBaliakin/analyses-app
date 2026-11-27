@@ -11,7 +11,7 @@ import 'sync_store.dart';
 /// SQL schema and transactions stay here; only domain values cross the port.
 final class RecordsDatabase extends GeneratedDatabase
     with DraftStorage, SyncStorage
-    implements HealthRecordsRepository, OriginalRepository {
+    implements HealthRecordBatchRepository, OriginalRepository {
   RecordsDatabase(super.executor, {DateTime Function()? clock})
     : _clock = clock ?? DateTime.now;
   final DateTime Function() _clock;
@@ -225,6 +225,24 @@ final class RecordsDatabase extends GeneratedDatabase
         WHERE profile_id = ? AND record_id = ? ORDER BY revision DESC''',
         variables: [Variable(profileId), Variable(recordId)],
       ).get()).map(_entry).toList(growable: false);
+
+  @override
+  Future<List<int>> commitBatch(List<RecordMutation> mutations) =>
+      transaction(() async {
+        if (mutations.isEmpty ||
+            mutations.map((m) => m.record.profileId).toSet().length != 1 ||
+            mutations.map((m) => m.record.id).toSet().length !=
+                mutations.length ||
+            mutations.map((m) => m.operationId).toSet().length !=
+                mutations.length) {
+          throw const InvalidRecord('batch');
+        }
+        final revisions = <int>[];
+        for (final mutation in mutations) {
+          revisions.add(await commit(mutation));
+        }
+        return List.unmodifiable(revisions);
+      });
 
   @override
   Future<int> commit(RecordMutation mutation) async {

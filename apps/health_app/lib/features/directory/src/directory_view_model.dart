@@ -53,6 +53,8 @@ final class DirectoryViewModel extends ChangeNotifier {
   DirectoryCity city = DirectoryCity.spb;
   String labQuery = '', doctorQuery = '';
   String? specialtyId;
+  final Set<String> _specialtyIds = {};
+  Set<String> get specialtyIds => Set.unmodifiable(_specialtyIds);
   String? networkId;
   final Set<String> _testIds = {};
   Set<String> get testIds => Set.unmodifiable(_testIds);
@@ -70,10 +72,17 @@ final class DirectoryViewModel extends ChangeNotifier {
               doctorsOnly: doctors,
               query: doctors ? doctorQuery : labQuery,
               testIds: doctors ? const {} : _testIds,
-              specialtyId: doctors ? specialtyId : null,
+              specialtyId: null,
             )
             .where(
-              (hit) => networkId == null || hit.branch.network == networkId,
+              (hit) =>
+                  (networkId == null || hit.branch.network == networkId) &&
+                  (!doctors ||
+                      _specialtyIds.isEmpty ||
+                      (hit.doctor != null &&
+                          catalog
+                              .doctorSpecialtyIds(hit.doctor!)
+                              .any(_specialtyIds.contains))),
             )
             .toList();
 
@@ -120,6 +129,7 @@ final class DirectoryViewModel extends ChangeNotifier {
     _checkNetwork();
     _testIds.clear();
     specialtyId = null;
+    _specialtyIds.clear();
     notifyListeners();
   }
 
@@ -134,6 +144,44 @@ final class DirectoryViewModel extends ChangeNotifier {
       return;
     }
     specialtyId = id;
+    _specialtyIds
+      ..clear()
+      ..addAll(id == null ? <String>[] : [id]);
+    notifyListeners();
+  }
+
+  void toggleSpecialty(String id) {
+    if (!catalog.specialtyOptions(city).any((o) => o.id == id)) return;
+    if (!_specialtyIds.remove(id)) _specialtyIds.add(id);
+    specialtyId = _specialtyIds.length == 1 ? _specialtyIds.single : null;
+    notifyListeners();
+  }
+
+  List<DirectoryTestOption> suggestTests(
+    String language,
+  ) => availableTests(language)
+      .where(
+        (o) => directorySearchText(
+          '${o.label.inLanguage(language)} ${catalog.terminology.searchText(o.id)}',
+        ).contains(directorySearchText(labQuery)),
+      )
+      .toList();
+  void selectBasicTests() {
+    const wanted = [
+      'Общий анализ крови',
+      'АЛТ',
+      'АСТ',
+      'Билирубин общий',
+      'Креатинин',
+      'Общий анализ мочи',
+      'Глюкоза',
+      'Витамин D',
+    ];
+    for (final option in availableTests('ru')) {
+      if (wanted.any((n) => option.label.inLanguage('ru').startsWith(n))) {
+        _testIds.add(option.id);
+      }
+    }
     notifyListeners();
   }
 

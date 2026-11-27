@@ -77,6 +77,30 @@ final class RecordsViewModel extends ChangeNotifier {
     }
   }
 
+  Future<bool> saveBatch(List<RecordMutation> mutations) async {
+    if (saving || loading || !loaded) return false;
+    saving = true;
+    error = null;
+    _notify();
+    try {
+      await _records.saveBatch(mutations);
+      _entries = List.unmodifiable(await _records.repository.read(profileId));
+      return true;
+    } on RecordConflict {
+      error = RecordsError.conflict;
+      return false;
+    } on InvalidRecord {
+      error = RecordsError.invalid;
+      return false;
+    } catch (_) {
+      error = RecordsError.save;
+      return false;
+    } finally {
+      saving = false;
+      _notify();
+    }
+  }
+
   Future<List<RecordEntry>> history(String id) =>
       _records.repository.history(profileId, id);
 

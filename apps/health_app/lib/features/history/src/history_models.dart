@@ -57,3 +57,30 @@ final class HistoryData {
 
 DateTime historyDate(CalendarDate date) =>
     DateTime.utc(date.year, date.month, date.day);
+
+/// Immutable export boundary: changing live filters while the platform dialog is
+/// open cannot widen the report or add newly arriving records.
+final class HistoryPrintSnapshot {
+  HistoryPrintSnapshot({
+    required Iterable<HistoryRow> rows,
+    required Iterable<CalendarDate> dates,
+    required Iterable<HistoryEvent> events,
+    required this.period,
+    required this.isDemo,
+    this.profile = '',
+  }) : rows = List.unmodifiable(rows),
+       dates = List.unmodifiable(dates),
+       events = List.unmodifiable(events);
+  final List<HistoryRow> rows;
+  final List<CalendarDate> dates;
+  final List<HistoryEvent> events;
+  final ReportPeriod period;
+  final bool isDemo;
+  final String profile;
+}
+
+typedef HistoryPdfExporter = Future<bool> Function(
+  HistoryPrintSnapshot snapshot,
+  String language,
+  bool share,
+);

@@ -54,6 +54,8 @@ void main() {
           harness(device, directory, language: language, doctors: true),
         );
         await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('directory-filters')));
+        await tester.pumpAndSettle();
         final label = language == 'ru'
             ? 'Все специальности'
             : 'All specialties';
@@ -236,9 +238,9 @@ void main() {
     directory.selectCity(DirectoryCity.voronezh);
     await tester.pumpWidget(harness(device, directory, language: 'ru'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Выбрать анализы'));
+    await tester.tap(find.text('Список на сдачу'));
     await tester.pumpAndSettle();
-    final filter = find.widgetWithText(FilterChip, 'Общий анализ мочи');
+    final filter = find.widgetWithText(OptionChip, 'Общий анализ мочи');
     expect(filter, findsOneWidget);
     await tester.ensureVisible(filter);
     await tester.tap(filter);
@@ -255,7 +257,7 @@ void main() {
     );
     await tester.pumpWidget(harness(device, directory, language: 'en'));
     await tester.pumpAndSettle();
-    expect(find.widgetWithText(InputChip, 'Urinalysis'), findsOneWidget);
+    expect(find.widgetWithText(OptionChip, 'Urinalysis'), findsOneWidget);
     expect(directory.testIds, {'test.urinalysis'});
     expect(find.text('Общий анализ мочи с микроскопией'), findsWidgets);
     expect(tester.takeException(), isNull);
@@ -276,11 +278,11 @@ void main() {
       await tester.pumpWidget(harness(device, directory, language: 'ru'));
       await tester.pumpAndSettle();
       expect(directory.hits(doctors: false), hasLength(29));
-      await tester.tap(find.text('Выбрать анализы'));
+      await tester.tap(find.text('Список на сдачу'));
       await tester.pumpAndSettle();
       await tester.tap(
         find.widgetWithText(
-          FilterChip,
+          OptionChip,
           'Клинический анализ крови с лейкоцитарной формулой без СОЭ',
         ),
       );
@@ -298,7 +300,7 @@ void main() {
       );
       // Each transition remounts selectable addresses in a different result list.
       final filter = find.widgetWithText(
-        FilterChip,
+        OptionChip,
         'Клинический анализ крови с лейкоцитарной формулой без СОЭ',
       );
       for (var i = 0; i < 2; i++) {
@@ -504,8 +506,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(directory.hits(doctors: false), isNotEmpty);
     expect(tester.takeException(), isNull);
-    await tester.ensureVisible(find.text('Выбрать анализы'));
-    await tester.tap(find.text('Выбрать анализы'));
+    await tester.ensureVisible(find.text('Список на сдачу'));
+    await tester.tap(find.text('Список на сдачу'));
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
   });

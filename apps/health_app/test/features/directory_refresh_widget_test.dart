@@ -38,6 +38,9 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
+        await tester.ensureVisible(find.byKey(const Key('directory-sources')));
+        await tester.tap(find.byKey(const Key('directory-sources')));
+        await tester.pumpAndSettle();
         final button = find.text(
           language == 'ru' ? 'Обновить каталог' : 'Refresh directory',
         );

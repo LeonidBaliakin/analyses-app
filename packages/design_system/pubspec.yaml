@@ -12,6 +12,10 @@ dependencies:
 dev_dependencies:
   flutter_lints: ^6.0.0
 flutter:
+  assets:
+    - assets/fonts/OFL.txt
+    - assets/fonts/Manrope-Regular.ttf
+    - assets/fonts/Manrope-Bold.ttf
   fonts:
     - family: Manrope
       fonts:

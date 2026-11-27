@@ -4,6 +4,7 @@ import 'package:medical_domain/medical_domain.dart';
 
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../presentation/category_presentation.dart';
+import '../../../presentation/calendar_input.dart';
 import 'record_history.dart';
 import 'records_view_model.dart';
 import 'result_coding_view_model.dart';
@@ -48,6 +49,8 @@ class _RecordEditorState extends State<_RecordEditor> {
   late final String _deleteOperation = widget.model.newId();
   AnalysisCategory _category = AnalysisCategory.blood;
   ResultValueKind _valueKind = ResultValueKind.numeric;
+  MedicationExperience? _experience;
+  MedicationRegimen? _regimen;
   bool _dirty = false;
   String? _invalidField;
   late final ResultCodingViewModel _coding;
@@ -84,7 +87,10 @@ class _RecordEditorState extends State<_RecordEditor> {
             'notes': r.notes,
           });
         case MedicationCourse():
+          _experience = r.experience;
+          _regimen = r.regimen;
           values.addAll({
+            'reason': r.reason,
             'start': r.start.toString(),
             'end': r.end?.toString() ?? '',
             'dosage': r.dosage,
@@ -125,6 +131,7 @@ class _RecordEditorState extends State<_RecordEditor> {
       'dosage',
       'schedule',
       'prescribedBy',
+      'reason',
       'source',
       'time',
       'offset',
@@ -204,6 +211,41 @@ class _RecordEditorState extends State<_RecordEditor> {
           helperMaxLines: 4,
           errorMaxLines: 4,
           hintText: date ? l.localDateHint : null,
+          suffixIcon: date
+              ? IconButton(
+                  tooltip: l.chooseDate,
+                  icon: const Icon(Icons.calendar_today_outlined, size: 17),
+                  onPressed: widget.model.saving
+                      ? null
+                      : () async {
+                          final value = await pickCalendarDate(
+                            context,
+                            _text(key),
+                          );
+                          if (value != null) {
+                            _fields[key]!.text = value;
+                            _changed();
+                          }
+                        },
+                )
+              : key == 'time'
+              ? IconButton(
+                  tooltip: l.chooseTime,
+                  icon: const Icon(Icons.schedule, size: 17),
+                  onPressed: widget.model.saving
+                      ? null
+                      : () async {
+                          final value = await pickLocalTime(
+                            context,
+                            _text(key),
+                          );
+                          if (value != null) {
+                            _fields[key]!.text = value;
+                            _changed();
+                          }
+                        },
+                )
+              : null,
         ),
         validator: (text) {
           if (required && (text ?? '').trim().isEmpty) return l.localRequired;
@@ -235,6 +277,7 @@ class _RecordEditorState extends State<_RecordEditor> {
           id: _id,
           name: _text('name'),
           birthDate: _optionalDate('birthDate'),
+          details: (widget.entry?.record as MedicalProfile?)?.details,
           history: _text('history'),
           allergies: _text('allergies'),
           notes: _text('notes'),
@@ -265,10 +308,15 @@ class _RecordEditorState extends State<_RecordEditor> {
           profileId: common,
           name: _text('name'),
           start: _date('start'),
-          end: _optionalDate('end'),
+          end: _regimen == MedicationRegimen.ongoing
+              ? null
+              : _optionalDate('end'),
+          regimen: _regimen,
           dosage: _text('dosage'),
           schedule: _text('schedule'),
           prescribedBy: _text('prescribedBy'),
+          reason: _text('reason'),
+          experience: _experience,
           notes: _text('notes'),
         );
       case RecordKind.measurement:
@@ -509,10 +557,59 @@ class _RecordEditorState extends State<_RecordEditor> {
                                     required: true,
                                     date: true,
                                   ),
-                                  _input('end', l.localEndDate, date: true),
+                                  if (_regimen != MedicationRegimen.ongoing)
+                                    _input('end', l.localEndDate, date: true),
+                                  AppSelect<MedicationRegimen?>(
+                                    label: l.medicationMode,
+                                    value: _regimen,
+                                    options: [
+                                      AppSelectOption(
+                                        value: null,
+                                        label: l.profileNotStated,
+                                      ),
+                                      AppSelectOption(
+                                        value: MedicationRegimen.course,
+                                        label: l.medicationCourse,
+                                      ),
+                                      AppSelectOption(
+                                        value: MedicationRegimen.ongoing,
+                                        label: l.medicationConstant,
+                                      ),
+                                    ],
+                                    onChanged: (value) => setState(() {
+                                      _regimen = value;
+                                      _changed();
+                                    }),
+                                  ),
+                                  const SizedBox(height: 16),
                                   _input('dosage', l.localDosage),
                                   _input('schedule', l.localSchedule),
                                   _input('prescribedBy', l.localPrescribedBy),
+                                  _input('reason', l.medicationReason),
+                                  AppSelect<MedicationExperience?>(
+                                    label: l.medicationExperience,
+                                    value: _experience,
+                                    options: [
+                                      AppSelectOption(
+                                        value: null,
+                                        label: l.profileNotStated,
+                                      ),
+                                      for (final v
+                                          in MedicationExperience.values)
+                                        AppSelectOption(
+                                          value: v,
+                                          label: [
+                                            l.medicationFirstCourse,
+                                            l.medicationRepeatCourse,
+                                            l.medicationUnknownCourse,
+                                          ][v.index],
+                                        ),
+                                    ],
+                                    onChanged: (v) {
+                                      setState(() => _experience = v);
+                                      _changed();
+                                    },
+                                  ),
                                 ],
                                 if (widget.kind == RecordKind.measurement) ...[
                                   _input(

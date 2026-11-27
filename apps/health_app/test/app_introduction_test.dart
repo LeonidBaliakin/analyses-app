@@ -25,6 +25,8 @@ String route(WidgetTester tester) =>
         .path;
 
 Future<void> press(WidgetTester tester, Key key) async {
+  await tester.ensureVisible(find.byKey(key));
+  await tester.pumpAndSettle();
   await tester.tap(find.byKey(key));
   await tester.pumpAndSettle();
 }
@@ -74,7 +76,7 @@ void main() {
       introductionCompleted: false,
     );
     expect(find.text('Шаг 1 из 6'), findsOneWidget);
-    expect(find.text('Заполните профиль'), findsOneWidget);
+    expect(find.text('Начните с профиля'), findsOneWidget);
   });
 
   testWidgets('settings restart opens the app introduction', (tester) async {
@@ -88,7 +90,7 @@ void main() {
     await tester.tap(restart);
     await tester.pumpAndSettle();
     expect(find.text('Шаг 1 из 6'), findsOneWidget);
-    expect(find.text('Заполните профиль'), findsOneWidget);
+    expect(find.text('Начните с профиля'), findsOneWidget);
   });
 
   testWidgets(
@@ -96,7 +98,11 @@ void main() {
     (tester) async {
       final storage = MemoryPreferencesRepository();
       await launch(tester, repository: storage, initialLocation: '/settings');
-      final support = find.byType(TextField).last;
+      await tester.ensureVisible(find.text('Support'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Support'));
+      await tester.pumpAndSettle();
+      final support = find.byKey(const Key('support-message'));
       await tester.ensureVisible(support);
       await tester.enterText(support, 'Keep this draft');
       final restart = find.text('Start the introduction again');

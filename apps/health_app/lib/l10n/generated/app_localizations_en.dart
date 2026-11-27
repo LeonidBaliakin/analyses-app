@@ -123,8 +123,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signIn => 'Sign in';
 
   @override
-  String get previewOnly =>
-      'This is an interface preview. Sign-in, medical record storage and external services are not connected yet.';
+  String get previewOnly => 'This feature is not available yet.';
 
   @override
   String get close => 'Close';
@@ -447,7 +446,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Information that helps your doctor interpret tests. Medications, weight and illnesses appear alongside results by date. The service does not assess your profile.';
 
   @override
-  String get profileComplete => 'Profile 100% complete';
+  String get profileComplete => '100% complete';
 
   @override
   String get profileCompleteHint =>
@@ -484,22 +483,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileDocuments => 'Documents and imaging';
 
   @override
-  String get profileComplaintsSub => 'What bothers you and since when';
+  String get profileComplaintsSub => 'Symptoms';
 
   @override
   String get profileBaseSub => 'Sex, age, height';
 
   @override
-  String get profileMedicinesSub => 'Courses and ongoing use';
+  String get profileMedicinesSub => 'What you take';
 
   @override
   String get profileWeightSub => 'Weight history';
 
   @override
-  String get profileIllnessSub => 'Recent illnesses, fever, antibiotics';
+  String get profileIllnessSub => 'Illnesses and dates';
 
   @override
-  String get profileHospitalSub => 'When and where you stayed in hospital';
+  String get profileHospitalSub => 'Hospital and dates';
 
   @override
   String get profileAllergiesSub => 'Triggers and reactions';
@@ -590,18 +589,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get whatTests => 'Which results to bring →';
 
   @override
-  String get sharingTitle => 'Share results with a doctor';
+  String get sharingTitle => 'Share results';
 
   @override
   String get doctorView => 'Open doctor view';
 
   @override
   String get sharingIntro =>
-      'For one-time access a doctor scans a QR code or opens a link. Permanent access uses a registered account. You can revoke access at any time.';
+      'Send a link or show the QR code to your clinician.';
 
   @override
-  String get sharingDemo =>
-      'The link and QR code are illustrative. They do not grant access to health records.';
+  String get sharingDemo => 'Demo · example link and QR code.';
 
   @override
   String get accessDuration => 'Access duration';
@@ -656,7 +654,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emailLabel => 'Email';
 
   @override
-  String get accessToMine => 'Who can access my results';
+  String get accessToMine => 'People I shared with';
 
   @override
   String get sharedWithMe => 'Shared with me';
@@ -1028,46 +1026,46 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get introductionProfileTitle => 'Complete your profile';
+  String get introductionProfileTitle => 'Start with your profile';
 
   @override
   String get introductionProfileBody =>
       'Enter your date of birth and height. You can add other details later.';
 
   @override
-  String get introductionReportsTitle => 'Add your first test report';
+  String get introductionReportsTitle => 'Add a test';
 
   @override
   String get introductionReportsBody =>
-      'The Tests section contains your results. The plus button opens the available ways to add data. Review recognised values against the original report before confirming them.';
+      'Upload a photo, screenshot or PDF. Check the values against the report before saving.';
 
   @override
-  String get introductionSummaryTitle => 'Explore your results';
+  String get introductionSummaryTitle => 'Compare results';
 
   @override
   String get introductionSummaryBody =>
-      'The summary shows your latest visit. History compares tests by date, with indicator selection and events.';
+      'The summary shows your latest visit. Open history to compare tests by date.';
 
   @override
-  String get introductionLabsTitle => 'Compare laboratories';
+  String get introductionLabsTitle => 'Choose a laboratory';
 
   @override
   String get introductionLabsBody =>
-      'In Find a lab, search for tests or providers in Saint Petersburg and Voronezh. Choose an address or device location to see the nearest branches. Confirm availability of network-listed tests at the branch.';
+      'Build a test list and compare laboratories by price and distance.';
 
   @override
   String get introductionDoctorsTitle => 'Find a specialist';
 
   @override
   String get introductionDoctorsBody =>
-      'In Doctors, search for a specialty or a doctor and open a card. It shows the clinic and information about the appointment.';
+      'See which tests to bring to your appointment. Open the clinic website from the card to book.';
 
   @override
-  String get introductionAppointmentTitle => 'Plan an appointment';
+  String get introductionAppointmentTitle => 'Share your results';
 
   @override
   String get introductionAppointmentBody =>
-      'The card links to the provider’s booking website and phone number. The clinic confirms your booking. You can repeat this introduction in Settings.';
+      'Show the QR code or send a link at your appointment. Set the access duration here.';
 
   @override
   String get introductionNotice =>
@@ -1987,4 +1985,504 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supportOther => 'Other';
+
+  @override
+  String get addShort => '+ Add';
+
+  @override
+  String get clearSelection => 'Clear all';
+
+  @override
+  String get verifyHospitalValidity => 'confirm validity for admission';
+
+  @override
+  String get validityFortnight => 'valid for 14 days';
+
+  @override
+  String get validityMonth => 'valid for 1 month';
+
+  @override
+  String get historyShort => 'History';
+
+  @override
+  String get historyLegend => 'Table legend';
+
+  @override
+  String get historyPdfActions => 'PDF actions';
+
+  @override
+  String get historySavePdf => 'Save PDF';
+
+  @override
+  String get historySharePdf => 'Share PDF';
+
+  @override
+  String get diaryTileSubtitle => 'Glucose, blood pressure, sleep';
+
+  @override
+  String get visitReason => 'Reason:';
+
+  @override
+  String get reasonDoctor => 'Prescribed by doctor';
+
+  @override
+  String get reasonCheckup => 'Checkup';
+
+  @override
+  String get reasonRoutine => 'Routine screening';
+
+  @override
+  String get reasonHospital => 'In hospital';
+
+  @override
+  String get reasonSanatorium => 'White Nights sanatorium';
+
+  @override
+  String get reasonAdd => '+ reason';
+
+  @override
+  String get myAnalyses => 'My tests';
+
+  @override
+  String get allOption => 'All';
+
+  @override
+  String get historyPeriodEvents => 'Events in period';
+
+  @override
+  String get durationMonth => '30 days';
+
+  @override
+  String get onlyOutsideRange => 'Outside reference only';
+
+  @override
+  String get selectedBlocks => 'Selected sections';
+
+  @override
+  String get notificationsAndPermissions => 'Notifications and permissions';
+
+  @override
+  String get selectedSpecialties => 'Selected specialties';
+
+  @override
+  String get testsToTake => 'Tests to take';
+
+  @override
+  String get basicTestSet => '+ Basic set';
+
+  @override
+  String get directoryFilters => 'Directory filters';
+
+  @override
+  String get directoryPriceUnknown => 'Price not published';
+
+  @override
+  String get directoryContactsAndSource => 'Contacts and source';
+
+  @override
+  String get profileFieldSex => 'Sex';
+
+  @override
+  String get profileFieldHeight => 'Height, cm';
+
+  @override
+  String get profileFieldWaist => 'Waist, cm';
+
+  @override
+  String get profileFieldHips => 'Hips, cm';
+
+  @override
+  String get profileFieldChest => 'Chest, cm';
+
+  @override
+  String get profileFieldCycle => 'Cycle day at visit';
+
+  @override
+  String get profileFieldCity => 'City';
+
+  @override
+  String get profileFieldTravel => 'Travel in the last year: where and when';
+
+  @override
+  String get profileFieldActivity => 'Sport and physical activity';
+
+  @override
+  String get profileFieldSport => 'Type of sport';
+
+  @override
+  String get profileFieldFoodNotes => 'Diet details';
+
+  @override
+  String get profileFieldStress => 'Stress in the last month';
+
+  @override
+  String get profileFieldSleep => 'Average sleep, hours per night';
+
+  @override
+  String get profileFieldDiet => 'Diet';
+
+  @override
+  String get profileFieldSmoking => 'Smoking';
+
+  @override
+  String get profileFieldPacksPerDay => 'Packs per day';
+
+  @override
+  String get profileFieldSmokingQuitPrecision => 'When you stopped smoking';
+
+  @override
+  String get profileFieldSmokingQuitDate => 'Date';
+
+  @override
+  String get profileFieldSmokingQuitYear => 'Approximate year';
+
+  @override
+  String get profileFieldAlcohol => 'Alcohol, how often';
+
+  @override
+  String get profileFieldAlcoholAmount => 'Alcohol per occasion';
+
+  @override
+  String get profileFieldAlcoholQuitPrecision => 'When you stopped drinking';
+
+  @override
+  String get profileFieldAlcoholQuitDate => 'Date';
+
+  @override
+  String get profileFieldAlcoholQuitYear => 'Approximate year';
+
+  @override
+  String get profileSexMale => 'Male';
+
+  @override
+  String get profileSexFemale => 'Female';
+
+  @override
+  String get profileOptionalMeasures => 'Circumferences · optional';
+
+  @override
+  String get profileAddRecord => '+ Add entry';
+
+  @override
+  String get profileDescription => 'Description';
+
+  @override
+  String get profileWhen => 'When';
+
+  @override
+  String get profileUnknownDate => 'Date unknown';
+
+  @override
+  String get profileExactDate => 'Exact date';
+
+  @override
+  String get profileApproximateYear => 'Approximate year';
+
+  @override
+  String get profileChildhood => 'Since childhood';
+
+  @override
+  String get profileRemoveEntry => 'Remove entry';
+
+  @override
+  String get profileChronic => 'Chronic conditions';
+
+  @override
+  String get profileSurgery => 'Surgery and injuries';
+
+  @override
+  String get profileFamily => 'Hereditary and genetic conditions';
+
+  @override
+  String get profileOtherHistory => 'Other information for your doctor';
+
+  @override
+  String get profileActivity1 => 'Little activity, sedentary work';
+
+  @override
+  String get profileActivity2 => '1–2 workouts or walks a week';
+
+  @override
+  String get profileActivity3 => '3–4 workouts a week';
+
+  @override
+  String get profileActivity4 => '5+ workouts or physical work';
+
+  @override
+  String get profileNo => 'No';
+
+  @override
+  String get profileSometimes => 'Yes, sometimes';
+
+  @override
+  String get profileOften => 'Yes, almost constantly';
+
+  @override
+  String get profileDietNormal => 'Regular';
+
+  @override
+  String get profileDietVegetarian => 'Vegetarian';
+
+  @override
+  String get profileDietVegan => 'Vegan';
+
+  @override
+  String get profileDietKeto => 'Low carbohydrate / keto';
+
+  @override
+  String get profileDietFasting => 'Intermittent fasting';
+
+  @override
+  String get profileNeverSmoked => 'Do not smoke';
+
+  @override
+  String get profileSmokes => 'Smoke';
+
+  @override
+  String get profileFormerSmoker => 'Stopped smoking';
+
+  @override
+  String get profileNoAlcohol => 'Do not drink';
+
+  @override
+  String get profileFormerDrinker => 'Previously drank';
+
+  @override
+  String get profileAlcoholRare => 'Less than weekly';
+
+  @override
+  String get profileAlcoholWeekly => '1–3 times a week';
+
+  @override
+  String get profileAlcoholOften => 'More often';
+
+  @override
+  String get profilePacksHalf => 'Half a pack';
+
+  @override
+  String get profileNotStated => 'Not stated';
+
+  @override
+  String get profileEventName => 'What happened';
+
+  @override
+  String get profileFrom => 'From';
+
+  @override
+  String get profileTo => 'To';
+
+  @override
+  String get profileTemperature => 'Maximum temperature, °C (optional)';
+
+  @override
+  String get profileInstitution => 'Where';
+
+  @override
+  String get profileOutcomes => 'Hospitalization outcome';
+
+  @override
+  String get profileReaction => 'Reaction';
+
+  @override
+  String get profileAdd => 'Add';
+
+  @override
+  String get profileSave => 'Save';
+
+  @override
+  String get medicationExperience => 'Course experience';
+
+  @override
+  String get medicationFirstCourse => 'First course';
+
+  @override
+  String get medicationRepeatCourse => 'Repeat course';
+
+  @override
+  String get medicationUnknownCourse => 'Do not remember';
+
+  @override
+  String get medicationReason => 'Reason for prescription';
+
+  @override
+  String profileFilledPercent(int percent) {
+    return '$percent% complete';
+  }
+
+  @override
+  String profileEntries(int count) {
+    return '$count entries';
+  }
+
+  @override
+  String get tourOpenBasics => 'Open basic details';
+
+  @override
+  String get tourOpenUpload => 'Open upload options';
+
+  @override
+  String get otherRecords => 'Other records';
+
+  @override
+  String get pdfUnit => 'Unit';
+
+  @override
+  String get pdfReference => 'Reference';
+
+  @override
+  String get captureWhat => 'What happened?';
+
+  @override
+  String get captureHint => 'Describe what happened…';
+
+  @override
+  String get captureDictate => 'Dictate';
+
+  @override
+  String get captureExample => 'View example';
+
+  @override
+  String get captureCheck => 'Review entries';
+
+  @override
+  String get captureReview => 'Review entries';
+
+  @override
+  String get captureSource => 'Original story';
+
+  @override
+  String get captureConfirm => 'Confirm and save';
+
+  @override
+  String get captureVoiceHint =>
+      'Use your device keyboard dictation or type your story.';
+
+  @override
+  String get captureLocalHint =>
+      'Local draft. Check names, dates and sections before saving.';
+
+  @override
+  String get captureMissingDate =>
+      'Specify the date: the year is missing or the date was not recognized.';
+
+  @override
+  String get captureKind => 'Section';
+
+  @override
+  String get captureIllness => 'Illness';
+
+  @override
+  String get captureMedication => 'Medication';
+
+  @override
+  String get captureHospital => 'Hospitalization';
+
+  @override
+  String get captureComplaint => 'Symptom';
+
+  @override
+  String get captureWeight => 'Weight';
+
+  @override
+  String get captureAllergy => 'Allergy';
+
+  @override
+  String get captureTravel => 'Travel';
+
+  @override
+  String get captureSample =>
+      'I was ill with flu on 10.11.2026; taking vitamin D from 11.11.2026. A trip to a health resort.';
+
+  @override
+  String get medicationMode => 'Course mode';
+
+  @override
+  String get medicationConstant => 'Ongoing';
+
+  @override
+  String get medicationCourse => 'Course';
+
+  @override
+  String get diaryWhat => 'What did you measure?';
+
+  @override
+  String get diaryGlucose => 'Blood glucose';
+
+  @override
+  String get diaryPressure => 'Blood pressure';
+
+  @override
+  String get diarySleep => 'Sleep';
+
+  @override
+  String get diaryGlucoseValue => 'Glucose, mmol/L';
+
+  @override
+  String get diarySystolic => 'Systolic, mmHg';
+
+  @override
+  String get diaryDiastolic => 'Diastolic, mmHg';
+
+  @override
+  String get diarySleepValue => 'Duration, h';
+
+  @override
+  String get diarySave => 'Save measurement';
+
+  @override
+  String get diaryEntries => 'Entries';
+
+  @override
+  String get diaryEmpty => 'No entries yet.';
+
+  @override
+  String get selectPrint => 'Select for printing';
+
+  @override
+  String get printSelected => 'Print selected';
+
+  @override
+  String get medicationActive => 'taking';
+
+  @override
+  String get medicationCompleted => 'completed';
+
+  @override
+  String get guestCaption => 'Guest · example data';
+
+  @override
+  String get signInRegister => 'Sign in or register';
+
+  @override
+  String get labShort => 'Lab';
+
+  @override
+  String get reasonDoctorShort => 'Doctor prescribed';
+
+  @override
+  String get captureMedicationName => 'Medication and dosage';
+
+  @override
+  String get captureIllnessName => 'Illness';
+
+  @override
+  String get captureComplaintName => 'What is bothering you';
+
+  @override
+  String get captureHospitalName => 'Reason for hospitalization';
+
+  @override
+  String get captureAllergyName => 'Allergic to';
+
+  @override
+  String get captureStartDate => 'Start date';
+
+  @override
+  String get captureEndDate => 'End date';
+
+  @override
+  String get chooseDate => 'Choose date';
+
+  @override
+  String get chooseTime => 'Choose time';
 }

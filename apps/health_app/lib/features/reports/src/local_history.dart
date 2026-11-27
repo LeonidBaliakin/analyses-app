@@ -39,6 +39,20 @@ HistoryData localHistoryData(HealthReport report, BuildContext context) =>
           ),
       ],
       events: [
+        for (final event in report.profile?.details?.events ?? <ProfileEvent>[])
+          if (event.start != null && event.kind != ProfileEventKind.allergy)
+            HistoryEvent(
+              id: event.id,
+              name: event.name,
+              start: event.start!,
+              end: event.end,
+              kind: event.kind == ProfileEventKind.complaint
+                  ? HistoryEventKind.complaint
+                  : HistoryEventKind.illness,
+              detail: event.fields.values
+                  .where((v) => v.isNotEmpty)
+                  .join(' · '),
+            ),
         for (final course in report.medications)
           HistoryEvent(
             id: course.id,
@@ -50,6 +64,7 @@ HistoryData localHistoryData(HealthReport report, BuildContext context) =>
               course.dosage,
               course.schedule,
               course.prescribedBy,
+              course.reason,
               course.notes,
             ].where((v) => v.isNotEmpty).join(' · '),
           ),

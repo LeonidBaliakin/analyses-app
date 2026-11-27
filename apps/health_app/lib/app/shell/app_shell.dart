@@ -13,13 +13,14 @@ class AppShell extends StatelessWidget {
     required this.settings,
     this.onAdd,
     this.modeControl,
+    this.accountCaption,
     this.onDirectoryOpened,
     super.key,
   });
   final StatefulNavigationShell navigationShell;
   final SettingsViewModel settings;
   final VoidCallback? onAdd;
-  final Widget? modeControl;
+  final Widget? modeControl, accountCaption;
   final VoidCallback? onDirectoryOpened;
   @override
   Widget build(BuildContext context) {
@@ -66,7 +67,11 @@ class AppShell extends StatelessWidget {
           child: Scaffold(
             extendBody: !wide,
             appBar: AppBar(
-              toolbarHeight: scale > 1.4 ? 68 : 54,
+              toolbarHeight: scale > 1.4
+                  ? 68
+                  : wide
+                  ? 61
+                  : 53,
               automaticallyImplyLeading: false,
               titleSpacing: 12,
               title: Row(
@@ -88,10 +93,14 @@ class AppShell extends StatelessWidget {
                           ),
                         ),
                         if (wide)
-                          Text(
-                            l.patientOffice,
-                            style: TextStyle(fontSize: 10.5, color: p.muted),
-                          ),
+                          accountCaption ??
+                              Text(
+                                l.guestCaption,
+                                style: TextStyle(
+                                  fontSize: 10.5,
+                                  color: p.muted,
+                                ),
+                              ),
                       ],
                     ),
                   ),
@@ -143,69 +152,94 @@ class AppShell extends StatelessWidget {
                 ),
               ),
             ),
-            body: SafeArea(
-              bottom: wide,
-              child: Column(
-                children: [
-                  ?modeControl,
-                  ListenableBuilder(
-                    listenable: settings,
-                    builder: (context, _) =>
-                        settings.error == SettingsError.load
-                        ? MaterialBanner(
-                            content: Text(l.preferencesLoadError),
-                            actions: [
-                              TextButton(
-                                onPressed: () => navigationShell.goBranch(6),
-                                child: Text(l.settings),
-                              ),
-                            ],
-                          )
-                        : const SizedBox.shrink(),
-                  ),
-                  Expanded(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (wide)
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(12, 18, 0, 18),
-                            child: Container(
-                              key: const Key('desktop-navigation'),
-                              width: 92,
-                              decoration: BoxDecoration(
-                                color: p.card,
-                                borderRadius: BorderRadius.circular(24),
-                                border: Border.all(color: p.line),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 8,
-                              ),
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    for (var i = 0; i < labels.length; i++)
-                                      _NavButton(
-                                        label: labels[i],
-                                        index: i,
-                                        selected: i == active,
-                                        onTap: () => select(i),
-                                        rail: true,
-                                      ),
-                                  ],
+            body: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: const Alignment(1, -1),
+                  radius: 1.4,
+                  colors: [
+                    Color.lerp(
+                      p.paper,
+                      p.accent,
+                      Theme.of(context).brightness == Brightness.light
+                          ? 0.035
+                          : 0.06,
+                    )!,
+                    p.paper,
+                  ],
+                ),
+              ),
+              child: SafeArea(
+                bottom: wide,
+                child: Column(
+                  children: [
+                    ?modeControl,
+                    ListenableBuilder(
+                      listenable: settings,
+                      builder: (context, _) =>
+                          settings.error == SettingsError.load
+                          ? MaterialBanner(
+                              content: Text(l.preferencesLoadError),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => navigationShell.goBranch(6),
+                                  child: Text(l.settings),
+                                ),
+                              ],
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                    Expanded(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(child: navigationShell),
+                          if (wide)
+                            Center(
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  0,
+                                  18,
+                                  16,
+                                  18,
+                                ),
+                                child: Container(
+                                  key: const Key('desktop-navigation'),
+                                  width: 92,
+                                  decoration: BoxDecoration(
+                                    color: p.card,
+                                    borderRadius: BorderRadius.circular(24),
+                                    border: Border.all(color: p.line),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 8,
+                                  ),
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: [
+                                        for (var i = 0; i < labels.length; i++)
+                                          _NavButton(
+                                            label: labels[i],
+                                            index: i,
+                                            selected: i == active,
+                                            onTap: () => select(i),
+                                            rail: true,
+                                          ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        Expanded(child: navigationShell),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             bottomNavigationBar: wide
@@ -293,7 +327,10 @@ class AppShell extends StatelessWidget {
                                               const SizedBox(height: 5),
                                               Flexible(
                                                 child: Text(
-                                                  l.addAnalysis,
+                                                  l.addAnalysis.replaceFirst(
+                                                    ' ',
+                                                    '\n',
+                                                  ),
                                                   textAlign: TextAlign.center,
                                                   maxLines: 2,
                                                   overflow:
@@ -346,7 +383,7 @@ class _NavButton extends StatelessWidget {
     final p = OrangePalette.of(context),
         scale = MediaQuery.textScalerOf(context).scale(14) / 14;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 6, 4, 7),
+      padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
       child: Semantics(
         button: true,
         selected: selected,
@@ -361,7 +398,9 @@ class _NavButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               child: Ink(
                 height: rail
-                    ? 72
+                    ? scale > 1.4
+                          ? 100
+                          : 58
                     : scale > 1.4
                     ? 76
                     : 56,
@@ -400,7 +439,7 @@ class _NavButton extends StatelessWidget {
                           maxLines: rail ? 2 : 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: rail ? 10 : 9,
+                            fontSize: rail ? 10.5 : 10,
                             fontWeight: FontWeight.w800,
                             height: 1.2,
                             color: selected ? Colors.white : p.secondary,

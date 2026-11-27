@@ -153,6 +153,10 @@ void main() {
         await tester.ensureVisible(button);
         await tester.tap(button);
         await tester.pumpAndSettle();
+        await tester.tap(
+          find.text(language == 'ru' ? 'Сохранить PDF' : 'Save PDF'),
+        );
+        await tester.pumpAndSettle();
         expect(exported, contains('&lt; 0,0100'));
         expect(exported, contains('unknown'));
         expect(exported, contains('&lt;script&gt;'));
@@ -162,7 +166,7 @@ void main() {
           '2026-10-01',
         );
         await tester.pumpAndSettle();
-        expect(tester.widget<IconButton>(button).onPressed, isNull);
+        expect(tester.widget<PopupMenuButton<int>>(button).enabled, isFalse);
         expect(tester.takeException(), isNull);
       },
     );

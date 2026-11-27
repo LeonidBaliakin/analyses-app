@@ -127,13 +127,16 @@ class ColorTile extends StatelessWidget {
     required this.color,
     required this.onTap,
     this.empty = false,
+    this.quiet = false,
+    this.badge,
     super.key,
   });
   final String title, subtitle;
   final Widget icon, footer;
   final Color color;
   final VoidCallback onTap;
-  final bool empty;
+  final bool empty, quiet;
+  final Widget? badge;
   @override
   Widget build(BuildContext context) {
     final p = OrangePalette.of(context);
@@ -152,20 +155,26 @@ class ColorTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 12,
+                padding: EdgeInsets.fromLTRB(
+                  quiet ? 10 : 12,
+                  quiet ? 10 : 12,
+                  quiet ? 10 : 12,
+                  quiet ? 4 : 12,
                 ),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      empty
-                          ? color.withValues(alpha: .5)
+                      quiet
+                          ? p.card
+                          : empty
+                          ? Color.lerp(color, p.card, .62)!
                           : Color.lerp(color, Colors.white, .07)!,
-                      empty
-                          ? color.withValues(alpha: .45)
+                      quiet
+                          ? p.card
+                          : empty
+                          ? Color.lerp(color, p.card, .62)!
                           : Color.lerp(color, Colors.black, .13)!,
                     ],
                   ),
@@ -173,16 +182,33 @@ class ColorTile extends StatelessWidget {
                 child: Row(
                   children: [
                     ExcludeSemantics(
-                      child: SizedBox(width: 25, height: 25, child: icon),
+                      child: Container(
+                        width: quiet ? 30 : 25,
+                        height: quiet ? 30 : 25,
+                        padding: quiet
+                            ? const EdgeInsets.all(6)
+                            : EdgeInsets.zero,
+                        decoration: quiet
+                            ? BoxDecoration(
+                                color: p.accentSoft,
+                                borderRadius: BorderRadius.circular(8),
+                              )
+                            : null,
+                        child: icon,
+                      ),
                     ),
                     const SizedBox(width: 9),
                     Expanded(
                       child: Text(
                         title,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: quiet ? p.ink : Colors.white,
                           fontWeight: FontWeight.w800,
-                          fontSize: 13,
+                          fontSize: quiet
+                              ? 12
+                              : MediaQuery.sizeOf(context).width <= 760
+                              ? 13.5
+                              : 15,
                           height: 1.25,
                         ),
                       ),
@@ -190,19 +216,35 @@ class ColorTile extends StatelessWidget {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(12, 9, 12, 6),
-                child: Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 12.5,
-                    height: 1.5,
-                    color: p.secondary,
+              if (quiet || MediaQuery.sizeOf(context).width > 760)
+                Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    quiet ? 10 : 14,
+                    quiet ? 5 : 8,
+                    quiet ? 10 : 14,
+                    0,
+                  ),
+                  child: Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      height: 1.5,
+                      color: p.secondary,
+                    ),
                   ),
                 ),
-              ),
+              if (badge != null)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 8, 10, 0),
+                  child: badge!,
+                ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(10, 8, 10, 12),
+                padding: EdgeInsets.fromLTRB(
+                  10,
+                  quiet ? 5 : 8,
+                  10,
+                  quiet ? 10 : 14,
+                ),
                 child: footer,
               ),
             ],
@@ -222,9 +264,9 @@ class AdaptiveTiles extends StatelessWidget {
       final scale = MediaQuery.textScalerOf(context).scale(14) / 14;
       final columns = scale > 1.4 && c.maxWidth < 600
           ? 1
-          : c.maxWidth >= 1000
+          : c.maxWidth >= 1036
           ? 4
-          : c.maxWidth >= 650
+          : c.maxWidth >= 774
           ? 3
           : c.maxWidth >= 300
           ? 2
@@ -234,7 +276,7 @@ class AdaptiveTiles extends StatelessWidget {
           for (var row = 0; row < children.length; row += columns)
             Padding(
               padding: EdgeInsets.only(
-                bottom: row + columns < children.length ? 10 : 0,
+                bottom: row + columns < children.length ? 12 : 0,
               ),
               child: IntrinsicHeight(
                 child: Row(
@@ -256,4 +298,134 @@ class AdaptiveTiles extends StatelessWidget {
       );
     },
   );
+}
+
+/// A disclosure row whose children retain state while collapsed or resized.
+class QuietFold extends StatefulWidget {
+  const QuietFold({
+    required this.title,
+    required this.children,
+    this.initiallyExpanded = false,
+    this.compact = false,
+    super.key,
+  });
+  final Widget title;
+  final List<Widget> children;
+  final bool initiallyExpanded, compact;
+  @override
+  State<QuietFold> createState() => _QuietFoldState();
+}
+
+class _QuietFoldState extends State<QuietFold> {
+  late bool _open = widget.initiallyExpanded;
+  @override
+  Widget build(BuildContext context) {
+    final p = OrangePalette.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (!widget.compact) Divider(color: p.line, height: 1),
+        Semantics(
+          expanded: _open,
+          button: true,
+          child: InkWell(
+            onTap: () => setState(() => _open = !_open),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: widget.compact ? 28 : 44),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 7),
+                child: Row(
+                  children: [
+                    if (widget.compact)
+                      Icon(
+                        _open ? Icons.arrow_drop_down : Icons.arrow_right,
+                        size: 13,
+                        color: p.accent,
+                      ),
+                    Expanded(
+                      child: DefaultTextStyle.merge(
+                        style: TextStyle(
+                          fontSize: widget.compact ? 12 : 13,
+                          fontWeight: FontWeight.w700,
+                          color: widget.compact ? p.accent : p.ink,
+                        ),
+                        child: widget.title,
+                      ),
+                    ),
+                    if (!widget.compact)
+                      Icon(
+                        _open ? Icons.expand_less : Icons.expand_more,
+                        size: 17,
+                        color: p.accent,
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        Offstage(
+          offstage: !_open,
+          child: TickerMode(
+            enabled: _open,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 13),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: widget.children,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class OptionChip extends StatelessWidget {
+  const OptionChip({
+    required this.label,
+    required this.selected,
+    required this.onSelected,
+    this.softSelection = false,
+    super.key,
+  });
+  final bool softSelection;
+  final Widget label;
+  final bool selected;
+  final ValueChanged<bool> onSelected;
+  @override
+  Widget build(BuildContext context) {
+    final p = OrangePalette.of(context);
+    return Semantics(
+      button: true,
+      selected: selected,
+      child: Material(
+        color: selected ? (softSelection ? p.accentSoft : p.accent) : p.card,
+        shape: StadiumBorder(
+          side: BorderSide(color: selected ? p.accent : p.line),
+        ),
+        child: InkWell(
+          customBorder: const StadiumBorder(),
+          onTap: () => onSelected(!selected),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: 11,
+              vertical: softSelection ? 9 : 6,
+            ),
+            child: DefaultTextStyle.merge(
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: selected
+                    ? (softSelection ? p.accent : Colors.white)
+                    : p.secondary,
+              ),
+              child: label,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

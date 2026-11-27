@@ -1,3 +1,6 @@
+import 'local_capture.dart';
+import 'local_overview.dart';
+
 import 'package:design_system/design_system.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:medical_domain/medical_domain.dart';
@@ -5,7 +8,6 @@ import 'package:medical_domain/medical_domain.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../presentation/category_presentation.dart';
 import '../../../presentation/reference_widgets.dart';
-import 'record_activity.dart';
 import 'record_editor.dart';
 import 'record_history.dart';
 import 'records_view_model.dart';
@@ -68,71 +70,99 @@ class _RecordsPageState extends State<RecordsPage> with WidgetsBindingObserver {
         final profile = model.profile;
         return SingleChildScrollView(
           key: PageStorageKey(widget.section),
-          padding: const EdgeInsets.fromLTRB(16, 20, 16, 120),
+          padding: const EdgeInsets.fromLTRB(12, 14, 12, 120),
           child: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 1180),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  PaperCard(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                switch (widget.section) {
-                                  RecordsSection.summary => l.summary,
-                                  RecordsSection.results => l.results,
-                                  RecordsSection.profile => l.profile,
-                                },
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headlineSmall,
+                  if (profile != null &&
+                      widget.section == RecordsSection.summary)
+                    LocalOverview(
+                      model: model,
+                      onAddEvent: () => showLocalEventCapture(context, model),
+                      onHistory: widget.onOpenReport,
+                    ),
+                  if (profile != null &&
+                      widget.section == RecordsSection.results)
+                    _heading(
+                      l.myAnalyses,
+                      l.addAnalysis,
+                      () => _add(RecordKind.result),
+                    ),
+                  if (profile != null &&
+                      widget.section == RecordsSection.results &&
+                      MediaQuery.sizeOf(context).width <
+                          AppLayout.railBreakpoint)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 5, bottom: 8),
+                      child: Text(
+                        recordName(profile.record),
+                        style: TextStyle(fontSize: 12, color: p.secondary),
+                      ),
+                    ),
+                  if (profile == null)
+                    PaperCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  switch (widget.section) {
+                                    RecordsSection.summary => l.summary,
+                                    RecordsSection.results => l.results,
+                                    RecordsSection.profile => l.profile,
+                                  },
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall,
+                                ),
+                              ),
+                              IconButton(
+                                tooltip: l.localRefresh,
+                                onPressed: model.loading || model.saving
+                                    ? null
+                                    : model.load,
+                                icon: const Icon(Icons.refresh),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          if (widget.sync == null)
+                            Text(l.localOnly)
+                          else
+                            ListenableBuilder(
+                              listenable: widget.sync!,
+                              builder: (context, _) =>
+                                  Text(l.syncPending(widget.sync!.pending)),
+                            ),
+                          if (widget.onOpenSync != null)
+                            TextButton.icon(
+                              onPressed: widget.onOpenSync,
+                              icon: const Icon(Icons.sync),
+                              label: Text(l.syncTitle),
+                            ),
+                          if (widget.onOpenOriginals != null)
+                            TextButton.icon(
+                              onPressed: widget.onOpenOriginals,
+                              icon: const Icon(Icons.folder_open_outlined),
+                              label: Text(l.originalsTitle),
+                            ),
+                          if (profile != null) ...[
+                            const SizedBox(height: 12),
+                            Text(
+                              recordName(profile.record),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            IconButton(
-                              tooltip: l.localRefresh,
-                              onPressed: model.loading || model.saving
-                                  ? null
-                                  : model.load,
-                              icon: const Icon(Icons.refresh),
-                            ),
                           ],
-                        ),
-                        const SizedBox(height: 8),
-                        if (widget.sync == null)
-                          Text(l.localOnly)
-                        else
-                          ListenableBuilder(
-                            listenable: widget.sync!,
-                            builder: (context, _) =>
-                                Text(l.syncPending(widget.sync!.pending)),
-                          ),
-                        if (widget.onOpenSync != null)
-                          TextButton.icon(
-                            onPressed: widget.onOpenSync,
-                            icon: const Icon(Icons.sync),
-                            label: Text(l.syncTitle),
-                          ),
-                        if (widget.onOpenOriginals != null)
-                          TextButton.icon(
-                            onPressed: widget.onOpenOriginals,
-                            icon: const Icon(Icons.folder_open_outlined),
-                            label: Text(l.originalsTitle),
-                          ),
-                        if (profile != null) ...[
-                          const SizedBox(height: 12),
-                          Text(
-                            recordName(profile.record),
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
                         ],
-                      ],
+                      ),
                     ),
-                  ),
                   if (model.loading) const LinearProgressIndicator(),
                   if (model.error != null)
                     Padding(
@@ -167,11 +197,12 @@ class _RecordsPageState extends State<RecordsPage> with WidgetsBindingObserver {
                       ),
                     ),
                   if (profile != null) ...[
-                    RecordActions(
-                      onAddEvent: () => showRecordActivity(context, model),
-                      onDiary: () =>
-                          showRecordActivity(context, model, diary: true),
-                    ),
+                    if (widget.section != RecordsSection.summary)
+                      RecordActions(
+                        onAddEvent: () => showLocalEventCapture(context, model),
+                        onDiary: () =>
+                            showLocalEventCapture(context, model, diary: true),
+                      ),
                     if (widget.section == RecordsSection.profile) ...[
                       PaperCard(
                         child: Column(
@@ -222,19 +253,12 @@ class _RecordsPageState extends State<RecordsPage> with WidgetsBindingObserver {
                       ),
                       const SizedBox(height: 12),
                       if (widget.section == RecordsSection.summary) ...[
-                        if (widget.reports != null &&
-                            widget.onOpenReport != null)
-                          ReportsSummary(
-                            model: widget.reports!,
-                            onOpen: widget.onOpenReport!,
-                          )
-                        else
-                          AdaptiveTiles(
-                            children: [
-                              for (final category in AnalysisCategory.values)
-                                _categoryTile(category),
-                            ],
-                          ),
+                        AdaptiveTiles(
+                          children: [
+                            for (final category in AnalysisCategory.values)
+                              _categoryTile(category),
+                          ],
+                        ),
                         const SizedBox(height: 20),
                       ],
                       if (widget.section == RecordsSection.results ||
@@ -262,7 +286,7 @@ class _RecordsPageState extends State<RecordsPage> with WidgetsBindingObserver {
                         const SizedBox(height: 20),
                       ],
                     ],
-                    if (widget.section != RecordsSection.results) ...[
+                    if (widget.section == RecordsSection.profile) ...[
                       _heading(
                         l.localMedications,
                         l.localAddMedication,
@@ -305,6 +329,39 @@ class _RecordsPageState extends State<RecordsPage> with WidgetsBindingObserver {
                       const SizedBox(height: 12),
                       ..._entries(RecordKind.measurement),
                     ],
+                    QuietFold(
+                      title: Text(l.localOnly),
+                      children: [
+                        if (widget.sync != null)
+                          ListenableBuilder(
+                            listenable: widget.sync!,
+                            builder: (context, _) =>
+                                Text(l.syncPending(widget.sync!.pending)),
+                          ),
+                        Wrap(
+                          spacing: 8,
+                          children: [
+                            TextButton.icon(
+                              onPressed: model.load,
+                              icon: const Icon(Icons.refresh),
+                              label: Text(l.localRefresh),
+                            ),
+                            if (widget.onOpenSync != null)
+                              TextButton.icon(
+                                onPressed: widget.onOpenSync,
+                                icon: const Icon(Icons.sync),
+                                label: Text(l.syncTitle),
+                              ),
+                            if (widget.onOpenOriginals != null)
+                              TextButton.icon(
+                                onPressed: widget.onOpenOriginals,
+                                icon: const Icon(Icons.folder_open_outlined),
+                                label: Text(l.originalsTitle),
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ],
                 ],
               ),

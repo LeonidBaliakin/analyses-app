@@ -53,6 +53,99 @@ void main() {
     directory.deleteSync(recursive: true);
   });
 
+  test('atomic capture batch rolls back every record, history and outbox, then replays once', () async {
+    await db.commit(command('p', profile));
+    final rows = [
+      command(
+        'batch-profile',
+        profile.copyWith(
+          details: ProfileDetails(
+            fields: {ProfileField.travel: 'Synthetic trip'},
+          ),
+        ),
+        revision: 1,
+      ),
+      command('batch-result', result()),
+    ];
+    await db.customStatement(
+      "CREATE TRIGGER fail_batch BEFORE INSERT ON outbox WHEN NEW.operation_id = 'batch-result' BEGIN SELECT RAISE(ABORT, 'synthetic failure'); END",
+    );
+    await expectLater(db.commitBatch(rows), throwsA(anything));
+    expect(await db.read('p'), hasLength(1));
+    expect(await db.history('p', 'p'), hasLength(1));
+    expect(await db.customSelect('SELECT * FROM outbox').get(), hasLength(1));
+    await db.customStatement('DROP TRIGGER fail_batch');
+    expect(await db.commitBatch(rows), [2, 1]);
+    expect(await db.commitBatch(rows), [2, 1]);
+    expect(await db.read('p'), hasLength(2));
+    expect(await db.history('p', 'p'), hasLength(2));
+    expect(await db.customSelect('SELECT * FROM outbox').get(), hasLength(3));
+  });
+
+  test('extended profile survives restart, replay, revision history and transaction rollback', () async {
+    await db.commit(command('profile-v1', profile));
+    final revised = profile.copyWith(
+      details: ProfileDetails(
+        fields: {ProfileField.height: '178,00'},
+        history: [
+          const ProfileHistoryEntry(
+            id: 'h',
+            kind: ProfileHistoryKind.surgery,
+            text: 'Synthetic original',
+            precision: HistoryDatePrecision.childhood,
+          ),
+        ],
+        events: [
+          ProfileEvent(
+            id: 'e',
+            kind: ProfileEventKind.hospitalization,
+            name: 'Synthetic source',
+            start: CalendarDate(2026, 1, 1),
+            end: CalendarDate(2026, 1, 5),
+            fields: {ProfileEventField.outcomes: 'Original outcome'},
+          ),
+        ],
+      ),
+    );
+    final mutation = command('profile-v4', revised, revision: 1);
+    expect(await db.commit(mutation), 2);
+    await db.close();
+    db = RecordsDatabase(NativeDatabase(file));
+    expect(await db.commit(mutation), 2);
+    final restored = (await db.read('p')).single.record as MedicalProfile;
+    expect(restored.details![ProfileField.height], '178,00');
+    expect(restored.details!.history.single.date, isNull);
+    expect(
+      restored.details!.events.single.fields[ProfileEventField.outcomes],
+      'Original outcome',
+    );
+    expect(await db.history('p', 'p'), hasLength(2));
+    expect(await db.customSelect('SELECT * FROM outbox').get(), hasLength(2));
+    await db.customStatement(
+      "CREATE TRIGGER fail_profile_outbox BEFORE INSERT ON outbox WHEN NEW.operation_id = 'failed-profile' BEGIN SELECT RAISE(ABORT, 'synthetic failure'); END",
+    );
+    await expectLater(
+      db.commit(
+        command(
+          'failed-profile',
+          profile.copyWith(details: ProfileDetails()),
+          revision: 2,
+        ),
+      ),
+      throwsA(isA<Exception>()),
+    );
+    expect(
+      ((await db.read('p')).single.record as MedicalProfile).details!.events,
+      hasLength(1),
+    );
+    expect(await db.history('p', 'p'), hasLength(2));
+    expect(await db.customSelect('SELECT * FROM outbox').get(), hasLength(2));
+    await expectLater(
+      db.commit(command('stale-profile', profile, revision: 1)),
+      throwsA(isA<RecordConflict>()),
+    );
+  });
+
   const coding = LabResultCoding(
     terminologyReleaseId: 'synthetic-v1',
     indicatorId: 'synthetic-indicator',

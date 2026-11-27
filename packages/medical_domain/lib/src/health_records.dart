@@ -1,3 +1,4 @@
+import 'profile_details.dart';
 import 'calendar_date.dart';
 import 'lab_result_coding.dart';
 import 'document_record_source.dart';
@@ -75,16 +76,34 @@ final class MedicalProfile extends HealthRecord {
     this.history = '',
     this.allergies = '',
     this.notes = '',
+    this.details,
   }) : super(profileId: id);
   final String name;
   final CalendarDate? birthDate;
   final String history, allergies, notes;
+  final ProfileDetails? details;
+  MedicalProfile copyWith({
+    String? name,
+    CalendarDate? birthDate,
+    ProfileDetails? details,
+  }) => MedicalProfile(
+    id: id,
+    name: name ?? this.name,
+    birthDate: birthDate ?? this.birthDate,
+    history: history,
+    allergies: allergies,
+    notes: notes,
+    details: details ?? this.details,
+  );
   @override
   RecordKind get kind => RecordKind.profile;
   @override
   void validate() {
     super.validate();
     _required(name, 'name');
+    if (details != null && !details!.isValid) {
+      throw const InvalidRecord('details');
+    }
   }
 }
 
@@ -145,6 +164,8 @@ final class LabResult extends HealthRecord {
   }
 }
 
+enum MedicationRegimen { course, ongoing }
+
 final class MedicationCourse extends HealthRecord {
   const MedicationCourse({
     required super.id,
@@ -155,9 +176,14 @@ final class MedicationCourse extends HealthRecord {
     this.dosage = '',
     this.schedule = '',
     this.prescribedBy = '',
+    this.reason = '',
+    this.experience,
+    this.regimen,
     this.notes = '',
   });
-  final String name, dosage, schedule, prescribedBy, notes;
+  final String name, dosage, schedule, prescribedBy, notes, reason;
+  final MedicationExperience? experience;
+  final MedicationRegimen? regimen;
   final CalendarDate start;
   final CalendarDate? end;
   bool activeOn(CalendarDate date) =>
@@ -168,6 +194,9 @@ final class MedicationCourse extends HealthRecord {
   void validate() {
     super.validate();
     _required(name, 'name');
+    if (regimen == MedicationRegimen.ongoing && end != null) {
+      throw const InvalidRecord('end');
+    }
     if (end != null && end!.compareTo(start) < 0) {
       throw const InvalidRecord('end');
     }
@@ -244,10 +273,36 @@ abstract interface class HealthRecordsRepository {
   Future<void> close();
 }
 
+/// Optional atomic bundle capability implemented by durable local stores.
+abstract interface class HealthRecordBatchRepository
+    implements HealthRecordsRepository {
+  Future<List<int>> commitBatch(List<RecordMutation> mutations);
+}
+
 /// Shared scenario used by every UI command; no platform dependencies.
 final class HealthRecords {
   const HealthRecords(this.repository);
   final HealthRecordsRepository repository;
+  Future<List<int>> saveBatch(List<RecordMutation> mutations) {
+    if (mutations.isEmpty ||
+        mutations.map((m) => m.record.profileId).toSet().length != 1 ||
+        mutations.map((m) => m.record.id).toSet().length != mutations.length ||
+        mutations.map((m) => m.operationId).toSet().length !=
+            mutations.length) {
+      throw const InvalidRecord('batch');
+    }
+    for (final mutation in mutations) {
+      mutation.record.validate();
+      _required(mutation.operationId, 'operationId');
+      if (mutation.expectedRevision < 0) throw const InvalidRecord('revision');
+    }
+    final adapter = repository;
+    if (adapter is! HealthRecordBatchRepository) {
+      throw const InvalidRecord('batchUnsupported');
+    }
+    return adapter.commitBatch(List.unmodifiable(mutations));
+  }
+
   Future<int> save(RecordMutation mutation) {
     mutation.record.validate();
     _required(mutation.operationId, 'operationId');

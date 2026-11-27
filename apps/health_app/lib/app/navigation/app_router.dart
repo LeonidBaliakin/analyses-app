@@ -10,6 +10,7 @@ import '../../features/processing/processing.dart';
 import '../../features/reports/reports.dart';
 import '../../features/results/results.dart';
 import '../../data/reports/export_report.dart';
+import '../../data/reports/history_pdf.dart';
 import '../../features/sync/sync.dart';
 import '../../features/account/account.dart';
 import '../../features/introduction/introduction.dart';
@@ -71,19 +72,26 @@ GoRouter createAppRouter(
           switch (step) {
             case IntroductionStep.profile:
               if (local) {
-                await showRecordEditor(
+                await showLocalProfileSection(
                   context,
                   records,
-                  RecordKind.profile,
-                  entry: records.profile,
+                  ProfileSection.base,
                 );
               } else {
-                await showReferenceSheet(
+                await showDemoProfileSection(
                   context,
-                  AppLocalizations.of(context).profile,
-                  Text(
-                    '${catalog.profile['name']}\n${catalog.profile['dob']}\n${catalog.profile['h']}',
-                  ),
+                  catalog,
+                  ProfileSection.base,
+                  onSaveAttempt: () async {
+                    if (account != null) {
+                      await router.push('/account');
+                    } else if (context.mounted) {
+                      await showUnavailable(
+                        context,
+                        AppLocalizations.of(context).signIn,
+                      );
+                    }
+                  },
                 );
               }
             case IntroductionStep.reports:
@@ -163,6 +171,14 @@ GoRouter createAppRouter(
           valueListenable: showDemo!,
           builder: (context, example, _) => example
               ? demo
+              : section == RecordsSection.profile
+              ? LocalProfilePage(
+                  model: records,
+                  catalog: catalog,
+                  onDocuments: originals == null
+                      ? null
+                      : () => router.goNamed(AppDestination.documents.name),
+                )
               : RecordsPage(
                   model: records,
                   section: section,
@@ -209,14 +225,27 @@ GoRouter createAppRouter(
           child: AppShell(
             navigationShell: shell,
             settings: settings,
+            accountCaption: records == null
+                ? null
+                : ListenableBuilder(
+                    listenable: Listenable.merge([records, showDemo!]),
+                    builder: (context, _) => Text(
+                      showDemo.value
+                          ? AppLocalizations.of(context).guestCaption
+                          : (records.profile?.record as MedicalProfile?)
+                                    ?.name ??
+                                AppLocalizations.of(context).profile,
+                      style: const TextStyle(fontSize: 10.5),
+                    ),
+                  ),
             onDirectoryOpened: () => confirmDirectoryLocation(context),
             onAdd: () {
               if (records == null || showDemo!.value) {
                 showAddAnalysis(
                   context,
-                  onAddEvent: () => showDemoActivity(context, catalog),
+                  onAddEvent: () => showDemoEventCapture(context, catalog),
                   onDiary: () =>
-                      showDemoActivity(context, catalog, diary: true),
+                      showDemoEventCapture(context, catalog, diary: true),
                 );
                 return;
               }
@@ -225,9 +254,9 @@ GoRouter createAppRouter(
               } else {
                 showAddAnalysis(
                   context,
-                  onAddEvent: () => showRecordActivity(context, records),
+                  onAddEvent: () => showLocalEventCapture(context, records),
                   onDiary: () =>
-                      showRecordActivity(context, records, diary: true),
+                      showLocalEventCapture(context, records, diary: true),
                   onManualEntry: () =>
                       showRecordEditor(context, records, RecordKind.result),
                 );
@@ -264,7 +293,9 @@ GoRouter createAppRouter(
                   SummaryPage(
                     catalog: catalog,
                     onOpenHistory: () => context.push('/history'),
-                    onAddEvent: () => showDemoActivity(context, catalog),
+                    onPrintSystems: (ids) =>
+                        context.push('/history', extra: ids),
+                    onAddEvent: () => showDemoEventCapture(context, catalog),
                     onStartIntroduction: () => startIntroduction(context),
                   ),
                 ),
@@ -280,9 +311,9 @@ GoRouter createAppRouter(
                   RecordsSection.results,
                   DocumentsPage(
                     catalog: catalog,
-                    onAddEvent: () => showDemoActivity(context, catalog),
+                    onAddEvent: () => showDemoEventCapture(context, catalog),
                     onDiary: () =>
-                        showDemoActivity(context, catalog, diary: true),
+                        showDemoEventCapture(context, catalog, diary: true),
                     onAdd: () =>
                         showAddAnalysis(context, showOtherRecords: false),
                   ),
@@ -324,9 +355,19 @@ GoRouter createAppRouter(
                   RecordsSection.profile,
                   ProfilePage(
                     catalog: catalog,
-                    onAddEvent: () => showDemoActivity(context, catalog),
+                    onPreviewSave: () async {
+                      if (account != null) {
+                        await router.push('/account');
+                      } else if (context.mounted) {
+                        await showUnavailable(
+                          context,
+                          AppLocalizations.of(context).signIn,
+                        );
+                      }
+                    },
+                    onAddEvent: () => showDemoEventCapture(context, catalog),
                     onDiary: () =>
-                        showDemoActivity(context, catalog, diary: true),
+                        showDemoEventCapture(context, catalog, diary: true),
                   ),
                 ),
               ),
@@ -352,6 +393,7 @@ GoRouter createAppRouter(
                 name: AppDestination.settings.name,
                 builder: (context, state) => SettingsPage(
                   viewModel: settings,
+                  demoMode: records == null,
                   onStartIntroduction: () => startIntroduction(context),
                   onOpenSharing: () =>
                       router.goNamed(AppDestination.sharing.name),
@@ -373,6 +415,10 @@ GoRouter createAppRouter(
                 ? DemoHistoryPage(
                     catalog: catalog,
                     export: exportReport,
+                    exportPdf: exportHistoryPdf,
+                    selectedSystemIds: state.extra is Set<int>
+                        ? state.extra as Set<int>
+                        : null,
                     onClose: closeHistory,
                   )
                 : ValueListenableBuilder<bool>(
@@ -381,9 +427,17 @@ GoRouter createAppRouter(
                         ? DemoHistoryPage(
                             catalog: catalog,
                             export: exportReport,
+                            exportPdf: exportHistoryPdf,
+                            selectedSystemIds: state.extra is Set<int>
+                                ? state.extra as Set<int>
+                                : null,
                             onClose: closeHistory,
                           )
-                        : ReportsPage(model: reports, onClose: closeHistory),
+                        : ReportsPage(
+                            model: reports,
+                            onClose: closeHistory,
+                            exportPdf: exportHistoryPdf,
+                          ),
                   ),
           ),
         ),

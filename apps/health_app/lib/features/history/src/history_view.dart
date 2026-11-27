@@ -16,11 +16,12 @@ class AnalysisHistoryView extends StatefulWidget {
     this.onOpenRow,
     this.onExport,
     this.onCopy,
+    this.onShare,
     this.exporting = false,
     super.key,
   });
   final HistoryViewModel model;
-  final VoidCallback? onClose, onExport, onCopy;
+  final VoidCallback? onClose, onExport, onCopy, onShare;
   final ValueChanged<HistoryRow>? onOpenRow;
   final bool exporting;
   @override
@@ -118,7 +119,7 @@ class _AnalysisHistoryViewState extends State<AnalysisHistoryView> {
     ),
   );
 
-  Widget _content(BuildContext context) {
+  Widget _period(BuildContext context, bool compact) {
     final m = widget.model,
         l = AppLocalizations.of(context),
         p = OrangePalette.of(context);
@@ -128,141 +129,127 @@ class _AnalysisHistoryViewState extends State<AnalysisHistoryView> {
       l.historyAll,
       l.historyCustom,
     ];
+    return PopupMenuButton<HistoryPeriod>(
+      key: const Key('history-period'),
+      tooltip: '${l.historyPeriod}: ${labels[m.periodKind.index]}',
+      initialValue: m.periodKind,
+      onSelected: (value) {
+        if (value == HistoryPeriod.custom) {
+          setState(() => _datesOpen = true);
+        } else {
+          m.selectPeriod(value);
+          _syncDates();
+          setState(() => _datesOpen = false);
+        }
+      },
+      itemBuilder: (_) => [
+        for (final value in HistoryPeriod.values)
+          PopupMenuItem(value: value, child: Text(labels[value.index])),
+      ],
+      child: Container(
+        constraints: BoxConstraints(maxWidth: compact ? 150 : 200),
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+        decoration: BoxDecoration(
+          color: p.card,
+          border: Border.all(color: p.line),
+          borderRadius: BorderRadius.circular(7),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: Text(
+                labels[m.periodKind.index],
+                style: TextStyle(
+                  fontSize: 12,
+                  height: 1.25,
+                  fontWeight: FontWeight.w700,
+                  color: p.accent,
+                ),
+              ),
+            ),
+            const Icon(Icons.expand_more, size: 13),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _content(BuildContext context) {
+    final m = widget.model,
+        l = AppLocalizations.of(context),
+        p = OrangePalette.of(context);
     return Material(
       color: p.card,
       child: LayoutBuilder(
-        builder: (context, constraints) {
-          final compact =
-              constraints.maxWidth < 600 || constraints.maxHeight < 450;
-          return Column(
+        builder: (context, c) {
+          final compact = c.maxWidth <= 590 || (_rotated && c.maxHeight < 590);
+          Widget action(
+            IconData icon,
+            String tooltip,
+            VoidCallback? onTap, {
+            Key? key,
+            bool active = false,
+          }) => IconButton(
+            key: key,
+            tooltip: tooltip,
+            onPressed: onTap,
+            style: IconButton.styleFrom(
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              minimumSize: const Size(32, 32),
+              padding: const EdgeInsets.all(7),
+              foregroundColor: active ? Colors.white : p.accent,
+              backgroundColor: active ? p.accent : null,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(9),
+              ),
+            ),
+            icon: Icon(icon, size: 18),
+          );
+          final content = Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              Container(
+                color: p.accentSoft,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
                 child: Row(
                   children: [
-                    if (widget.onClose != null)
-                      BackButton(onPressed: widget.onClose),
                     Expanded(
                       child: Text(
-                        l.analysisHistory,
+                        compact ? l.historyShort : l.analysisHistory,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: compact ? 16 : 22,
+                        style: const TextStyle(
+                          fontSize: 14,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
                     ),
-                    IconButton(
-                      key: const Key('history-events-toggle'),
-                      tooltip: l.historyEvents,
-                      onPressed: m.toggleEvents,
-                      isSelected: m.showEvents,
-                      icon: const Icon(Icons.timeline),
-                    ),
-                    IconButton(
-                      key: const Key('history-rotate'),
-                      tooltip: l.historyRotate,
-                      onPressed: () => setState(() => _rotated = !_rotated),
-                      icon: const Icon(Icons.screen_rotation),
-                    ),
-                    if (widget.onExport != null)
-                      IconButton(
-                        key: const Key('history-export'),
-                        tooltip: l.historyPrint,
-                        onPressed: m.invalidPeriod || widget.exporting
-                            ? null
-                            : widget.onExport,
-                        icon: const Icon(Icons.picture_as_pdf_outlined),
-                      ),
-                    if (widget.onExport == null && widget.onCopy != null)
-                      IconButton(
-                        key: const Key('copy-local-report'),
-                        tooltip: l.reportCopy,
-                        onPressed: widget.exporting || m.invalidPeriod
-                            ? null
-                            : widget.onCopy,
-                        icon: const Icon(Icons.copy),
-                      ),
-                  ],
-                ),
-              ),
-              if (m.data.isDemo)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Text(
-                    l.demoTitle,
-                    style: TextStyle(color: p.secondary, fontSize: 12),
-                  ),
-                ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Row(
-                  children: [
-                    PopupMenuButton<HistoryPeriod>(
-                      key: const Key('history-period'),
-                      tooltip: l.historyPeriod,
-                      initialValue: m.periodKind,
-                      onSelected: (value) {
-                        if (value == HistoryPeriod.custom) {
-                          setState(() => _datesOpen = true);
-                        } else {
-                          m.selectPeriod(value);
-                          _syncDates();
-                          setState(() => _datesOpen = false);
-                        }
-                      },
-                      itemBuilder: (_) => [
-                        for (final value in HistoryPeriod.values)
-                          PopupMenuItem(
-                            value: value,
-                            child: Text(labels[value.index]),
-                          ),
-                      ],
-                      child: SizedBox(
-                        width: compact ? constraints.maxWidth * .40 : 190,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 12,
-                          ),
-                          child: Text(
-                            labels[m.periodKind.index],
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: p.accent,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        '${m.period.start} — ${m.period.end}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                    if (!compact)
+                      Text(
+                        '${m.rows.length} / ${m.data.rows.length} · ${m.dates.length}',
                         style: TextStyle(fontSize: 12, color: p.secondary),
                       ),
+                    if (m.selected.isNotEmpty)
+                      action(Icons.restart_alt, l.historyReset, () {
+                        m.reset();
+                        _query.clear();
+                        _syncDates();
+                      }),
+                    _period(context, compact),
+                    action(
+                      Icons.screen_rotation_outlined,
+                      l.historyRotate,
+                      () => setState(() => _rotated = !_rotated),
+                      key: const Key('history-rotate'),
                     ),
-                    IconButton(
-                      tooltip: l.historyScrollBack,
-                      onPressed: () => _pan(-1),
-                      icon: const Icon(Icons.chevron_left),
-                    ),
-                    IconButton(
-                      tooltip: l.historyScrollForward,
-                      onPressed: () => _pan(1),
-                      icon: const Icon(Icons.chevron_right),
-                    ),
+                    action(Icons.close, l.close, widget.onClose),
                   ],
                 ),
               ),
               if (_datesOpen)
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
+                  padding: const EdgeInsets.all(8),
                   child: Row(
                     children: [
                       for (final pair in [
@@ -289,84 +276,229 @@ class _AnalysisHistoryViewState extends State<AnalysisHistoryView> {
                     ],
                   ),
                 ),
-              if (!compact)
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 4,
-                  ),
-                  child: Text(
-                    l.historyTableHint,
-                    style: TextStyle(color: p.secondary, fontSize: 12),
-                  ),
-                ),
-              if (m.showEvents)
-                SizedBox(
-                  height: compact ? 126 : 188,
-                  child: _EventTimeline(model: m),
-                ),
-              if (m.selected.isNotEmpty)
-                SizedBox(
-                  height: 44,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    children: [
-                      for (final row in m.data.rows.where(
-                        (r) => m.selected.contains(r.id),
-                      ))
-                        Padding(
-                          padding: const EdgeInsets.only(right: 6),
-                          child: InputChip(
-                            label: Text(row.name),
-                            selected: true,
-                            onSelected: (_) => m.select(row.id),
-                            onDeleted: () => m.select(row.id),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 4, 8, 4),
+                child: InkWell(
+                  onTap: m.toggleEvents,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: p.accentSoft.withValues(alpha: .5),
+                      border: Border.all(color: p.line),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          m.showEvents
+                              ? Icons.arrow_drop_down
+                              : Icons.arrow_right,
+                          size: 15,
+                          color: p.accent,
+                        ),
+                        Expanded(
+                          child: Text(
+                            '${l.historyPeriodEvents} · ${m.events.length}',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              height: 1.25,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
-                      TextButton(
-                        onPressed: () {
-                          m.reset();
-                          _query.clear();
-                          _syncDates();
-                        },
-                        child: Text(l.historyReset),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
+              ),
               Expanded(
                 child: Stack(
                   children: [
                     Positioned.fill(
-                      child: m.rows.isEmpty
-                          ? Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(20),
-                                child: Text(l.historyEmpty),
+                      child: LayoutBuilder(
+                        builder: (context, body) => Column(
+                          children: [
+                            Offstage(
+                              offstage: !m.showEvents || body.maxHeight < 180,
+                              child: SizedBox(
+                                height: math.min(
+                                  220,
+                                  math.max(48, body.maxHeight * .30),
+                                ),
+                                child: _EventTimeline(model: m),
                               ),
-                            )
-                          : _table(context),
-                    ),
-                    Positioned(
-                      right: 12,
-                      bottom: 12,
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: math.min(340, constraints.maxWidth - 24),
-                          maxHeight: math.max(48, constraints.maxHeight * .52),
+                            ),
+                            Expanded(
+                              child: m.rows.isEmpty
+                                  ? Center(child: Text(l.historyEmpty))
+                                  : _table(
+                                      context,
+                                      Size(c.maxWidth, c.maxHeight),
+                                    ),
+                            ),
+                          ],
                         ),
-                        child: _search(context),
                       ),
+                    ),
+                    if (_searchOpen)
+                      Positioned(
+                        right: 8,
+                        bottom: 4,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: math.min(360, c.maxWidth - 16),
+                            maxHeight: math.max(90, c.maxHeight * .55),
+                          ),
+                          child: _search(context),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color: p.card,
+                  border: Border(top: BorderSide(color: p.line)),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                child: Row(
+                  children: [
+                    action(
+                      Icons.show_chart,
+                      l.historyEvents,
+                      () {
+                        setState(() => _searchOpen = false);
+                        m.toggleEvents();
+                      },
+                      key: const Key('history-events-toggle'),
+                      active: m.showEvents,
+                    ),
+                    PopupMenuButton<int>(
+                      tooltip: l.historyLegend,
+                      position: PopupMenuPosition.over,
+                      itemBuilder: (_) => [
+                        PopupMenuItem(
+                          enabled: false,
+                          child: Text(
+                            '↑ ${l.aboveRange}',
+                            style: TextStyle(color: p.red),
+                          ),
+                        ),
+                        PopupMenuItem(
+                          enabled: false,
+                          child: Text(
+                            '↓ ${l.belowRange}',
+                            style: TextStyle(color: p.blue),
+                          ),
+                        ),
+                        PopupMenuItem(
+                          enabled: false,
+                          child: Text('— ${l.noData}'),
+                        ),
+                      ],
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Icon(
+                          Icons.info_outline,
+                          size: 17,
+                          color: p.accent,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    action(
+                      Icons.arrow_back,
+                      l.historyScrollBack,
+                      () => _pan(-1),
+                    ),
+                    action(
+                      Icons.arrow_forward,
+                      l.historyScrollForward,
+                      () => _pan(1),
+                    ),
+                    const Spacer(),
+                    if (widget.onExport != null || widget.onShare != null)
+                      PopupMenuButton<int>(
+                        key: const Key('history-export'),
+                        tooltip: l.historyPdfActions,
+                        position: PopupMenuPosition.over,
+                        enabled: !m.invalidPeriod && !widget.exporting,
+                        onSelected: (value) {
+                          if (value == 0) {
+                            (widget.onExport ?? widget.onCopy)?.call();
+                          } else {
+                            (widget.onShare ?? widget.onExport)?.call();
+                          }
+                        },
+                        itemBuilder: (_) => [
+                          PopupMenuItem(
+                            value: 0,
+                            child: Text(l.historySavePdf),
+                          ),
+                          PopupMenuItem(
+                            value: 1,
+                            child: Text(l.historySharePdf),
+                          ),
+                        ],
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 7,
+                            vertical: 10,
+                          ),
+                          child: Row(
+                            children: [
+                              Text(
+                                'PDF',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  height: 1.25,
+                                  color: p.accent,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const Icon(Icons.expand_more, size: 12),
+                            ],
+                          ),
+                        ),
+                      ),
+                    if (widget.onExport == null &&
+                        widget.onShare == null &&
+                        widget.onCopy != null)
+                      action(
+                        Icons.copy,
+                        l.reportCopy,
+                        widget.onCopy,
+                        key: const Key('copy-local-report'),
+                      ),
+                    action(
+                      Icons.search,
+                      _searchOpen ? l.close : l.historySearch,
+                      () => setState(() => _searchOpen = !_searchOpen),
+                      key: const Key('history-search-toggle'),
+                      active: true,
                     ),
                   ],
                 ),
               ),
             ],
           );
+          return c.maxHeight < 260
+              ? SingleChildScrollView(
+                  child: SizedBox(height: 460, child: content),
+                )
+              : content;
         },
       ),
     );
+  }
+
+  void _select(String id) {
+    widget.model.select(id);
+    _query.clear();
+    widget.model.setQuery('');
   }
 
   Widget _search(BuildContext context) {
@@ -375,48 +507,63 @@ class _AnalysisHistoryViewState extends State<AnalysisHistoryView> {
         p = OrangePalette.of(context);
     return Material(
       color: p.card,
-      elevation: 4,
-      borderRadius: BorderRadius.circular(16),
+      elevation: 5,
+      borderRadius: BorderRadius.circular(12),
       clipBehavior: Clip.antiAlias,
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (_searchOpen) ...[
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: TextField(
-                key: const Key('history-search'),
-                controller: _query,
-                onChanged: m.setQuery,
-                decoration: InputDecoration(
-                  labelText: l.historySearch,
-                  prefixIcon: const Icon(Icons.search),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    key: const Key('history-search'),
+                    controller: _query,
+                    autofocus: true,
+                    onChanged: m.setQuery,
+                    onSubmitted: (_) {
+                      if (m.suggestions.isNotEmpty) {
+                        _select(m.suggestions.first.id);
+                      }
+                    },
+                    decoration: InputDecoration(
+                      hintText: l.historySearch,
+                      prefixIcon: const Icon(Icons.search, size: 18),
+                    ),
+                  ),
                 ),
-              ),
+                IconButton(
+                  tooltip: l.close,
+                  onPressed: () => setState(() => _searchOpen = false),
+                  icon: const Icon(Icons.close, size: 18),
+                ),
+              ],
             ),
+          ),
+          if (m.query.trim().isNotEmpty)
             Flexible(
               child: ListView(
                 shrinkWrap: true,
                 children: [
                   for (final row in m.suggestions.take(50))
-                    CheckboxListTile(
+                    ListTile(
                       key: ValueKey('history-select-${row.id}'),
+                      dense: true,
                       title: Text(
                         row.name,
                         style: const TextStyle(fontSize: 13),
                       ),
                       subtitle: Text(
-                        [
-                          row.group,
-                          row.context,
-                        ].where((v) => v.isNotEmpty).join(' · '),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 11),
+                        row.group,
+                        style: TextStyle(fontSize: 11, color: p.muted),
                       ),
-                      value: m.selected.contains(row.id),
-                      onChanged: (_) => m.select(row.id),
+                      trailing: m.selected.contains(row.id)
+                          ? const Icon(Icons.check, size: 17)
+                          : null,
+                      onTap: () => _select(row.id),
                     ),
                   if (m.suggestions.isEmpty)
                     Padding(
@@ -426,65 +573,148 @@ class _AnalysisHistoryViewState extends State<AnalysisHistoryView> {
                 ],
               ),
             ),
-          ],
-          IconButton(
-            key: const Key('history-search-toggle'),
-            tooltip: _searchOpen ? l.close : l.historySearch,
-            onPressed: () => setState(() => _searchOpen = !_searchOpen),
-            icon: Icon(
-              _searchOpen ? Icons.close : Icons.search,
-              color: p.accent,
+          if (m.selected.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+              child: Wrap(
+                spacing: 5,
+                runSpacing: 4,
+                children: [
+                  for (final row in m.data.rows.where(
+                    (r) => m.selected.contains(r.id),
+                  ))
+                    InputChip(
+                      label: Text(
+                        row.name,
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                      onDeleted: () => m.select(row.id),
+                    ),
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );
   }
 
-  Widget _table(BuildContext context) {
+  Widget _table(BuildContext context, Size viewport) {
     final m = widget.model,
         l = AppLocalizations.of(context),
         p = OrangePalette.of(context);
-    final scale = MediaQuery.textScalerOf(context).scale(14) / 14;
-    final rowHeight = math.max(48.0, 42 * scale);
+    final scale = MediaQuery.textScalerOf(context);
+    final nameWidth = viewport.width <= 760
+        ? (viewport.width < 360 ? 150.0 : 166.0)
+        : 230.0;
     final dates = m.dates, rows = m.rows;
     final lines = <(String, HistoryRow?)>[
       for (final group in m.groups)
-        if (rows.any((row) => row.group == group)) ...[
+        if (rows.any((r) => r.group == group)) ...[
           (group, null),
-          for (final row in rows.where((row) => row.group == group)) ('', row),
+          for (final row in rows.where((r) => r.group == group)) ('', row),
         ],
     ];
-    final nameWidth = MediaQuery.sizeOf(context).width < 600 ? 142.0 : 220.0;
-    final valueWidth = math.max(112.0, 104 * scale);
-    Widget cell(Widget child, {double? width, Color? color}) => Container(
+    String unit(HistoryRow row) {
+      final units = row.points.map((p) => p.unit).toSet();
+      return units.length == 1 && units.single != '—' ? units.single : '';
+    }
+
+    TextSpan name(HistoryRow row) => TextSpan(
+      children: [
+        TextSpan(
+          text: row.name,
+          style: const TextStyle(
+            fontSize: 12.5,
+            height: 1.35,
+            letterSpacing: -.25,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        if (unit(row).isNotEmpty)
+          TextSpan(
+            text: '${row.name.length > 22 ? "\n" : " "}${unit(row)}',
+            style: TextStyle(fontSize: 11, color: p.secondary),
+          ),
+      ],
+    );
+    final heights = [
+      for (final line in lines)
+        line.$2 == null
+            ? math.max(26.0, scale.scale(11) * 1.5 + 8)
+            : math.max(
+                math.max(
+                  28.0,
+                  scale.scale(12.5) *
+                          1.5 *
+                          line.$2!.points.fold<int>(
+                            1,
+                            (count, point) => math.max(
+                              count,
+                              m.points(line.$2!, point.date).length,
+                            ),
+                          ) +
+                      8,
+                ),
+                (() {
+                  final painter = TextPainter(
+                    text: TextSpan(
+                      style: DefaultTextStyle.of(context).style,
+                      children: [name(line.$2!)],
+                    ),
+                    textDirection: Directionality.of(context),
+                    textScaler: scale,
+                  )..layout(maxWidth: nameWidth - 8);
+                  return painter.height + 8;
+                })(),
+              ),
+    ];
+    final widths = [
+      for (final date in dates)
+        rows
+                .expand((r) => m.points(r, date))
+                .any((v) => v.source.toLowerCase().contains('см-клиника'))
+            ? 85.0 * (scale.scale(12) / 12)
+            : (viewport.width < 410 ? 66.0 : 68.0) * (scale.scale(12) / 12),
+    ];
+    final headerHeight = math.max(
+      38.0,
+      scale.scale(12) * 1.25 + scale.scale(10.5) * 1.25 + 11,
+    );
+    Widget cell(
+      Widget child, {
+      required double height,
+      double? width,
+      Color? color,
+      bool center = false,
+    }) => Container(
       width: width,
-      height: rowHeight,
-      alignment: Alignment.centerLeft,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      height: height,
+      alignment: center ? Alignment.center : Alignment.centerLeft,
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: color,
         border: Border(
-          right: BorderSide(color: p.line),
-          bottom: BorderSide(color: p.line),
+          bottom: BorderSide(color: p.line.withValues(alpha: .8)),
+          right: BorderSide(color: p.line.withValues(alpha: .45)),
         ),
       ),
       child: child,
     );
-    Widget title((String, HistoryRow?) line) {
-      final row = line.$2;
+    Widget title(int i) {
+      final line = lines[i], row = line.$2;
       if (row == null) {
         return cell(
           Text(
-            line.$1,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+            line.$1.toUpperCase(),
+            maxLines: 1,
+            overflow: TextOverflow.visible,
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w800,
               color: p.accent,
             ),
           ),
+          height: heights[i],
           color: p.accentSoft,
         );
       }
@@ -493,36 +723,32 @@ class _AnalysisHistoryViewState extends State<AnalysisHistoryView> {
         child: InkWell(
           key: ValueKey('history-row-${row.id}'),
           onTap: () => widget.onOpenRow?.call(row),
-          child: cell(
-            Text(
-              row.name,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
-            ),
-            color: p.paper,
-          ),
+          child: cell(Text.rich(name(row)), height: heights[i], color: p.card),
         ),
       );
     }
 
-    Widget value(HistoryRow? row, CalendarDate date) {
+    Widget value(int i, int j) {
+      final row = lines[i].$2, date = dates[j];
       if (row == null) {
         return cell(
           const SizedBox.shrink(),
-          width: valueWidth,
+          height: heights[i],
+          width: widths[j],
           color: p.accentSoft,
         );
       }
-      final points = m.points(row, date);
+      final points = m.points(row, date),
+          high = points.any((p) => p.status == 'high'),
+          low = points.any((p) => p.status == 'low');
       final content = points
           .map(
-            (point) =>
-                '${point.value}${point.status == 'high'
+            (v) =>
+                '${v.value}${v.status == 'high'
                     ? ' ↑'
-                    : point.status == 'low'
+                    : v.status == 'low'
                     ? ' ↓'
-                    : ''} ${point.unit}',
+                    : ''}${unit(row).isEmpty && v.unit.isNotEmpty ? ' ${v.unit}' : ''}',
           )
           .join('\n');
       return cell(
@@ -530,29 +756,41 @@ class _AnalysisHistoryViewState extends State<AnalysisHistoryView> {
           label: '${row.name} · $date',
           child: Tooltip(
             message: points
-                .map(
-                  (point) =>
-                      '${point.value} ${point.unit}\n${point.reference}\n${point.source}',
-                )
+                .map((v) => '${v.value} ${v.unit}\n${v.reference}\n${v.source}')
                 .join('\n'),
             child: Text(
               content.isEmpty ? '—' : content,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12.5,
+                color: high
+                    ? p.red
+                    : low
+                    ? p.blue
+                    : content.isEmpty
+                    ? p.muted
+                    : p.ink,
+                fontWeight: high || low || j == dates.length - 1
+                    ? FontWeight.w700
+                    : FontWeight.w500,
+              ),
             ),
           ),
         ),
-        width: valueWidth,
-        color: points.any((p) => p.status == 'high')
-            ? p.redSoft
-            : points.any((p) => p.status == 'low')
-            ? p.blueSoft
-            : null,
+        height: heights[i],
+        width: widths[j],
+        center: true,
+        color: high
+            ? p.redSoft.withValues(alpha: .55)
+            : low
+            ? p.blueSoft.withValues(alpha: .55)
+            : j == dates.length - 1
+            ? p.accentSoft.withValues(alpha: .35)
+            : p.card,
       );
     }
 
-    return Row(
+    final table = Row(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SizedBox(
@@ -562,68 +800,144 @@ class _AnalysisHistoryViewState extends State<AnalysisHistoryView> {
               cell(
                 Text(
                   l.indicator,
-                  style: const TextStyle(fontWeight: FontWeight.w800),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    height: 1.25,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
-                color: p.paper,
+                height: headerHeight,
+                color: p.accentSoft,
               ),
               Expanded(
                 child: ListView.builder(
                   key: const Key('history-names'),
                   controller: _names,
-                  padding: const EdgeInsets.only(bottom: 76),
-                  itemExtent: rowHeight,
+                  padding: EdgeInsets.zero,
                   itemCount: lines.length,
-                  itemBuilder: (_, i) => title(lines[i]),
+                  itemBuilder: (_, i) => title(i),
                 ),
               ),
             ],
           ),
         ),
         Expanded(
-          child: Scrollbar(
+          child: SingleChildScrollView(
+            key: const Key('history-horizontal'),
             controller: _horizontal,
-            thumbVisibility: true,
-            child: SingleChildScrollView(
-              key: const Key('history-horizontal'),
-              controller: _horizontal,
-              scrollDirection: Axis.horizontal,
-              child: SizedBox(
-                width: math.max(valueWidth, valueWidth * dates.length),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        for (final date in dates)
-                          cell(
-                            Text(
-                              DateFormat.yMMMd(l.localeName)
-                                  .format(historyDate(date)),
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
+            scrollDirection: Axis.horizontal,
+            child: SizedBox(
+              width: math.max(68, widths.fold<double>(0, (a, b) => a + b)),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      for (var j = 0; j < dates.length; j++)
+                        cell(
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                DateFormat('dd.MM.yy')
+                                    .format(historyDate(dates[j])),
+                                maxLines: 1,
+                                softWrap: false,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  height: 1.25,
+                                  fontWeight: FontWeight.w800,
+                                ),
                               ),
-                            ),
-                            width: valueWidth,
-                            color: p.paper,
+                              Text(
+                                rows
+                                    .expand((r) => m.points(r, dates[j]))
+                                    .map((p) => p.source)
+                                    .toSet()
+                                    .join(' · ')
+                                    .toUpperCase(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 10.5,
+                                  height: 1.25,
+                                  color: p.secondary,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
                           ),
-                      ],
-                    ),
-                    Expanded(
-                      child: ListView.builder(
-                        key: const Key('history-values'),
-                        controller: _values,
-                        padding: const EdgeInsets.only(bottom: 76),
-                        itemExtent: rowHeight,
-                        itemCount: lines.length,
-                        itemBuilder: (_, i) => Row(
-                          children: [
-                            for (final date in dates) value(lines[i].$2, date),
-                          ],
+                          height: headerHeight,
+                          width: widths[j],
+                          center: true,
+                          color: p.accentSoft,
                         ),
+                    ],
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      key: const Key('history-values'),
+                      controller: _values,
+                      padding: EdgeInsets.zero,
+                      itemCount: lines.length,
+                      itemBuilder: (_, i) => Row(
+                        children: [
+                          for (var j = 0; j < dates.length; j++) value(i, j),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+    return Stack(
+      children: [
+        Positioned.fill(child: table),
+        Positioned.fill(
+          top: headerHeight,
+          child: IgnorePointer(
+            child: ClipRect(
+              child: AnimatedBuilder(
+                animation: _names,
+                builder: (context, _) {
+                  var position = -(_names.positions.lastOrNull?.pixels ?? 0.0);
+                  final headers = <Widget>[];
+                  for (var i = 0; i < lines.length; i++) {
+                    if (lines[i].$2 == null) {
+                      headers.add(
+                        Positioned(
+                          top: position,
+                          left: 0,
+                          right: 0,
+                          height: heights[i],
+                          child: ExcludeSemantics(
+                            child: Container(
+                              alignment: Alignment.centerLeft,
+                              padding: const EdgeInsets.all(4),
+                              color: p.accentSoft,
+                              child: Text(
+                                lines[i].$1.toUpperCase(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w800,
+                                  color: p.accent,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                    position += heights[i];
+                  }
+                  return Stack(children: headers);
+                },
               ),
             ),
           ),

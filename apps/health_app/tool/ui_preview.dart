@@ -9,7 +9,7 @@ import 'package:health_app/presentation/demo_catalog.dart';
 import '../test/support/memory_preferences_repository.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  // Driver must create its binding before another binding is initialized.
   enableFlutterDriverExtension();
   final repository = MemoryPreferencesRepository()
     ..value = const AppPreferences(

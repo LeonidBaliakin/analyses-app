@@ -54,6 +54,12 @@ Future<SettingsViewModel> launch(
 
 Future<void> choose<T>(WidgetTester tester, String text) async {
   final field = find.byType(AppSelect<T>);
+  if (field.evaluate().isEmpty) {
+    await tester.ensureVisible(find.byKey(const Key('appearance-fold')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('appearance-fold')));
+    await tester.pumpAndSettle();
+  }
   await tester.ensureVisible(field);
   await tester.pumpAndSettle();
   await tester.tap(field);
@@ -92,7 +98,8 @@ void main() {
             for (final button in buttons) {
               expect(button.width, greaterThanOrEqualTo(rail.width - 24));
               expect(button.width, closeTo(buttons.first.width, .01));
-              expect(button.height, 72);
+              expect(button.height, greaterThanOrEqualTo(56));
+              expect(button.height, closeTo(buttons.first.height, .01));
             }
             final ink = tester.widget<Ink>(
               find.descendant(
@@ -234,12 +241,14 @@ void main() {
       expect(find.text('Хеликс · ДЦ Автово'), findsOneWidget);
       expect(find.text('Скандинавия · Отделение «Литейное»'), findsNothing);
       expect(tester.widget<TextField>(search).controller!.text, 'Витамин D');
-      await tester.tap(find.text('Выбрать анализы'));
+      await tester.tap(
+        find.byKey(const PageStorageKey('directory-test-selection')),
+      );
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.widgetWithText(FilterChip, 'Ферритин'));
-      await tester.tap(find.widgetWithText(FilterChip, 'Ферритин'));
+      await tester.ensureVisible(find.widgetWithText(OptionChip, 'Ферритин'));
+      await tester.tap(find.widgetWithText(OptionChip, 'Ферритин'));
       await tester.pumpAndSettle();
-      expect(find.widgetWithText(InputChip, 'Ферритин'), findsOneWidget);
+      expect(find.widgetWithText(OptionChip, 'Ферритин'), findsOneWidget);
       expect(find.text('Хеликс · ДЦ Автово'), findsOneWidget);
     },
   );

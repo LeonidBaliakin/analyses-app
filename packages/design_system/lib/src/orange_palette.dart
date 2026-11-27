@@ -22,6 +22,11 @@ class OrangePalette extends ThemeExtension<OrangePalette> {
 
   final Color paper, card, line, ink, secondary, muted, accent, accentSoft;
   final Color orangeSoft, green, greenSoft, red, redSoft, blue, blueSoft;
+  static const violetGradient = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [Color(0xFF9A77E0), Color(0xFF7F5FBC)],
+  );
   static const orange = Color(0xFFF97316);
   static const orangeGradient = LinearGradient(
     begin: Alignment.topLeft,
@@ -51,10 +56,10 @@ class OrangePalette extends ThemeExtension<OrangePalette> {
     line: Color(0xFFE7E3F0),
     ink: Color(0xFF1C1930),
     secondary: Color(0xFF4A4660),
-    muted: Color(0xFF777087),
+    muted: Color(0xFF685F78),
     accent: Color(0xFF7C5CE0),
     accentSoft: Color(0xFFF0EDFB),
-    orangeSoft: Color(0xFFFFF1E6),
+    orangeSoft: Color(0xFFFFF1E8),
     green: Color(0xFF15803D),
     greenSoft: Color(0xFFE7F8EE),
     red: Color(0xFFDC2626),

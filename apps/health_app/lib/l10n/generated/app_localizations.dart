@@ -309,7 +309,7 @@ abstract class AppLocalizations {
   /// No description provided for @previewOnly.
   ///
   /// In en, this message translates to:
-  /// **'This is an interface preview. Sign-in, medical record storage and external services are not connected yet.'**
+  /// **'This feature is not available yet.'**
   String get previewOnly;
 
   /// No description provided for @close.
@@ -915,7 +915,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileComplete.
   ///
   /// In en, this message translates to:
-  /// **'Profile 100% complete'**
+  /// **'100% complete'**
   String get profileComplete;
 
   /// No description provided for @profileCompleteHint.
@@ -987,7 +987,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileComplaintsSub.
   ///
   /// In en, this message translates to:
-  /// **'What bothers you and since when'**
+  /// **'Symptoms'**
   String get profileComplaintsSub;
 
   /// No description provided for @profileBaseSub.
@@ -999,7 +999,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileMedicinesSub.
   ///
   /// In en, this message translates to:
-  /// **'Courses and ongoing use'**
+  /// **'What you take'**
   String get profileMedicinesSub;
 
   /// No description provided for @profileWeightSub.
@@ -1011,13 +1011,13 @@ abstract class AppLocalizations {
   /// No description provided for @profileIllnessSub.
   ///
   /// In en, this message translates to:
-  /// **'Recent illnesses, fever, antibiotics'**
+  /// **'Illnesses and dates'**
   String get profileIllnessSub;
 
   /// No description provided for @profileHospitalSub.
   ///
   /// In en, this message translates to:
-  /// **'When and where you stayed in hospital'**
+  /// **'Hospital and dates'**
   String get profileHospitalSub;
 
   /// No description provided for @profileAllergiesSub.
@@ -1191,7 +1191,7 @@ abstract class AppLocalizations {
   /// No description provided for @sharingTitle.
   ///
   /// In en, this message translates to:
-  /// **'Share results with a doctor'**
+  /// **'Share results'**
   String get sharingTitle;
 
   /// No description provided for @doctorView.
@@ -1203,13 +1203,13 @@ abstract class AppLocalizations {
   /// No description provided for @sharingIntro.
   ///
   /// In en, this message translates to:
-  /// **'For one-time access a doctor scans a QR code or opens a link. Permanent access uses a registered account. You can revoke access at any time.'**
+  /// **'Send a link or show the QR code to your clinician.'**
   String get sharingIntro;
 
   /// No description provided for @sharingDemo.
   ///
   /// In en, this message translates to:
-  /// **'The link and QR code are illustrative. They do not grant access to health records.'**
+  /// **'Demo · example link and QR code.'**
   String get sharingDemo;
 
   /// No description provided for @accessDuration.
@@ -1317,7 +1317,7 @@ abstract class AppLocalizations {
   /// No description provided for @accessToMine.
   ///
   /// In en, this message translates to:
-  /// **'Who can access my results'**
+  /// **'People I shared with'**
   String get accessToMine;
 
   /// No description provided for @sharedWithMe.
@@ -2007,7 +2007,7 @@ abstract class AppLocalizations {
   /// No description provided for @introductionProfileTitle.
   ///
   /// In en, this message translates to:
-  /// **'Complete your profile'**
+  /// **'Start with your profile'**
   String get introductionProfileTitle;
 
   /// No description provided for @introductionProfileBody.
@@ -2019,37 +2019,37 @@ abstract class AppLocalizations {
   /// No description provided for @introductionReportsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Add your first test report'**
+  /// **'Add a test'**
   String get introductionReportsTitle;
 
   /// No description provided for @introductionReportsBody.
   ///
   /// In en, this message translates to:
-  /// **'The Tests section contains your results. The plus button opens the available ways to add data. Review recognised values against the original report before confirming them.'**
+  /// **'Upload a photo, screenshot or PDF. Check the values against the report before saving.'**
   String get introductionReportsBody;
 
   /// No description provided for @introductionSummaryTitle.
   ///
   /// In en, this message translates to:
-  /// **'Explore your results'**
+  /// **'Compare results'**
   String get introductionSummaryTitle;
 
   /// No description provided for @introductionSummaryBody.
   ///
   /// In en, this message translates to:
-  /// **'The summary shows your latest visit. History compares tests by date, with indicator selection and events.'**
+  /// **'The summary shows your latest visit. Open history to compare tests by date.'**
   String get introductionSummaryBody;
 
   /// No description provided for @introductionLabsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Compare laboratories'**
+  /// **'Choose a laboratory'**
   String get introductionLabsTitle;
 
   /// No description provided for @introductionLabsBody.
   ///
   /// In en, this message translates to:
-  /// **'In Find a lab, search for tests or providers in Saint Petersburg and Voronezh. Choose an address or device location to see the nearest branches. Confirm availability of network-listed tests at the branch.'**
+  /// **'Build a test list and compare laboratories by price and distance.'**
   String get introductionLabsBody;
 
   /// No description provided for @introductionDoctorsTitle.
@@ -2061,19 +2061,19 @@ abstract class AppLocalizations {
   /// No description provided for @introductionDoctorsBody.
   ///
   /// In en, this message translates to:
-  /// **'In Doctors, search for a specialty or a doctor and open a card. It shows the clinic and information about the appointment.'**
+  /// **'See which tests to bring to your appointment. Open the clinic website from the card to book.'**
   String get introductionDoctorsBody;
 
   /// No description provided for @introductionAppointmentTitle.
   ///
   /// In en, this message translates to:
-  /// **'Plan an appointment'**
+  /// **'Share your results'**
   String get introductionAppointmentTitle;
 
   /// No description provided for @introductionAppointmentBody.
   ///
   /// In en, this message translates to:
-  /// **'The card links to the provider’s booking website and phone number. The clinic confirms your booking. You can repeat this introduction in Settings.'**
+  /// **'Show the QR code or send a link at your appointment. Set the access duration here.'**
   String get introductionAppointmentBody;
 
   /// No description provided for @introductionNotice.
@@ -3665,6 +3665,990 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Other'**
   String get supportOther;
+
+  /// No description provided for @addShort.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Add'**
+  String get addShort;
+
+  /// No description provided for @clearSelection.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get clearSelection;
+
+  /// No description provided for @verifyHospitalValidity.
+  ///
+  /// In en, this message translates to:
+  /// **'confirm validity for admission'**
+  String get verifyHospitalValidity;
+
+  /// No description provided for @validityFortnight.
+  ///
+  /// In en, this message translates to:
+  /// **'valid for 14 days'**
+  String get validityFortnight;
+
+  /// No description provided for @validityMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'valid for 1 month'**
+  String get validityMonth;
+
+  /// No description provided for @historyShort.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get historyShort;
+
+  /// No description provided for @historyLegend.
+  ///
+  /// In en, this message translates to:
+  /// **'Table legend'**
+  String get historyLegend;
+
+  /// No description provided for @historyPdfActions.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF actions'**
+  String get historyPdfActions;
+
+  /// No description provided for @historySavePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Save PDF'**
+  String get historySavePdf;
+
+  /// No description provided for @historySharePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Share PDF'**
+  String get historySharePdf;
+
+  /// No description provided for @diaryTileSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Glucose, blood pressure, sleep'**
+  String get diaryTileSubtitle;
+
+  /// No description provided for @visitReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason:'**
+  String get visitReason;
+
+  /// No description provided for @reasonDoctor.
+  ///
+  /// In en, this message translates to:
+  /// **'Prescribed by doctor'**
+  String get reasonDoctor;
+
+  /// No description provided for @reasonCheckup.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkup'**
+  String get reasonCheckup;
+
+  /// No description provided for @reasonRoutine.
+  ///
+  /// In en, this message translates to:
+  /// **'Routine screening'**
+  String get reasonRoutine;
+
+  /// No description provided for @reasonHospital.
+  ///
+  /// In en, this message translates to:
+  /// **'In hospital'**
+  String get reasonHospital;
+
+  /// No description provided for @reasonSanatorium.
+  ///
+  /// In en, this message translates to:
+  /// **'White Nights sanatorium'**
+  String get reasonSanatorium;
+
+  /// No description provided for @reasonAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'+ reason'**
+  String get reasonAdd;
+
+  /// No description provided for @myAnalyses.
+  ///
+  /// In en, this message translates to:
+  /// **'My tests'**
+  String get myAnalyses;
+
+  /// No description provided for @allOption.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get allOption;
+
+  /// No description provided for @historyPeriodEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Events in period'**
+  String get historyPeriodEvents;
+
+  /// No description provided for @durationMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'30 days'**
+  String get durationMonth;
+
+  /// No description provided for @onlyOutsideRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Outside reference only'**
+  String get onlyOutsideRange;
+
+  /// No description provided for @selectedBlocks.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected sections'**
+  String get selectedBlocks;
+
+  /// No description provided for @notificationsAndPermissions.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications and permissions'**
+  String get notificationsAndPermissions;
+
+  /// No description provided for @selectedSpecialties.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected specialties'**
+  String get selectedSpecialties;
+
+  /// No description provided for @testsToTake.
+  ///
+  /// In en, this message translates to:
+  /// **'Tests to take'**
+  String get testsToTake;
+
+  /// No description provided for @basicTestSet.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Basic set'**
+  String get basicTestSet;
+
+  /// No description provided for @directoryFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Directory filters'**
+  String get directoryFilters;
+
+  /// No description provided for @directoryPriceUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Price not published'**
+  String get directoryPriceUnknown;
+
+  /// No description provided for @directoryContactsAndSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts and source'**
+  String get directoryContactsAndSource;
+
+  /// No description provided for @profileFieldSex.
+  ///
+  /// In en, this message translates to:
+  /// **'Sex'**
+  String get profileFieldSex;
+
+  /// No description provided for @profileFieldHeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Height, cm'**
+  String get profileFieldHeight;
+
+  /// No description provided for @profileFieldWaist.
+  ///
+  /// In en, this message translates to:
+  /// **'Waist, cm'**
+  String get profileFieldWaist;
+
+  /// No description provided for @profileFieldHips.
+  ///
+  /// In en, this message translates to:
+  /// **'Hips, cm'**
+  String get profileFieldHips;
+
+  /// No description provided for @profileFieldChest.
+  ///
+  /// In en, this message translates to:
+  /// **'Chest, cm'**
+  String get profileFieldChest;
+
+  /// No description provided for @profileFieldCycle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle day at visit'**
+  String get profileFieldCycle;
+
+  /// No description provided for @profileFieldCity.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get profileFieldCity;
+
+  /// No description provided for @profileFieldTravel.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel in the last year: where and when'**
+  String get profileFieldTravel;
+
+  /// No description provided for @profileFieldActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Sport and physical activity'**
+  String get profileFieldActivity;
+
+  /// No description provided for @profileFieldSport.
+  ///
+  /// In en, this message translates to:
+  /// **'Type of sport'**
+  String get profileFieldSport;
+
+  /// No description provided for @profileFieldFoodNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Diet details'**
+  String get profileFieldFoodNotes;
+
+  /// No description provided for @profileFieldStress.
+  ///
+  /// In en, this message translates to:
+  /// **'Stress in the last month'**
+  String get profileFieldStress;
+
+  /// No description provided for @profileFieldSleep.
+  ///
+  /// In en, this message translates to:
+  /// **'Average sleep, hours per night'**
+  String get profileFieldSleep;
+
+  /// No description provided for @profileFieldDiet.
+  ///
+  /// In en, this message translates to:
+  /// **'Diet'**
+  String get profileFieldDiet;
+
+  /// No description provided for @profileFieldSmoking.
+  ///
+  /// In en, this message translates to:
+  /// **'Smoking'**
+  String get profileFieldSmoking;
+
+  /// No description provided for @profileFieldPacksPerDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Packs per day'**
+  String get profileFieldPacksPerDay;
+
+  /// No description provided for @profileFieldSmokingQuitPrecision.
+  ///
+  /// In en, this message translates to:
+  /// **'When you stopped smoking'**
+  String get profileFieldSmokingQuitPrecision;
+
+  /// No description provided for @profileFieldSmokingQuitDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get profileFieldSmokingQuitDate;
+
+  /// No description provided for @profileFieldSmokingQuitYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Approximate year'**
+  String get profileFieldSmokingQuitYear;
+
+  /// No description provided for @profileFieldAlcohol.
+  ///
+  /// In en, this message translates to:
+  /// **'Alcohol, how often'**
+  String get profileFieldAlcohol;
+
+  /// No description provided for @profileFieldAlcoholAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Alcohol per occasion'**
+  String get profileFieldAlcoholAmount;
+
+  /// No description provided for @profileFieldAlcoholQuitPrecision.
+  ///
+  /// In en, this message translates to:
+  /// **'When you stopped drinking'**
+  String get profileFieldAlcoholQuitPrecision;
+
+  /// No description provided for @profileFieldAlcoholQuitDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get profileFieldAlcoholQuitDate;
+
+  /// No description provided for @profileFieldAlcoholQuitYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Approximate year'**
+  String get profileFieldAlcoholQuitYear;
+
+  /// No description provided for @profileSexMale.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get profileSexMale;
+
+  /// No description provided for @profileSexFemale.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get profileSexFemale;
+
+  /// No description provided for @profileOptionalMeasures.
+  ///
+  /// In en, this message translates to:
+  /// **'Circumferences · optional'**
+  String get profileOptionalMeasures;
+
+  /// No description provided for @profileAddRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Add entry'**
+  String get profileAddRecord;
+
+  /// No description provided for @profileDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get profileDescription;
+
+  /// No description provided for @profileWhen.
+  ///
+  /// In en, this message translates to:
+  /// **'When'**
+  String get profileWhen;
+
+  /// No description provided for @profileUnknownDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date unknown'**
+  String get profileUnknownDate;
+
+  /// No description provided for @profileExactDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Exact date'**
+  String get profileExactDate;
+
+  /// No description provided for @profileApproximateYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Approximate year'**
+  String get profileApproximateYear;
+
+  /// No description provided for @profileChildhood.
+  ///
+  /// In en, this message translates to:
+  /// **'Since childhood'**
+  String get profileChildhood;
+
+  /// No description provided for @profileRemoveEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove entry'**
+  String get profileRemoveEntry;
+
+  /// No description provided for @profileChronic.
+  ///
+  /// In en, this message translates to:
+  /// **'Chronic conditions'**
+  String get profileChronic;
+
+  /// No description provided for @profileSurgery.
+  ///
+  /// In en, this message translates to:
+  /// **'Surgery and injuries'**
+  String get profileSurgery;
+
+  /// No description provided for @profileFamily.
+  ///
+  /// In en, this message translates to:
+  /// **'Hereditary and genetic conditions'**
+  String get profileFamily;
+
+  /// No description provided for @profileOtherHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Other information for your doctor'**
+  String get profileOtherHistory;
+
+  /// No description provided for @profileActivity1.
+  ///
+  /// In en, this message translates to:
+  /// **'Little activity, sedentary work'**
+  String get profileActivity1;
+
+  /// No description provided for @profileActivity2.
+  ///
+  /// In en, this message translates to:
+  /// **'1–2 workouts or walks a week'**
+  String get profileActivity2;
+
+  /// No description provided for @profileActivity3.
+  ///
+  /// In en, this message translates to:
+  /// **'3–4 workouts a week'**
+  String get profileActivity3;
+
+  /// No description provided for @profileActivity4.
+  ///
+  /// In en, this message translates to:
+  /// **'5+ workouts or physical work'**
+  String get profileActivity4;
+
+  /// No description provided for @profileNo.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get profileNo;
+
+  /// No description provided for @profileSometimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, sometimes'**
+  String get profileSometimes;
+
+  /// No description provided for @profileOften.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, almost constantly'**
+  String get profileOften;
+
+  /// No description provided for @profileDietNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'Regular'**
+  String get profileDietNormal;
+
+  /// No description provided for @profileDietVegetarian.
+  ///
+  /// In en, this message translates to:
+  /// **'Vegetarian'**
+  String get profileDietVegetarian;
+
+  /// No description provided for @profileDietVegan.
+  ///
+  /// In en, this message translates to:
+  /// **'Vegan'**
+  String get profileDietVegan;
+
+  /// No description provided for @profileDietKeto.
+  ///
+  /// In en, this message translates to:
+  /// **'Low carbohydrate / keto'**
+  String get profileDietKeto;
+
+  /// No description provided for @profileDietFasting.
+  ///
+  /// In en, this message translates to:
+  /// **'Intermittent fasting'**
+  String get profileDietFasting;
+
+  /// No description provided for @profileNeverSmoked.
+  ///
+  /// In en, this message translates to:
+  /// **'Do not smoke'**
+  String get profileNeverSmoked;
+
+  /// No description provided for @profileSmokes.
+  ///
+  /// In en, this message translates to:
+  /// **'Smoke'**
+  String get profileSmokes;
+
+  /// No description provided for @profileFormerSmoker.
+  ///
+  /// In en, this message translates to:
+  /// **'Stopped smoking'**
+  String get profileFormerSmoker;
+
+  /// No description provided for @profileNoAlcohol.
+  ///
+  /// In en, this message translates to:
+  /// **'Do not drink'**
+  String get profileNoAlcohol;
+
+  /// No description provided for @profileFormerDrinker.
+  ///
+  /// In en, this message translates to:
+  /// **'Previously drank'**
+  String get profileFormerDrinker;
+
+  /// No description provided for @profileAlcoholRare.
+  ///
+  /// In en, this message translates to:
+  /// **'Less than weekly'**
+  String get profileAlcoholRare;
+
+  /// No description provided for @profileAlcoholWeekly.
+  ///
+  /// In en, this message translates to:
+  /// **'1–3 times a week'**
+  String get profileAlcoholWeekly;
+
+  /// No description provided for @profileAlcoholOften.
+  ///
+  /// In en, this message translates to:
+  /// **'More often'**
+  String get profileAlcoholOften;
+
+  /// No description provided for @profilePacksHalf.
+  ///
+  /// In en, this message translates to:
+  /// **'Half a pack'**
+  String get profilePacksHalf;
+
+  /// No description provided for @profileNotStated.
+  ///
+  /// In en, this message translates to:
+  /// **'Not stated'**
+  String get profileNotStated;
+
+  /// No description provided for @profileEventName.
+  ///
+  /// In en, this message translates to:
+  /// **'What happened'**
+  String get profileEventName;
+
+  /// No description provided for @profileFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get profileFrom;
+
+  /// No description provided for @profileTo.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get profileTo;
+
+  /// No description provided for @profileTemperature.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum temperature, °C (optional)'**
+  String get profileTemperature;
+
+  /// No description provided for @profileInstitution.
+  ///
+  /// In en, this message translates to:
+  /// **'Where'**
+  String get profileInstitution;
+
+  /// No description provided for @profileOutcomes.
+  ///
+  /// In en, this message translates to:
+  /// **'Hospitalization outcome'**
+  String get profileOutcomes;
+
+  /// No description provided for @profileReaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Reaction'**
+  String get profileReaction;
+
+  /// No description provided for @profileAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get profileAdd;
+
+  /// No description provided for @profileSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get profileSave;
+
+  /// No description provided for @medicationExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Course experience'**
+  String get medicationExperience;
+
+  /// No description provided for @medicationFirstCourse.
+  ///
+  /// In en, this message translates to:
+  /// **'First course'**
+  String get medicationFirstCourse;
+
+  /// No description provided for @medicationRepeatCourse.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat course'**
+  String get medicationRepeatCourse;
+
+  /// No description provided for @medicationUnknownCourse.
+  ///
+  /// In en, this message translates to:
+  /// **'Do not remember'**
+  String get medicationUnknownCourse;
+
+  /// No description provided for @medicationReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for prescription'**
+  String get medicationReason;
+
+  /// No description provided for @profileFilledPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% complete'**
+  String profileFilledPercent(int percent);
+
+  /// No description provided for @profileEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} entries'**
+  String profileEntries(int count);
+
+  /// No description provided for @tourOpenBasics.
+  ///
+  /// In en, this message translates to:
+  /// **'Open basic details'**
+  String get tourOpenBasics;
+
+  /// No description provided for @tourOpenUpload.
+  ///
+  /// In en, this message translates to:
+  /// **'Open upload options'**
+  String get tourOpenUpload;
+
+  /// No description provided for @otherRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'Other records'**
+  String get otherRecords;
+
+  /// No description provided for @pdfUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit'**
+  String get pdfUnit;
+
+  /// No description provided for @pdfReference.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference'**
+  String get pdfReference;
+
+  /// No description provided for @captureWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'What happened?'**
+  String get captureWhat;
+
+  /// No description provided for @captureHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe what happened…'**
+  String get captureHint;
+
+  /// No description provided for @captureDictate.
+  ///
+  /// In en, this message translates to:
+  /// **'Dictate'**
+  String get captureDictate;
+
+  /// No description provided for @captureExample.
+  ///
+  /// In en, this message translates to:
+  /// **'View example'**
+  String get captureExample;
+
+  /// No description provided for @captureCheck.
+  ///
+  /// In en, this message translates to:
+  /// **'Review entries'**
+  String get captureCheck;
+
+  /// No description provided for @captureReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Review entries'**
+  String get captureReview;
+
+  /// No description provided for @captureSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Original story'**
+  String get captureSource;
+
+  /// No description provided for @captureConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm and save'**
+  String get captureConfirm;
+
+  /// No description provided for @captureVoiceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Use your device keyboard dictation or type your story.'**
+  String get captureVoiceHint;
+
+  /// No description provided for @captureLocalHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Local draft. Check names, dates and sections before saving.'**
+  String get captureLocalHint;
+
+  /// No description provided for @captureMissingDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Specify the date: the year is missing or the date was not recognized.'**
+  String get captureMissingDate;
+
+  /// No description provided for @captureKind.
+  ///
+  /// In en, this message translates to:
+  /// **'Section'**
+  String get captureKind;
+
+  /// No description provided for @captureIllness.
+  ///
+  /// In en, this message translates to:
+  /// **'Illness'**
+  String get captureIllness;
+
+  /// No description provided for @captureMedication.
+  ///
+  /// In en, this message translates to:
+  /// **'Medication'**
+  String get captureMedication;
+
+  /// No description provided for @captureHospital.
+  ///
+  /// In en, this message translates to:
+  /// **'Hospitalization'**
+  String get captureHospital;
+
+  /// No description provided for @captureComplaint.
+  ///
+  /// In en, this message translates to:
+  /// **'Symptom'**
+  String get captureComplaint;
+
+  /// No description provided for @captureWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get captureWeight;
+
+  /// No description provided for @captureAllergy.
+  ///
+  /// In en, this message translates to:
+  /// **'Allergy'**
+  String get captureAllergy;
+
+  /// No description provided for @captureTravel.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel'**
+  String get captureTravel;
+
+  /// No description provided for @captureSample.
+  ///
+  /// In en, this message translates to:
+  /// **'I was ill with flu on 10.11.2026; taking vitamin D from 11.11.2026. A trip to a health resort.'**
+  String get captureSample;
+
+  /// No description provided for @medicationMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Course mode'**
+  String get medicationMode;
+
+  /// No description provided for @medicationConstant.
+  ///
+  /// In en, this message translates to:
+  /// **'Ongoing'**
+  String get medicationConstant;
+
+  /// No description provided for @medicationCourse.
+  ///
+  /// In en, this message translates to:
+  /// **'Course'**
+  String get medicationCourse;
+
+  /// No description provided for @diaryWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'What did you measure?'**
+  String get diaryWhat;
+
+  /// No description provided for @diaryGlucose.
+  ///
+  /// In en, this message translates to:
+  /// **'Blood glucose'**
+  String get diaryGlucose;
+
+  /// No description provided for @diaryPressure.
+  ///
+  /// In en, this message translates to:
+  /// **'Blood pressure'**
+  String get diaryPressure;
+
+  /// No description provided for @diarySleep.
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep'**
+  String get diarySleep;
+
+  /// No description provided for @diaryGlucoseValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Glucose, mmol/L'**
+  String get diaryGlucoseValue;
+
+  /// No description provided for @diarySystolic.
+  ///
+  /// In en, this message translates to:
+  /// **'Systolic, mmHg'**
+  String get diarySystolic;
+
+  /// No description provided for @diaryDiastolic.
+  ///
+  /// In en, this message translates to:
+  /// **'Diastolic, mmHg'**
+  String get diaryDiastolic;
+
+  /// No description provided for @diarySleepValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration, h'**
+  String get diarySleepValue;
+
+  /// No description provided for @diarySave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save measurement'**
+  String get diarySave;
+
+  /// No description provided for @diaryEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'Entries'**
+  String get diaryEntries;
+
+  /// No description provided for @diaryEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No entries yet.'**
+  String get diaryEmpty;
+
+  /// No description provided for @selectPrint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select for printing'**
+  String get selectPrint;
+
+  /// No description provided for @printSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Print selected'**
+  String get printSelected;
+
+  /// No description provided for @medicationActive.
+  ///
+  /// In en, this message translates to:
+  /// **'taking'**
+  String get medicationActive;
+
+  /// No description provided for @medicationCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'completed'**
+  String get medicationCompleted;
+
+  /// No description provided for @guestCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest · example data'**
+  String get guestCaption;
+
+  /// No description provided for @signInRegister.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in or register'**
+  String get signInRegister;
+
+  /// No description provided for @labShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Lab'**
+  String get labShort;
+
+  /// No description provided for @reasonDoctorShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor prescribed'**
+  String get reasonDoctorShort;
+
+  /// No description provided for @captureMedicationName.
+  ///
+  /// In en, this message translates to:
+  /// **'Medication and dosage'**
+  String get captureMedicationName;
+
+  /// No description provided for @captureIllnessName.
+  ///
+  /// In en, this message translates to:
+  /// **'Illness'**
+  String get captureIllnessName;
+
+  /// No description provided for @captureComplaintName.
+  ///
+  /// In en, this message translates to:
+  /// **'What is bothering you'**
+  String get captureComplaintName;
+
+  /// No description provided for @captureHospitalName.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for hospitalization'**
+  String get captureHospitalName;
+
+  /// No description provided for @captureAllergyName.
+  ///
+  /// In en, this message translates to:
+  /// **'Allergic to'**
+  String get captureAllergyName;
+
+  /// No description provided for @captureStartDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Start date'**
+  String get captureStartDate;
+
+  /// No description provided for @captureEndDate.
+  ///
+  /// In en, this message translates to:
+  /// **'End date'**
+  String get captureEndDate;
+
+  /// No description provided for @chooseDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose date'**
+  String get chooseDate;
+
+  /// No description provided for @chooseTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose time'**
+  String get chooseTime;
 }
 
 class _AppLocalizationsDelegate

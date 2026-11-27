@@ -1,3 +1,7 @@
+export 'src/event_record_form.dart';
+export 'src/diary_view.dart' show showMeasurementDiary;
+export 'src/event_capture_view.dart' show showEventCapture;
+
 import 'package:design_system/design_system.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
@@ -24,6 +28,8 @@ Future<void> showAddAnalysis(
       onAddEvent: onAddEvent,
       onDiary: onDiary,
     ),
+    maxWidth: 480,
+    plainHeader: true,
   );
 }
 
@@ -89,7 +95,11 @@ class _CaptureOptions extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 10),
             child: OutlinedButton(
               style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.all(14),
+                minimumSize: const Size(0, 61),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 8,
+                ),
                 alignment: Alignment.centerLeft,
               ),
               onPressed:
@@ -101,15 +111,15 @@ class _CaptureOptions extends StatelessWidget {
               child: Row(
                 children: [
                   Container(
-                    width: 42,
-                    height: 42,
+                    width: 36,
+                    height: 36,
                     decoration: BoxDecoration(
                       color: p.accentSoft,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(option.$1, color: p.accent),
+                    child: Icon(option.$1, color: p.accent, size: 19),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,9 +195,19 @@ class _CaptureOptions extends StatelessWidget {
             ),
           ],
         ),
-        if (showOtherRecords)
+        if (showOtherRecords) ...[
+          const Divider(),
+          const SizedBox(height: 9),
+          Text(
+            l.otherRecords,
+            style: TextStyle(fontSize: 12, color: p.secondary),
+          ),
+          const SizedBox(height: 7),
           RecordActions(onAddEvent: onAddEvent, onDiary: onDiary),
+        ],
       ],
     );
   }
 }
+
+// Public feature entry; views depend only on domain snapshots and commands.
